@@ -4,7 +4,7 @@ Plugin Name: Search Regex
 Plugin URI: http://urbangiraffe.com/plugins/search-regex
 Description: Adds search &amp; replace functionality across posts, pages, comments, and meta-data, with full regular expression support
 Author: John Godley
-Version: 1.4.2
+Version: 1.4.3
 Author URI: http://urbangiraffe.com/
 
 1.1   - Minor cosmetic changes & set a timeout limit
@@ -12,6 +12,7 @@ Author URI: http://urbangiraffe.com/
 1.3   - Use correct table prefix
 1.4   - Extensible plugins.  Reorganisation of code
 1.4.2 - Fix escaping bug
+1.4.3 - Allow searching in pings & trackbacks
 */
 
 include (dirname (__FILE__).'/plugin.php');
