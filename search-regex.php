@@ -78,7 +78,7 @@ class SearchRegex extends SearchRegex_Plugin
 	
 	function admin_menu ()
 	{
-    add_management_page (__ ("Search Regex", 'search-regex'), __ ("Search Regex", 'search-regex'), 'edit_posts', basename (__FILE__), array (&$this, 'admin_screen'));
+    add_management_page (__ ("Search Regex", 'search-regex'), __ ("Search Regex", 'search-regex'), 'administrator', basename (__FILE__), array (&$this, 'admin_screen'));
 	}
 	
 	function admin_head ()
