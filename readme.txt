@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://urbangiraffe.com/about/support/
 Tags: search, regex, regular expression, admin, post, page
 Requires at least: 2.0
-Tested up to: 2.2
+Tested up to: 2.3
 Stable tag: trunk
 
 Search Regex adds a powerful set of search and replace functions to WordPress that go beyond the standard searching capabilities, with full regex support.
@@ -22,7 +22,7 @@ The plugin is simple to install:
 
 1. Download `search-regex.zip`
 1. Unzip
-1. Upload `audit-trail` directory to your `/wp-content/plugins` directory
+1. Upload `search-regex` directory to your `/wp-content/plugins` directory
 1. Go to the plugin management page and enable the plugin
 1. Configure the plugin from `Management/Search Regex`
 
