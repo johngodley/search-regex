@@ -39,7 +39,6 @@ class SearchRegex extends SearchRegex_Plugin
 		}
 	}
 	
-	
 	function admin_screen ()
 	{	
 		$searches = Search::get_searches ();

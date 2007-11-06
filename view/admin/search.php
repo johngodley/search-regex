@@ -16,7 +16,7 @@
 				
 				<strong><?php _e ('Limit to', 'search-regex'); ?>:</strong>
 				<select name="limit">
-					<?php echo $this->select (array ('10' => '10', '25' => '25', '50' => '50', '100' => '100'), $_POST['limit']) ?>
+					<?php echo $this->select (array ('10' => '10', '25' => '25', '50' => '50', '100' => '100', '18446744073709551615' => __ ('No limit', 'search-regex')), $_POST['limit']) ?>
 				</select>
 				
 				<strong><?php _e ('Order By', 'search-regex'); ?>:</strong>
