@@ -4,7 +4,7 @@ Plugin Name: Search Regex
 Plugin URI: http://urbangiraffe.com/plugins/search-regex
 Description: Adds search &amp; replace functionality across posts, pages, comments, and meta-data, with full regular expression support
 Author: John Godley
-Version: 1.4.3
+Version: 1.4.4
 Author URI: http://urbangiraffe.com/
 
 1.1   - Minor cosmetic changes & set a timeout limit
@@ -13,6 +13,7 @@ Author URI: http://urbangiraffe.com/
 1.4   - Extensible plugins.  Reorganisation of code
 1.4.2 - Fix escaping bug
 1.4.3 - Allow searching in pings & trackbacks
+1.4.4 - Fix escaping issue, allowing search limit and direction
 */
 
 include (dirname (__FILE__).'/plugin.php');
@@ -45,10 +46,16 @@ class SearchRegex extends SearchRegex_Plugin
 		$_POST = stripslashes_deep ($_POST);
 		
 		if (isset ($_POST['search_pattern']))
-			$search_pattern  = stripslashes ($_POST['search_pattern']);
+			$search_pattern  = $_POST['search_pattern'];
 		if (isset ($_POST['replace_pattern']))
-			$replace_pattern = stripslashes ($_POST['replace_pattern']);
+			$replace_pattern = $_POST['replace_pattern'];
 
+		$search_pattern  = str_replace ("\'", "'", $search_pattern);
+		$replace_pattern = str_replace ("\'", "'", $replace_pattern);
+		$orderby         = $_POST['orderby'];
+		$limit           = intval ($_POST['limit']);
+		$offset          = 0;
+		
 		if (Search::valid_search ($_POST['source']) && (isset ($_POST['search']) || isset ($_POST['replace']) || isset ($_POST['replace_and_save'])))
 		{
 			$searcher = new $_POST['source'];
@@ -56,11 +63,11 @@ class SearchRegex extends SearchRegex_Plugin
 				$searcher->set_regex_options ($_POST['dotall'], $_POST['case'], $_POST['multi']);
 			
 			if (isset ($_POST['search']))
-				$results = $searcher->search_for_pattern ($_POST['search_pattern']);
+				$results = $searcher->search_for_pattern ($_POST['search_pattern'], $limit, $offset, $orderby);
 			else if (isset ($_POST['replace']))
-				$results = $searcher->search_and_replace ($_POST['search_pattern'], $_POST['replace_pattern']);
+				$results = $searcher->search_and_replace ($_POST['search_pattern'], $_POST['replace_pattern'], $limit, $offset, $orderby);
 			else if (isset ($_POST['replace_and_save']))
-				$results = $searcher->search_and_replace ($_POST['search_pattern'], $_POST['replace_pattern'], true);
+				$results = $searcher->search_and_replace ($_POST['search_pattern'], $_POST['replace_pattern'], $limit, $offset, $orderby, true);
 			
 			if (!is_array ($results))
 				$this->render_error ($results);

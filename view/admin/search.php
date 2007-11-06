@@ -13,18 +13,28 @@
 					<option value="<?php echo get_class ($searcher) ?>" <?php if (strcasecmp ($_POST['source'], get_class ($searcher)) == 0 || ($_POST['source'] == '' && strcasecmp (get_class ($searcher), 'SearchPostContent') == 0)) echo ' selected="selected"' ?>><?php echo $searcher->name () ?></option>
 					<?php endforeach; ?>
 				</select>
+				
+				<strong><?php _e ('Limit to', 'search-regex'); ?>:</strong>
+				<select name="limit">
+					<?php echo $this->select (array ('10' => '10', '25' => '25', '50' => '50', '100' => '100'), $_POST['limit']) ?>
+				</select>
+				
+				<strong><?php _e ('Order By', 'search-regex'); ?>:</strong>
+				<select name="orderby">
+					<?php echo $this->select (array ('asc' => __ ('Ascending', 'search-regex'), 'desc' => __ ('Descending', 'search-regex')), $_POST['orderby']); ?>
+				</select>
 			</td>
 		</tr>
 		<tr>
 			<th width="150" valign="top"><?php _e ("Search pattern", 'search-regex') ?></th>
 			<td>
-			  <input class="term" type="text" name="search_pattern" value="<?php echo htmlentities ($search) ?>"/><br/>
+			  <input class="term" type="text" name="search_pattern" value="<?php echo htmlspecialchars ($search) ?>"/><br/>
 			</td>
 		</tr>
 		<tr>
 		  <th width="150" valign="top"><?php _e ('Replace pattern', 'search-regex') ?></th>
 			<td>
-			  <input class="term" type="text" name="replace_pattern" value="<?php echo htmlentities ($replace) ?>"/><br/>
+			  <input class="term" type="text" name="replace_pattern" value="<?php echo htmlspecialchars ($replace) ?>"/><br/>
 			</td>
 		</tr>
 		<tr>
@@ -35,6 +45,7 @@
 				<label for="case"><?php _e ('case-insensitive:', 'search-regex') ?></label> <input id="case" type="checkbox" name="regex_case" value="caseless"<?php if (isset ($_POST['regex_case'])) echo 'checked="checked"' ?>/>
 		  	<label for="multi"><?php _e ('multi-line:', 'search-regex') ?></label> <input id="multi" type="checkbox" name="regex_multi" value="multiline"<?php if (isset ($_POST['regex_multi'])) echo 'checked="checked"' ?>/>
 		  	<label for="dotall"><?php _e ('dot-all:', 'search-regex') ?></label> <input id="dotall" type="checkbox" name="regex_dot" value="dotall"<?php if (isset ($_POST['regex_dot'])) echo 'checked="checked"' ?>/>
+				&mdash; <?php _e ('remember to surround your regex with a delimiter!', 'search-regex'); ?>
 			</span>
 		  </td>
 		</tr>

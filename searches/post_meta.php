@@ -2,12 +2,12 @@
 
 class SearchPostMetaValue extends Search
 {
-	function find ($pattern)
+	function find ($pattern, $limit, $offset, $orderby)
 	{
 		global $wpdb;
 
 		$results = array ();
-		$metas = $wpdb->get_results ("SELECT {$wpdb->postmeta}.meta_id AS meta_id, {$wpdb->postmeta}.meta_value AS meta_value, {$wpdb->postmeta}.post_id AS post_id, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta},{$wpdb->posts} WHERE {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID");
+		$metas = $wpdb->get_results ("SELECT {$wpdb->postmeta}.meta_id AS meta_id, {$wpdb->postmeta}.meta_value AS meta_value, {$wpdb->postmeta}.post_id AS post_id, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta},{$wpdb->posts} WHERE {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID $orderby LIMIT $offset,$limit");
 
 		if (count ($metas) > 0)
 		{

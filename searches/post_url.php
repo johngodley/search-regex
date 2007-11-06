@@ -2,12 +2,12 @@
 
 class SearchPostURL extends Search
 {
-	function find ($pattern)
+	function find ($pattern, $limit, $offset, $orderby)
 	{
 		global $wpdb;
 
 		$results = array ();
-		$posts   = $wpdb->get_results ("SELECT ID, post_name, post_title FROM {$wpdb->posts} ORDER BY ID");
+		$posts   = $wpdb->get_results ("SELECT ID, post_name, post_title FROM {$wpdb->posts} ORDER BY ID $orderby LIMIT $offset,$limit");
 		if (count ($posts) > 0)
 		{
 			foreach ($posts AS $post)

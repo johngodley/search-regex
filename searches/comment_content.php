@@ -2,12 +2,12 @@
 
 class SearchCommentContent extends Search
 {
-	function find ($pattern)
+	function find ($pattern, $limit, $offset, $orderby)
 	{
 		global $wpdb;
 
 		$results = array ();
-		$comments = $wpdb->get_results ("SELECT {$wpdb->comments}.comment_ID AS comment_ID, {$wpdb->comments}.comment_post_ID AS comment_post_ID, {$wpdb->comments}.comment_content AS comment_content, {$wpdb->posts}.post_title AS post_title FROM {$wpdb->comments},{$wpdb->posts} WHERE {$wpdb->comments}.comment_approved='1' AND {$wpdb->posts}.ID={$wpdb->comments}.comment_post_ID ORDER BY {$wpdb->comments}.comment_ID");
+		$comments = $wpdb->get_results ("SELECT {$wpdb->comments}.comment_ID AS comment_ID, {$wpdb->comments}.comment_post_ID AS comment_post_ID, {$wpdb->comments}.comment_content AS comment_content, {$wpdb->posts}.post_title AS post_title FROM {$wpdb->comments},{$wpdb->posts} WHERE {$wpdb->comments}.comment_approved='1' AND {$wpdb->posts}.ID={$wpdb->comments}.comment_post_ID ORDER BY {$wpdb->comments}.comment_ID $orderby LIMIT $offset,$limit");
 		if (count ($comments) > 0)
 		{
 			foreach ($comments AS $comment)

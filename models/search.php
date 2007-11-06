@@ -16,11 +16,11 @@ class Search
 	function set_regex_options ($dotall, $case, $multi)
 	{
 		$this->regex = true;
-		if (!empty ($dotall))
-			$this->regex_options .= 's';
-			
 		if (!empty ($case))
 			$this->regex_options .= 'i';
+			
+		if (!empty ($dotall))
+			$this->regex_options .= 's';
 			
 		if (!empty ($multi))
 			$this->regex_options .= 'm';
@@ -34,17 +34,17 @@ class Search
 	function name () { return '';}
 	function run_search ($search) { return false; }
 	
-	function search_and_replace ($search, $replace, $save = false)
+	function search_and_replace ($search, $replace, $limit, $offset, $orderby, $save = false)
 	{
 		$this->replace = $replace;
-		$results = $this->search_for_pattern ($search);
+		$results = $this->search_for_pattern ($search, $limit, $offset, $orderby);
 
 		if ($results !== false && $save)
 			$this->replace ($results);
 		return $results;
 	}
 	
-	function search_for_pattern ($search)
+	function search_for_pattern ($search, $limit, $offset, $orderby)
 	{
 		if (strlen ($search) > 0)
 		{
@@ -53,6 +53,7 @@ class Search
 			// First test that the search and replace strings are valid regex
 			if ($this->regex)
 			{
+				echo $search;
 				set_error_handler (array (&$this, 'regex_error'));
 				$valid = @preg_match ($search, '', $matches);
 				restore_error_handler ();
@@ -60,10 +61,10 @@ class Search
 				if ($valid === false)
 					return $this->regex_error;
 					
-				return $this->find ($search);
+				return $this->find ($search, $limit, $offset, $orderby);
 			}
 			else
-				return $this->find ('@'.preg_quote ($search, '@').'@');
+				return $this->find ('@'.preg_quote ($search, '@').'@', $limit, $offset, $orderby);
 		}
 		
 		return __ ("No search pattern", 'search-regex');
