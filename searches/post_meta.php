@@ -7,7 +7,8 @@ class SearchPostMetaValue extends Search
 		global $wpdb;
 
 		$results = array ();
-		$metas = $wpdb->get_results ("SELECT {$wpdb->postmeta}.meta_id AS meta_id, {$wpdb->postmeta}.meta_value AS meta_value, {$wpdb->postmeta}.post_id AS post_id, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta},{$wpdb->posts} WHERE {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID $orderby LIMIT $offset,$limit");
+		
+		$metas = $wpdb->get_results ("SELECT {$wpdb->postmeta}.meta_id AS meta_id, {$wpdb->postmeta}.meta_value AS meta_value, {$wpdb->postmeta}.post_id AS post_id, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta} LEFT JOIN {$wpdb->posts} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID ORDER BY meta_value $orderby LIMIT $offset,$limit");
 
 		if (count ($metas) > 0)
 		{

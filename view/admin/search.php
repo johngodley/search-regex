@@ -53,8 +53,11 @@
 		  <th width="150"></th>
 			<td><p class="submit">
       	<input type="submit" name="search" value="<?php _e ('Search', 'search-regex')?> &raquo;" />
+
+				<?php if (current_user_can ('administrator') || current_user_can ('search_regex_write')) : ?>
 	     	<input type="submit" name="replace" value="<?php _e ('Replace', 'search-regex')?> &raquo;" />
 				<input type="submit" name="replace_and_save" value="<?php _e ('Replace &amp; Save &raquo;', 'search-regex') ?>"/>
+				<?php endif; ?>
     		</p>
 			</td>
 		</tr>

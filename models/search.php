@@ -49,11 +49,10 @@ class Search
 		if (strlen ($search) > 0)
 		{
 		  set_time_limit (0);
-	  
+
 			// First test that the search and replace strings are valid regex
 			if ($this->regex)
 			{
-				echo $search;
 				set_error_handler (array (&$this, 'regex_error'));
 				$valid = @preg_match ($search, '', $matches);
 				restore_error_handler ();

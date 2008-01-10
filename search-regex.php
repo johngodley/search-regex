@@ -4,7 +4,7 @@ Plugin Name: Search Regex
 Plugin URI: http://urbangiraffe.com/plugins/search-regex
 Description: Adds search &amp; replace functionality across posts, pages, comments, and meta-data, with full regular expression support
 Author: John Godley
-Version: 1.4.4
+Version: 1.4.5
 Author URI: http://urbangiraffe.com/
 
 1.1   - Minor cosmetic changes & set a timeout limit
@@ -14,6 +14,7 @@ Author URI: http://urbangiraffe.com/
 1.4.2 - Fix escaping bug
 1.4.3 - Allow searching in pings & trackbacks
 1.4.4 - Fix escaping issue, allowing search limit and direction
+1.4.5 - Add search regex capabilities ('search_regex_read' and 'search_regex_write').  Fix meta values
 */
 
 include (dirname (__FILE__).'/plugin.php');
@@ -84,7 +85,10 @@ class SearchRegex extends SearchRegex_Plugin
 	
 	function admin_menu ()
 	{
-    add_management_page (__ ("Search Regex", 'search-regex'), __ ("Search Regex", 'search-regex'), 'administrator', basename (__FILE__), array (&$this, 'admin_screen'));
+		if (current_user_can ('administrator'))
+    	add_management_page (__ ("Search Regex", 'search-regex'), __ ("Search Regex", 'search-regex'), 'administrator', basename (__FILE__), array (&$this, 'admin_screen'));
+		else if (current_user_can ('search_regex_read'))
+    	add_management_page (__ ("Search Regex", 'search-regex'), __ ("Search Regex", 'search-regex'), 'search_regex_read', basename (__FILE__), array (&$this, 'admin_screen'));
 	}
 	
 	function admin_head ()

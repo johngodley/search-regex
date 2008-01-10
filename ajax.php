@@ -8,7 +8,7 @@ class Search_AJAX extends Redirection_Plugin
 {
 	function Search_AJAX ($id, $command)
 	{
-		if (!current_user_can ('edit_plugins'))
+		if (!current_user_can ('administrator') && !current_user_can ('search_regex_write'))
 			die ('<p style="color: red">You are not allowed access to this resource</p>');
 		
 		$_POST = stripslashes_deep ($_POST);
