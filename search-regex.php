@@ -62,6 +62,14 @@ class SearchRegex extends SearchRegex_Plugin
 			if (isset ($_POST['regex']))
 				$searcher->set_regex_options ($_POST['dotall'], $_POST['case'], $_POST['multi']);
 			
+			// Make sure no one sneaks in with a replace
+			if (!current_user_can ('administrator') && !current_user_can ('search_regex_write'))
+			{
+				unset ($_POST['replace']);
+				unset ($_POST['replace_and_save']);
+				$_POST['search'] = 'search';
+			}
+				
 			if (isset ($_POST['search']))
 				$results = $searcher->search_for_pattern ($_POST['search_pattern'], $limit, $offset, $orderby);
 			else if (isset ($_POST['replace']))
