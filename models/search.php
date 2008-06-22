@@ -48,7 +48,8 @@ class Search
 	{
 		if (strlen ($search) > 0)
 		{
-		  set_time_limit (0);
+			if (!ini_get ('safe_mode'))
+				set_time_limit (0);
 
 			// First test that the search and replace strings are valid regex
 			if ($this->regex)

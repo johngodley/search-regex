@@ -22,9 +22,9 @@ class Search_AJAX extends Redirection_Plugin
 	
 	function regex_replace ($id)
 	{
-		if (Search::valid_search ($_POST['class']))
+		if (Search::valid_search ($_POST['klass']))
 		{
-			$searcher = new $_POST['class'];
+			$searcher = new $_POST['klass'];
 			$searcher->replace_inline (intval ($_POST['item']), intval ($_POST['offset']), intval ($_POST['length']), $_POST['replace']);
 		}
 	}

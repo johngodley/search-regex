@@ -1,3 +1,4 @@
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?>
 <div class="wrap">
 	<h2><?php _e ('Results', 'search-regex') ?></h2>
 

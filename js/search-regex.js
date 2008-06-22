@@ -8,13 +8,20 @@ function regex_replace (classs, item, offset, length, replace)
   // Need an ID, start, end, and replace
   new Ajax.Request (wp_base + '?cmd=regex_replace&id=' + item,
     {
-      asynchronous: true, evalScripts: true,
-      parameters: $H({ class: classs, item: item, offset: offset, length: length, replace: replace}).toQueryString (),
-      onLoading: function(request) { $('options_' + item + '_' + offset).innerHTML = '<img src="' + wp_loading + '" alt="loading" width="16" height="16"/>'; },
-      onComplete: function(request) { new Effect.Fade ('search_' + item + '_' + offset, { to: 0.2}); new Effect.Fade ('options_' + item + '_' + offset); }
+      asynchronous: true,
+      evalScripts: true,
+      parameters: { klass: classs, item: item, offset: offset, length: length, replace: replace },
+      onLoading: function(request)
+      {
+        $('options_' + item + '_' + offset).innerHTML = '<img src="' + wp_loading + '" alt="loading" width="16" height="16"/>';
+      },
+      onComplete: function(request)
+      {
+        new Effect.Fade ('search_' + item + '_' + offset, { to: 0.2});
+        new Effect.Fade ('options_' + item + '_' + offset);
+      }
     });
 }
-
 
 function regex_edit_replace (classs, item, offset, length)
 {
@@ -45,7 +52,7 @@ function save_edit (classs, item, offset, start, length)
   new Ajax.Request (wp_base + '?cmd=regex_replace&id=' + item,
     {
       asynchronous: true, evalScripts: true,
-      parameters: $H({ class: classs, item: item, offset: start, length: length, replace: $('txt_' + item + '_' + offset).value}).toQueryString (),
+      parameters: { klass: classs, item: item, offset: start, length: length, replace: $('txt_' + item + '_' + offset).value},
       onLoading: function(request) { $('options_' + item + '_' + offset).innerHTML = '<img src="' + wp_loading + '" alt="loading" width="16" height="16"/>'; },
       onComplete: function(request)
         {
@@ -61,7 +68,7 @@ function save_edit_rep (classs, item, offset, start, length)
   new Ajax.Request (wp_base + '?cmd=regex_replace&id=' + item,
     {
       asynchronous: true, evalScripts: true,
-      parameters: $H({ class: classs, item: item, offset: start, length: length, replace: $('rep_' + item + '_' + offset).value}).toQueryString (),
+      parameters: { klass: classs, item: item, offset: start, length: length, replace: $('rep_' + item + '_' + offset).value},
       onLoading: function(request) { $('options_' + item + '_' + offset).innerHTML = '<img src="' + wp_loading + '" alt="loading" width="16" height="16"/>'; },
       onComplete: function(request)
         {
