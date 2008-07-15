@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://urbangiraffe.com/about/support/
 Tags: search, regex, regular expression, admin, post, page
 Requires at least: 2.0
-Tested up to: 2.5.1
+Tested up to: 2.6
 Stable tag: trunk
 
 Search Regex adds a powerful set of search and replace functions to WordPress that go beyond the standard searching capabilities, with full regex support.
