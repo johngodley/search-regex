@@ -7,7 +7,7 @@ class SearchPostTitle extends Search
 		global $wpdb;
 
 		$results = array ();
-		$posts   = $wpdb->get_results ("SELECT ID, post_title FROM {$wpdb->posts} ORDER BY ID $orderby LIMIT $offset,$limit");
+		$posts   = $wpdb->get_results ("SELECT ID, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby LIMIT $offset,$limit");
 		if (count ($posts) > 0)
 		{
 			foreach ($posts AS $post)
@@ -16,7 +16,7 @@ class SearchPostTitle extends Search
 				{
 					foreach ($matches AS $match)
 						$match->title = $post->post_title;
-					
+
 					$results = array_merge ($results, $matches);
 				}
 			}
@@ -24,23 +24,23 @@ class SearchPostTitle extends Search
 
 		return $results;
 	}
-	
+
 	function get_options ($result)
 	{
 		$options[] = '<a href="'.get_permalink ($result->id).'">'.__ ('view', 'search-regex').'</a>';
 		if ($result->replace)
 			$options[] = '<a href="#" onclick="regex_replace (\'SearchPostTitle\','.$result->id.','.$result->offset.','.$result->length.',\''.str_replace ("'", "\'", $result->replace_string).'\'); return false">replace</a>';
-			
+
 		if (current_user_can ('edit_post', $result->id))
 			$options[] = '<a href="'.get_bloginfo ('wpurl').'/wp-admin/post.php?action=edit&amp;post='.$result->id.'">'.__ ('edit','search-regex').'</a>';
 		return $options;
 	}
-	
+
 	function show ($result)
 	{
 		printf (__ ('Post #%d: %s', 'search-regex'), $result->id, $result->title);
 	}
-	
+
 	function name () { return __ ('Post title', 'search-regex'); }
 
 	function get_content ($id)
@@ -50,7 +50,7 @@ class SearchPostTitle extends Search
 		$post = $wpdb->get_row ("SELECT post_title FROM {$wpdb->prefix}posts WHERE id='$id'");
 		return $post->post_title;
 	}
-	
+
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
