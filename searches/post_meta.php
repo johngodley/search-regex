@@ -59,7 +59,7 @@ class SearchPostMetaValue extends Search
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
-		$content = wpdb::escape ($content);
+		$content = $wpdb->escape ($content);
 		$wpdb->query ("UPDATE {$wpdb->postmeta} SET meta_value='{$content}' WHERE meta_id='$id'");
 	}
 }

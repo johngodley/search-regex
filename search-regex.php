@@ -4,20 +4,8 @@ Plugin Name: Search Regex
 Plugin URI: http://urbangiraffe.com/plugins/search-regex
 Description: Adds search &amp; replace functionality across posts, pages, comments, and meta-data, with full regular expression support
 Author: John Godley
-Version: 1.4.8
+Version: 1.4.9
 Author URI: http://urbangiraffe.com/
-
-1.1   - Minor cosmetic changes & set a timeout limit
-1.2   - Fix stupid typo
-1.3   - Use correct table prefix
-1.4   - Extensible plugins.  Reorganisation of code
-1.4.2 - Fix escaping bug
-1.4.3 - Allow searching in pings & trackbacks
-1.4.4 - Fix escaping issue, allowing search limit and direction
-1.4.5 - Add search regex capabilities ('search_regex_read' and 'search_regex_write').  Fix meta values
-1.4.6 - Added tag & sniplet searching.  Make work in Safari
-1.4.7 - WP 2.6
-1.4.8 - Update base library.  Fix issue with regex not being selected
 */
 
 include (dirname (__FILE__).'/plugin.php');

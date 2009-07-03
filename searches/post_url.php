@@ -54,7 +54,7 @@ class SearchPostURL extends Search
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
-		$content = wpdb::escape ($content);
+		$content = $wpdb->escape ($content);
 		$wpdb->query ("UPDATE {$wpdb->posts} SET post_name='{$content}' WHERE ID='$id'");
 	}
 }

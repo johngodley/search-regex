@@ -1,0 +1,117 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR John Godley
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: search-regex\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Илья <mrilyuha@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Belarusian\n"
+"X-Poedit-Country: BELARUS\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: search-regex.php:335
+#, php-format
+msgid "%1$s results found."
+msgstr "%1$s знойдзена."
+
+#: search-regex.php:306
+msgid "Case-less:"
+msgstr "без уліку рэгістра:"
+
+#: search-regex.php:343
+msgid "Comment"
+msgstr "Каментарый"
+
+#: search-regex.php:296
+msgid "Comments"
+msgstr "Каментарыі"
+
+#: search-regex.php:308
+msgid "Dot-all:"
+msgstr "Dot-all:"
+
+#: search-regex.php:59
+msgid "Invalid regular expression"
+msgstr "Няправільны рэгулярны выраз"
+
+#: search-regex.php:297
+msgid "Meta-data"
+msgstr "Метададзеныя"
+
+#: search-regex.php:307
+msgid "Multi-line:"
+msgstr "Шмат радкоў:"
+
+#: search-regex.php:286
+msgid "NOTE: No liability is accepted for any damage caused - make sure to backup your database before clicking 'Replace &amp; Save'."
+msgstr "NOTE: No liability is accepted for any damage caused - make sure to backup your database before clicking 'Replace &amp; Save'."
+
+#: search-regex.php:85
+msgid "No search pattern"
+msgstr "Няма шаблонаў пошуку"
+
+#: search-regex.php:341
+msgid "Post"
+msgstr "пост"
+
+#: search-regex.php:295
+msgid "Posts &amp; pages"
+msgstr "Пастоў &amp; старонак"
+
+#: search-regex.php:305
+msgid "Regex:"
+msgstr "Regex:"
+
+#: search-regex.php:321
+msgid "Replace"
+msgstr "Замяніць"
+
+#: search-regex.php:322
+msgid "Replace &amp; Save &raquo;"
+msgstr "Замяніць &amp; Захаваць &raquo;"
+
+#: search-regex.php:312
+msgid "Replace pattern"
+msgstr "Шаблон замены"
+
+#: search-regex.php:332
+msgid "Results"
+msgstr "рэзультаты"
+
+#: search-regex.php:320
+msgid "Search"
+msgstr "пошук"
+
+#: search-regex.php:284
+#: search-regex.php:365
+msgid "Search Regex"
+msgstr "Search Regex"
+
+#: search-regex.php:302
+msgid "Search pattern"
+msgstr "Шаблон пошуку"
+
+#: search-regex.php:292
+msgid "Source"
+msgstr "Крыніца"
+
+#: search-regex.php:356
+msgid "There are no results."
+msgstr "Няма рэзультатаў."
+
+#: search-regex.php:285
+msgid "WordPress Search &amp; Replace, with full regular expression support.  Replacements will only be saved to the database if you check 'save', otherwise you will get a preview of the results."
+msgstr "WordPress пошук &amp; замена, з поўнай падтрымкай рэгулярных выразаў. Замены будуць захаваныя ў базе дадзеных толькі пры ўмове, што вы адзначыце 'захаваць'."
+
+#: search-regex.php:348
+msgid "replaced with:"
+msgstr "заменена"
+

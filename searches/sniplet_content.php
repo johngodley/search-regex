@@ -51,7 +51,7 @@ class SearchSnipletContent extends Search
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
-		$content = wpdb::escape ($content);
+		$content = $wpdb->escape ($content);
 		$wpdb->query ("UPDATE {$wpdb->prefix}sniplets SET contents='{$content}' WHERE id='$id'");
 	}
 }

@@ -57,7 +57,7 @@ class SearchCommentContent extends Search
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
-		$content = wpdb::escape ($content);
+		$content = $wpdb->escape ($content);
 		$wpdb->query ("UPDATE {$wpdb->comments} SET comment_content='{$content}' WHERE comment_ID='$id'");
 	}
 }

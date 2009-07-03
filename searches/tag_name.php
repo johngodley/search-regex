@@ -51,7 +51,7 @@ class SearchTagName extends Search
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
-		$content = wpdb::escape ($content);
+		$content = $wpdb->escape ($content);
 		$wpdb->query ("UPDATE {$wpdb->terms} SET name='{$content}' WHERE term_id='$id'");
 	}
 }

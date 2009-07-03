@@ -62,7 +62,7 @@ class SearchCommentAuthorEmail extends Search
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
-		$content = wpdb::escape ($content);
+		$content = $wpdb->escape ($content);
 		$wpdb->query ("UPDATE {$wpdb->comments} SET comment_author_email='{$content}' WHERE comment_ID='$id'");
 	}
 }

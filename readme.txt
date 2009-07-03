@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://urbangiraffe.com/about/support/
 Tags: search, regex, regular expression, admin, post, page
 Requires at least: 2.0
-Tested up to: 2.6
+Tested up to: 2.8
 Stable tag: trunk
 
 Search Regex adds a powerful set of search and replace functions to WordPress that go beyond the standard searching capabilities, with full regex support.
@@ -37,3 +37,46 @@ You can find full details of installing a plugin on the [plugin installation pag
 
 Full documentation can be found on the [Search Regex Page](http://urbangiraffe.com/plugins/search-regex/) page.
 
+== Changelog ==
+
+= 1.1   = 
+* Minor cosmetic changes
+* Set a timeout limit
+
+= 1.2   = 
+* Fix stupid typo
+
+= 1.3   = 
+* Use correct table prefix
+
+= 1.4   = 
+* Extensible plugins
+* Reorganisation of code
+
+= 1.4.2 = 
+* Fix escaping bug
+
+= 1.4.3 = 
+* Allow searching in pings & trackbacks
+
+= 1.4.4 = 
+* Fix escaping issue
+* Allowing search limit and direction
+
+= 1.4.5 = 
+* Add search regex capabilities ('search_regex_read' and 'search_regex_write').
+* Fix meta values
+
+= 1.4.6 = 
+* Added tag & sniplet searching.
+* Make work in Safari
+
+= 1.4.7 = 
+* WP 2.6
+
+= 1.4.8 = 
+* Update base library
+* Fix issue with regex not being selected
+
+= 1.4.9 =
+* WP 2.8 compatibility
