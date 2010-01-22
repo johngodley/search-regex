@@ -4,7 +4,7 @@ Plugin Name: Search Regex
 Plugin URI: http://urbangiraffe.com/plugins/search-regex
 Description: Adds search &amp; replace functionality across posts, pages, comments, and meta-data, with full regular expression support
 Author: John Godley
-Version: 1.4.9
+Version: 1.4.10
 Author URI: http://urbangiraffe.com/
 */
 
@@ -34,22 +34,21 @@ class SearchRegex extends SearchRegex_Plugin
 	function admin_screen ()
 	{	
 		$searches = Search::get_searches ();
-		$_POST = stripslashes_deep ($_POST);
 		
 		if (isset ($_POST['search_pattern']))
-			$search_pattern  = $_POST['search_pattern'];
+			$search_pattern  = stripslashes( $_POST['search_pattern'] );
 		if (isset ($_POST['replace_pattern']))
-			$replace_pattern = $_POST['replace_pattern'];
+			$replace_pattern = stripslashes( $_POST['replace_pattern'] );
 
 		$search_pattern  = str_replace ("\'", "'", $search_pattern);
 		$replace_pattern = str_replace ("\'", "'", $replace_pattern);
-		$orderby         = $_POST['orderby'];
+		$orderby         = stripslashes( $_POST['orderby'] );
 		$limit           = intval ($_POST['limit']);
 		$offset          = 0;
 		
-		if (Search::valid_search ($_POST['source']) && (isset ($_POST['search']) || isset ($_POST['replace']) || isset ($_POST['replace_and_save'])))
+		if (Search::valid_search (stripslashes( $_POST['source'] )) && (isset ($_POST['search']) || isset ($_POST['replace']) || isset ($_POST['replace_and_save'])))
 		{
-			$searcher = new $_POST['source'];
+			$searcher = new stripslashes( $_POST['source'] );
 			if (isset ($_POST['regex']))
 				$searcher->set_regex_options ($_POST['dotall'], $_POST['case'], $_POST['multi']);
 			
@@ -60,13 +59,13 @@ class SearchRegex extends SearchRegex_Plugin
 				unset ($_POST['replace_and_save']);
 				$_POST['search'] = 'search';
 			}
-				
+			
 			if (isset ($_POST['search']))
-				$results = $searcher->search_for_pattern ($_POST['search_pattern'], $limit, $offset, $orderby);
+				$results = $searcher->search_for_pattern (stripslashes( $_POST['search_pattern'] ), $limit, $offset, $orderby);
 			else if (isset ($_POST['replace']))
-				$results = $searcher->search_and_replace ($_POST['search_pattern'], $_POST['replace_pattern'], $limit, $offset, $orderby);
+				$results = $searcher->search_and_replace (stripslashes( $_POST['search_pattern'] ), stripslashes( $_POST['replace_pattern'] ), $limit, $offset, $orderby);
 			else if (isset ($_POST['replace_and_save']))
-				$results = $searcher->search_and_replace ($_POST['search_pattern'], $_POST['replace_pattern'], $limit, $offset, $orderby, true);
+				$results = $searcher->search_and_replace (stripslashes( $_POST['search_pattern'] ), stripslashes( $_POST['replace_pattern'] ), $limit, $offset, $orderby, true);
 			
 			if (!is_array ($results))
 				$this->render_error ($results);
