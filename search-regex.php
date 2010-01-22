@@ -48,7 +48,8 @@ class SearchRegex extends SearchRegex_Plugin
 		
 		if (Search::valid_search (stripslashes( $_POST['source'] )) && (isset ($_POST['search']) || isset ($_POST['replace']) || isset ($_POST['replace_and_save'])))
 		{
-			$searcher = new stripslashes( $_POST['source'] );
+			$klass = stripslashes( $_POST['source'] );
+			$searcher = new $klass;
 			if (isset ($_POST['regex']))
 				$searcher->set_regex_options ($_POST['dotall'], $_POST['case'], $_POST['multi']);
 			
