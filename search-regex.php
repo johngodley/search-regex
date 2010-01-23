@@ -4,7 +4,7 @@ Plugin Name: Search Regex
 Plugin URI: http://urbangiraffe.com/plugins/search-regex
 Description: Adds search &amp; replace functionality across posts, pages, comments, and meta-data, with full regular expression support
 Author: John Godley
-Version: 1.4.10
+Version: 1.4.11
 Author URI: http://urbangiraffe.com/
 */
 
@@ -35,6 +35,7 @@ class SearchRegex extends SearchRegex_Plugin
 	{	
 		$searches = Search::get_searches ();
 		
+		$search_pattern = $replace_pattern = '';
 		if (isset ($_POST['search_pattern']))
 			$search_pattern  = stripslashes( $_POST['search_pattern'] );
 		if (isset ($_POST['replace_pattern']))
@@ -42,11 +43,13 @@ class SearchRegex extends SearchRegex_Plugin
 
 		$search_pattern  = str_replace ("\'", "'", $search_pattern);
 		$replace_pattern = str_replace ("\'", "'", $replace_pattern);
-		$orderby         = stripslashes( $_POST['orderby'] );
-		$limit           = intval ($_POST['limit']);
+		$orderby         = isset( $_POST['orderby'] ) ? stripslashes( $_POST['orderby'] ) : '';
+		$limit           = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 0;
 		$offset          = 0;
 		
-		if (Search::valid_search (stripslashes( $_POST['source'] )) && (isset ($_POST['search']) || isset ($_POST['replace']) || isset ($_POST['replace_and_save'])))
+		$source = isset( $_POST['source'] ) ? stripslashes( $_POST['source'] ) : '';
+		
+		if (Search::valid_search ($source) && (isset ($_POST['search']) || isset ($_POST['replace']) || isset ($_POST['replace_and_save'])))
 		{
 			$klass = stripslashes( $_POST['source'] );
 			$searcher = new $klass;
@@ -61,6 +64,7 @@ class SearchRegex extends SearchRegex_Plugin
 				$_POST['search'] = 'search';
 			}
 			
+			$results = array();
 			if (isset ($_POST['search']))
 				$results = $searcher->search_for_pattern (stripslashes( $_POST['search_pattern'] ), $limit, $offset, $orderby);
 			else if (isset ($_POST['replace']))

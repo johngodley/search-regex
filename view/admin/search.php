@@ -8,20 +8,23 @@
 	  <tr>
 	    <th width="150"><?php _e ("Source", 'search-regex') ?></th>
 	    <td>
+				<?php $source = isset( $_POST['source'] ) ? $_POST['source'] : ''; ?>
 				<select name="source">
 					<?php foreach ($searches AS $searcher) : ?>
-					<option value="<?php echo get_class ($searcher) ?>" <?php if (strcasecmp ($_POST['source'], get_class ($searcher)) == 0 || ($_POST['source'] == '' && strcasecmp (get_class ($searcher), 'SearchPostContent') == 0)) echo ' selected="selected"' ?>><?php echo $searcher->name () ?></option>
+					<option value="<?php echo get_class ($searcher) ?>" <?php if (strcasecmp ($source, get_class ($searcher)) == 0 || ($source == '' && strcasecmp (get_class ($searcher), 'SearchPostContent') == 0)) echo ' selected="selected"' ?>><?php echo $searcher->name () ?></option>
 					<?php endforeach; ?>
 				</select>
 				
 				<strong><?php _e ('Limit to', 'search-regex'); ?>:</strong>
+				<?php $limit = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 0 ?>
 				<select name="limit">
-					<?php echo $this->select (array ('18446744073709551615' => __ ('No limit', 'search-regex'), '10' => '10', '25' => '25', '50' => '50', '100' => '100'), $_POST['limit']) ?>
+					<?php echo $this->select (array ('18446744073709551615' => __ ('No limit', 'search-regex'), '10' => '10', '25' => '25', '50' => '50', '100' => '100'), $limit) ?>
 				</select>
 				
 				<strong><?php _e ('Order By', 'search-regex'); ?>:</strong>
+				<?php $orderby = isset( $_POST['orderby'] ) ? $_POST['orderby'] : ''; ?>
 				<select name="orderby">
-					<?php echo $this->select (array ('asc' => __ ('Ascending', 'search-regex'), 'desc' => __ ('Descending', 'search-regex')), $_POST['orderby']); ?>
+					<?php echo $this->select (array ('asc' => __ ('Ascending', 'search-regex'), 'desc' => __ ('Descending', 'search-regex')), $orderby ); ?>
 				</select>
 			</td>
 		</tr>
@@ -38,7 +41,7 @@
 			</td>
 		</tr>
 		<tr>
-			<th><label for="regex">Regex</label>:</th>
+			<th><label for="regex"><?php _e( 'Regex', 'search-regex' ); ?></label>:</th>
 			<td>
 				<input onclick="toggle_regex(); return true" id="regex" type="checkbox" value="regex" name="regex"<?php if (isset ($_POST['regex'])) echo 'checked="checked"' ?>/>
 		  <span id="regex-options" <?php if (!isset ($_POST['regex'])) : ?>style="display: none"<?php endif; ?> class="sub">

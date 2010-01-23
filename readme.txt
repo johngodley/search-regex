@@ -16,6 +16,12 @@ The driving force behind this plugin is to aid in website migration and upgradin
 
 Why would you want this? The primary reason for the plugin was to aid in relocating directories. It's a real pain to manually go through every post and change image directory names. With this plugin all that was required was a simple search and replace pattern, and the job was finished in a few seconds.
 
+Search Regex is available in the following languages:
+
+* English
+* Arabic, thanks to ()[]
+* Belarussian, thanks to (Marcis Gasuns)[http://www.fatcow.com]
+
 == Installation ==
 
 The plugin is simple to install:
@@ -83,3 +89,6 @@ Full documentation can be found on the [Search Regex Page](http://urbangiraffe.c
 
 = 1.4.10 =
 * Fix deep slashes
+
+= 1.4.11 =
+* Add Arabic translation
