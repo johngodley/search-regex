@@ -7,7 +7,11 @@ class SearchPostContent extends Search
 		global $wpdb;
 
 		$results = array ();
-		$posts   = $wpdb->get_results ("SELECT ID, post_content, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby LIMIT $offset,$limit");
+		$posts   = $wpdb->get_results ($wpdb->prepare( "SELECT ID, post_content, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby" ) );
+
+		if ( $limit > 0 )
+			$sql .= $wpdb->prepare( " LIMIT %d,%d", $offset, $limit );
+
 		if (count ($posts) > 0)
 		{
 			foreach ($posts AS $post)
@@ -47,18 +51,13 @@ class SearchPostContent extends Search
 	{
 		global $wpdb;
 
-		$post = $wpdb->get_row ("SELECT post_content FROM {$wpdb->prefix}posts WHERE id='$id'");
+		$post = $wpdb->get_row ( $wpdb->prepare( "SELECT post_content FROM {$wpdb->prefix}posts WHERE id=%d", $id ) );
 		return $post->post_content;
 	}
 
 	function replace_content ($id, $content)
 	{
 		global $wpdb;
-		$content = $wpdb->escape ($content);
-		$wpdb->query ("UPDATE {$wpdb->posts} SET post_content='{$content}' WHERE ID='$id'");
+		$wpdb->query ($wpdb->prepare( "UPDATE {$wpdb->posts} SET post_content=%s WHERE ID=%d", $content, $id ) );
 	}
 }
-
-
-
-?>

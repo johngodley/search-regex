@@ -1,5 +1,5 @@
 <?php
-	
+
 class Result
 {
 	var $search;
@@ -7,11 +7,11 @@ class Result
 	var $content;
 	var $id;
 	var $title;
-	
+
 	var $offset;
 	var $length;
 	var $replace_string;
-	
+
 	function for_js ($js)
 	{
 		$js = str_replace ('\\', '\\\\', $js);
@@ -23,7 +23,7 @@ class Result
 		$js = str_replace ("\r", "\\r", $js);
 		return $js;
 	}
-	
+
 	function single_line ()
 	{
 		if (strpos ($this->search_plain, "\r") !== false || strpos ($this->search_plain, "\n") !== false)
@@ -32,4 +32,3 @@ class Result
 	}
 }
 
-?>
