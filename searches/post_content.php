@@ -7,7 +7,7 @@ class SearchPostContent extends Search
 		global $wpdb;
 
 		$results = array ();
-		$posts   = $wpdb->get_results ($wpdb->prepare( "SELECT ID, post_content, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby" ) );
+		$posts   = $wpdb->get_results ( "SELECT ID, post_content, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' AND post_type IN ('post','page') ORDER BY ID $orderby" );
 
 		if ( $limit > 0 )
 			$sql .= $wpdb->prepare( " LIMIT %d,%d", $offset, $limit );
