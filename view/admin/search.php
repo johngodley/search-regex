@@ -57,11 +57,11 @@
 			<tr>
 			  <th width="150"></th>
 				<td><p class="submit">
-	      	<input type="submit" name="search" value="<?php esc_attr_e( 'Search', 'search-regex' )?> &raquo;" />
+	      	<input type="submit" class="button-primary" name="search" value="<?php esc_attr_e( 'Search', 'search-regex' )?> &raquo;" />
 
 					<?php if (current_user_can( 'administrator' ) || current_user_can( 'search_regex_write' )) : ?>
-		     	<input type="submit" name="replace" value="<?php esc_attr_e( 'Replace', 'search-regex' )?> &raquo;" />
-					<input type="submit" name="replace_and_save" value="<?php esc_attr_e( 'Replace &amp; Save &raquo;', 'search-regex' ) ?>"/>
+		     	<input type="submit" class="button" name="replace" value="<?php esc_attr_e( 'Replace', 'search-regex' )?> &raquo;" />
+					<input type="submit" class="button" name="replace_and_save" value="<?php esc_attr_e( 'Replace &amp; Save &raquo;', 'search-regex' ) ?>"/>
 					<?php endif; ?>
 	    		</p>
 				</td>
