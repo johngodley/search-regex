@@ -46,7 +46,7 @@
 				<th><label for="regex"><?php _e( 'Regex', 'search-regex' ); ?></label>:</th>
 				<td>
 					<input id="regex" type="checkbox" value="regex" name="regex"<?php if (isset ($_POST['regex'])) echo 'checked="checked"' ?>/>
-			  	<span id="regex-options" <?php if (!isset ($_POST['regex'])) : ?>style="display: none"<?php endif; ?> class="sub">
+			  	<span id="regex-options" class="sub">
 						<label for="case"><?php _e( 'case-insensitive:', 'search-regex' ) ?></label> <input id="case" type="checkbox" name="regex_case" value="caseless"<?php if (isset ($_POST['regex_case'])) echo 'checked="checked"' ?>/>
 				  	<label for="multi"><?php _e( 'multi-line:', 'search-regex' ) ?></label> <input id="multi" type="checkbox" name="regex_multi" value="multiline"<?php if (isset ($_POST['regex_multi'])) echo 'checked="checked"' ?>/>
 				  	<label for="dotall"><?php _e( 'dot-all:', 'search-regex' ) ?></label> <input id="dotall" type="checkbox" name="regex_dot" value="dotall"<?php if (isset ($_POST['regex_dot'])) echo 'checked="checked"' ?>/>
