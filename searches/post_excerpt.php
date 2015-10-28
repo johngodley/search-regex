@@ -7,7 +7,16 @@ class SearchPostExcerpt extends Search
 		global $wpdb;
 
 		$results = array ();
-		$posts   = $wpdb->get_results ($wpdb->prepare( "SELECT ID, post_title, post_excerpt FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby LIMIT %d,%d", $offset,$limit ) );
+		$sql = "SELECT ID, post_title, post_excerpt FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby";
+
+		if ( $limit > 0 ) {
+			$prepared_sql = $wpdb->prepare( $sql . " LIMIT %d, %d ", $offset, $limit );	
+		} else {
+			$prepared_sql = $wpdb->prepare( $sql );
+		}
+
+		$posts = $wpdb->get_results ( $prepared_sql );
+
 		if (count ($posts) > 0)
 		{
 			foreach ($posts AS $post)

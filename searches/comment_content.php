@@ -7,7 +7,16 @@ class SearchCommentContent extends Search
 		global $wpdb;
 
 		$results = array ();
-		$comments = $wpdb->get_results ($wpdb->prepare( "SELECT {$wpdb->comments}.comment_ID AS comment_ID, {$wpdb->comments}.comment_post_ID AS comment_post_ID, {$wpdb->comments}.comment_content AS comment_content, {$wpdb->posts}.post_title AS post_title FROM {$wpdb->comments},{$wpdb->posts} WHERE {$wpdb->comments}.comment_approved='1' AND {$wpdb->posts}.ID={$wpdb->comments}.comment_post_ID ORDER BY {$wpdb->comments}.comment_ID $orderby LIMIT %d,%d", $offset,$limit ) );
+		$sql = "SELECT {$wpdb->comments}.comment_ID AS comment_ID, {$wpdb->comments}.comment_post_ID AS comment_post_ID, {$wpdb->comments}.comment_content AS comment_content, {$wpdb->posts}.post_title AS post_title FROM {$wpdb->comments},{$wpdb->posts} WHERE {$wpdb->comments}.comment_approved='1' AND {$wpdb->posts}.ID={$wpdb->comments}.comment_post_ID ORDER BY {$wpdb->comments}.comment_ID $orderby";
+
+		if ( $limit > 0 ) {
+			$prepared_sql = $wpdb->prepare( $sql . " LIMIT %d, %d ", $offset, $limit );	
+		} else {
+			$prepared_sql = $wpdb->prepare( $sql );
+		}
+
+		$comments = $wpdb->get_results ( $prepared_sql );
+
 		if (count ($comments) > 0)
 		{
 			foreach ($comments AS $comment)
