@@ -20,7 +20,7 @@
 					<strong><?php _e( 'Limit to', 'search-regex' ); ?>:</strong>
 					<?php $limit = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 0 ?>
 					<select name="limit">
-						<?php echo $this->select( array( '0' => __( 'No limit', 'search-regex' ), '10' => '10', '25' => '25', '50' => '50', '100' => '100' ), $limit ) ?>
+						<?php echo $this->select( array( '0' => __( 'No limit', 'search-regex' ), '10' => '10', '50' => '50', '100' => '100', '500' => '500', '1000' => '1.000', '5000' => '5.000', '10000' => '10.000' ), $limit ) ?>
 					</select>
 
 					<strong><?php _e( 'Order By', 'search-regex' ); ?>:</strong>
