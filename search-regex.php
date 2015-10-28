@@ -52,7 +52,7 @@ class SearchRegex extends SearchRegex_Plugin {
 			$searcher = new $klass;
 
 			if ( isset( $_POST['regex'] ) )
-				$searcher->set_regex_options( $_POST['dotall'], $_POST['case'], $_POST['multi'] );
+				$searcher->set_regex_options( $_POST['regex_dot'], $_POST['regex_case'], $_POST['regex_multi'] );
 
 			// Make sure no one sneaks in with a replace
 			if ( !current_user_can( 'administrator' ) && !current_user_can( 'search_regex_write' ) ) {
