@@ -4,14 +4,14 @@ Plugin Name: Search Regex
 Plugin URI: http://urbangiraffe.com/plugins/search-regex
 Description: Adds search &amp; replace functionality across posts, pages, comments, and meta-data, with full regular expression support
 Author: John Godley
-Version: 1.4.15
+Version: 1.4.16
 Author URI: http://urbangiraffe.com/
 */
 
 include dirname( __FILE__ ).'/plugin.php';
 
 class SearchRegex extends SearchRegex_Plugin {
-	function SearchRegex()	{
+	function __construct() {
 		if (  is_admin()) {
 			$this->register_plugin( 'search-regex', __FILE__ );
 			$this->add_filter( 'admin_menu' );
@@ -51,8 +51,9 @@ class SearchRegex extends SearchRegex_Plugin {
 			$klass    = stripslashes( $source );
 			$searcher = new $klass;
 
-			if ( isset( $_POST['regex'] ) )
-				$searcher->set_regex_options( $_POST['dotall'], $_POST['case'], $_POST['multi'] );
+			if ( isset( $_POST['regex'] ) ) {
+				$searcher->set_regex_options( isset( $_POST['regex_dot'] ) ? $_POST['regex_dot'] : false, isset( $_POST['regex_case'] ) ? $_POST['regex_case'] : false, isset( $_POST['regex_multi'] ) ? $_POST['regex_multi'] : false );
+			}
 
 			// Make sure no one sneaks in with a replace
 			if ( !current_user_can( 'administrator' ) && !current_user_can( 'search_regex_write' ) ) {
