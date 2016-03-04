@@ -1,27 +1,25 @@
 <?php
 
-class SearchPostContent extends Search
-{
-	function find ($pattern, $limit, $offset, $orderby)
-	{
+class SearchPostContent extends Search {
+	function find( $pattern, $limit, $offset, $orderby ) {
 		global $wpdb;
 
-		$results = array ();
-		$posts   = $wpdb->get_results ( "SELECT ID, post_content, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' AND post_type IN ('post','page') ORDER BY ID $orderby" );
+		$sql = "SELECT ID, post_content, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' AND post_type IN ('post','page') ORDER BY ID ".$orderby;
 
 		if ( $limit > 0 )
 			$sql .= $wpdb->prepare( " LIMIT %d,%d", $offset, $limit );
 
-		if (count ($posts) > 0)
-		{
-			foreach ($posts AS $post)
-			{
-				if (($matches = $this->matches ($pattern, $post->post_content, $post->ID)))
-				{
-					foreach ($matches AS $match)
-						$match->title = $post->post_title;
+		$results = array();
+		$posts   = $wpdb->get_results( $sql );
 
-					$results = array_merge ($results, $matches);
+		if ( count( $posts ) > 0 ) {
+			foreach ( $posts as $post ) {
+				if ( ( $matches = $this->matches( $pattern, $post->post_content, $post->ID ) ) ) {
+					foreach ( $matches AS $match ) {
+						$match->title = $post->post_title;
+					}
+
+					$results = array_merge( $results, $matches );
 				}
 			}
 		}

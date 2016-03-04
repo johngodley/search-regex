@@ -1,19 +1,20 @@
 <?php
 
-class SearchPostMetaValue extends Search
-{
-	function find ($pattern, $limit, $offset, $orderby)
-	{
+class SearchPostMetaValue extends Search {
+	function find( $pattern, $limit, $offset, $orderby ) {
 		global $wpdb;
 
-		$results = array ();
+		$results = array();
+		$sql = "SELECT {$wpdb->postmeta}.meta_id AS meta_id, {$wpdb->postmeta}.meta_value AS meta_value, {$wpdb->postmeta}.post_id AS post_id, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta} LEFT JOIN {$wpdb->posts} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID ORDER BY meta_value $orderby";
 
-		$metas = $wpdb->get_results ($wpdb->prepare( "SELECT {$wpdb->postmeta}.meta_id AS meta_id, {$wpdb->postmeta}.meta_value AS meta_value, {$wpdb->postmeta}.post_id AS post_id, {$wpdb->posts}.post_title AS title FROM {$wpdb->postmeta} LEFT JOIN {$wpdb->posts} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID ORDER BY meta_value $orderby LIMIT %d,%d", $offset,$limit ) );
+		if ( $limit > 0 ) {
+			$sql .= $wpdb->prepare( "LIMIT %d,%d", $offset, $limit );
+		}
 
-		if (count ($metas) > 0)
-		{
-			foreach ($metas AS $meta)
-			{
+		$metas = $wpdb->get_results( $sql );
+
+		if ( count( $metas ) > 0 ) {
+			foreach ( $metas as $meta ) {
 				// Perform a regex
 				if (($result = $this->matches ($pattern, $meta->meta_value, $meta->meta_id)) !== false)
 				{
@@ -62,4 +63,3 @@ class SearchPostMetaValue extends Search
 		$wpdb->query ($wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value=%s WHERE meta_id=%d", $content, $id ) );
 	}
 }
-

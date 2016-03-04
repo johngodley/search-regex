@@ -1,17 +1,19 @@
 <?php
 
-class SearchPostExcerpt extends Search
-{
-	function find ($pattern, $limit, $offset, $orderby)
-	{
+class SearchPostExcerpt extends Search {
+	function find( $pattern, $limit, $offset, $orderby ) {
 		global $wpdb;
 
-		$results = array ();
-		$posts   = $wpdb->get_results ($wpdb->prepare( "SELECT ID, post_title, post_excerpt FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby LIMIT %d,%d", $offset,$limit ) );
-		if (count ($posts) > 0)
-		{
-			foreach ($posts AS $post)
-			{
+		$results = array();
+		$sql = "SELECT ID, post_title, post_excerpt FROM {$wpdb->posts} WHERE post_status != 'inherit' ORDER BY ID $orderby";
+
+		if ( $limit > 0 ) {
+			$sql .= $wpdb->prepare( "LIMIT %d,%d", $offset, $limit );
+		}
+
+		$posts = $wpdb->get_results( $sql );
+		if ( count( $posts ) > 0 ) {
+			foreach ( $posts as $post ) {
 				if (($matches = $this->matches ($pattern, $post->post_excerpt, $post->ID)))
 				{
 					foreach ($matches AS $match)

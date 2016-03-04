@@ -1,9 +1,7 @@
 <?php
 
-class SearchCommentAuthorEmail extends Search
-{
-	function find ($pattern, $limit, $offset, $orderby)
-	{
+class SearchCommentAuthorEmail extends Search {
+	function find( $pattern, $limit, $offset, $orderby ) {
 		global $wpdb;
 
 		if ($orderby == 'id')
@@ -12,11 +10,14 @@ class SearchCommentAuthorEmail extends Search
 			$order = 'comment_date DESC';
 
 		$results = array ();
-		$comments = $wpdb->get_results ($wpdb->prepare( "SELECT {$wpdb->comments}.comment_ID AS comment_ID, {$wpdb->comments}.comment_post_ID AS comment_post_ID, {$wpdb->comments}.comment_author_email AS comment_author_email, {$wpdb->posts}.post_title AS post_title FROM {$wpdb->comments},{$wpdb->posts} WHERE {$wpdb->comments}.comment_approved='1' AND {$wpdb->posts}.ID={$wpdb->comments}.comment_post_ID ORDER BY {$wpdb->comments}.comment_ID $orderby LIMIT %d,%d", $offset,$limit ) );
-		if (count ($comments) > 0)
-		{
-			foreach ($comments AS $comment)
-			{
+		$sql = "SELECT {$wpdb->comments}.comment_ID AS comment_ID, {$wpdb->comments}.comment_post_ID AS comment_post_ID, {$wpdb->comments}.comment_author_email AS comment_author_email, {$wpdb->posts}.post_title AS post_title FROM {$wpdb->comments},{$wpdb->posts} WHERE {$wpdb->comments}.comment_approved='1' AND {$wpdb->posts}.ID={$wpdb->comments}.comment_post_ID ORDER BY {$wpdb->comments}.comment_ID $orderby";
+		if ( $limit > 0 ) {
+			$sql .= $wpdb->prepare( "LIMIT %d,%d", $offset, $limit );
+		}
+
+		$comments = $wpdb->get_results( $sql );
+		if ( count( $comments ) > 0 ) {
+			foreach ( $comments as $comment ) {
 				if (($matches = $this->matches ($pattern, $comment->comment_author_email, $comment->comment_ID)))
 				{
 					foreach ($matches AS $match)
