@@ -146,14 +146,13 @@ class Search
 				if( $start != 0)
 					$result->search = '&hellip; ';
 
-				$result->search .= htmlspecialchars( $left, HTML_ENTITIES, 'UTF-8');
-				$result->search .= '<a href="#" onclick="return false">';
-				$result->search .= htmlspecialchars( $found[0], HTML_ENTITIES, 'UTF-8').'</a>';
-				$result->search .= htmlspecialchars( $right, HTML_ENTITIES, 'UTF-8');
+				$result->search .= esc_html( $left );
+				$result->search .= '<strong>'.esc_html( $found[0] ).'</strong>';
+				$result->search .= esc_html( $right );
 
-				$result->search_plain = htmlspecialchars( $left, HTML_ENTITIES, 'UTF-8');
-				$result->search_plain .= htmlspecialchars( $found[0], HTML_ENTITIES, 'UTF-8');
-				$result->search_plain .= htmlspecialchars( $right, HTML_ENTITIES, 'UTF-8');
+				$result->search_plain = esc_html( $left );
+				$result->search_plain .= esc_html( $found[0] );
+				$result->search_plain .= esc_html( $right );
 
 				if( $start + $end < strlen( $content))
 					$result->search .= ' &hellip;';
@@ -167,19 +166,15 @@ class Search
 					if( $start != 0)
 						$result->replace = '&hellip; ';
 
-					$result->replace .= htmlspecialchars( $left, HTML_ENTITIES, 'UTF-8');
-					$result->replace .= '<a title="'.__( 'edit').'" onclick="return false;" ondblclick="regex_edit_replace(\''.get_class( $this).'\','.$result->id.','.$result->offset.','.$result->length.'); return false" href="#">';
-					if( $rep != '')
- 						$result->replace .= '<strong>'.htmlspecialchars( $rep, HTML_ENTITIES, 'UTF-8').'</strong></a>';
-					else
-						$result->replace .= '<strong>['.__( 'deleted','search-regex').']</strong></a>';
-					$result->replace .= htmlspecialchars( $right, HTML_ENTITIES, 'UTF-8');
+					$result->replace .= esc_html( $left );
+					$result->replace .= '<strong>'.esc_html( $rep ).'</strong></a>';
+					$result->replace .= esc_html( $right );
 
 					$result->left_length_replace = strlen( $left) + strlen( $rep) + strlen( $right) + 1;
 
-					$result->replace_plain  = htmlspecialchars( $left, HTML_ENTITIES, 'UTF-8');
-					$result->replace_plain .= htmlspecialchars( $rep, HTML_ENTITIES, 'UTF-8');
-					$result->replace_plain .= htmlspecialchars( $right, HTML_ENTITIES, 'UTF-8');
+					$result->replace_plain  = esc_html( $left );
+					$result->replace_plain .= esc_html( $rep );
+					$result->replace_plain .= esc_html( $right );
 
 					if( $start + $end < strlen( $content))
 						$result->replace .= ' &hellip;';

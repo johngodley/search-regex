@@ -34,8 +34,6 @@ class SearchPostMetaValue extends Search {
 	function get_options ($result)
 	{
 		$options[] = '<a href="'.get_permalink ($result->sub_id).'">'.__ ('view post', 'search-regex').'</a>';
-		if ($result->replace)
-			$options[] = '<a href="#" onclick="regex_replace (\'SearchPostMetaValue\','.$result->id.','.$result->offset.','.$result->length.',\''.str_replace ("'", "\'", $result->replace_string).'\'); return false">replace</a>';
 
 		if (current_user_can ('edit_post', $result->sub_id))
 			$options[] = '<a href="'.get_bloginfo ('wpurl').'/wp-admin/post.php?action=edit&amp;post='.$result->sub_id.'">'.__ ('edit','search-regex').'</a>';

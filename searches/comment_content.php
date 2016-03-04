@@ -33,8 +33,6 @@ class SearchCommentContent extends Search {
 	function get_options ($result)
 	{
 		$options[] = '<a href="'.get_permalink ($result->sub_id).'">'.__ ('view post', 'search-regex').'</a>';
-		if ($result->replace)
-			$options[] = '<a href="#" onclick="regex_replace (\'SearchCommentContent\','.$result->id.','.$result->offset.','.$result->length.',\''.str_replace ("'", "\'", $result->replace_string).'\'); return false">replace</a>';
 
 		if (current_user_can ('edit_post', $result->id))
 			$options[] = '<a href="'.get_bloginfo ('wpurl').'/wp-admin/comment.php?action=editcomment&amp;c='.$result->id.'">'.__ ('edit','search-regex').'</a>';
