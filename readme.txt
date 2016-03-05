@@ -47,6 +47,7 @@ Full documentation can be found on the [Search Regex Page](http://urbangiraffe.c
 
 = 1.4.16 =
 * Fix error thrown by regex options, props to leoxavier
+* Fix pagination problem
 
 = 1.4.15 =
 * Minor refresh
