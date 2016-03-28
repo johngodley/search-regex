@@ -1,0 +1,30 @@
+{
+  "name": "search-regex",
+  "version": "2.4.1",
+  "description": "Search Regex adds a powerful set of search and replace functions to WordPress that go beyond the standard searching capabilities, with full regex support.",
+  "main": "search-regex.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johngodley/search-regex.git"
+  },
+  "author": "John Godley",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/johngodley/search-regex/issues"
+  },
+  "homepage": "https://github.com/johngodley/search-regex",
+  "devDependencies": {
+    "del": "^2.0.2",
+    "glob-all": "^3.0.1",
+    "gulp": "^3.9.0",
+    "gulp-deleted": "0.0.2",
+    "gulp-sort": "^1.1.1",
+    "gulp-wp-pot": "^1.0.4",
+    "path": "^0.12.7",
+    "through": "^2.3.8",
+    "underscore": "^1.8.3"
+  }
+}
