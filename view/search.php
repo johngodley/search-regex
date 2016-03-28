@@ -6,13 +6,15 @@
 
 	<form method="post" action="">
 		<table class="searchargs">
-		  <tr>
-		    <th width="150"><?php _e( "Source", 'search-regex' ) ?></th>
-		    <td>
+			<tr>
+			    <th width="150">
+					<?php _e( "Source", 'search-regex' ) ?>
+				</th>
+			    <td>
 					<select name="source">
 						<?php foreach ( $searches AS $searcher ) : ?>
 							<option value="<?php echo get_class( $searcher ) ?>" <?php if ( strcasecmp( $source, get_class( $searcher ) ) == 0 || ( $source == '' && strcasecmp( get_class( $searcher ), 'SearchPostContent' ) == 0 ) ) echo ' selected="selected"' ?>>
-								<?php echo $searcher->name() ?>
+								<?php echo esc_attr( $searcher->name() ) ?>
 							</option>
 						<?php endforeach; ?>
 					</select>
@@ -20,13 +22,18 @@
 					<strong><?php _e( 'Limit to', 'search-regex' ); ?>:</strong>
 					<?php $limit = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 0 ?>
 					<select name="limit">
-						<?php echo $this->select( array( '0' => __( 'No limit', 'search-regex' ), '10' => '10', '25' => '25', '50' => '50', '100' => '100' ), $limit ) ?>
+						<option <?php selected( $limit, 0 ); ?> value="0"><?php _e( 'No limit', 'search-regex' ); ?></option>
+						<option <?php selected( $limit, 10 ); ?> value="10"><?php _e( '10', 'search-regex' ); ?></option>
+						<option <?php selected( $limit, 25 ); ?> value="25"><?php _e( '25', 'search-regex' ); ?></option>
+						<option <?php selected( $limit, 50 ); ?> value="50"><?php _e( '50', 'search-regex' ); ?></option>
+						<option <?php selected( $limit, 100 ); ?> value="100"><?php _e( '100', 'search-regex' ); ?></option>
 					</select>
 
 					<strong><?php _e( 'Order By', 'search-regex' ); ?>:</strong>
 					<?php $orderby = isset( $_POST['orderby'] ) ? $_POST['orderby'] : ''; ?>
 					<select name="orderby">
-						<?php echo $this->select( array( 'asc' => __( 'Ascending', 'search-regex' ), 'desc' => __( 'Descending', 'search-regex' ) ), $orderby ); ?>
+						<option <?php selected( $orderby, 'asc' ); ?>value="asc"><?php _e( 'Ascending', 'search-regex' ); ?></option>
+						<option <?php selected( $orderby, 'desc' ); ?>value="desc"><?php _e( 'Descending', 'search-regex' ); ?></option>
 					</select>
 				</td>
 			</tr>
@@ -68,19 +75,21 @@
 			<tr>
 			  <th width="150"></th>
 				<td><p class="submit">
-	      	<input type="submit" class="button-primary" name="search" value="<?php esc_attr_e( 'Search', 'search-regex' )?> &raquo;" />
+	      			<input type="submit" class="button-primary" name="search" value="<?php esc_attr_e( 'Search', 'search-regex' )?> &raquo;" />
 
 					<?php if (current_user_can( 'administrator' ) || current_user_can( 'search_regex_write' )) : ?>
-		     	<input type="submit" class="button" name="replace" value="<?php esc_attr_e( 'Replace', 'search-regex' )?> &raquo;" />
-					<input type="submit" class="button" name="replace_and_save" value="<?php esc_attr_e( 'Replace &amp; Save &raquo;', 'search-regex' ) ?>"/>
+		     			<input type="submit" class="button" name="replace" value="<?php esc_attr_e( 'Replace', 'search-regex' )?> &raquo;" />
+						<input type="submit" class="button" name="replace_and_save" value="<?php esc_attr_e( 'Replace &amp; Save &raquo;', 'search-regex' ) ?>"/>
 					<?php endif; ?>
 	    		</p>
 				</td>
 			</tr>
+
+			<?php wp_nonce_field( 'search', 'search-regex-nonce' ); ?>
 		</table>
 	</form>
 </div>
 
 <script type="text/javascript" charset="utf-8">
-	var wp_loading = '<?php echo plugins_url( '/images/small.gif', $this->base_url() ); ?>';
+	var wp_loading = '<?php echo plugins_url( '/images/small.gif', dirname( __FILE__ ) ); ?>';
 </script>

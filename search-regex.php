@@ -8,40 +8,65 @@ Version: 1.4.16
 Author URI: http://urbangiraffe.com/
 */
 
-include dirname( __FILE__ ).'/plugin.php';
+class SearchRegex {
+	private static $instance = null;
 
-class SearchRegex extends SearchRegex_Plugin {
-	function __construct() {
-		if (  is_admin()) {
-			$this->register_plugin( 'search-regex', __FILE__ );
-			$this->add_filter( 'admin_menu' );
-			$this->add_action( 'load-tools_page_search-regex', 'search_head' );
+	static function init() {
+		if ( is_admin() ) {
+			if ( is_null( self::$instance ) ) {
+				self::$instance = new SearchRegex();
+
+				load_plugin_textdomain( 'search-regex', false, dirname( plugin_basename( __FILE__ ) ).'/locale/' );
+			}
+
+			return self::$instance;
 		}
+	}
+
+	function __construct() {
+		add_filter( 'admin_menu', array( &$this, 'admin_menu' ) );
+		add_action( 'load-tools_page_search-regex', array( &$this, 'search_head' ) );
 	}
 
 	function search_head() {
 		include dirname( __FILE__ ).'/models/search.php';
 		include dirname( __FILE__ ).'/models/result.php';
 
-		wp_enqueue_style( 'search-regex', plugin_dir_url( __FILE__ ).'admin.css', $this->version() );
+		wp_enqueue_style( 'search-regex', plugin_dir_url( __FILE__ ).'admin.css' );
 	}
 
-	function admin_screen()	{
+	function admin_menu() {
+		if ( current_user_can( 'administrator' ) ) {
+			add_management_page( __( 'Search Regex', 'search-regex' ), __( 'Search Regex', 'search-regex' ), 'administrator', basename( __FILE__ ), array( &$this, 'admin_screen' ) );
+		}
+		elseif ( current_user_can( 'search_regex_read' ) ) {
+			add_management_page( __( 'Search Regex', 'search-regex' ), __( 'Search Regex', 'search-regex' ), 'search_regex_read', basename( __FILE__ ), array( &$this, 'admin_screen' ) );
+		}
+	}
+
+	function admin_screen() {
 		$searches = Search::get_searches();
 
-		$search_pattern = $replace_pattern = '';
-		if ( isset( $_POST['search_pattern'] ) )
-			$search_pattern  = stripslashes( $_POST['search_pattern'] );
+		if ( isset( $_POST['search_pattern'] ) && ! wp_verify_nonce( $_POST['search-regex-nonce'], 'search' ) ) {
+			return;
+		}
 
-		if ( isset( $_POST['replace_pattern'] ) )
+		$search_pattern = $replace_pattern = '';
+		if ( isset( $_POST['search_pattern'] ) ) {
+			$search_pattern  = stripslashes( $_POST['search_pattern'] );
+		}
+
+		if ( isset( $_POST['replace_pattern'] ) ) {
 			$replace_pattern = stripslashes( $_POST['replace_pattern'] );
+		}
 
 		$search_pattern  = str_replace( "\'", "'", $search_pattern );
 		$replace_pattern = str_replace( "\'", "'", $replace_pattern );
 		$orderby         = 'asc';
 
-		if ( isset( $_POST['orderby'] ) && $_POST['orderby'] == 'desc' )
+		if ( isset( $_POST['orderby'] ) && $_POST['orderby'] === 'desc' ) {
 			$orderby = 'desc';
+		}
 
 		$limit  = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 10;
 		$offset = 0;
@@ -56,7 +81,7 @@ class SearchRegex extends SearchRegex_Plugin {
 			}
 
 			// Make sure no one sneaks in with a replace
-			if ( !current_user_can( 'administrator' ) && !current_user_can( 'search_regex_write' ) ) {
+			if ( ! current_user_can( 'administrator' ) && ! current_user_can( 'search_regex_write' ) ) {
 				unset( $_POST['replace'] );
 				unset( $_POST['replace_and_save'] );
 				$_POST['search'] = 'search';
@@ -64,45 +89,56 @@ class SearchRegex extends SearchRegex_Plugin {
 
 			$results = array();
 
-			if ( isset( $_POST['search'] ) )
+			if ( isset( $_POST['search'] ) ) {
 				$results = $searcher->search_for_pattern( $search_pattern, $limit, $offset, $orderby );
-			elseif ( isset( $_POST['replace'] ) )
+			}
+			elseif ( isset( $_POST['replace'] ) ) {
 				$results = $searcher->search_and_replace( $search_pattern, $replace_pattern, $limit, $offset, $orderby );
-			elseif ( isset( $_POST['replace_and_save'] ) )
+			}
+			elseif ( isset( $_POST['replace_and_save'] ) ) {
 				$results = $searcher->search_and_replace( $search_pattern, $replace_pattern, $limit, $offset, $orderby, true );
+			}
 
-			if ( !is_array( $results ) )
+			if ( ! is_array( $results ) ) {
 				$this->render_error( $results );
-			elseif ( isset( $_POST['replace_and_save'] ) )
-				$this->render_message( sprintf( '%d occurrence(s) replaced', count( $results ) ) );
+			}
+			elseif ( isset( $_POST['replace_and_save'] ) ) {
+?>
+				<div class="updated" id="message" onclick="this.parentNode.removeChild (this)">
+				 <p><?php printf( _n( '%d occurrence replaced', '%d occurrences replaced', count( $results ) ), count( $results ) ) ?></p>
+				</div>
+<?php
+			}
 
-			$this->render_admin( 'search', array( 'search' => $search_pattern, 'replace' => $replace_pattern, 'searches' => $searches, 'source' => $source ) );
+			$this->render( 'search', array( 'search' => $search_pattern, 'replace' => $replace_pattern, 'searches' => $searches, 'source' => $source ) );
 
-			if ( is_array( $results ) && !isset( $_POST['replace_and_save'] ) )
-				$this->render_admin( 'results', array( 'search' => $searcher, 'results' => $results ) );
+			if ( is_array( $results ) && ! isset( $_POST['replace_and_save'] ) ) {
+				$this->render( 'results', array( 'search' => $searcher, 'results' => $results ) );
+			}
 		}
-		else
-			$this->render_admin( 'search', array( 'search' => $search_pattern, 'replace' => $replace_pattern, 'searches' => $searches, 'source' => $source ) );
+		else {
+			$this->render( 'search', array( 'search' => $search_pattern, 'replace' => $replace_pattern, 'searches' => $searches, 'source' => $source ) );
+		}
 	}
 
-	function admin_menu()	{
-		if ( current_user_can( 'administrator' ) )
-    	add_management_page( __( "Search Regex", 'search-regex' ), __( "Search Regex", 'search-regex' ), 'administrator', basename(__FILE__), array( &$this, 'admin_screen' ) );
-		elseif ( current_user_can('search_regex_read'))
-    	add_management_page( __( "Search Regex", 'search-regex' ), __( "Search Regex", 'search-regex' ), 'search_regex_read', basename(__FILE__), array( &$this, 'admin_screen' ) );
+	private function render( $template, $template_vars = array() ) {
+		foreach ( $template_vars as $key => $val ) {
+			$$key = $val;
+		}
+
+		if ( file_exists( dirname( __FILE__ )."/view/$template.php" ) )
+			include dirname( __FILE__ )."/view/$template.php";
 	}
 
-	function base_url() {
-		return __FILE__;
-	}
-
-	function version() {
-		$plugin_data = implode( '', file( __FILE__ ) );
-
-		if ( preg_match( '|Version:(.*)|i', $plugin_data, $version ) )
-			return trim( $version[1] );
-		return '';
+	function render_error( $message ) {
+	?>
+<div class="fade error" id="message">
+	<p><?php echo $message ?></p>
+</div>
+<?php
 	}
 }
 
-$search_regex = new SearchRegex;
+if ( is_admin() ) {
+	add_action( 'init', array( 'SearchRegex', 'init' ) );
+}
