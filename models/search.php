@@ -103,7 +103,7 @@ class Search
 	static function valid_search( $class )	{
 		$classes = Search::get_searches();
 		foreach ( $classes AS $item )	{
-			if ( strcasecmp( get_class( $item ), $class ) == 0 )
+			if ( strcasecmp( get_class( $item ), $class ) === 0 )
 				return true;
 		}
 
