@@ -30,3 +30,6 @@ Search Regex is available in the following languages:
 * English
 * Arabic, thanks to R.SN
 * Belarussian, thanks to Marcis Gasuns
+
+## Documentation 
+Full documentation can be found on the [Search Regex Page](http://urbangiraffe.com/plugins/search-regex/) page.
