@@ -1,0 +1,23 @@
+.tablenav-pages {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+}
+
+.pagination-links {
+	display: flex;
+	align-items: center;
+
+	.button {
+		margin: 0 2px;
+	}
+
+	.paging-input {
+		margin: 0 4px;
+	}
+
+	.tablenav-paging-text {
+		margin: 0 5px;
+	}
+}

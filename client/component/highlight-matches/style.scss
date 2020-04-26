@@ -1,0 +1,32 @@
+.searchregex-result__replaced,
+.searchregex-result__highlight {
+	background-color: yellow;
+	font-weight: bold;
+	padding: 1px;
+	cursor: pointer;
+}
+
+.searchregex-result__replaced {
+	background-color: orange;
+	display: inline;
+}
+
+.searchregex-result__deleted {
+	background-color: red;
+	color: white;
+}
+
+.searchregex-match {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	line-height: 2;
+
+	.searchregex-match__column {
+		margin-right: 10px;
+		background-color: #ddd;
+		padding: 0 5px;
+		border-radius: 3px;
+		margin-bottom: 5px;
+	}
+}
