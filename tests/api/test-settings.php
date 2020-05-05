@@ -55,16 +55,4 @@ class RedirectionApiSettingsTest extends Redirection_Api_Test {
 		$result = $this->callApi( 'setting', array( 'rest_api' => $data ), 'POST' );
 		$this->assertEquals( 1, $result->data['settings']['rest_api'] );
 	}
-
-	public function testSaveHelp() {
-		$data = true;
-		$this->setNonce();
-
-		$result = $this->callApi( 'setting', array( 'help' => $data ), 'POST' );
-		$this->assertEquals( true, $result->data['settings']['help'] );
-
-		$data = false;
-		$result = $this->callApi( 'setting', array( 'help' => $data ), 'POST' );
-		$this->assertEquals( false, $result->data['settings']['help'] );
-	}
 }

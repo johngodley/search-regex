@@ -22,7 +22,7 @@ require $_tests_dir . '/includes/bootstrap.php';
 class Redirection_Api_Test extends WP_Ajax_UnitTestCase {
 	protected function callApi( $endpoint, array $params = array(), $method = 'GET' ) {
 		$request = new WP_REST_Request( $method, '/search-regex/v1/' . $endpoint );
-echo '/search-regex/v1/' . $endpoint  ."\n";
+
 		foreach ( $params as $name => $value ) {
 			$request->set_param( $name, $value );
 		}

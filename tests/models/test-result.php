@@ -20,6 +20,7 @@ class ResultTest extends WP_UnitTestCase {
 
 		$this->assertEquals( $raw, $result->get_raw() );
 		$this->assertEquals( 1, $result->get_row_id() );
+
 		$this->assertEquals( [
 			'row_id' => 1,
 			'source_type' => 'post',
@@ -27,6 +28,7 @@ class ResultTest extends WP_UnitTestCase {
 			'columns' => [],
 			'actions' => [],
 			'title' => 'title',
+			'match_count' => 0,
 		], $json );
 	}
 }
