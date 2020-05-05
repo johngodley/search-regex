@@ -1,15 +1,38 @@
 {
   "name": "search-regex",
-  "version": "2.4.1",
-  "description": "Search Regex adds a powerful set of search and replace functions to WordPress that go beyond the standard searching capabilities, with full regex support.",
+  "version": "2.0-alpha-3",
+  "description": "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support",
   "main": "search-regex.php",
+  "sideEffects": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "watch": "jest --watch",
+    "testsetup": "bin/install-wp-tests.sh wordpress_test wp wp localhost latest",
+    "start": "NODE_ENV=development DEBUG=search-regex* webpack-dev-server --progress --colors --hot --config ./webpack.config.js --port 3312 --mode development",
+    "build": "NODE_ENV=production webpack --progress --colors --config ./webpack.config.js --mode production",
+    "localbuild": "NODE_ENV=production webpack-dev-server --progress --colors --hot --config ./webpack.config.js --port 3312 --mode production",
+    "lint": "eslint --cache --ext=.js src",
+    "stat": "NODE_ENV=production webpack --json --mode production | webpack-bundle-size-analyzer",
+    "release": "rm -rf node_modules && yarn install && yarn dist && gulp version",
+    "doc": "apidoc -v -i api/ -o ./api-doc/",
+    "phpcs": "phpcs ./models ./api ./actions ./modules ./matches ./fileio ./database ./*.php",
+    "phpunit": "WP_TESTS_DIR=./../../../../test/trunk phpunit"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johngodley/search-regex.git"
   },
+  "keywords": [
+    "post",
+    "admin",
+    "seo",
+    "pages",
+    "manage",
+    "301",
+    "404",
+    "redirect",
+    "permalink"
+  ],
   "author": "John Godley",
   "license": "GPL-3.0",
   "bugs": {
@@ -17,14 +40,145 @@
   },
   "homepage": "https://github.com/johngodley/search-regex",
   "devDependencies": {
-    "del": "^2.0.2",
-    "glob-all": "^3.0.1",
-    "gulp": "^3.9.0",
-    "gulp-deleted": "0.0.2",
-    "gulp-sort": "^1.1.1",
-    "gulp-wp-pot": "^1.0.4",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/plugin-proposal-export-namespace-from": "^7.8.3",
+    "@babel/plugin-proposal-function-sent": "^7.8.3",
+    "@babel/plugin-proposal-json-strings": "^7.8.3",
+    "@babel/plugin-proposal-numeric-separator": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.9.6",
+    "@babel/plugin-proposal-throw-expressions": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-syntax-import-meta": "^7.8.3",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "@hot-loader/react-dom": "^16.13.0",
+    "apidoc": "^0.22.0",
+    "autoprefixer": "^9.7.6",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^25.5.1",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "chai": "^4.2.0",
+    "css-loader": "^3.5.3",
+    "download": "^8.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-wpcalypso": "^5.0.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-flowtype": "^4.7.0",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-wpcalypso": "^4.1.0",
+    "exports-loader": "^0.7.0",
+    "extract-text-webpack-plugin": "3.0.2",
+    "glob-all": "^3.2.1",
+    "gulp": "^4.0.2",
+    "gulp-deleted": "1.0.0",
+    "gulp-po2json": "^1.0.0",
+    "gulp-sort": "^2.0.0",
+    "gulp-wp-pot": "^2.4.2",
+    "gulp-zip": "^5.0.1",
+    "he": "^1.2.0",
+    "html-webpack-plugin": "^4.3.0",
+    "i18n-calypso-cli": "^1.0.0",
+    "imports-loader": "^0.8.0",
+    "jest": "^25.5.4",
+    "json-loader": "^0.5.7",
+    "mocha": "^7.1.2",
+    "node-fetch": "^2.6.0",
+    "node-sass": "^4.14.0",
+    "null-loader": "^4.0.0",
     "path": "^0.12.7",
+    "postcss-focus": "^4.0.0",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.7.0",
+    "postcss-reporter": "^6.0.1",
+    "precss": "^4.0.0",
+    "prettier": "https://github.com/Automattic/wp-prettier/releases/download/wp-1.16.4/wp-prettier-1.16.4.tgz",
+    "react-hot-loader": "^4.12.21",
+    "redux-devtools-extension": "^2.13.8",
+    "request-promise": "^4.2.5",
+    "sass-loader": "^8.0.2",
+    "shared-git-hooks": "^1.2.1",
+    "style-loader": "1.2.1",
+    "stylelint": "^13.3.3",
+    "stylelint-config-wordpress": "^16.0.0",
     "through": "^2.3.8",
-    "underscore": "^1.8.3"
+    "through2": "^3.0.1",
+    "underscore": "^1.10.2",
+    "webpack": "^4.43.0",
+    "webpack-bundle-analyzer": "^3.7.0",
+    "webpack-bundle-size-analyzer": "^3.1.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-remove-debug": "^0.1.0"
+  },
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "debounce-promise": "^3.1.2",
+    "interpolate-components": "^1.1.1",
+    "jed": "^1.1.1",
+    "lru": "^3.1.0",
+    "plite": "^0.0.5",
+    "prop-types": "^15.7.2",
+    "qs": "^6.9.3",
+    "rc-progress": "^2.5.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-highlight-words": "^0.16.0",
+    "react-redux": "^7.2.0",
+    "react-textarea-autosize": "^7.1.2",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "eslintConfig": {
+    "env": {
+      "mocha": true,
+      "node": true
+    },
+    "extends": [
+      "wpcalypso/react",
+      "plugin:flowtype/recommended"
+    ],
+    "plugins": [
+      "flowtype"
+    ],
+    "rules": {
+      "max-len": 0,
+      "wpcalypso/jsx-classname-namespace": 0,
+      "wpcalypso/import-no-redux-combine-reducers": 0
+    },
+    "parserOptions": {
+      "ecmaFeatures": {
+        "experimentalObjectRestSpread": true
+      }
+    }
+  },
+  "jest": {
+    "modulePaths": [
+      "./client"
+    ]
+  },
+  "apidoc": {
+    "name": "Search Regex REST API",
+    "version": "1.0.0",
+    "description": "WordPress REST API documentation for Search Regex",
+    "title": "Search Regex REST API",
+    "url": "https://searchregex.com/wp-json",
+    "header": {
+      "title": "Introduction",
+      "filename": "./api/header.md"
+    },
+    "footer": {
+      "filename": "./api/footer.md"
+    },
+    "template": {
+      "withCompare": false
+    }
+  },
+  "wordpress": {
+    "supported": "4.6"
   }
 }

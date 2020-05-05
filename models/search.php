@@ -1,231 +1,192 @@
 <?php
 
-class Search
-{
-	var $search        = null;
-	var $replace       = null;
-	var $search_params = null;
-	var $save          = false;
-	var $source        = null;
-	var $error         = null;
+namespace SearchRegex;
 
-	var $regex_options = null;
-	var $regex_error   = null;
-	var $regex         = false;
+use SearchRegex\Result_Collection;
+use SearchRegex\Match;
 
-	function set_regex_options( $dotall, $case, $multi)
-	{
-		$this->regex = true;
-		if( !empty( $case))
-			$this->regex_options .= 'i';
+require_once __DIR__ . '/source.php';
+require_once __DIR__ . '/source-manager.php';
+require_once __DIR__ . '/match.php';
+require_once __DIR__ . '/match-context.php';
+require_once __DIR__ . '/match-column.php';
+require_once __DIR__ . '/search-flags.php';
+require_once __DIR__ . '/source-flags.php';
 
-		if( !empty( $dotall))
-			$this->regex_options .= 's';
+/**
+ * Perform a search
+ */
+class Search {
+	private $search;
+	private $sources = [];
+	private $flags;
 
-		if( !empty( $multi))
-			$this->regex_options .= 'm';
+	/**
+	 * Create a Search object, with a search value, an array of sources, and some search flags
+	 *
+	 * @param Stromg       $search_value The value to search for.
+	 * @param Array        $sources Array of Search_Source objects. Only one is supported.
+	 * @param Search_Flags $flags Search flags.
+	 */
+	public function __construct( $search_value, array $sources, Search_Flags $flags ) {
+		$this->search = $search_value;
+		$this->flags = $flags;
+		$this->sources = $sources;
 	}
 
-	function regex_error( $errno, $errstr, $errfile, $errline)
-	{
-		$this->regex_error = __( "Invalid regular expression", 'search-regex').": ".preg_replace( '/(.*?):/', '', $errstr);
+	// Get total number of matches and rows across each source
+	private function get_totals( $offset ) {
+		$totals = [ 'rows' => 0 ];
+
+		foreach ( $this->sources as $source ) {
+			$rows = $source->get_total_rows();
+			if ( is_wp_error( $rows ) ) {
+				return $rows;
+			}
+
+			$totals['rows'] += intval( $rows, 10 );
+		}
+
+		// First request also returns the total matched
+		if ( $offset === 0 ) {
+			$totals['matched_rows'] = 0;
+			$totals['matched_phrases'] = 0;
+
+			foreach ( $this->sources as $source ) {
+				if ( ! $this->flags->is_regex() ) {
+					$matches = $source->get_total_matches( $this->search );
+					if ( is_wp_error( $matches ) ) {
+						return $matches;
+					}
+
+					$totals['matched_rows'] += $matches['rows'];
+					$totals['matched_phrases'] += $matches['matches'];
+				}
+			}
+		}
+
+		return $totals;
 	}
 
-	function name() { return '';}
-	function run_search( $search) { return false; }
+	// Get the match data for a search
+	private function get_data( $offset, $limit ) {
+		if ( $this->flags->is_regex() ) {
+			return $this->sources[0]->get_all_rows( $this->search, $offset, $limit );
+		}
 
-	function search_and_replace( $search, $replace, $limit, $offset, $orderby, $save = false)
-	{
-		$this->replace = $replace;
-		$results = $this->search_for_pattern( $search, $limit, $offset, $orderby);
+		return $this->sources[0]->get_matched_rows( $this->search, $offset, $limit );
+	}
 
-		if( $results !== false && $save)
-			$this->replace( $results);
+	/**
+	 * Get a single database row
+	 *
+	 * @param integer $row_id Row ID to return.
+	 * @param Replace $replacer The Replace object used when replacing data.
+	 * @return WP_Error|array Return a single database row, or WP_Error on error
+	 */
+	public function get_row( $row_id, Replace $replacer ) {
+		$row = $this->sources[0]->get_row( $row_id );
+
+		// Error
+		if ( $row === null ) {
+			global $wpdb;
+
+			return new \WP_Error( 'searchregex_database', $wpdb->last_error );
+		}
+
+		if ( $row ) {
+			return $this->rows_to_results( [ $row ], $replacer );
+		}
+
+		return [];
+	}
+
+	/**
+	 * Perform the search, returning a result array that contains the totals, the progress, and an array of Result objects
+	 *
+	 * @param Replace $replacer The replacer which performs any replacements.
+	 * @param Integer $offset Current page offset.
+	 * @param Integer $limit Per page limit.
+	 * @return Array Array containing `totals`, `progress`, and `results`
+	 */
+	public function get_results( Replace $replacer, $offset, $limit = 5 ) {
+		// TODO return totals of each source
+		$totals = $this->get_totals( $offset );
+		$rows = $this->get_data( $offset, $limit );
+
+		if ( is_wp_error( $totals ) ) {
+			return $totals;
+		}
+
+		if ( is_wp_error( $rows ) ) {
+			return $rows;
+		}
+
+		$results = $this->rows_to_results( $rows, $replacer );
+		$previous = max( 0, $offset - $limit );
+		$next = min( $offset + $limit, $totals['rows'] );   // TODO this isn't going to end in simple search
+
+		if ( $next === $offset ) {
+			$next = false;
+		}
+
+		if ( $previous === $offset ) {
+			$previous = false;
+		}
+
+		return [
+			'results' => $results,
+			'totals' => $totals,
+			'progress' => [
+				'current' => $offset,
+				'rows' => count( $results ),
+
+				'previous' => $previous,
+				'next' => $next,
+			],
+		];
+	}
+
+	// Convert database rows into Result objects
+	private function rows_to_results( $rows, Replace $replacer ) {
+		$results = [];
+		$source = $this->sources[0];
+
+		foreach ( $rows as $row ) {
+			$columns = array_keys( $row );
+			$match_columns = [];
+
+			foreach ( array_slice( $columns, 1 ) as $column ) {
+				$row_id = intval( array_values( $row )[0], 10 );
+				$replacement = $replacer->get_replace_positions( $this->search, $row[ $column ] );
+				$contexts = Match::get_all( $this->search, $this->flags, $replacement, $row[ $column ] );
+
+				if ( count( $contexts ) > 0 ) {
+					$match_columns[] = new Match_Column( $column, $source->get_column_label( $column ), $replacer->get_global_replace( $this->search, $row[ $column ] ), $contexts );
+				}
+			}
+
+			if ( count( $match_columns ) > 0 ) {
+				$results[] = new Result( $row_id, $source, $match_columns, $row );
+			}
+		}
+
 		return $results;
 	}
 
-	function search_for_pattern( $search, $limit, $offset, $orderby ) {
-		if ( !in_array( $orderby, array( 'asc', 'desc' ) ) )
-			$orderby = 'asc';
+	/**
+	 * Convert a set of search results into JSON
+	 *
+	 * @param Array $results Array of Results.
+	 * @return Array JSON array
+	 */
+	public function results_to_json( $results ) {
+		$json = [];
 
-		$limit = intval( $limit );
-		$offset = intval( $offset );
-
-		if ( strlen( $search ) > 0 ) {
-			if ( !ini_get( 'safe_mode' ) )
-				set_time_limit( 0 );
-
-			// First test that the search and replace strings are valid regex
-			if ( $this->regex ) {
-				set_error_handler( array( &$this, 'regex_error' ) );
-				$valid = @preg_match( $search, '', $matches );
-				restore_error_handler();
-
-				if ( $valid === false )
-					return $this->regex_error;
-
-				return $this->find( $search, $limit, $offset, $orderby );
-			}
-			else
-				return $this->find( '@'.preg_quote( $search, '@' ).'@', $limit, $offset, $orderby );
+		foreach ( $results as $result ) {
+			$json[] = $result->to_json();
 		}
 
-		return __( "No search pattern", 'search-regex' );
-	}
-
-	static function get_searches()
-	{
-		global $search_regex_searches;
-		if( !is_array( $search_regex_searches))
-		{
-			$available = get_declared_classes();
-			$files = glob( dirname( __FILE__).'/../searches/*.php');
-			if( !empty( $files))
-			{
-				foreach( $files AS $file)
-					include_once( $file);
-			}
-
-			$classes = array();
-			$available = array_diff( get_declared_classes(), $available);
-			if( count( $available) > 0)
-			{
-				foreach( $available AS $class)
-					$classes[] = new $class;
-			}
-
-			$search_regex_searches = $classes;
-		}
-
-		return $search_regex_searches;
-	}
-
-	static function valid_search( $class )	{
-		$classes = Search::get_searches();
-		foreach ( $classes AS $item )	{
-			if ( strcasecmp( get_class( $item ), $class ) === 0 )
-				return true;
-		}
-
-		return false;
-	}
-
-	function matches( $pattern, $content, $id)
-	{
-		if( preg_match_all( $pattern.$this->regex_options, $content, $matches, PREG_OFFSET_CAPTURE) > 0)
-		{
-			$results = array();
-
-			// We found something
-			foreach( $matches[0] AS $found)
-			{
-				$result = new Result();
-				$result->id = $id;
-
-				$result->offset = $found[1];
-				$result->length = strlen( $found[0]);
-
-				// Extract the context - surrounding 40 characters either side
-				// Index 0 is the match, index 1 is the position
-				$start = $found[1] - 40;
-				if( $start < 0)
-					$start = 0;
-
-				$end = $found[1] + 40;
-				if( $end > strlen( $content))
-					$end = strlen( $content);
-
-				$end -= $start;
-
-				$left  = substr( $content, $start, $found[1] - $start);
-				$right = substr( $content, $found[1] + strlen( $found[0]), $end);
-
-				$result->left        = $start;
-				$result->left_length = strlen( $found[0]) +( $found[1] - $start) + $end;
-
-				if( $start != 0)
-					$result->search = '&hellip; ';
-
-				$result->search .= esc_html( $left );
-				$result->search .= '<strong>'.esc_html( $found[0] ).'</strong>';
-				$result->search .= esc_html( $right );
-
-				$result->search_plain = esc_html( $left );
-				$result->search_plain .= esc_html( $found[0] );
-				$result->search_plain .= esc_html( $right );
-
-				if( $start + $end < strlen( $content))
-					$result->search .= ' &hellip;';
-
-				if( !is_null( $this->replace))
-				{
-					// Produce preview
-					$rep = preg_replace( $pattern.$this->regex_options, $this->replace, $found[0]);
-					$result->replace_string = $rep;
-
-					if( $start != 0)
-						$result->replace = '&hellip; ';
-
-					$result->replace .= esc_html( $left );
-					$result->replace .= '<strong>'.esc_html( $rep ).'</strong></a>';
-					$result->replace .= esc_html( $right );
-
-					$result->left_length_replace = strlen( $left) + strlen( $rep) + strlen( $right) + 1;
-
-					$result->replace_plain  = esc_html( $left );
-					$result->replace_plain .= esc_html( $rep );
-					$result->replace_plain .= esc_html( $right );
-
-					if( $start + $end < strlen( $content))
-						$result->replace .= ' &hellip;';
-
-					// And the real thing
-					$result->content = preg_replace( $pattern.$this->regex_options, $this->replace, $content);
-				}
-
-				$results[] = $result;
-			}
-
-			return $results;
-		}
-		return false;
-	}
-
-
-	function replace( $results)
-	{
-		global $wpdb;
-
-		// Update database, if appropriate
-		if( count( $results) > 0)
-		{
-			// We only do the first replace of any set, as that will cover everything
-			$lastid = '';
-			foreach( $results AS $result)
-			{
-				if( $result->id != $lastid)
-				{
-					$this->replace_content( $result->id, $result->content);
-					$lastid = $result->id;
-				}
-			}
-		}
-	}
-
-	function replace_inline( $id, $offset, $length, $replace)
-	{
-		$content = $this->get_content( $id);
-
-		// Delete the original string
-		$before = substr( $content, 0, $offset);
-		$after  = substr( $content, $offset + $length);
-
-		// Stick the new string between
-		$content = $before.$replace.$after;
-
-		// Insert back into database
-		$this->replace_content( $id, $content);
+		return $json;
 	}
 }
-
-global $search_regex_searches;
