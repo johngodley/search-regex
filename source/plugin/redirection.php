@@ -1,9 +1,10 @@
 <?php
 
 use SearchRegex\Search_Source;
+use SearchRegex\Result;
 
 class Redirection_Search_Regex extends Search_Source {
-	public function get_actions( $result ) {
+	public function get_actions( Result $result ) {
 		$edit = admin_url( 'tools.php?page=redirection.php' );
 
 		return [

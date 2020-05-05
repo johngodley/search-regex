@@ -3,6 +3,7 @@
 namespace SearchRegex;
 
 use SearchRegex\Search_Source;
+use SearchRegex\Result;
 
 class Source_User extends Search_Source {
 	public function get_columns() {
@@ -39,7 +40,7 @@ class Source_User extends Search_Source {
 		return $wpdb->users;
 	}
 
-	public function get_actions( $result ) {
+	public function get_actions( Result $result ) {
 		return [
 			'edit' => get_edit_profile_url( $result->get_row_id(), 'admin' ),
 		];

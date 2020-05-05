@@ -185,7 +185,7 @@ function potExtract( cb ) {
 			let result = i18n_calypso( {
 				projectName: 'Search Regex',
 				inputPaths: files,
-				phpArrayName: 'search-regex_strings',
+				phpArrayName: 'search_regex_strings',
 				format: 'PHP',
 				textdomain: 'search-regex',
 				keywords: [ 'translate', '__' ],
