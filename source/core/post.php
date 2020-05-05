@@ -3,6 +3,7 @@
 namespace SearchRegex;
 
 use SearchRegex\Search_Source;
+use SearchRegex\Result;
 
 class Source_Post extends Search_Source {
 	private function get_post_type( $post_type ) {
@@ -42,11 +43,10 @@ class Source_Post extends Search_Source {
 	public function get_supported_flags() {
 		return [
 			'post_guid' => __( 'Search GUID', 'search-regex' ),
-//			'post_revisions' => __( 'Disable post revision', 'search-regex' ),
 		];
 	}
 
-	public function get_actions( $result ) {
+	public function get_actions( Result $result ) {
 		$edit = get_edit_post_link( $result->get_row_id(), '' );
 		$view = get_permalink( $result->get_row_id() );
 

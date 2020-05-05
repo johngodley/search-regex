@@ -175,7 +175,7 @@ class Search_Regex_Admin {
 		$content = [ '<p>' . sprintf( __( 'You can find full documentation about using Search Regex on the <a href="%s" target="_blank">searchregex.com</a> support site.', 'search-regex' ), 'https://searchregex.com/support/' ) . '</p>' ];
 		$content[] = '<p>' . __( 'The following concepts are used by Search Regex:', 'search-regex' ) . '</p>';
 		$content[] = '<ul>';
-		$content[] = '<li>' . $this->linkify( __( '{{link}}Search Flags{{/link}} - additional qualifiers for your search, to enable case insensitivity, and to enable regular expression support.', 'search-regex' ), 'https://searchregex.com/support/searching/' ). '</li>';
+		$content[] = '<li>' . $this->linkify( __( '{{link}}Search Flags{{/link}} - additional qualifiers for your search, to enable case insensitivity, and to enable regular expression support.', 'search-regex' ), 'https://searchregex.com/support/searching/' ) . '</li>';
 		$content[] = '<li>' . $this->linkify( __( '{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches.', 'search-regex' ), 'https://searchregex.com/support/regular-expression/' ) . '</li>';
 		$content[] = '<li>' . $this->linkify( __( '{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments.', 'search-regex' ), 'https://searchregex.com/support/search-source/' ) . '</li>';
 		$content[] = '<li>' . $flags . '</li>';

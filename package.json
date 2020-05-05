@@ -15,7 +15,7 @@
     "stat": "NODE_ENV=production webpack --json --mode production | webpack-bundle-size-analyzer",
     "release": "rm -rf node_modules && yarn install && yarn dist && gulp version",
     "doc": "apidoc -v -i api/ -o ./api-doc/",
-    "phpcs": "phpcs ./models ./api ./actions ./modules ./matches ./fileio ./database ./*.php",
+    "phpcs": "phpcs ./models ./source ./search-regex-admin.php ./search-regex-capabilities.php ./search-regex-settings.php ./search-regex.php",
     "phpunit": "WP_TESTS_DIR=./../../../../test/trunk phpunit"
   },
   "repository": {

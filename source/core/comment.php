@@ -3,6 +3,7 @@
 namespace SearchRegex;
 
 use SearchRegex\Search_Source;
+use SearchRegex\Result;
 
 class Source_Comment extends Search_Source {
 	public function get_columns() {
@@ -42,7 +43,7 @@ class Source_Comment extends Search_Source {
 		return [];
 	}
 
-	public function get_actions( $result ) {
+	public function get_actions( Result $result ) {
 		return [
 			'edit' => str_replace( '&amp;', '&', get_edit_comment_link( $result->get_row_id() ) ),
 		];
