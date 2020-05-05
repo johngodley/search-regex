@@ -40,7 +40,7 @@ function Replacement( props ) {
 			onHide={ reset }
 			hasArrow
 			align="centre"
-			offset={ 15 }
+			offset={ 25 }
 			renderContent={ ( toggle ) => (
 				<Replace
 					className="searchregex-replace__modal"

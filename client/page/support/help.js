@@ -41,6 +41,12 @@ const Help = () => {
 				},
 			} ) }
 			</p>
+			<h2>{ __( 'Redirection' ) }</h2>
+			<p>{ __( 'Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, that is also written by me.', {
+				components: {
+					link: <ExternalLink url="https://redirection.me" />
+				},
+			} ) }</p>
 		</div>
 	);
 };

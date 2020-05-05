@@ -24,7 +24,7 @@ export function getAdjustedPosition( position, togglePosition, align, ref, hasAr
 		};
 	}
 
-	const { width } = ref.current.getBoundingClientRect();
+	const width = position.width ? position.width : ref.current.getBoundingClientRect().width;
 	const minLeftPos = togglePosition.parentWidth - width - OFFSET_MAX;
 	const adjustedLeft = adjustForAlignment( togglePosition.left, position.width ? position.width : width, togglePosition.width, align );
 
@@ -45,7 +45,7 @@ export function getDimensions( ref, offset ) {
 
 	return {
 		left: left - parentRect.left + ( offset ? offset : 0 ),
-		top: top - height,
+		top: top -  parentRect.top,
 		width,
 		height,
 		parentWidth: parentRect.width,
