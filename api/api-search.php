@@ -138,7 +138,7 @@ use SearchRegex\Source_Flags;
  * @apiParam (Query Parameter) {String} searchFlags[regex] Perform a regular expression search
  * @apiParam (Query Parameter) {String} searchFlags[case] Perform a case insensitive search
  * @apiParam (Query Parameter) {Integer} page The current page offset in the results
- * @apiParam (Query Parameter) {Integer=25,50,100,250} [perPage=25] The maximum number of results per page
+ * @apiParam (Query Parameter) {Integer=25,50,100,250,500} [perPage=25] The maximum number of results per page
  * @apiParam (Query Parameter) {String="forward","backward"} [searchDirection="forward"] The direction the search is to proceed. Only needed for regular expression searches
  */
 
@@ -171,7 +171,8 @@ use SearchRegex\Source_Flags;
  * @apiSuccess {Object[]} totals The totals for this search
  * @apiSuccess {Integer} totals.current The current search offset
  * @apiSuccess {Integer} totals.rows The total number of rows for the source, including non-matches
- * @apiSuccess {Integer} totals.matches The number of matches if known, or `-1` if a regular expression match and unknown
+ * @apiSuccess {Integer} totals.matched_rows The number of matched rows if known, or `-1` if a regular expression match and unknown
+ * @apiSuccess {Integer} totals.matched_phrases The number of matched phraes if known, or `-1` if a regular expression match and unknown
  * @apiSuccess {Object[]} progress The current search progress, and the previous and next set of results
  * @apiSuccess {Integer} progress.current The current search offset
  * @apiSuccess {Integer} progress.rows The number of rows contained within this result set
@@ -262,7 +263,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				'description' => 'The maximum number of results per page',
 				'type' => 'integer',
 				'default' => 25,
-				'maximum' => 250,
+				'maximum' => 500,
 				'minimum' => 25,
 			],
 			'searchDirection' => [

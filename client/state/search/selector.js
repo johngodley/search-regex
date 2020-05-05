@@ -32,4 +32,8 @@ export const getPerPage = () => ( [
 		value: 250,
 		label: __( '250 per page' ),
 	},
+	{
+		value: 500,
+		label: __( '500 per page' ),
+	},
 ] );
