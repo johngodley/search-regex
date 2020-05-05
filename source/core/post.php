@@ -133,4 +133,12 @@ class Source_Post extends Search_Source {
 
 		return new WP_Error( 'searchregex', 'Failed to update post' );
 	}
+
+	public function delete_row( $row_id ) {
+		if ( wp_delete_post( $row_id ) ) {
+			return true;
+		}
+
+		return new \WP_Error( 'searchregex_delete', 'Failed to delete post', 401 );
+	}
 }

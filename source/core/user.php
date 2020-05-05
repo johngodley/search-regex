@@ -56,4 +56,12 @@ class Source_User extends Search_Source {
 			$column_id => $content,
 		] );
 	}
+
+	public function delete_row( $row_id ) {
+		if ( wp_delete_user( $row_id ) ) {
+			return true;
+		}
+
+		return new \WP_Error( 'searchregex_delete', 'Failed to delete user', 401 );
+	}
 }

@@ -75,4 +75,12 @@ class Source_Comment extends Search_Source {
 			$column_id => $content,
 		] );
 	}
+
+	public function delete_row( $row_id ) {
+		if ( wp_delete_comment( $row_id, true ) ) {
+			return true;
+		}
+
+		return new \WP_Error( 'searchregex_delete', 'Failed to delete comment', 401 );
+	}
 }

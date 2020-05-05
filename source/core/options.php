@@ -70,4 +70,21 @@ class Source_Options extends Search_Source {
 
 		return new \WP_Error( 'searchregex', 'Unable to update option' );
 	}
+
+	public function delete_row( $row_id ) {
+		global $wpdb;
+
+		// Get current option name. The table name is a known sanitized value
+		// phpcs:ignore
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_name,option_value,autoload FROM {$this->get_table_name()} WHERE option_id=%d", $row_id ) );
+		if ( ! $row ) {
+			return new \WP_Error( 'searchregex', 'Failed to delete option' );
+		}
+
+		if ( delete_option( $row->option_name ) ) {
+			return true;
+		}
+
+		return new \WP_Error( 'searchregex_delete', 'Failed to delete option', 401 );
+	}
 }
