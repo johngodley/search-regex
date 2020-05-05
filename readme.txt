@@ -1,7 +1,7 @@
 === Search Regex ===
 Contributors: johnny5
 Donate link: http://searchregex.com/donation/
-Tags: search, regex, regular expression, database, post, page
+Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.3
 Tested up to: 5.4
 Stable tag: trunk
@@ -45,6 +45,7 @@ You can find full details of installing a plugin on the [plugin installation pag
 
 1. Search options
 2. Inline search and replace
+3. Inline editor
 
 == Documentation ==
 

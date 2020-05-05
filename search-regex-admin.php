@@ -22,10 +22,7 @@ class Search_Regex_Admin {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10, 4 );
-		add_filter( 'plugin_row_meta', [ $this, 'plugin_row_meta' ], 10, 4 );
 		add_filter( 'set-screen-option', [ $this, 'set_per_page' ], 10, 3 );
-
-		add_filter( 'searchregex_sources_posttype', [ $this, 'searchregex_sources_posttype' ] );
 
 		register_deactivation_hook( SEARCHREGEX_FILE, [ 'Search_Regex_Admin', 'plugin_deactivated' ] );
 		register_uninstall_hook( SEARCHREGEX_FILE, [ 'Search_Regex_Admin', 'plugin_uninstall' ] );
@@ -48,24 +45,8 @@ class Search_Regex_Admin {
 		return $links;
 	}
 
-	public function plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data, $status ) {
-		if ( $plugin_file === basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ) ) {
-			$plugin_data['Description'] .= '<p>' . __( 'Please upgrade your database', 'search-regex' ) . '</p>';
-		}
-
-		return $plugin_meta;
-	}
-
 	private function get_plugin_url() {
 		return admin_url( 'tools.php?page=' . basename( SEARCHREGEX_FILE ) );
-	}
-
-	public function searchregex_sources_posttype( $sources ) {
-		$blacklist = [ 'oembed_cache', 'customise_changeset', 'custom_css', 'customize_changeset', 'user_request' ];
-
-		return array_filter( $sources, function( $source ) use ( $blacklist ) {
-			return ! in_array( $source['name'], $blacklist, true );
-		} );
 	}
 
 	private function get_first_available_page_url() {
