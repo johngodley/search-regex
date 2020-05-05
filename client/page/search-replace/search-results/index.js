@@ -29,7 +29,6 @@ function SearchResults( props ) {
 	const { results, totals, progress, status, requestCount, search, searchDirection, showLoading } = props;
 	const { searchFlags, perPage } = search;
 	const { onSearchMore, onChangePage, onSetError } = props;
-	const { matches = null, rows = null } = totals;
 	const isLoading = status === STATUS_IN_PROGRESS;
 
 	useEffect( () => {
@@ -43,8 +42,7 @@ function SearchResults( props ) {
 	return (
 		<>
 			<Pagination
-				matches={ matches }
-				rows={ rows }
+				totals={ totals }
 				onChangePage={ onChangePage }
 				perPage={ perPage }
 				isLoading={ isLoading }
@@ -55,11 +53,11 @@ function SearchResults( props ) {
 			<table className={ classnames( 'wp-list-table', 'widefat', 'fixed', 'striped', 'items', 'searchregex-results' ) }>
 				<thead>
 					<tr>
-						<th className="searchregex-result__table">{ __( 'Table' ) }</th>
+						<th className="searchregex-result__table">{ __( 'Source' ) }</th>
 						<th className="searchregex-result__row">{ __( 'Row ID' ) }</th>
 						<th className="searchregex-result__matches">{ __( 'Matches' ) }</th>
-						<th className="searchregex-result__match">{ __( 'Match' ) }</th>
-						<th className="searchregex-result__action">{ __( 'Action' ) }</th>
+						<th className="searchregex-result__match">{ __( 'Matched Phrases' ) }</th>
+						<th className="searchregex-result__action">{ __( 'Actions' ) }</th>
 					</tr>
 				</thead>
 
@@ -73,6 +71,16 @@ function SearchResults( props ) {
 					{ ! isLoading && results.length === 0 && <EmptyResults columns={ 5 } /> }
 				</tbody>
 			</table>
+
+			<Pagination
+				totals={ totals }
+				onChangePage={ onChangePage }
+				perPage={ perPage }
+				isLoading={ isLoading }
+				progress={ progress }
+				searchDirection={ searchDirection }
+				noTotal
+			/>
 		</>
 	);
 }

@@ -12,14 +12,15 @@ import AdvancedPagination from './advanced-pagination';
 import './style.scss';
 
 function Pagination( props ) {
-	const { matches, rows, searchDirection } = props;
+	const { totals, searchDirection } = props;
+	const { matched_rows, matched_phrases, rows } = totals;
 
-	if ( matches === null ) {
+	if ( matched_rows === null ) {
 		return <div className="tablenav-pages"><div className="displaying-num">&nbsp;</div></div>;
 	}
 
-	if ( matches > 0 ) {
-		return <SimplePagination { ...props } matched={ matches } total={ rows } />;
+	if ( matched_rows > 0 ) {
+		return <SimplePagination { ...props } matchedRows={ matched_rows } matchedPhrases={ matched_phrases } total={ rows } />;
 	}
 
 	return <AdvancedPagination { ...props } total={ rows } searchDirection={ searchDirection } />;

@@ -49,7 +49,8 @@ class Search {
 
 		// First request also returns the total matched
 		if ( $offset === 0 ) {
-			$totals['matches'] = 0;
+			$totals['matched_rows'] = 0;
+			$totals['matched_phrases'] = 0;
 
 			foreach ( $this->sources as $source ) {
 				if ( ! $this->flags->is_regex() ) {
@@ -58,7 +59,8 @@ class Search {
 						return $matches;
 					}
 
-					$totals['matches'] += intval( $matches, 10 );
+					$totals['matched_rows'] += $matches['rows'];
+					$totals['matched_phrases'] += $matches['matches'];
 				}
 			}
 		}

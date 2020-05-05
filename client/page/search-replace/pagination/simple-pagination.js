@@ -14,23 +14,24 @@ import Nav from './nav-button';
 import { search } from 'state/search/action';
 
 function SimplePagination( props ) {
-	const { total, progress, onChangePage, isLoading, matched, perPage, search } = props;
+	const { progress, onChangePage, isLoading, matchedPhrases, matchedRows, perPage, search, noTotal = false } = props;
 	const { current, previous, next } = progress;
-	const totalPages = Math.round( matched / perPage );
+	const totalPages = Math.round( matchedRows / perPage );
 	const currentPage = Math.round( current / perPage );
 	const hasNext = next && currentPage < totalPages;
 
 	return (
 		<div className="tablenav-pages">
-			<div className="displaying-num">
-				{ __( '%(matches)s row matches', '%(matches)s of %(total)s rows match', {
-						count: total,
+			{ noTotal && <div>&nbsp;</div> }
+			{ ! noTotal && <div className="displaying-num">
+				{ __( 'Matches: %(phrases)s across %(rows)s database row.', 'Matches: %(phrases)s across %(rows)s database rows.', {
+						count: matchedRows,
 						args: {
-							matches: numberFormat( matched ),
-							total: numberFormat( total ),
+							phrases: numberFormat( matchedPhrases ),
+							rows: numberFormat( matchedRows ),
 						},
 					} ) }
-			</div>
+			</div> }
 
 			<div className="pagination-links">
 				<Nav title={ __( 'First page' ) } button="«" className="first-page" enabled={ previous !== false && ! isLoading } onClick={ () => onChangePage( search, 0 ) } />

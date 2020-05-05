@@ -137,21 +137,32 @@ abstract class Search_Source {
 	 * Get the total number of matches for this search
 	 *
 	 * @param String $search Search string.
-	 * @return Integer|WP_Error The number of matches, or WP_Error on error
+	 * @return Array`|WP_Error The number of matches as an array of 'matches' and 'rows', or WP_Error on error
 	 */
 	public function get_total_matches( $search ) {
 		global $wpdb;
 
 		$search_query = $this->get_search_query( $search );
 
+		// Sum all the matches
+		$sum = [];
+		foreach ( $this->get_columns() as $column ) {
+			$cropped = mb_substr( $search, 0, mb_strlen( $search, 'UTF-8' ) - 1, 'UTF-8' );
+			// phpcs:ignore
+			$sum[] = $wpdb->prepare( "SUM( CHAR_LENGTH( $column ) - CHAR_LENGTH( REPLACE( $column, %s, %s ) ) )", $search, $cropped );
+		}
+
 		// This is a known and validated query
 		// phpcs:ignore
-		$result = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->get_table_name()} WHERE " . $search_query );
+		$result = $wpdb->get_row( "SELECT COUNT(*) AS match_rows, " . implode( ' + ', $sum ) . " AS match_total FROM {$this->get_table_name()} WHERE " . $search_query );
 		if ( $result === null ) {
 			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
 		}
 
-		return intval( $result, 10 );
+		return [
+			'matches' => intval( $result->match_total, 10 ),
+			'rows' => intval( $result->match_rows, 10 ),
+		];
 	}
 
 	/**
