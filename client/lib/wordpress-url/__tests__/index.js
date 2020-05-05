@@ -18,20 +18,11 @@ describe( 'WordPress URL', () => {
 	} );
 
 	test( 'getPluginPage returns redirect when no page param provided', () => {
-		expect( getPluginPage( '?something' ) ).toEqual( 'redirect' );
+		expect( getPluginPage( '?something' ) ).toEqual( 'search' );
 	} );
 
 	test( 'getPluginPage returns redirect when invalid page param provided', () => {
-		expect( getPluginPage( '?page=cats' ) ).toEqual( 'redirect' );
-	} );
-
-	test( 'getPluginPage returns redirect when valid page param provided', () => {
-		expect( getPluginPage( '?thing=here&sub=log' ) ).toEqual( 'log' );
-		expect( getPluginPage( '?thing=here&sub=groups' ) ).toEqual( 'groups' );
-		expect( getPluginPage( '?thing=here&sub=404s' ) ).toEqual( '404s' );
-		expect( getPluginPage( '?thing=here&sub=io' ) ).toEqual( 'io' );
-		expect( getPluginPage( '?thing=here&sub=options' ) ).toEqual( 'options' );
-		expect( getPluginPage( '?thing=here&sub=support' ) ).toEqual( 'support' );
+		expect( getPluginPage( '?page=cats' ) ).toEqual( 'search' );
 	} );
 
 	test( 'getWordPressUrl returns existing URL with no params', () => {
