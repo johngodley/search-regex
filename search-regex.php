@@ -28,6 +28,12 @@ define( 'SEARCHREGEX_DEV_MODE', false );
 if ( version_compare( phpversion(), '5.6' ) < 0 ) {
 	add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), 'searchregex_deprecated_php', 10, 4 );
 
+	/**
+	 * Show a deprecated PHP warning in the plugin page
+	 *
+	 * @param Array $links Plugin links.
+	 * @return Array
+	 */
 	function searchregex_deprecated_php( $links ) {
 		/* translators: 1: server PHP version. 2: required PHP version. */
 		array_unshift( $links, '<a href="https://searchregex.com/support/problems/php-version/" style="color: red; text-decoration: underline">' . sprintf( __( 'Disabled! Detected PHP %1$s, need PHP %2$s+', 'search-regex' ), phpversion(), '5.6' ) . '</a>' );
@@ -41,6 +47,11 @@ require_once __DIR__ . '/search-regex-version.php';
 require_once __DIR__ . '/search-regex-settings.php';
 require_once __DIR__ . '/search-regex-capabilities.php';
 
+/**
+ * Is the request for WP CLI?
+ *
+ * @return Bool
+ */
 function searchregex_is_wpcli() {
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		return true;
@@ -49,6 +60,11 @@ function searchregex_is_wpcli() {
 	return false;
 }
 
+/**
+ * Is the request for Search Regex admin?
+ *
+ * @return Bool
+ */
 function searchregex_is_admin() {
 	if ( is_admin() ) {
 		return true;
@@ -57,6 +73,11 @@ function searchregex_is_admin() {
 	return false;
 }
 
+/**
+ * Start the Search Regex REST API
+ *
+ * @return void
+ */
 function searchregex_start_rest() {
 	require_once __DIR__ . '/search-regex-admin.php';
 	require_once __DIR__ . '/api/api.php';
@@ -67,7 +88,13 @@ function searchregex_start_rest() {
 	remove_action( 'rest_api_init', 'searchregex_start_rest' );
 }
 
+/**
+ * Set the Search Regex text domain
+ *
+ * @return void
+ */
 function searchregex_locale() {
+	/** @psalm-suppress PossiblyFalseArgument */
 	load_plugin_textdomain( 'search-regex', false, dirname( plugin_basename( SEARCHREGEX_FILE ) ) . '/locale/' );
 }
 

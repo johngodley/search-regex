@@ -6,6 +6,7 @@ namespace SearchRegex;
  * Represents flags for a particular search
  */
 class Search_Flags {
+	/** @var String[] */
 	private $flags = [];
 
 	/**

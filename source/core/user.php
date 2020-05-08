@@ -5,7 +5,15 @@ namespace SearchRegex;
 use SearchRegex\Search_Source;
 use SearchRegex\Result;
 
+/**
+ * User source
+ */
 class Source_User extends Search_Source {
+	/**
+	 * Return an array of columns for this source
+	 *
+	 * @return Array The array of column names
+	 */
 	public function get_columns() {
 		$columns = [
 			'user_nicename',
@@ -16,6 +24,12 @@ class Source_User extends Search_Source {
 		return $columns;
 	}
 
+	/**
+	 * Return a visible label for the column. This is shown to the user and should be more descriptive than the column name itself
+	 *
+	 * @param String $column Column name.
+	 * @return String Column label
+	 */
 	public function get_column_label( $column ) {
 		$labels = [
 			'user_nicename' => __( 'Nicename', 'search-regex' ),
@@ -52,10 +66,16 @@ class Source_User extends Search_Source {
 
 	public function save( $row_id, $column_id, $content ) {
 		// This does all the sanitization
-		wp_update_user( [
+		$result = wp_update_user( [
 			'ID' => $row_id,
 			$column_id => $content,
 		] );
+
+		if ( $result ) {
+			return true;
+		}
+
+		return new \WP_Error( 'searchregex', 'Failed to update user' );
 	}
 
 	public function delete_row( $row_id ) {

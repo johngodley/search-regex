@@ -9,8 +9,11 @@ use SearchRegex\Match;
  * Performs plain and regular expressions of single and global replacements
  */
 class Replace {
+	/** @var String */
 	private $replace;
+	/** @var Search_Source[] */
 	private $sources = [];
+	/** @var Search_Flags */
 	private $flags;
 
 	const BEFORE = '<SEARCHREGEX>';
@@ -70,8 +73,8 @@ class Replace {
 	 *
 	 * @param Array  $results Array of Result objects.
 	 * @param String $column_id The optional column. If specified only this column is replaced.
-	 * @param String $pos_id The optional position within the column. If specified only this match is replaced.
-	 * @return Array A summary consisting of `rows`, the total number of rows changed, and `phrases` containing how many replacements were made
+	 * @param Int    $pos_id The optional position within the column. If specified only this match is replaced.
+	 * @return Array|\WP_Error A summary consisting of `rows`, the total number of rows changed, and `phrases` containing how many replacements were made
 	 */
 	public function save_and_replace( array $results, $column_id = null, $pos_id = null ) {
 		$rows_replaced = 0;
@@ -80,13 +83,14 @@ class Replace {
 		foreach ( $results as $result ) {
 			$replaced = $this->save_and_replace_result( $result, $column_id, $pos_id );
 
-			if ( is_wp_error( $replaced ) ) {
+			if ( \is_wp_error( $replaced ) && is_object( $replaced ) ) {
 				return $replaced;
 			}
 
-			if ( $replaced > 0 ) {
+			if ( is_int( $replaced ) && $replaced > 0 ) {
 				$rows_replaced++;
 				$phrases_replaced += $replaced;
+				error_log($replaced);
 			}
 		}
 
@@ -96,7 +100,15 @@ class Replace {
 		];
 	}
 
-	// Perform a replacement for a single result
+	/**
+	 * Perform a replacement for a single result
+	 *
+	 * @internal
+	 * @param Result      $result The result to replace in.
+	 * @param String|null $column_id Column ID.
+	 * @param Int|null    $pos_id Position within column.
+	 * @return Int|\WP_Error Number of phrases replaced, or WP_Error on error
+	 */
 	private function save_and_replace_result( Result $result, $column_id, $pos_id ) {
 		$phrases_replaced = 0;
 
@@ -111,7 +123,7 @@ class Replace {
 			}
 
 			$saved = $this->sources[0]->save( $result->get_row_id(), $column->get_column_id(), $replacement );
-			if ( is_wp_error( $saved ) ) {
+			if ( is_wp_error( $saved ) && is_object( $saved ) ) {
 				return $saved;
 			}
 
@@ -121,14 +133,29 @@ class Replace {
 		return $phrases_replaced;
 	}
 
-	// Check if we can replace this particular column
+	/**
+	 * Check if we can replace this particular column
+	 *
+	 * @internal
+	 * @param String|null $result_column Column.
+	 * @param String      $replace_column Column.
+	 * @return boolean
+	 */
 	private function can_replace_column( $result_column, $replace_column ) {
 		return $result_column === null || $result_column === $replace_column;
 	}
 
-	// Perform a global replacement
+	/**
+	 * Perform a global replacement
+	 *
+	 * @internal
+	 * @param String $search Search string.
+	 * @param String $replace Replacement value.
+	 * @param String $value Content to replace.
+	 * @return String
+	 */
 	private function replace_all( $search, $replace, $value ) {
-		$pattern = '@' . Match::get_pattern( $search, $this->flags->is_regex() ) . '@';
+		$pattern = Match::get_pattern( $search, $this->flags );
 
 		// Global replace
 		return preg_replace( $pattern, $replace, $value );

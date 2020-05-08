@@ -6,6 +6,7 @@ namespace SearchRegex;
  * Represents flags for a particular source
  */
 class Source_Flags {
+	/** @var Array */
 	private $flags = [];
 
 	/**
@@ -21,6 +22,7 @@ class Source_Flags {
 	 * Set which flags are allowed, and remove any existing flags that don't match
 	 *
 	 * @param Array $allowed Array of allowed flags.
+	 * @return void
 	 */
 	public function set_allowed_flags( array $allowed ) {
 		$this->flags = array_filter( $this->flags, function( $flag ) use ( $allowed ) {

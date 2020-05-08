@@ -35,7 +35,18 @@ abstract class Source_Meta extends Search_Source {
 		return 'meta_key';
 	}
 
+	/**
+	 * Return the meta object ID name
+	 *
+	 * @return String
+	 */
 	abstract public function get_meta_object_id();
+
+	/**
+	 * Return the meta table name
+	 *
+	 * @return String
+	 */
 	abstract public function get_meta_table();
 
 	public function save( $row_id, $column_id, $content ) {

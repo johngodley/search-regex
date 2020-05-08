@@ -51,17 +51,22 @@ class Redirection_Search_Regex extends Search_Source {
 
 	public function save( $row_id, $column_id, $content ) {
 		$item = \Red_Item::get_by_id( $row_id );
-		$json = $item->to_json();
 
-		if ( isset( $json[ $column_id ] ) ) {
-			$json[ $column_id ] = $content;
-			$saved = $item->update( $json );
+		if ( ! is_wp_error( $item ) ) {
+			/** @psalm-suppress PossiblyUndefinedMethod */
+			$json = $item->to_json();
 
-			if ( is_wp_error( $saved ) ) {
-				return $saved;
+			if ( isset( $json[ $column_id ] ) ) {
+				$json[ $column_id ] = $content;
+				/** @psalm-suppress PossiblyUndefinedMethod */
+				$saved = $item->update( $json );
+
+				if ( is_wp_error( $saved ) ) {
+					return $saved;
+				}
+
+				return true;
 			}
-
-			return true;
 		}
 
 		return new WP_Error( 'searchregex', 'Failed to update redirection' );

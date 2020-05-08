@@ -47,7 +47,15 @@
  *     }
  */
 
+/**
+ * Settings API endpoint
+ */
 class Search_Regex_Api_Settings extends Search_Regex_Api_Route {
+	/**
+	 * Create API endpoints with the given namespace
+	 *
+	 * @param String $namespace Namespace.
+	 */
 	public function __construct( $namespace ) {
 		register_rest_route( $namespace, '/setting', array(
 			$this->get_route( WP_REST_Server::READABLE, 'route_settings', [ $this, 'permission_callback' ] ),
@@ -55,12 +63,24 @@ class Search_Regex_Api_Settings extends Search_Regex_Api_Route {
 		) );
 	}
 
+	/**
+	 * Get settings
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return Array Settings
+	 */
 	public function route_settings( WP_REST_Request $request ) {
 		return [
 			'settings' => searchregex_get_options(),
 		];
 	}
 
+	/**
+	 * Set settings
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return Array Settings
+	 */
 	public function route_save_settings( WP_REST_Request $request ) {
 		$params = $request->get_params();
 

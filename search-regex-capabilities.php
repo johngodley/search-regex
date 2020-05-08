@@ -53,6 +53,7 @@ class Search_Regex_Capabilities {
 	 */
 	public static function has_access( $cap_name ) {
 		// Get the capability using the default plugin access as the base. Old sites overriding `searchregex_role` will get access to everything
+		/** @psalm-suppress TooManyArguments */
 		$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $cap_name );
 
 		// Check the capability

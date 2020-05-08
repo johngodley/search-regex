@@ -44,9 +44,15 @@ class Source_Comment extends Search_Source {
 	}
 
 	public function get_actions( Result $result ) {
-		return [
-			'edit' => str_replace( '&amp;', '&', get_edit_comment_link( $result->get_row_id() ) ),
-		];
+		$link = get_edit_comment_link( $result->get_row_id() );
+
+		if ( $link ) {
+			return [
+				'edit' => str_replace( '&amp;', '&', $link ),
+			];
+		}
+
+		return [];
 	}
 
 	public function get_supported_flags() {
@@ -71,10 +77,16 @@ class Source_Comment extends Search_Source {
 
 	public function save( $row_id, $column_id, $content ) {
 		// This does all the sanitization
-		wp_update_comment( [
+		$result = wp_update_comment( [
 			$this->get_table_id() => $row_id,
 			$column_id => $content,
 		] );
+
+		if ( $result ) {
+			return true;
+		}
+
+		return new \WP_Error( 'searchregex', 'Failed to save comment' );
 	}
 
 	public function delete_row( $row_id ) {
