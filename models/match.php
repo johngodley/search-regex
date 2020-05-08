@@ -8,18 +8,23 @@ use SearchRegex\Match_Context;
  * Represents a single match
  */
 class Match {
+	/** @var Int */
 	private $pos_id;
+	/** @var String */
 	private $match;
-	private $context_offset;
+	/** @var Int */
+	private $context_offset = 0;
+	/** @var String */
 	private $replacement;
+	/** @var String[] */
 	private $captures;
 
 	/**
 	 * Create a Match given the matched phrase, the match offset, and what the match is replaced with
 	 *
-	 * @param String  $match The matched phrased. Typical the search phrase unless a regular expression search.
-	 * @param Integer $match_offset The offset within the column.
-	 * @param String  $replacement The replaced value, if one is supplied.
+	 * @param String $match The matched phrased. Typical the search phrase unless a regular expression search.
+	 * @param int    $match_offset The offset within the column.
+	 * @param String $replacement The replaced value, if one is supplied.
 	 */
 	public function __construct( $match, $match_offset, $replacement ) {
 		$this->pos_id = intval( $match_offset, 10 );
@@ -41,7 +46,7 @@ class Match {
 	/**
 	 * Get match position
 	 *
-	 * @return Integer Position
+	 * @return Int Position
 	 */
 	public function get_position() {
 		return $this->pos_id;
@@ -59,7 +64,7 @@ class Match {
 	/**
 	 * Set the context offset - the offset within the context that this match belongs to
 	 *
-	 * @param Integer $context_offset The context offset.
+	 * @param Int $context_offset The context offset.
 	 * @return void
 	 */
 	public function set_context( $context_offset ) {
@@ -84,16 +89,25 @@ class Match {
 	/**
 	 * Encode a search as a regular expression
 	 *
-	 * @param String $search Search phrase.
-	 * @param Bool   $regex Is this regular expression.
+	 * @param String       $search Search phrase.
+	 * @param Search_Flags $flags Is this regular expression.
 	 * @return String Encoded search phrase
 	 */
-	public static function get_pattern( $search, $regex = false ) {
-		if ( $regex ) {
-			return str_replace( '@', '\\@', $search );
+	public static function get_pattern( $search, Search_Flags $flags ) {
+		$pattern = \preg_quote( $search, '@' );
+
+		if ( $flags->is_regex() ) {
+			$pattern = str_replace( '@', '\\@', $search );
 		}
 
-		return \preg_quote( $search, '@' );
+		$pattern = '@' . $pattern . '@';
+
+		if ( $flags->is_case_insensitive() ) {
+			$pattern .= 'i';
+		}
+
+		// UTF-8 support
+		return $pattern . 'u';
 	}
 
 	/**
@@ -106,17 +120,10 @@ class Match {
 	 * @return Array Array of Match contexts
 	 */
 	public static function get_all( $search, Search_Flags $flags, array $replacements, $column_value ) {
-		$pattern = '@' . self::get_pattern( $search, $flags->is_regex() ) . '@';
+		$pattern = self::get_pattern( $search, $flags );
 		$contexts = [];
 
-		if ( $flags->is_case_insensitive() ) {
-			$pattern .= 'i';
-		}
-
-		$pattern .= 'u';
-
 		if ( \preg_match_all( $pattern, $column_value, $searches, PREG_OFFSET_CAPTURE ) > 0 ) {
-			$matches = [];
 			$current_context = new Match_Context( 0 );
 			$contexts[] = $current_context;
 

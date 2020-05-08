@@ -207,7 +207,16 @@ use SearchRegex\Source_Flags;
  * @apiSuccess {String} result.title A title for the result
  */
 
+/**
+ * Search API endpoint
+ */
 class Search_Regex_Api_Search extends Search_Regex_Api_Route {
+	/**
+	 * Return API search args
+	 *
+	 * @internal
+	 * @return Array<String, Array>
+	 */
 	private function get_search_params() {
 		return [
 			'searchPhrase' => [
@@ -251,6 +260,12 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		];
 	}
 
+	/**
+	 * Return API paging args
+	 *
+	 * @internal
+	 * @return Array<String, Array>
+	 */
 	private function get_paging_params() {
 		return [
 			'page' => [
@@ -278,6 +293,11 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		];
 	}
 
+	/**
+	 * Search API endpoint constructor
+	 *
+	 * @param String $namespace Namespace.
+	 */
 	public function __construct( $namespace ) {
 		register_rest_route( $namespace, '/search', [
 			'args' => array_merge(
@@ -348,7 +368,14 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		] );
 	}
 
-	// Helper to return a search and replace object
+	/**
+	 * Helper to return a search and replace object
+	 *
+	 * @internal
+	 * @param Array  $params Array of params.
+	 * @param String $replacement Replacement value.
+	 * @return Array Search and Replace objects
+	 */
 	private function get_search_replace( $params, $replacement ) {
 		// Get basics
 		$flags = new Search_Flags( $params['searchFlags'] );
@@ -390,6 +417,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		$params = $request->get_params();
 
 		if ( $params['rowId'] > 0 ) {
+			// Get the Search/Replace pair, with our replacePhrase as the replacement value
 			list( $search, $replacer ) = $this->get_search_replace( $params, $params['replacePhrase'] );
 			$results = $search->get_row( $params['rowId'], $replacer );
 
@@ -403,6 +431,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				return $replaced;
 			}
 
+			// Now perform a standard search with the original replacement value so the UI is refreshed
 			return $this->search( $request );
 		}
 
@@ -418,11 +447,16 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 			return $results;
 		}
 
+		$search_results = $this->search( $request );
+		if ( $search_results instanceof \WP_Error ) {
+			return $search_results;
+		}
+
 		// Do the replacement
 		return [
 			'results' => $results,
-			'progress' => $results['progress'],
-			'totals' => $results['totals'],
+			'progress' => $search_results['progress'],
+			'totals' => $search_results['totals'],
 		];
 	}
 
@@ -452,7 +486,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 			return $row;
 		}
 
-		$results = $search->results_to_json( $row );
+		$results = $search->results_to_json( (array) $row );
 
 		return [
 			'result' => count( $results ) > 0 ? $results[0] : [],
@@ -511,12 +545,16 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	/**
 	 * Validate that the column is correct for the given source
 	 *
-	 * @param String          $value The value to validate.
+	 * @param String|null     $value The value to validate.
 	 * @param WP_REST_Request $request The request.
 	 * @param Array           $param The array of parameters.
-	 * @return Bool true or false
+	 * @return WP_Error|Bool true or false
 	 */
 	public function validate_replace_column( $value, WP_REST_Request $request, $param ) {
+		if ( $value === null ) {
+			return true;
+		}
+
 		$handlers = Source_Manager::get( Source_Manager::get_all_source_names(), new Search_Flags(), new Source_Flags() );
 
 		foreach ( $handlers as $handler ) {
@@ -531,10 +569,10 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	/**
 	 * Validate that the search flags are correct
 	 *
-	 * @param String          $value The value to validate.
+	 * @param Array|String    $value The value to validate.
 	 * @param WP_REST_Request $request The request.
 	 * @param Array           $param The array of parameters.
-	 * @return Bool true or false
+	 * @return WP_Error|Bool true or false
 	 */
 	public function validate_search_flags( $value, WP_REST_Request $request, $param ) {
 		if ( is_array( $value ) ) {
@@ -551,10 +589,10 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	/**
 	 * Validate that the source flags are correct
 	 *
-	 * @param String          $value The value to validate.
+	 * @param Array|String    $value The value to validate.
 	 * @param WP_REST_Request $request The request.
 	 * @param Array           $param The array of parameters.
-	 * @return Bool true or false
+	 * @return Bool|WP_Error true or false
 	 */
 	public function validate_source_flags( $value, WP_REST_Request $request, $param ) {
 		if ( is_array( $value ) ) {
@@ -582,10 +620,10 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	/**
 	 * Validate that the source is valid
 	 *
-	 * @param String          $value The value to validate.
+	 * @param Array|String    $value The value to validate.
 	 * @param WP_REST_Request $request The request.
 	 * @param Array           $param The array of parameters.
-	 * @return Bool true or false
+	 * @return Bool|WP_Error true or false
 	 */
 	public function validate_source( $value, WP_REST_Request $request, $param ) {
 		$allowed = Source_Manager::get_all_source_names();
@@ -606,7 +644,12 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		return new WP_Error( 'rest_invalid_param', 'Invalid source detected', array( 'status' => 400 ) );
 	}
 
-	// Used to disable post revisions when updating a post
+	/**
+	 * Used to disable post revisions when updating a post
+	 *
+	 * @internal
+	 * @return Int
+	 */
 	public function disable_post_revisions() {
 		return 0;
 	}

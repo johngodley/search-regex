@@ -6,6 +6,12 @@ use SearchRegex\Search_Source;
 use SearchRegex\Result;
 
 class Source_Post extends Search_Source {
+	/**
+	 * Get the custom post type from the source
+	 *
+	 * @param String $post_type Source post type.
+	 * @return null|Array
+	 */
 	private function get_post_type( $post_type ) {
 		$post_types = array_values( array_filter( Source_Manager::get_all_grouped(), function( $source ) {
 			return $source['name'] === 'posttype';
@@ -52,8 +58,8 @@ class Source_Post extends Search_Source {
 
 		if ( $edit ) {
 			return [
-				'edit' => get_edit_post_link( $result->get_row_id(), '' ),
-				'view' => get_permalink( $result->get_row_id() ),
+				'edit' => $edit,
+				'view' => $view,
 			];
 		}
 
@@ -131,7 +137,7 @@ class Source_Post extends Search_Source {
 			return true;
 		}
 
-		return new WP_Error( 'searchregex', 'Failed to update post' );
+		return new \WP_Error( 'searchregex', 'Failed to update post' );
 	}
 
 	public function delete_row( $row_id ) {

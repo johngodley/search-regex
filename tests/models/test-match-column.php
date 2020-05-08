@@ -31,8 +31,8 @@ class ColumnTest extends WP_UnitTestCase {
 		$this->assertEquals( $expected, $column->to_json() );
 		$this->assertEquals( 'column', $column->get_column_id() );
 		$this->assertEquals( 0, $column->get_match_count() );
-		$this->assertEquals( 'replacement', $column->get_replacement( null, '' ) );
-		$this->assertFalse( $column->get_replacement( 343, 'something' ) );
+		$this->assertEquals( 'replacement', $column->get_replacement( null, [ '' ] ) );
+		$this->assertFalse( $column->get_replacement( 343, [ 'something' ] ) );
 	}
 
 	public function testColumnWithMatches() {
@@ -72,7 +72,7 @@ class ColumnTest extends WP_UnitTestCase {
 		$this->assertEquals( 'column', $column->get_column_id() );
 		$this->assertEquals( 2, $column->get_match_count() );
 
-		$this->assertFalse( $column->get_replacement( 13, 'one there is one match here and at the end is one' ) );
+		$this->assertFalse( $column->get_replacement( 13, [ 'one there is one match here and at the end is one' ] ) );
 	}
 
 	public function testContextLimit() {

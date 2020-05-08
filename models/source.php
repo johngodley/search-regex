@@ -8,9 +8,14 @@ use SearchRegex\Search_Regex;
  * Represents a source of data that can be searched. Typically maps directly to a database table
  */
 abstract class Search_Source {
+	/** @var Search_Flags */
 	protected $search_flags;
+	/** @var Source_Flags */
 	protected $source_flags;
+	/** @var String */
 	protected $source_type;
+	/** @var String */
+	protected $source_name;
 
 	/**
 	 * Create a Search_Source object
@@ -137,7 +142,7 @@ abstract class Search_Source {
 	 * Get the total number of matches for this search
 	 *
 	 * @param String $search Search string.
-	 * @return Array`|WP_Error The number of matches as an array of 'matches' and 'rows', or WP_Error on error
+	 * @return Array<String,Int>|\WP_Error The number of matches as an array of 'matches' and 'rows', or WP_Error on error
 	 */
 	public function get_total_matches( $search ) {
 		global $wpdb;
@@ -148,8 +153,9 @@ abstract class Search_Source {
 		$sum = [];
 		foreach ( $this->get_columns() as $column ) {
 			$cropped = mb_substr( $search, 0, mb_strlen( $search, 'UTF-8' ) - 1, 'UTF-8' );
+
 			// phpcs:ignore
-			$sum[] = $wpdb->prepare( "SUM( CHAR_LENGTH( $column ) - CHAR_LENGTH( REPLACE( $column, %s, %s ) ) )", $search, $cropped );
+			$sum[] = $wpdb->prepare( "SUM( CHAR_LENGTH( $column ) - CHAR_LENGTH( REPLACE( UPPER($column), UPPER(%s), UPPER(%s) ) ) )", $search, $cropped );
 		}
 
 		// This is a known and validated query
@@ -168,7 +174,7 @@ abstract class Search_Source {
 	/**
 	 * Get total number of rows for this source
 	 *
-	 * @return Integer|WP_Error The number of rows, or WP_Error on error
+	 * @return Int|\WP_Error The number of rows, or WP_Error on error
 	 */
 	public function get_total_rows() {
 		global $wpdb;
@@ -186,8 +192,8 @@ abstract class Search_Source {
 	/**
 	 * Get a single row from the source
 	 *
-	 * @param Integer $row_id The row ID.
-	 * @return Object|WP_Error The database row, or WP_Error on error
+	 * @param int $row_id The row ID.
+	 * @return Object|\WP_Error The database row, or WP_Error on error
 	 */
 	public function get_row( $row_id ) {
 		global $wpdb;
@@ -207,10 +213,10 @@ abstract class Search_Source {
 	/**
 	 * Get all database rows for the source from the start offset to the limit
 	 *
-	 * @param String  $search The search phrase.
-	 * @param Integer $offset The row offset.
-	 * @param Integer $limit The number of rows to return.
-	 * @return Array|WP_Error The database rows, or WP_Error on error
+	 * @param String $search The search phrase.
+	 * @param int    $offset The row offset.
+	 * @param int    $limit The number of rows to return.
+	 * @return Array|\WP_Error The database rows, or WP_Error on error
 	 */
 	public function get_all_rows( $search, $offset, $limit ) {
 		global $wpdb;
@@ -237,10 +243,10 @@ abstract class Search_Source {
 	/**
 	 * Get a set of matching rows
 	 *
-	 * @param String  $search The search string.
-	 * @param Integer $offset The row offset.
-	 * @param Integer $limit The number of rows to return.
-	 * @return Array|WP_Error The database rows, or WP_Error on error
+	 * @param String $search The search string.
+	 * @param int    $offset The row offset.
+	 * @param int    $limit The number of rows to return.
+	 * @return Array|\WP_Error The database rows, or WP_Error on error
 	 */
 	public function get_matched_rows( $search, $offset, $limit ) {
 		global $wpdb;
@@ -261,10 +267,10 @@ abstract class Search_Source {
 	/**
 	 * Save a replacement to the database
 	 *
-	 * @param Integer $row_id The row ID to save.
-	 * @param String  $column_id The column to save.
-	 * @param String  $content The value to save to the column in the row.
-	 * @return Boolean|WP_Error True on success, or WP_Error on error
+	 * @param int    $row_id The row ID to save.
+	 * @param String $column_id The column to save.
+	 * @param String $content The value to save to the column in the row.
+	 * @return Bool|\WP_Error True on success, or WP_Error on error
 	 */
 	public function save( $row_id, $column_id, $content ) {
 		global $wpdb;
@@ -287,8 +293,8 @@ abstract class Search_Source {
 	/**
 	 * Delete a row from the source
 	 *
-	 * @param Integer $row_id The row ID.
-	 * @return Boolean|WP_Error true on success, or WP_Error on error
+	 * @param int $row_id The row ID.
+	 * @return Bool|\WP_Error true on success, or WP_Error on error
 	 */
 	public function delete_row( $row_id ) {
 		global $wpdb;
@@ -300,7 +306,12 @@ abstract class Search_Source {
 		return true;
 	}
 
-	// Returns database columns in SQL format
+	/**
+	 * Returns database columns in SQL format
+	 *
+	 * @internal
+	 * @return String SQL string
+	 */
 	protected function get_query_columns() {
 		$columns = array_merge(
 			[ $this->get_table_id() ],
@@ -311,7 +322,14 @@ abstract class Search_Source {
 		return implode( ', ', $columns );
 	}
 
-	// Returns a LIKE query for a given column and search phrase
+	/**
+	 * Returns a LIKE query for a given column and search phrase
+	 *
+	 * @internal
+	 * @param String $column Column name.
+	 * @param String $search Search phrase.
+	 * @return String SQL string
+	 */
 	protected function get_search_query_as_like( $column, $search ) {
 		global $wpdb;
 
@@ -322,7 +340,13 @@ abstract class Search_Source {
 		return $column . ' ' . $wpdb->prepare( 'LIKE %s', '%' . $wpdb->esc_like( $search ) . '%' );
 	}
 
-	// Returns the search for each of the columns in SQL format
+	/**
+	 * Returns the search for each of the columns in SQL format
+	 *
+	 * @internal
+	 * @param String $search Search phrase.
+	 * @return String SQL string
+	 */
 	protected function get_search_query( $search ) {
 		$source_matches = [];
 

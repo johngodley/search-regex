@@ -67,6 +67,7 @@ class Source_Manager {
 		];
 
 		// Add on post types
+		/** @var Array */
 		$post_types = get_post_types( [], 'objects' );
 		$post_sources = [];
 
@@ -84,6 +85,9 @@ class Source_Manager {
 		// Load custom stuff here
 		$plugin_sources = glob( dirname( SEARCHREGEX_FILE ) . '/source/plugin/*.php' );
 		foreach ( $plugin_sources as $plugin ) {
+			/**
+			 * @psalm-suppress UnresolvableInclude
+			 */
 			require_once $plugin;
 		}
 
@@ -136,7 +140,14 @@ class Source_Manager {
 		} );
 	}
 
-	// Return a particular Source object for the given name
+	/**
+	 * Return a particular Source object for the given name
+	 *
+	 * @param String       $source Source name.
+	 * @param Search_Flags $search_flags Search_Flags.
+	 * @param Source_Flags $source_flags Source_Flags.
+	 * @return object|null New Source_Flags object
+	 */
 	private static function get_handler_for_source( $source, Search_Flags $search_flags, Source_Flags $source_flags ) {
 		$sources = self::get_all_sources();
 

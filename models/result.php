@@ -6,18 +6,25 @@ namespace SearchRegex;
  * Contains all information for a search result - a database row that contains matches
  */
 class Result {
+	/** @var Int */
 	private $row_id;
+	/** @var String */
 	private $source_type;
+	/** @var String */
 	private $source_name;
+	/** @var String */
 	private $result_title;
+	/** @var Match_Column[] */
 	private $columns;
+	/** @var String[] */
 	private $raw;
+	/** @var String[] */
 	private $actions = [];
 
 	/**
 	 * Create the result given a row ID, the Search_Source, a set of columns, and the raw database data.
 	 *
-	 * @param Integer       $row_id Database row ID.
+	 * @param Int           $row_id Database row ID.
 	 * @param Search_Source $source The search source.
 	 * @param Array         $columns Array of Match_Column objects.
 	 * @param Array         $raw Raw row data.
@@ -31,7 +38,8 @@ class Result {
 		$this->source_type = $source->get_type( $raw );
 		$this->source_name = $source->get_name( $raw );
 		$this->result_title = isset( $raw[ $source->get_title_column() ] ) ? $raw[ $source->get_title_column() ] : false;
-		$this->actions = apply_filters( 'searchregex_result_actions', $source->get_actions( $this ), $this->source_type, $this );
+		/** @psalm-suppress TooManyArguments */
+		$this->actions = \apply_filters( 'searchregex_result_actions', $source->get_actions( $this ), $this->source_type, $this );
 	}
 
 	/**
@@ -71,7 +79,7 @@ class Result {
 	/**
 	 * Get the raw data
 	 *
-	 * @return String Raw data
+	 * @return String[] Raw data
 	 */
 	public function get_raw() {
 		return $this->raw;
@@ -80,7 +88,7 @@ class Result {
 	/**
 	 * Get the row ID
 	 *
-	 * @return Integer Row ID
+	 * @return Int Row ID
 	 */
 	public function get_row_id() {
 		return $this->row_id;

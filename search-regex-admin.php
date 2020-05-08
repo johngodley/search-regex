@@ -9,8 +9,14 @@ use SearchRegex\Search_Flags;
 use SearchRegex\Source_Flags;
 
 class Search_Regex_Admin {
+	/** @var null|Search_Regex_Admin */
 	private static $instance = null;
 
+	/**
+	 * Initialize the object
+	 *
+	 * @return Search_Regex_Admin
+	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new Search_Regex_Admin();
@@ -19,36 +25,41 @@ class Search_Regex_Admin {
 		return self::$instance;
 	}
 
+	/**
+	 * Create the admin class
+	 */
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10, 4 );
+		/** @psalm-suppress InvalidArgument */
 		add_filter( 'set-screen-option', [ $this, 'set_per_page' ], 10, 3 );
-
-		register_deactivation_hook( SEARCHREGEX_FILE, [ 'Search_Regex_Admin', 'plugin_deactivated' ] );
-		register_uninstall_hook( SEARCHREGEX_FILE, [ 'Search_Regex_Admin', 'plugin_uninstall' ] );
 	}
 
-	// These are only called on the single standard site, or in the network admin of the multisite - they run across all available sites
-	public static function plugin_activated() {
-	}
-
-	// These are only called on the single standard site, or in the network admin of the multisite - they run across all available sites
-	public static function plugin_deactivated() {
-	}
-
-	// These are only called on the single standard site, or in the network admin of the multisite - they run across all available sites
-	public static function plugin_uninstall() {
-	}
-
+	/**
+	 * Add plugin settings to plugin page
+	 *
+	 * @param Array $links Links.
+	 * @return Array
+	 */
 	public function plugin_settings( $links ) {
 		array_unshift( $links, '<a href="' . esc_url( $this->get_plugin_url() ) . '&amp;sub=options">' . __( 'Settings', 'search-regex' ) . '</a>' );
 		return $links;
 	}
 
+	/**
+	 * Get plugin URL
+	 *
+	 * @return String
+	 */
 	private function get_plugin_url() {
 		return admin_url( 'tools.php?page=' . basename( SEARCHREGEX_FILE ) );
 	}
 
+	/**
+	 * Get first page the current user is allowed to see
+	 *
+	 * @return String
+	 */
 	private function get_first_available_page_url() {
 		$pages = Search_Regex_Capabilities::get_available_pages();
 
@@ -59,6 +70,11 @@ class Search_Regex_Admin {
 		return admin_url();
 	}
 
+	/**
+	 * Insert stuff into the admin head
+	 *
+	 * @return void
+	 */
 	public function searchregex_head() {
 		global $wp_version;
 
@@ -70,9 +86,7 @@ class Search_Regex_Admin {
 		}
 
 		if ( isset( $_REQUEST['action'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp_rest' ) ) {
-			if ( $_REQUEST['action'] === 'fixit' ) {
-				$this->run_fixit();
-			} elseif ( $_REQUEST['action'] === 'rest_api' ) {
+			if ( $_REQUEST['action'] === 'rest_api' ) {
 				$this->set_rest_api( intval( $_REQUEST['rest_api'], 10 ) );
 			}
 		}
@@ -125,6 +139,11 @@ class Search_Regex_Admin {
 		$this->add_help_tab();
 	}
 
+	/**
+	 * Get browser agent
+	 *
+	 * @return String
+	 */
 	public function get_user_agent() {
 		$agent = '';
 
@@ -135,12 +154,23 @@ class Search_Regex_Admin {
 		return $agent;
 	}
 
+	/**
+	 * Set REST API
+	 *
+	 * @param Int $api API.
+	 * @return void
+	 */
 	private function set_rest_api( $api ) {
 		if ( $api >= 0 && $api <= SEARCHREGEX_API_JSON_RELATIVE ) {
 			searchregex_set_options( array( 'rest_api' => intval( $api, 10 ) ) );
 		}
 	}
 
+	/**
+	 * Get preloaded data
+	 *
+	 * @return Array
+	 */
 	private function get_preload_data() {
 		$sources = Source_Manager::get_all_grouped();
 		$all = Source_Manager::get_all_source_names();
@@ -157,10 +187,25 @@ class Search_Regex_Admin {
 		];
 	}
 
+	/**
+	 * Replace links
+	 *
+	 * @internal
+	 * @param String $text Text to replace.
+	 * @param String $url URL to insert into the link.
+	 * @param String $link Link name.
+	 * @return String
+	 */
 	private function linkify( $text, $url, $link = 'link' ) {
 		return preg_replace( '@{{' . $link . '}}(.*?){{/' . $link . '}}@', '<a target="_blank" rel="noopener noreferrer" href="' . esc_url( $url ) . '">$1</a>', $text );
 	}
 
+	/**
+	 * Add help tab
+	 *
+	 * @internal
+	 * @return void
+	 */
 	private function add_help_tab() {
 		$flags = $this->linkify(
 			$this->linkify(
@@ -184,13 +229,21 @@ class Search_Regex_Admin {
 		$title = __( 'Search Regex Support', 'search-regex' );
 
 		$current_screen = get_current_screen();
-		$current_screen->add_help_tab( array(
-			'id'        => 'search-regex',
-			'title'     => 'Search Regex',
-			'content'   => "<h2>$title</h2>" . implode( "\n", $content ),
-		) );
+		if ( $current_screen ) {
+			$current_screen->add_help_tab( array(
+				'id'        => 'search-regex',
+				'title'     => 'Search Regex',
+				'content'   => "<h2>$title</h2>" . implode( "\n", $content ),
+			) );
+		}
 	}
 
+	/**
+	 * Get i18n data
+	 *
+	 * @internal
+	 * @return Array
+	 */
 	private function get_i18n_data() {
 		$locale = get_locale();
 
@@ -214,11 +267,23 @@ class Search_Regex_Admin {
 		return array();
 	}
 
+	/**
+	 * Admin menu
+	 *
+	 * @return void
+	 */
 	public function admin_menu() {
 		$hook = add_management_page( 'Search Regex', 'Search Regex', Search_Regex_Capabilities::get_plugin_access(), basename( SEARCHREGEX_FILE ), [ $this, 'admin_screen' ] );
-		add_action( 'load-' . $hook, [ $this, 'searchregex_head' ] );
+		if ( $hook ) {
+			add_action( 'load-' . $hook, [ $this, 'searchregex_head' ] );
+		}
 	}
 
+	/**
+	 * Check if we meet minimum WP requirements
+	 *
+	 * @return Bool
+	 */
 	private function check_minimum_wp() {
 		$wp_version = get_bloginfo( 'version' );
 
@@ -229,18 +294,30 @@ class Search_Regex_Admin {
 		return true;
 	}
 
+	/**
+	 * Admin screen
+	 *
+	 * @return void
+	 */
 	public function admin_screen() {
 		if ( count( Search_Regex_Capabilities::get_all_capabilities() ) === 0 ) {
 			die( 'You do not have sufficient permissions to access this page.' );
 		}
 
 		if ( $this->check_minimum_wp() === false ) {
-			return $this->show_minimum_wordpress();
+			$this->show_minimum_wordpress();
+			return;
 		}
 
 		$this->show_main();
 	}
 
+	/**
+	 * Show minimum supported WP
+	 *
+	 * @internal
+	 * @return void
+	 */
 	private function show_minimum_wordpress() {
 		global $wp_version;
 
@@ -254,6 +331,12 @@ class Search_Regex_Admin {
 		<?php
 	}
 
+	/**
+	 * Show fail to load page
+	 *
+	 * @internal
+	 * @return void
+	 */
 	private function show_load_fail() {
 		?>
 	<div class="react-error" style="display: none">
@@ -275,6 +358,12 @@ class Search_Regex_Admin {
 		<?php
 	}
 
+	/**
+	 * Show main UI
+	 *
+	 * @internal
+	 * @return void
+	 */
 	private function show_main() {
 		?>
 	<div id="react-modal"></div>
@@ -340,7 +429,7 @@ class Search_Regex_Admin {
 	 * Get the current plugin page.
 	 * Uses $_GET['sub'] to determine the current page unless a page is supplied.
 	 *
-	 * @param string $page Current page.
+	 * @param String|Bool $page Current page.
 	 *
 	 * @return string|boolean Current page, or false.
 	 */
@@ -361,7 +450,5 @@ class Search_Regex_Admin {
 		return false;
 	}
 }
-
-register_activation_hook( SEARCHREGEX_FILE, array( 'Search_Regex_Admin', 'plugin_activated' ) );
 
 add_action( 'init', array( 'Search_Regex_Admin', 'init' ) );

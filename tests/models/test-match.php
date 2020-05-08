@@ -33,23 +33,28 @@ class MatchTest extends WP_UnitTestCase {
 	}
 
 	public function testPlainPattern() {
-		$pattern = Match::get_pattern( 'hello' );
-		$this->assertEquals( 'hello', $pattern );
+		$pattern = Match::get_pattern( 'hello', new Search_Flags() );
+		$this->assertEquals( '@hello@u', $pattern );
 	}
 
 	public function testPlainPatternWithRegex() {
-		$pattern = Match::get_pattern( '@hello[' );
-		$this->assertEquals( '\@hello\[', $pattern );
+		$pattern = Match::get_pattern( '@hello[', new Search_Flags() );
+		$this->assertEquals( '@\@hello\[@u', $pattern );
 	}
 
 	public function testRegexPattern() {
-		$pattern = Match::get_pattern( 'regex', true );
-		$this->assertEquals( 'regex', $pattern );
+		$pattern = Match::get_pattern( 'regex', new Search_Flags( [ 'regex' ] ) );
+		$this->assertEquals( '@regex@u', $pattern );
 	}
 
 	public function testRegexPatternWithRegex() {
-		$pattern = Match::get_pattern( 'regex[]@', true );
-		$this->assertEquals( 'regex[]\\@', $pattern );
+		$pattern = Match::get_pattern( 'regex[]@', new Search_Flags( [ 'regex' ] ) );
+		$this->assertEquals( '@regex[]\\@@u', $pattern );
+	}
+
+	public function testRegexPatternWithRegexCase() {
+		$pattern = Match::get_pattern( 'regex[]@', new Search_Flags( [ 'regex', 'case' ] ) );
+		$this->assertEquals( '@regex[]\\@@iu', $pattern );
 	}
 
 	public function testNoMatches() {

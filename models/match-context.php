@@ -11,15 +11,19 @@ class Match_Context {
 	const CHARS_BEFORE = 50;
 	const CHARS_AFTER = 60;
 
+	/** @var Int */
 	private $context_id;
+	/** @var String|null */
 	private $context = null;
+	/** @var Match[] */
 	private $matches = [];
+	/** @var Int */
 	private $match_count = 0;
 
 	/**
 	 * Create a Match_Context with a given context ID
 	 *
-	 * @param Integer $context_id Context ID.
+	 * @param int $context_id Context ID.
 	 */
 	public function __construct( $context_id ) {
 		$this->context_id = $context_id;
@@ -28,7 +32,7 @@ class Match_Context {
 	/**
 	 * Return the number of matches within this context
 	 *
-	 * @return Integer Match count
+	 * @return Int Match count
 	 */
 	public function get_match_count() {
 		return $this->match_count;
@@ -58,7 +62,7 @@ class Match_Context {
 	 * Determine if the Match object is within this context.
 	 *
 	 * @param Match $match The match to check.
-	 * @return Boolean true if within the context, false otherwise
+	 * @return Bool true if within the context, false otherwise
 	 */
 	public function is_within_context( Match $match ) {
 		if ( $this->context === null ) {
@@ -101,8 +105,8 @@ class Match_Context {
 	/**
 	 * Find the Match that exists at the given position
 	 *
-	 * @param Integer $pos_id Position.
-	 * @return Match Match at position
+	 * @param int $pos_id Position.
+	 * @return Match|Bool Match at position
 	 */
 	public function get_match_at_position( $pos_id ) {
 		foreach ( $this->matches as $match ) {

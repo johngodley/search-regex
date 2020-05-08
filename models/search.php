@@ -17,14 +17,17 @@ require_once __DIR__ . '/source-flags.php';
  * Perform a search
  */
 class Search {
+	/** @var String */
 	private $search;
+	/** @var Search_Source[] */
 	private $sources = [];
+	/** @var Search_Flags */
 	private $flags;
 
 	/**
 	 * Create a Search object, with a search value, an array of sources, and some search flags
 	 *
-	 * @param Stromg       $search_value The value to search for.
+	 * @param String       $search_value The value to search for.
 	 * @param Array        $sources Array of Search_Source objects. Only one is supported.
 	 * @param Search_Flags $flags Search flags.
 	 */
@@ -34,13 +37,19 @@ class Search {
 		$this->sources = $sources;
 	}
 
-	// Get total number of matches and rows across each source
+	/**
+	 * Get total number of matches and rows across each source
+	 *
+	 * @internal
+	 * @param Int $offset Page offset.
+	 * @return \WP_Error|Array<String,Int> Array of totals
+	 */
 	private function get_totals( $offset ) {
 		$totals = [ 'rows' => 0 ];
 
 		foreach ( $this->sources as $source ) {
 			$rows = $source->get_total_rows();
-			if ( is_wp_error( $rows ) ) {
+			if ( is_wp_error( $rows ) && is_object( $rows ) ) {
 				return $rows;
 			}
 
@@ -55,7 +64,7 @@ class Search {
 			foreach ( $this->sources as $source ) {
 				if ( ! $this->flags->is_regex() ) {
 					$matches = $source->get_total_matches( $this->search );
-					if ( is_wp_error( $matches ) ) {
+					if ( $matches instanceof \WP_Error ) {
 						return $matches;
 					}
 
@@ -68,7 +77,14 @@ class Search {
 		return $totals;
 	}
 
-	// Get the match data for a search
+	/**
+	 * Get the match data for a search
+	 *
+	 * @internal
+	 * @param Int $offset Page offset.
+	 * @param Int $limit Page limit.
+	 * @return \WP_Error|Array Data array
+	 */
 	private function get_data( $offset, $limit ) {
 		if ( $this->flags->is_regex() ) {
 			return $this->sources[0]->get_all_rows( $this->search, $offset, $limit );
@@ -80,49 +96,49 @@ class Search {
 	/**
 	 * Get a single database row
 	 *
-	 * @param integer $row_id Row ID to return.
+	 * @param int     $row_id Row ID to return.
 	 * @param Replace $replacer The Replace object used when replacing data.
-	 * @return WP_Error|array Return a single database row, or WP_Error on error
+	 * @return \WP_Error|Array Return a single database row, or WP_Error on error
 	 */
 	public function get_row( $row_id, Replace $replacer ) {
+		global $wpdb;
+
 		$row = $this->sources[0]->get_row( $row_id );
 
 		// Error
-		if ( $row === null ) {
-			global $wpdb;
-
+		if ( is_wp_error( $row ) ) {
 			return new \WP_Error( 'searchregex_database', $wpdb->last_error );
 		}
 
-		if ( $row ) {
-			return $this->rows_to_results( [ $row ], $replacer );
-		}
-
-		return [];
+		return $this->rows_to_results( [ $row ], $replacer );
 	}
 
 	/**
 	 * Perform the search, returning a result array that contains the totals, the progress, and an array of Result objects
 	 *
 	 * @param Replace $replacer The replacer which performs any replacements.
-	 * @param Integer $offset Current page offset.
-	 * @param Integer $limit Per page limit.
-	 * @return Array Array containing `totals`, `progress`, and `results`
+	 * @param int     $offset Current page offset.
+	 * @param int     $limit Per page limit.
+	 * @return Array|\WP_Error Array containing `totals`, `progress`, and `results`
 	 */
 	public function get_results( Replace $replacer, $offset, $limit = 5 ) {
 		// TODO return totals of each source
 		$totals = $this->get_totals( $offset );
 		$rows = $this->get_data( $offset, $limit );
 
-		if ( is_wp_error( $totals ) ) {
+		if ( $totals instanceof \WP_Error ) {
 			return $totals;
 		}
 
-		if ( is_wp_error( $rows ) ) {
+		if ( $rows instanceof \WP_Error ) {
 			return $rows;
 		}
 
-		$results = $this->rows_to_results( $rows, $replacer );
+		$results = $this->rows_to_results( (array) $rows, $replacer );
+		if ( $results instanceof \WP_Error ) {
+			return $results;
+		}
+
 		$previous = max( 0, $offset - $limit );
 		$next = min( $offset + $limit, $totals['rows'] );   // TODO this isn't going to end in simple search
 
@@ -140,14 +156,20 @@ class Search {
 			'progress' => [
 				'current' => $offset,
 				'rows' => count( $results ),
-
 				'previous' => $previous,
 				'next' => $next,
 			],
 		];
 	}
 
-	// Convert database rows into Result objects
+	/**
+	 * Convert database rows into Result objects
+	 *
+	 * @internal
+	 * @param Array   $rows Array of row data.
+	 * @param Replace $replacer Replace object.
+	 * @return Result[]|\WP_Error Array of results
+	 */
 	private function rows_to_results( $rows, Replace $replacer ) {
 		$results = [];
 		$source = $this->sources[0];
@@ -155,6 +177,7 @@ class Search {
 		foreach ( $rows as $row ) {
 			$columns = array_keys( $row );
 			$match_columns = [];
+			$row_id = 0;
 
 			foreach ( array_slice( $columns, 1 ) as $column ) {
 				$row_id = intval( array_values( $row )[0], 10 );
@@ -166,7 +189,7 @@ class Search {
 				}
 			}
 
-			if ( count( $match_columns ) > 0 ) {
+			if ( count( $match_columns ) > 0 && $row_id > 0 ) {
 				$results[] = new Result( $row_id, $source, $match_columns, $row );
 			}
 		}
@@ -180,7 +203,7 @@ class Search {
 	 * @param Array $results Array of Results.
 	 * @return Array JSON array
 	 */
-	public function results_to_json( $results ) {
+	public function results_to_json( array $results ) {
 		$json = [];
 
 		foreach ( $results as $result ) {
