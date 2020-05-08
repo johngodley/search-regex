@@ -4,7 +4,7 @@ Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.3
 Tested up to: 5.4
-Stable tag: 1.4.16
+Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
 

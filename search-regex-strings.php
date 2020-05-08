@@ -37,11 +37,11 @@ __( "{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the 
 __( "{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems.", "search-regex" ), // client/component/error/index.js:173
 __( "If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues.", "search-regex" ), // client/component/error/index.js:180
 __( "That didn't help", "search-regex" ), // client/component/error/index.js:188
+__( "Replacement for this match", "search-regex" ), // client/component/highlight-matches/replacement.js:52
+__( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:53
 __( "Search & Replace", "search-regex" ), // client/component/menu/index.js:18
 __( "Options", "search-regex" ), // client/component/menu/index.js:22
 __( "Support", "search-regex" ), // client/component/menu/index.js:26
-__( "Replacement for this match", "search-regex" ), // client/component/highlight-matches/replacement.js:52
-__( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:53
 __( "View notice", "search-regex" ), // client/component/notice/index.js:76
 __( "Single", "search-regex" ), // client/component/replace/index.js:19
 __( "Multi", "search-regex" ), // client/component/replace/index.js:23
@@ -78,6 +78,17 @@ __( "Delete", "search-regex" ), // client/component/result/actions.js:82
 _n( "Replace %(count)s match.", "Replace %(count)s matches.", 1, "search-regex" ), // client/component/result/index.js:86
 __( "Maximum number of matches exceeded and hidden from view. These will be included in any replacements.", "search-regex" ), // client/component/result/restricted-matches.js:11
 _n( "Show %s more", "Show %s more", 1, "search-regex" ), // client/component/result/result-columns.js:42
+__( "Settings saved", "search-regex" ), // client/state/message/reducer.js:30
+__( "Row deleted", "search-regex" ), // client/state/message/reducer.js:31
+__( "Row replaced", "search-regex" ), // client/state/message/reducer.js:32
+__( "Row updated", "search-regex" ), // client/state/message/reducer.js:33
+__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:10
+__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:14
+__( "25 per page ", "search-regex" ), // client/state/search/selector.js:21
+__( "50 per page ", "search-regex" ), // client/state/search/selector.js:25
+__( "100 per page", "search-regex" ), // client/state/search/selector.js:29
+__( "250 per page", "search-regex" ), // client/state/search/selector.js:33
+__( "500 per page", "search-regex" ), // client/state/search/selector.js:37
 __( "Search Regex", "search-regex" ), // client/page/home/index.js:26
 __( "Options", "search-regex" ), // client/page/home/index.js:27
 __( "Support", "search-regex" ), // client/page/home/index.js:28
@@ -129,17 +140,6 @@ __( "{{link}}Search Flags{{/link}} - additional qualifiers for your search, to e
 __( "{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches.", "search-regex" ), // client/page/support/search-help.js:27
 __( "{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments.", "search-regex" ), // client/page/support/search-help.js:32
 __( "{{link}}Source Flags{{/link}} - additional options for the selected source. For example, include post {{guid}}GUID{{/guid}} in the search.", "search-regex" ), // client/page/support/search-help.js:37
-__( "Settings saved", "search-regex" ), // client/state/message/reducer.js:30
-__( "Row deleted", "search-regex" ), // client/state/message/reducer.js:31
-__( "Row replaced", "search-regex" ), // client/state/message/reducer.js:32
-__( "Row updated", "search-regex" ), // client/state/message/reducer.js:33
-__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:10
-__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:14
-__( "25 per page ", "search-regex" ), // client/state/search/selector.js:21
-__( "50 per page ", "search-regex" ), // client/state/search/selector.js:25
-__( "100 per page", "search-regex" ), // client/state/search/selector.js:29
-__( "250 per page", "search-regex" ), // client/state/search/selector.js:33
-__( "500 per page", "search-regex" ), // client/state/search/selector.js:37
 _n( "%s database row in total", "%s database rows in total", 1, "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:28
 __( "First page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:34
 __( "Prev page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:35
