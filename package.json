@@ -1,6 +1,6 @@
 {
   "name": "search-regex",
-  "version": "2.0-alpha-3",
+  "version": "2.0-alpha-4",
   "description": "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support",
   "main": "search-regex.php",
   "sideEffects": true,
@@ -16,7 +16,8 @@
     "release": "rm -rf node_modules && yarn install && yarn dist && gulp version",
     "doc": "apidoc -v -i api/ -o ./api-doc/",
     "phpcs": "phpcs ./models ./source ./search-regex-admin.php ./search-regex-capabilities.php ./search-regex-settings.php ./search-regex.php",
-    "phpunit": "WP_TESTS_DIR=./../../../../test/trunk phpunit"
+    "phpunit": "WP_TESTS_DIR=./../../../../test/trunk phpunit",
+    "psalm": "./vendor/vimeo/psalm/psalm --show-info=true"
   },
   "repository": {
     "type": "git",
