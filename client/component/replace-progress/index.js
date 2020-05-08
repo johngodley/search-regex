@@ -17,7 +17,7 @@ import './style.scss';
 
 function ReplaceProgress( props ) {
 	const { progress, totals, requestCount, replaceCount, onNext, status, onCancel, phraseCount, isRegex } = props;
-	const total = isRegex ? totals.rows : totals.matches;
+	const total = isRegex ? totals.rows : totals.matched_rows;
 	const current = progress.rows === undefined ? 0 : progress.current + progress.rows;
 	const percent = total > 0 ? Math.round( ( current / total ) * 100 ) : 0;
 

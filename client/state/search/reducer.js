@@ -86,13 +86,13 @@ const reset = () => ( {
 
 function hasReplaceFinished( state, action ) {
 	const replaceCount = action.results.rows + state.replaceCount;
-	const total = action.totals.matches ? action.totals.matches : ( action.totals.rows ? action.totals.rows : state.totals.rows );
+	const total = action.totals.matched_rows ? action.totals.matched_rows : ( action.totals.rows ? action.totals.rows : state.totals.rows );
 
 	if ( action.progress.next === false || replaceCount >= total ) {
 		return true;
 	}
 
-	if ( state.totals.matches > 0 && replaceCount >= state.totals.matches ) {
+	if ( state.totals.matched_rows > 0 && replaceCount >= state.totals.matched_rows ) {
 		return true;
 	}
 
