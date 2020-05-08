@@ -101,7 +101,7 @@ const postApiRequest = ( path, params = {}, query = {} ) => {
 
 	request.body = '{}';
 	if ( Object.keys( params ).length > 0 ) {
-		request.body = JSON.stringify( removeEmptyDefaults( params ) );
+		request.body = JSON.stringify( params );
 	}
 
 	return request;
