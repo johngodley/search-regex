@@ -4,7 +4,7 @@ Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.3
 Tested up to: 5.4
-Stable tag: trunk
+Stable tag: 1.4.16
 Requires PHP: 5.6
 License: GPLv3
 
@@ -18,6 +18,18 @@ You can use this to do things like:
 - Help migrate a site from one domain to another
 - Update URLs in links and images
 - Perform site-wide changes
+
+== What can I search? ==
+
+You can search:
+- Posts
+- Pages
+- Any custom post type
+- Comments (including spam)
+- Users
+- Meta data
+- WordPress options
+- Supported plugins (such as Redirection)
 
 == Support ==
 
@@ -39,7 +51,7 @@ The plugin is simple to install:
 1. Go to the plugin management page and enable the plugin
 1. Configure the options from the `Tools/Search Regex` page
 
-You can find full details of installing a plugin on the [plugin installation page](https://searchregex.me/support/installation/).
+You can find full details of installing a plugin on the [plugin installation page](https://searchregex.com/support/installation/).
 
 == Screenshots ==
 
@@ -53,5 +65,8 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 2.0 - ??? =
+= 2.0 - 9th May 2020 =
 - Release version 2.0
+
+= 1.4.16 - 21st November 2014 =
+- Old version

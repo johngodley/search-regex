@@ -48,6 +48,9 @@ const SVN_SOURCE_FILES = [
 	'!vendor/**',
 	'!vendor',
 	'!phpcs.xml.dist',
+	'!psalm.xml',
+	'!composer.json',
+	'!composer.lock',
 ];
 const versionHeader = md5 => `<?php
 
