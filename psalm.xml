@@ -21,6 +21,7 @@
         <directory name="api" />
         <directory name="models" />
         <directory name="source" />
+        <directory name="tests" />
         <ignoreFiles>
             <directory name="vendor" />
             <directory name="vendor" />
