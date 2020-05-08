@@ -65,7 +65,15 @@ export const clear = () => ( { type: SEARCH_CANCEL, clearAll: true } );
 
 export const replaceRow = ( replacement, rowId, columnId = null, posId = null ) => ( dispatch, getState ) => {
 	const { search } = getState().search;
-	const replace = { ...search, replacement, rowId, columnId, posId, replacePhrase: search.replacement, searchFlags: Object.keys( search.searchFlags ), sourceFlags: Object.keys( search.sourceFlags ) };
+	const replace = { ...search, rowId, replacePhrase: replacement, searchFlags: Object.keys( search.searchFlags ), sourceFlags: Object.keys( search.sourceFlags ) };
+
+	if ( columnId ) {
+		replace.columnId = columnId;
+	}
+
+	if ( posId ) {
+		replace.posId = posId;
+	}
 
 	getApi( SearchRegexApi.search.replace( replace ) )
 		.then( json => {
@@ -78,8 +86,8 @@ export const replaceRow = ( replacement, rowId, columnId = null, posId = null ) 
 	return dispatch( { type: SEARCH_REPLACE_ROW, rowId } );
 };
 
-export const replaceAll = ( search, page, perPage ) => ( dispatch ) => {
-	getApi( SearchRegexApi.search.replace( { ...search, page, perPage, searchFlags: Object.keys( search.searchFlags ) } ) )
+export const replaceAll = ( search, page, perPage ) => ( dispatch, getState ) => {
+	getApi( SearchRegexApi.search.replace( { ...search, replacePhrase: search.replacement, page, perPage, searchFlags: Object.keys( search.searchFlags ) } ) )
 		.then( json => {
 			dispatch( { type: SEARCH_REPLACE_ALL_COMPLETE, ...json } );
 		} )
@@ -130,7 +138,7 @@ export const loadRow = ( source, rowId ) => ( dispatch ) => {
 
 export const saveRow = ( source, rowId, columnId, content ) => ( dispatch, getState ) => {
 	const { searchPhrase, searchFlags, replacement, sourceFlags } = getState().search.search;
-	const searchValues = { searchPhrase, searchFlags, replacement, sourceFlags: Object.keys( sourceFlags ) };
+	const searchValues = { searchPhrase, replacement, searchFlags: Object.keys( searchFlags ), sourceFlags: Object.keys( sourceFlags ) };
 
 	getApi( SearchRegexApi.source.saveRow( source, rowId, { ...searchValues, columnId, content } ) )
 		.then( json => {
