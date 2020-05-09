@@ -21,7 +21,7 @@ import {
 
 import { getApi, SearchRegexApi } from 'lib/api';
 
-function getSearchValues( values ) {
+function getSearchValues( values, sources ) {
 	return {
 		...values,
 		searchFlags: Object.keys( values.searchFlags ),
@@ -31,8 +31,8 @@ function getSearchValues( values ) {
 
 export const setSearch = ( searchValue ) => ( { type: SEARCH_VALUES, searchValue } );
 
-export const search = ( search, page, searchDirection = SEARCH_FORWARD ) => ( dispatch ) => {
-	const searchValues = { ...getSearchValues( search ), page, searchDirection };
+export const search = ( search, page, searchDirection = SEARCH_FORWARD ) => ( dispatch, getState ) => {
+	const searchValues = { ...getSearchValues( search, getState().search.sources ), page, searchDirection };
 
 	getApi( SearchRegexApi.search.get( searchValues ) )
 		.then( json => {
@@ -45,8 +45,13 @@ export const search = ( search, page, searchDirection = SEARCH_FORWARD ) => ( di
 	return dispatch( { type: SEARCH_START_FRESH, ...searchValues } );
 };
 
-export const searchMore = ( search, page ) => ( dispatch, getState ) => {
-	const searchValues = { ...getSearchValues( search ), page, searchDirection: getState().search.searchDirection };
+export const searchMore = ( search, page, limit ) => ( dispatch, getState ) => {
+	const searchValues = {
+		...getSearchValues( search, getState().search.sources ),
+		page,
+		searchDirection: getState().search.searchDirection,
+		limit,
+	};
 
 	getApi( SearchRegexApi.search.get( searchValues ) )
 		.then( json => {
@@ -59,13 +64,17 @@ export const searchMore = ( search, page ) => ( dispatch, getState ) => {
 	return dispatch( { type: SEARCH_START_MORE, ...searchValues } );
 }
 
-export const setError = ( error ) => ( { type: SEARCH_FAIL, error } );
+export const setError = ( error ) => ( { type: SEARCH_FAIL, error: { message: error } } );
 export const cancel = () => ( { type: SEARCH_CANCEL, clearAll: false } );
 export const clear = () => ( { type: SEARCH_CANCEL, clearAll: true } );
 
 export const replaceRow = ( replacement, rowId, columnId = null, posId = null ) => ( dispatch, getState ) => {
 	const { search } = getState().search;
-	const replace = { ...search, rowId, replacePhrase: replacement, searchFlags: Object.keys( search.searchFlags ), sourceFlags: Object.keys( search.sourceFlags ) };
+	const replace = {
+		...getSearchValues( search, getState().search.sources ),
+		rowId,
+		replacePhrase: replacement,
+	};
 
 	if ( columnId ) {
 		replace.columnId = columnId;
@@ -87,7 +96,14 @@ export const replaceRow = ( replacement, rowId, columnId = null, posId = null ) 
 };
 
 export const replaceAll = ( search, page, perPage ) => ( dispatch, getState ) => {
-	getApi( SearchRegexApi.search.replace( { ...search, replacePhrase: search.replacement, page, perPage, searchFlags: Object.keys( search.searchFlags ) } ) )
+	const replace = {
+		...getSearchValues( search, getState().search.sources ),
+		replacePhrase: search.replacement,
+		page,
+		perPage,
+	};
+
+	getApi( SearchRegexApi.search.replace( replace ) )
 		.then( json => {
 			dispatch( { type: SEARCH_REPLACE_ALL_COMPLETE, ...json } );
 		} )
@@ -99,7 +115,12 @@ export const replaceAll = ( search, page, perPage ) => ( dispatch, getState ) =>
 };
 
 export const replaceNext = ( page ) => ( dispatch, getState ) => {
-	const searchValues = { ...getSearchValues( getState().search.search ), page };
+	const { search } = getState().search;
+	const searchValues = {
+		...getSearchValues( getState().search.search, getState().search.sources ),
+		replacePhrase: search.replacement,
+		page,
+	};
 
 	getApi( SearchRegexApi.search.replace( searchValues ) )
 		.then( json => {

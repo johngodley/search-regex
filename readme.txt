@@ -19,6 +19,8 @@ You can use this to do things like:
 - Update URLs in links and images
 - Perform site-wide changes
 
+Search Regex handles small and large sites.
+
 == What can I search? ==
 
 You can search:
@@ -30,6 +32,14 @@ You can search:
 - Meta data
 - WordPress options
 - Supported plugins (such as Redirection)
+
+Full regular expression support is provided, and you can capture data and use it in the replacement.
+
+== Replace Matched Data ==
+
+Once a match has been made you can replace it with a popup replacer. You can also replace all matches in a database row, and you can replace all matches across your database.
+
+Additionally, if you need to make your change with context of the surrounding content you can use the inline editor to edit the full context.
 
 == Support ==
 
@@ -63,10 +73,23 @@ You can find full details of installing a plugin on the [plugin installation pag
 
 Full documentation can be found on the [Search Regex](http://searchregex.com/) site.
 
+== Upgrade Notice ==
+
+= 2.0 =
+* Entirely new rewrite of the plugin. Requires minimum PHP 5.6.
+
 == Changelog ==
 
 = 2.0 - 9th May 2020 =
-- Release version 2.0
+- Release version 2.0, a ground-up rewrite
+- Handles any size of database without memory issues or server timeouts
+- New and responsive UI with inline replacing of individual phrases
+- Match replacements are updated in real-time, including regular expressions
+- Edit an entire database row with the inline editor
+- Supports custom post types
+- Groups columns from one database together
+- Search in third-party plugins (currently Redirection)
+- Improved regular expressions without needing delimiters
 
-= 1.4.16 - 21st November 2014 =
-- Old version
+= 1.4.16 - 21st Nov 2014 and before to 2007 =
+- Old versions
