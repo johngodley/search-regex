@@ -83,6 +83,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 = 2.0.1 - 10th May 2010 =
 - Comment title now takes you to comment page
 - Improve regex performance when data has large gaps
+- Use correct contact address
 
 = 2.0 - 9th May 2020 =
 - Release version 2.0, a ground-up rewrite
