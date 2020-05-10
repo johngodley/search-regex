@@ -17,7 +17,7 @@ import { replaceRow } from 'state/search/action';
 import { deleteRow } from 'state/search/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 
-function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete, onEditor, description } ) {
+function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete, onEditor, description, sourceType } ) {
 	const reset = ( toggle ) => {
 		toggle();
 		setReplacement( '' );
@@ -25,7 +25,7 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 	const save = ( value, toggle ) => {
 		toggle();
 		setReplacement( '' );
-		onSave( value, result.row_id );
+		onSave( value, sourceType, result.row_id );
 	};
 	const clicked = ( ev, toggle ) => {
 		ev.preventDefault();
@@ -97,8 +97,8 @@ function mapDispatchToProps( dispatch ) {
 		onDelete: ( sourceName, rowId ) => {
 			dispatch( deleteRow( sourceName, rowId ) );
 		},
-		onSave: ( replacement, rowId ) => {
-			dispatch( replaceRow( replacement, rowId ) );
+		onSave: ( replacement, source, rowId ) => {
+			dispatch( replaceRow( replacement, source, rowId ) );
 		},
 	};
 }

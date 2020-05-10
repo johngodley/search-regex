@@ -70,6 +70,7 @@ function Result( props ) {
 						replacement={ getReplacement( globalReplacement, replacement ) }
 						rowId={ row_id }
 						isReplacing={ isReplacing }
+						sourceType={ source_type }
 						key={ column.column_id }
 					/>
 				) ) }
@@ -82,6 +83,7 @@ function Result( props ) {
 						setReplacement={ setReplacement }
 						result={ result }
 						onEditor={ () => setEditor( true ) }
+						sourceType={ source_type }
 						description={ __( 'Replace %(count)s match.', 'Replace %(count)s matches.', {
 							count: match_count,
 							args: {

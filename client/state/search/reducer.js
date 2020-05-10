@@ -85,6 +85,22 @@ const reset = () => ( {
 	showLoading: false,
 } );
 
+function replaceRows( existing, results ) {
+	const newResults = [];
+
+	for ( let index = 0; index < existing.length; index++ ) {
+		const newResult = results.find( result => result.row_id === existing[ index ].row_id );
+
+		if ( newResult ) {
+			newResults.push( newResult );
+		} else {
+			newResults.push( existing[ index ] );
+		}
+	}
+
+	return newResults;
+}
+
 function hasReplaceFinished( state, action ) {
 	const replaceCount = action.results.rows + state.replaceCount;
 	const total = action.totals.matched_rows ? action.totals.matched_rows : ( action.totals.rows ? action.totals.rows : state.totals.rows );
@@ -158,7 +174,9 @@ export default function redirects( state = {}, action ) {
 
 			// Replace the result with the new details, and remove the replacing status
 			return {
-				...searchState( { ...state, results: [] }, action ),
+				...state,
+				results: replaceRows( state.results, action.result ),
+				status: STATUS_COMPLETE,
 				replacing: state.replacing.filter( item => item !== action.rowId ),
 			};
 

@@ -20,16 +20,21 @@ import {
 } from './type';
 
 import { getApi, SearchRegexApi } from 'lib/api';
+import { removePostTypes } from 'lib/sources';
 
 function getSearchValues( values, sources ) {
 	return {
 		...values,
+		source: removePostTypes( values.source, sources ),
 		searchFlags: Object.keys( values.searchFlags ),
 		sourceFlags: Object.keys( values.sourceFlags ),
 	};
 }
 
 export const setSearch = ( searchValue ) => ( { type: SEARCH_VALUES, searchValue } );
+export const setError = ( error ) => ( { type: SEARCH_FAIL, error: { message: error } } );
+export const cancel = () => ( { type: SEARCH_CANCEL, clearAll: false } );
+export const clear = () => ( { type: SEARCH_CANCEL, clearAll: true } );
 
 export const search = ( search, page, searchDirection = SEARCH_FORWARD ) => ( dispatch, getState ) => {
 	const searchValues = { ...getSearchValues( search, getState().search.sources ), page, searchDirection };
@@ -64,15 +69,10 @@ export const searchMore = ( search, page, limit ) => ( dispatch, getState ) => {
 	return dispatch( { type: SEARCH_START_MORE, ...searchValues } );
 }
 
-export const setError = ( error ) => ( { type: SEARCH_FAIL, error: { message: error } } );
-export const cancel = () => ( { type: SEARCH_CANCEL, clearAll: false } );
-export const clear = () => ( { type: SEARCH_CANCEL, clearAll: true } );
-
-export const replaceRow = ( replacement, rowId, columnId = null, posId = null ) => ( dispatch, getState ) => {
+export const replaceRow = ( replacement, source, rowId, columnId = null, posId = null ) => ( dispatch, getState ) => {
 	const { search } = getState().search;
 	const replace = {
 		...getSearchValues( search, getState().search.sources ),
-		rowId,
 		replacePhrase: replacement,
 	};
 
@@ -84,7 +84,9 @@ export const replaceRow = ( replacement, rowId, columnId = null, posId = null ) 
 		replace.posId = posId;
 	}
 
-	getApi( SearchRegexApi.search.replace( replace ) )
+	delete replace.source;
+
+	getApi( SearchRegexApi.source.replaceRow( source, rowId, replace ) )
 		.then( json => {
 			dispatch( { type: SEARCH_REPLACE_COMPLETE, ...json, perPage: search.perPage, rowId } );
 		} )
@@ -120,6 +122,7 @@ export const replaceNext = ( page ) => ( dispatch, getState ) => {
 		...getSearchValues( getState().search.search, getState().search.sources ),
 		replacePhrase: search.replacement,
 		page,
+		perPage: getState().search.perPage,
 	};
 
 	getApi( SearchRegexApi.search.replace( searchValues ) )

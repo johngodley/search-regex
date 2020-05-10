@@ -28,7 +28,7 @@ function replaceWord( current, index, word ) {
 }
 
 function getMatches( props, specific, setSpecific ) {
-	const { source, matches, contextReplacement, columnId, rowId, onReplace, isReplacing } = props;
+	const { source, matches, contextReplacement, columnId, rowId, onReplace, isReplacing, sourceType } = props;
 	const display = [];
 	let offset = 0;
 
@@ -40,7 +40,7 @@ function getMatches( props, specific, setSpecific ) {
 		display.push(
 			<Replacement
 				typeOfReplacement={ getTypeOfReplacement( matchedWord, match ) }
-				onSave={ ( phrase ) => onReplace( phrase, rowId, columnId, pos_id ) }
+				onSave={ ( phrase ) => onReplace( phrase, sourceType, rowId, columnId, pos_id ) }
 				onUpdate={ ( update ) => setSpecific( replaceWord( specific, index, update ) ) }
 				isReplacing={ isReplacing }
 				title={ match }
@@ -78,8 +78,8 @@ function HighlightMatches( props ) {
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		onReplace: ( replacedPhrase, rowId, columnId, pos_id ) => {
-			dispatch( replaceRow( replacedPhrase, rowId, columnId, pos_id ) );
+		onReplace: ( replacedPhrase, source, rowId, columnId, pos_id ) => {
+			dispatch( replaceRow( replacedPhrase, source, rowId, columnId, pos_id ) );
 		},
 	};
 }
