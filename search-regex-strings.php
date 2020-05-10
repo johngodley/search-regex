@@ -37,11 +37,11 @@ __( "{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the 
 __( "{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems.", "search-regex" ), // client/component/error/index.js:173
 __( "If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues.", "search-regex" ), // client/component/error/index.js:180
 __( "That didn't help", "search-regex" ), // client/component/error/index.js:188
+__( "Replacement for this match", "search-regex" ), // client/component/highlight-matches/replacement.js:52
+__( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:53
 __( "Search & Replace", "search-regex" ), // client/component/menu/index.js:18
 __( "Options", "search-regex" ), // client/component/menu/index.js:22
 __( "Support", "search-regex" ), // client/component/menu/index.js:26
-__( "Replacement for this match", "search-regex" ), // client/component/highlight-matches/replacement.js:52
-__( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:53
 __( "View notice", "search-regex" ), // client/component/notice/index.js:76
 __( "Single", "search-regex" ), // client/component/replace/index.js:19
 __( "Multi", "search-regex" ), // client/component/replace/index.js:23
@@ -152,11 +152,11 @@ __( "Page %(current)s of %(total)s", "search-regex" ), // client/page/search-rep
 __( "Next page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:49
 __( "Last page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:50
 __( "No more matching results found.", "search-regex" ), // client/page/search-replace/search-results/empty-results.js:11
-__( "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.", "search-regex" ), // client/page/search-replace/search-results/index.js:36
-__( "Source", "search-regex" ), // client/page/search-replace/search-results/index.js:56
-__( "Row ID", "search-regex" ), // client/page/search-replace/search-results/index.js:57
-__( "Matches", "search-regex" ), // client/page/search-replace/search-results/index.js:58
-__( "Matched Phrases", "search-regex" ), // client/page/search-replace/search-results/index.js:59
-__( "Actions", "search-regex" ), // client/page/search-replace/search-results/index.js:60
+__( "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.", "search-regex" ), // client/page/search-replace/search-results/index.js:37
+__( "Source", "search-regex" ), // client/page/search-replace/search-results/index.js:61
+__( "Row ID", "search-regex" ), // client/page/search-replace/search-results/index.js:62
+__( "Matches", "search-regex" ), // client/page/search-replace/search-results/index.js:63
+__( "Matched Phrases", "search-regex" ), // client/page/search-replace/search-results/index.js:64
+__( "Actions", "search-regex" ), // client/page/search-replace/search-results/index.js:65
 );
 /* THIS IS THE END OF THE GENERATED FILE */

@@ -14,89 +14,89 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: search-regex-admin.php:44
+#: search-regex-admin.php:45
 msgid "Settings"
 msgstr ""
 
-#: search-regex-admin.php:167, search-regex-strings.php:131
+#: search-regex-admin.php:212, search-regex-strings.php:131
 msgid "{{link}}Source Flags{{/link}} - additional options for the selected source. For example, include post {{guid}}GUID{{/guid}} in the search."
 msgstr ""
 
 #. translators: URL
-#: search-regex-admin.php:175
+#: search-regex-admin.php:220
 msgid "You can find full documentation about using Search Regex on the <a href=\"%s\" target=\"_blank\">searchregex.com</a> support site."
 msgstr ""
 
-#: search-regex-admin.php:176, search-regex-strings.php:127
+#: search-regex-admin.php:221, search-regex-strings.php:127
 msgid "The following concepts are used by Search Regex:"
 msgstr ""
 
-#: search-regex-admin.php:178, search-regex-strings.php:128
+#: search-regex-admin.php:223, search-regex-strings.php:128
 msgid "{{link}}Search Flags{{/link}} - additional qualifiers for your search, to enable case insensitivity, and to enable regular expression support."
 msgstr ""
 
-#: search-regex-admin.php:179, search-regex-strings.php:129
+#: search-regex-admin.php:224, search-regex-strings.php:129
 msgid "{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches."
 msgstr ""
 
-#: search-regex-admin.php:180, search-regex-strings.php:130
+#: search-regex-admin.php:225, search-regex-strings.php:130
 msgid "{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments."
 msgstr ""
 
-#: search-regex-admin.php:184
+#: search-regex-admin.php:229
 msgid "Search Regex Support"
 msgstr ""
 
 #. translators: 1: Expected WordPress version, 2: Actual WordPress version
-#: search-regex-admin.php:248
+#: search-regex-admin.php:325
 msgid "Search Regex requires WordPress v%1$1s, you are using v%2$2s - please update your WordPress"
 msgstr ""
 
-#: search-regex-admin.php:251
+#: search-regex-admin.php:328
 msgid "Unable to load Search Regex"
 msgstr ""
 
-#: search-regex-admin.php:260
+#: search-regex-admin.php:343
 msgid "Unable to load Search Regex ☹️"
 msgstr ""
 
-#: search-regex-admin.php:261
+#: search-regex-admin.php:344
 msgid "This may be caused by another plugin - look at your browser's error console for more details."
 msgstr ""
 
-#: search-regex-admin.php:262, search-regex-strings.php:90
+#: search-regex-admin.php:345, search-regex-strings.php:90
 msgid "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache."
 msgstr ""
 
-#: search-regex-admin.php:263
+#: search-regex-admin.php:346
 msgid "Also check if your browser is able to load <code>search-regex.js</code>:"
 msgstr ""
 
-#: search-regex-admin.php:265
+#: search-regex-admin.php:348
 msgid "Please note that Search Regex requires the WordPress REST API to be enabled. If you have disabled this then you won't be able to use Search Regex"
 msgstr ""
 
-#: search-regex-admin.php:266
+#: search-regex-admin.php:349
 msgid "Please see the <a href=\"https://searchregex.com/support/problems/\">list of common problems</a>."
 msgstr ""
 
-#: search-regex-admin.php:267
+#: search-regex-admin.php:350
 msgid "If you think Search Regex is at fault then create an issue."
 msgstr ""
 
-#: search-regex-admin.php:268
+#: search-regex-admin.php:351
 msgid "<code>SearchRegexi10n</code> is not defined. This usually means another plugin is blocking Search Regex from loading. Please disable all plugins and try again."
 msgstr ""
 
-#: search-regex-admin.php:271
+#: search-regex-admin.php:354
 msgid "Create Issue"
 msgstr ""
 
-#: search-regex-admin.php:284
+#: search-regex-admin.php:373
 msgid "Loading, please wait..."
 msgstr ""
 
-#: search-regex-admin.php:288
+#: search-regex-admin.php:377
 msgid "Please enable JavaScript"
 msgstr ""
 
@@ -164,7 +164,7 @@ msgstr ""
 msgid "Create An Issue"
 msgstr ""
 
-#: search-regex-strings.php:24, source/core/comment.php:23
+#: search-regex-strings.php:24
 msgid "Email"
 msgstr ""
 
@@ -225,23 +225,23 @@ msgid "If you are using WordPress 5.2 or newer then look at your {{link}}Site He
 msgstr ""
 
 #: search-regex-strings.php:40
-msgid "Search & Replace"
-msgstr ""
-
-#: search-regex-strings.php:41, search-regex-strings.php:82
-msgid "Options"
-msgstr ""
-
-#: search-regex-strings.php:42, search-regex-strings.php:83
-msgid "Support"
-msgstr ""
-
-#: search-regex-strings.php:43
 msgid "Replacement for this match"
 msgstr ""
 
-#: search-regex-strings.php:44
+#: search-regex-strings.php:41
 msgid "Replace single phrase."
+msgstr ""
+
+#: search-regex-strings.php:42
+msgid "Search & Replace"
+msgstr ""
+
+#: search-regex-strings.php:43, search-regex-strings.php:82
+msgid "Options"
+msgstr ""
+
+#: search-regex-strings.php:44, search-regex-strings.php:83
+msgid "Support"
 msgstr ""
 
 #: search-regex-strings.php:45
@@ -528,7 +528,7 @@ msgstr ""
 msgid "If you want to submit information that you don't want in a public repository then send it directly via {{email}}email{{/email}} - include as much information as you can!"
 msgstr ""
 
-#: search-regex-strings.php:124, source/plugin/redirection.php:76
+#: search-regex-strings.php:124
 msgid "Redirection"
 msgstr ""
 
@@ -645,7 +645,7 @@ msgid "Actions"
 msgstr ""
 
 #. translators: 1: server PHP version. 2: required PHP version.
-#: search-regex.php:33
+#: search-regex.php:39
 msgid "Disabled! Detected PHP %1$s, need PHP %2$s+"
 msgstr ""
 
@@ -705,70 +705,14 @@ msgstr ""
 msgid "Search all WordPress options."
 msgstr ""
 
-#: models/source-manager.php:113
+#: models/source-manager.php:117
 msgid "Standard Types"
 msgstr ""
 
-#: models/source-manager.php:120
+#: models/source-manager.php:124
 msgid "Specific Post Types"
 msgstr ""
 
-#: models/source-manager.php:127
+#: models/source-manager.php:131
 msgid "Plugins"
-msgstr ""
-
-#: source/core/comment.php:22, source/core/meta.php:19, source/core/options.php:19
-msgid "Name"
-msgstr ""
-
-#: source/core/comment.php:24, source/core/user.php:22, source/plugin/redirection.php:27
-msgid "URL"
-msgstr ""
-
-#: source/core/comment.php:25
-msgid "Comment"
-msgstr ""
-
-#: source/core/comment.php:54
-msgid "Include spam comments"
-msgstr ""
-
-#: source/core/meta.php:20, source/core/options.php:20
-msgid "Value"
-msgstr ""
-
-#: source/core/post.php:45
-msgid "Search GUID"
-msgstr ""
-
-#: source/core/post.php:80
-msgid "Content"
-msgstr ""
-
-#: source/core/post.php:81
-msgid "Excerpt"
-msgstr ""
-
-#: source/core/post.php:82, source/plugin/redirection.php:28
-msgid "Title"
-msgstr ""
-
-#: source/core/post.php:83
-msgid "Slug"
-msgstr ""
-
-#: source/core/post.php:84
-msgid "GUID"
-msgstr ""
-
-#: source/core/user.php:21
-msgid "Nicename"
-msgstr ""
-
-#: source/core/user.php:23
-msgid "Display name"
-msgstr ""
-
-#: source/plugin/redirection.php:77
-msgid "Search your redirects"
 msgstr ""

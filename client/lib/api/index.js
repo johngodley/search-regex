@@ -148,7 +148,8 @@ const getErrorMessage = json => {
 		return json.message;
 	}
 
-	return 'Unknown error ' + json;
+	console.error( json );
+	return 'Unknown error ' + ( typeof json === 'object' ? Object.keys( json ) : json );
 };
 
 const getErrorCode = json => {

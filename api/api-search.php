@@ -290,6 +290,11 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 					'backward',
 				],
 			],
+			'limit' => [
+				'description' => 'Maximum number of results to return',
+				'type' => 'integer',
+				'default' => 0,
+			],
 		];
 	}
 
@@ -399,7 +404,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 
 		list( $search, $replacer ) = $this->get_search_replace( $params, $params['replacement'] );
 
-		$results = $search->get_results( $replacer, $params['page'], $params['perPage'] );
+		$results = $search->get_results( $replacer, $params['page'], $params['perPage'], $params['limit'] );
 		if ( ! is_wp_error( $results ) ) {
 			$results['results'] = $search->results_to_json( $results['results'] );
 		}
@@ -602,14 +607,19 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 			// Get the sanitized flags from all the sources
 			$allowed = [];
 			foreach ( $sources as $source ) {
-				$allowed = array_merge( $allowed, $source->get_source_flags()->get_flags() );
+				$allowed = array_merge( $allowed, array_keys( $source->get_supported_flags() ) );
 			}
 
 			// Make it unique, as some sources can use the same flag
-			$allowed = array_unique( $allowed );
+			$allowed = array_values( array_unique( $allowed ) );
+
+			// Filter the value by this allowed list
+			$filtered_value = array_filter( $value, function( $item ) use ( $allowed ) {
+				return in_array( $item, $allowed, true );
+			} );
 
 			// Any flags missing?
-			if ( count( $allowed ) === count( $value ) ) {
+			if ( count( $filtered_value ) === count( $value ) ) {
 				return true;
 			}
 		}

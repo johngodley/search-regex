@@ -31,7 +31,7 @@ function mergeProgress( existing, progress, direction, firstInSet ) {
 	};
 }
 
-const isComplete = ( action, results, direction ) => ( direction === SEARCH_FORWARD && action.progress.next === false ) || ( direction === SEARCH_BACKWARD && action.progress.previous === false ) || results.length === action.perPage;
+const isComplete = ( action, results, direction ) => ( direction === SEARCH_FORWARD && action.progress.next === false ) || ( direction === SEARCH_BACKWARD && action.progress.previous === false ) || results.length >= action.perPage;
 const isAdvancedSearch = ( search ) => search.searchFlags.regex;
 
 function getSimpleState( state, action ) {
@@ -48,16 +48,17 @@ function getSimpleState( state, action ) {
 
 function getAdvancedState( state, action ) {
 	const results = state.searchDirection === SEARCH_FORWARD ? state.results.concat( action.results ) : action.results.concat( state.results );
+	const status = isComplete( action, results, state.searchDirection ) ? STATUS_COMPLETE : state.status;
 
 	return {
 		...state,
-		status: isComplete( action, results, state.searchDirection ) ? STATUS_COMPLETE : state.status,
+		status,
 		results,
 		requestCount: state.requestCount + 1,
 		progress: mergeProgress( state.progress, action.progress, state.searchDirection, state.requestCount === 0 ),
 		totals: { ...state.totals, ...action.totals },
-		canCancel: false,
-		showLoading: false,
+		canCancel: status !== STATUS_COMPLETE,
+		showLoading: status !== STATUS_COMPLETE,
 	};
 }
 
@@ -76,7 +77,7 @@ const reset = () => ( {
 	searchedPhrase: '',
 	replaceCount: 0,
 	phraseCount: 0,
-	status: null,
+	status: STATUS_COMPLETE,
 	replacing: [],
 	replaceAll: false,
 	row: null,
@@ -132,6 +133,10 @@ export default function redirects( state = {}, action ) {
 			};
 
 		case SEARCH_START_MORE:
+			if ( isAlreadyFinished( state ) ) {
+				return state;
+			}
+
 			return {
 				...state,
 				canCancel: true,

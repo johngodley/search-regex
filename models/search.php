@@ -118,13 +118,14 @@ class Search {
 	 *
 	 * @param Replace $replacer The replacer which performs any replacements.
 	 * @param int     $offset Current page offset.
-	 * @param int     $limit Per page limit.
+	 * @param int     $per_page Per page limit.
+	 * @param int     $limit Max number of results.
 	 * @return Array|\WP_Error Array containing `totals`, `progress`, and `results`
 	 */
-	public function get_results( Replace $replacer, $offset, $limit = 5 ) {
+	public function get_results( Replace $replacer, $offset, $per_page, $limit = 0 ) {
 		// TODO return totals of each source
 		$totals = $this->get_totals( $offset );
-		$rows = $this->get_data( $offset, $limit );
+		$rows = $this->get_data( $offset, $per_page );
 
 		if ( $totals instanceof \WP_Error ) {
 			return $totals;
@@ -135,12 +136,21 @@ class Search {
 		}
 
 		$results = $this->rows_to_results( (array) $rows, $replacer );
+
 		if ( $results instanceof \WP_Error ) {
 			return $results;
 		}
 
-		$previous = max( 0, $offset - $limit );
-		$next = min( $offset + $limit, $totals['rows'] );   // TODO this isn't going to end in simple search
+		$previous = max( 0, $offset - $per_page );
+
+		// We always go in $per_page groups, but we need to limit if we only need a few more to fill a result set
+		if ( $limit > 0 && $limit <= count( $results ) ) {
+			$next = min( $offset + $limit, $totals['rows'] );
+		} else {
+			$next = min( $offset + $per_page, $totals['rows'] );   // TODO this isn't going to end in simple search
+		}
+
+		$results = array_slice( $results, 0, $limit === 0 ? $per_page : $limit );
 
 		if ( $next === $offset ) {
 			$next = false;

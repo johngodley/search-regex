@@ -212,7 +212,7 @@ function potGenerate() {
 		bugReport: 'https://wordpress.org/plugins/search-regex/',
 	};
 
-	return src( [ '**/*.php' ] )
+	return src( [ './*.php', 'models/*.php', 'source/*.php', 'api/*.php' ] )
 		.pipe( sort() )
 		.pipe( wpPot( pot ) )
 		.pipe( dest( 'locale/search-regex.pot' ) );

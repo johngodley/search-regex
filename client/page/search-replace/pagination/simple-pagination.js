@@ -16,8 +16,8 @@ import { search } from 'state/search/action';
 function SimplePagination( props ) {
 	const { progress, onChangePage, isLoading, matchedPhrases, matchedRows, perPage, search, noTotal = false } = props;
 	const { current, previous, next } = progress;
-	const totalPages = Math.round( matchedRows / perPage );
-	const currentPage = Math.round( current / perPage );
+	const totalPages = Math.ceil( matchedRows / perPage );
+	const currentPage = Math.ceil( current / perPage ) + 1;
 	const hasNext = next && currentPage < totalPages;
 
 	return (
@@ -40,8 +40,8 @@ function SimplePagination( props ) {
 				<span className="tablenav-paging-text">
 					{ __( 'Page %(current)s of %(total)s', {
 						args: {
-							current: numberFormat( currentPage + 1 ),
-							total: numberFormat( Math.max( 1, totalPages + 1 ) ),
+							current: numberFormat( currentPage ),
+							total: numberFormat( totalPages ),
 						},
 					} ) }
 				</span>
