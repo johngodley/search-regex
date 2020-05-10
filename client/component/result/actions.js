@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
  */
 
 import Dropdown from 'component/dropdown';
+import DropdownMenu from 'component/dropdown-menu';
 import Replace from 'component/replace';
 import ExternalLink from 'component/external-link';
 import { replaceRow } from 'state/search/action';
@@ -42,11 +43,28 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 		onEditor();
 	};
 
-	const actionList = [
+	const actionList = [];
+	const actionMap = {
+		edit: __( 'Edit Page' ),
+	};
+
+	const actionKeys = Object.keys( actions );
+	for ( let index = 0; index < actionKeys.length; index++ ) {
+		if ( actionMap[ actionKeys[ index ] ] ) {
+			actionList.push( <ExternalLink url={ actions[ actionKeys[ index ] ] } key={ actionKeys[ index ] }>{ actionMap[ actionKeys[ index ] ] }</ExternalLink> );
+		}
+	}
+
+	actionList.push( <a key="edit" href="#" onClick={ editor }>{ __( 'Inline Editor' ) }</a> );
+	actionList.push( <a key="delete" href="#" onClick={ deleteTheRow }>{ __( 'Delete Row' ) }</a> );
+
+	return (
 		<Dropdown
 			key="replace"
 			renderToggle={ ( isOpen, toggle ) => (
-				<a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>{ __( 'Replace' ) }</a>
+				<DropdownMenu
+					menu={ [ <a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>{ __( 'Replace Row' ) }</a> ].concat( actionList ) }
+				/>
 			) }
 			onHide={ () => setReplacement( '' ) }
 			hasArrow
@@ -65,23 +83,7 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 				/>
 			) }
 		/>
-	];
-
-	const actionMap = {
-		edit: __( 'Edit' ),
-	};
-	const actionKeys = Object.keys( actions );
-
-	for ( let index = 0; index < actionKeys.length; index++ ) {
-		if ( actionMap[ actionKeys[ index ] ] ) {
-			actionList.push( <ExternalLink url={ actions[ actionKeys[ index ] ] } key={ actionKeys[ index ] }>{ actionMap[ actionKeys[ index ] ] }</ExternalLink> );
-		}
-	}
-
-	actionList.push( <a key="edit" href="#" onClick={ editor }>{ __( 'Editor' ) }</a> );
-	actionList.push( <a key="delete" href="#" onClick={ deleteTheRow }>{ __( 'Delete' ) }</a> );
-
-	return actionList.reduce( ( prev, curr ) => [ prev, ' | ', curr ] );
+	)
 }
 
 function mapStateToProps( state ) {
