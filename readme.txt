@@ -80,6 +80,10 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 2.0.1 - 10th May 2010 =
+- Comment title now takes you to comment page
+- Improve regex performance when data has large gaps
+
 = 2.0 - 9th May 2020 =
 - Release version 2.0, a ground-up rewrite
 - Handles any size of database without memory issues or server timeouts
