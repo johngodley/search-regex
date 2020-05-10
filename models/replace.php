@@ -90,7 +90,6 @@ class Replace {
 			if ( is_int( $replaced ) && $replaced > 0 ) {
 				$rows_replaced++;
 				$phrases_replaced += $replaced;
-				error_log($replaced);
 			}
 		}
 

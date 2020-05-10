@@ -91,7 +91,7 @@ class Error extends React.Component {
 	}
 
 	renderDebug( debug ) {
-		const email = 'mailto:john@search-regex?subject=Search%20Regex%20Error&body=' + encodeURIComponent( debug.join( '\n' ) );
+		const email = 'mailto:john@searchregex.com?subject=Search%20Regex%20Error&body=' + encodeURIComponent( debug.join( '\n' ) );
 		const github = 'https://github.com/johngodley/search-regex/issues/new?title=Search%20Regex%20Error&body=' + encodeURIComponent( '```\n' + debug.join( '\n' ) + '\n```\n\n' );
 
 		return (
