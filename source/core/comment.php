@@ -44,12 +44,18 @@ class Source_Comment extends Search_Source {
 	}
 
 	public function get_actions( Result $result ) {
+		$actions = [];
+
 		$link = get_edit_comment_link( $result->get_row_id() );
+		$raw = $result->get_raw();
 
 		if ( $link ) {
-			return [
+			$view = get_permalink( intval( $raw['comment_post_ID'], 10 ) );
+
+			return array_filter( [
 				'edit' => str_replace( '&amp;', '&', $link ),
-			];
+				'view' => $view,
+			] );
 		}
 
 		return [];
@@ -63,6 +69,10 @@ class Source_Comment extends Search_Source {
 
 	public function get_table_id() {
 		return 'comment_ID';
+	}
+
+	public function get_info_columns() {
+		return [ 'comment_post_ID' ];
 	}
 
 	public function get_table_name() {
