@@ -16,32 +16,110 @@ import Replace from 'component/replace';
 import { setSearch } from 'state/search/action';
 import { getSearchOptions, getPerPage } from 'state/search/selector';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
+import { getAllPostTypes } from 'lib/sources';
 
-function getCurrentSource( sources, current ) {
-	if ( current.length === 0 ) {
-		return null;
+function convertToSource( options, changed, group, sources ) {
+	let newSources = [];
+	const allPostTypes = getAllPostTypes( sources );
+
+	Object.keys( options ).forEach( option => {
+		newSources = newSources.concat( options[ option ] );
+	} );
+
+	if ( changed === 'posts' ) {
+		if ( newSources.indexOf( 'posts' ) === -1 ) {
+			newSources = newSources.filter( item => allPostTypes.indexOf( item ) === -1 );
+		} else {
+			newSources = newSources.concat( allPostTypes );
+		}
+	} else if ( group === 'posttype' && newSources.indexOf( changed ) === -1 ) {
+		newSources = newSources.filter( item => item !== 'posts' );
+	} else if ( group === 'posttype' && allPostTypes.filter( item => newSources.indexOf( item ) !== -1 ).length === allPostTypes.length ) {
+		newSources.push( 'posts' );
 	}
 
+	if ( newSources.length === 0 ) {
+		newSources = [ 'post', 'page' ];
+	}
+
+	return Array.from( new Set( newSources ) );
+}
+
+function convertSelectedSource( source, sources ) {
+	const newSources = {};
+
 	for ( let index = 0; index < sources.length; index++ ) {
-		for ( let subIndex = 0; subIndex < sources[ index ].sources.length; subIndex++ ) {
-			if ( sources[ index ].sources[ subIndex ].name === current[ 0 ] ) {
-				return sources[ index ].sources[ subIndex ];
+		const currentSource = sources[ index ];
+
+		if ( ! newSources[ currentSource.name ] ) {
+			newSources[ currentSource.name ] = [];
+		}
+
+		// source is an array
+		for ( let index = 0; index < source.length; index++ ) {
+			const inSources = currentSource.sources.find( item => item.name === source[ index ] );
+
+			if ( inSources ) {
+				newSources[ currentSource.name ].push( source[ index ] );
 			}
 		}
 	}
 
-	return null;
+	return newSources;
 }
 
-const sourcesToSelect = ( sources ) => sources.map( ( { name, label } ) => ( { label, value: name } ) );
-const objectToArray = ( object ) => Object.keys( object ).map( item => ( { value: item, label: object[ item ] } ) );
+function getSourcesForDropdown( sources ) {
+	return sources.map( sourceGroup => {
+		return {
+			label: sourceGroup.label,
+			value: sourceGroup.name,
+			multiple: true,
+			options: sourceGroup.sources.map( ( { label, name } ) => {
+				return {
+					label,
+					value: name,
+				}
+			} ),
+		};
+	} );
+}
+
+function customBadge( badges, sources ) {
+	// If 'all post types' then dont show the post types
+	if ( badges.indexOf( 'posts' ) !== -1 ) {
+		const allPosts = getAllPostTypes( sources );
+
+		return badges.filter( item => allPosts.indexOf( item ) === -1 );
+	}
+
+	return badges;
+}
+
+function getSourceFlagOptions( options, source ) {
+	let sourceFlags = [];
+
+	Object.keys( options ).forEach( option => {
+		if ( source.indexOf( option ) !== -1 ) {
+			const newFlags = Object.keys( options[ option ] ).map( item => ( {
+				label: options[ option ][ item ],
+				value: item,
+			} ) );
+
+			for ( let index = 0; index < newFlags.length; index++ ) {
+				if ( ! sourceFlags.find( item => item.value === newFlags[ index ].value ) ) {
+					sourceFlags.push( newFlags[ index ] );
+				}
+			}
+		}
+	} );
+
+	return sourceFlags;
+}
 
 function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceAll } ) {
 	const { searchPhrase, searchFlags, sourceFlags, source, perPage } = search;
-	const options = sources.map( ( { sources: groupSources, label } ) => ( { label, value: sourcesToSelect( groupSources ) } ) );
-	const sourceFlagsForSource = sourceFlagOptions[ source[ 0 ] ] ? objectToArray( sourceFlagOptions[ source[ 0 ] ] ) : null;
+	const sourceFlagsForSource = getSourceFlagOptions( sourceFlagOptions, source );
 	const isBusy = status === STATUS_IN_PROGRESS || replaceAll;
-	const currentSource = getCurrentSource( sources, source );
 
 	const setSearchValue = ( ev ) => {
 		onSetSearch( { [ ev.target.name ]: ev.target.value } );
@@ -88,15 +166,18 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 				<tr className="searchregex-search__source">
 					<th>{ __( 'Source' ) }</th>
 					<td>
-						<Select
-							items={ options }
-							value={ source[ 0 ] }
-							onChange={ ( ev ) => onSetSearch( { source: [ ev.target.value ], sourceFlags: {} } ) }
-							name="source"
+						<MultiOptionDropdown
+							options={ getSourcesForDropdown( sources ) }
+							selected={ convertSelectedSource( source, sources ) }
+							onApply={ ( newSources, change, group ) => onSetSearch( { source: convertToSource( newSources, change, group, sources ) } ) }
+							title=""
 							isEnabled={ ! isBusy }
+							badges
+							badgeValues
+							customBadge={ ( badges ) => customBadge( badges, sources ) }
 						/>
 
-						{ sourceFlagsForSource && sourceFlagsForSource.length > 0 && (
+						{ Object.keys( sourceFlagsForSource ).length > 0 && (
 							<MultiOptionDropdown
 								options={ sourceFlagsForSource }
 								selected={ sourceFlags }
@@ -107,8 +188,6 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 								hideTitle
 							/>
 						) }
-
-						{ currentSource && <span className="searchregex-search__source__description">{ currentSource.description }</span> }
 					</td>
 				</tr>
 

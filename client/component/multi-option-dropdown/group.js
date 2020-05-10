@@ -27,6 +27,7 @@ class MultiOptionGroup extends React.Component {
 		multiple: PropTypes.bool.isRequired,
 	};
 
+	// { group => [ value, value, value ] }
 	onSelect = ( optionValue, checked ) => {
 		const { selected, value, multiple } = this.props;
 		const newSelected = { ...selected };
@@ -41,7 +42,7 @@ class MultiOptionGroup extends React.Component {
 			delete newSelected[ value ];
 		}
 
-		this.props.onApply( newSelected, optionValue );
+		this.props.onApply( newSelected, optionValue, value );
 	}
 
 	isSelected( option ) {

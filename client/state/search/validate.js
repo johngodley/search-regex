@@ -13,17 +13,27 @@ function sanitizeArray( valueArray, array ) {
 }
 
 function sanitizeSources( sourceArray, array ) {
-	return sourceArray
-		.map( ( source ) => sanitizeValue( array, source.sources ) )
-		.filter( item => item );
+	let sources = [];
+
+	sourceArray.forEach( source => {
+		sources = sources.concat( source.sources.map( item => item.name ) );
+	} );
+
+	return array.filter( ( source ) => sources.indexOf( source ) !== -1 );
 }
 
-function sanitizeSourceFlags( source, sourceFlags, array ) {
-	if ( sourceFlags[ source[ 0 ] ] ) {
-		return array.filter( ( item ) => sourceFlags[ source[ 0 ] ][ item ] !== undefined );
+function sanitizeSourceFlags( source, sourceFlags, flags ) {
+	let remainingFlags = [ ...flags ];
+
+	for ( let index = 0; index < source.length; index++ ) {
+		const current = source[ index ];
+
+		// Remove flags that existing in this source
+		remainingFlags = remainingFlags.filter( flag => Object.keys( sourceFlags[ current ] ).indexOf( flag ) !== -1 );
 	}
 
-	return [];
+	// Remove any flags not in one of the sources
+	return flags.filter( item => remainingFlags.indexOf( item ) === -1 );
 }
 
 function arrayToObject( array ) {
@@ -38,7 +48,7 @@ function arrayToObject( array ) {
 
 export default function validateSearch( search ) {
 	const { searchPhrase, searchFlags, sourceFlags, replacement, perPage } = search;
-	const source = sanitizeSources( SearchRegexi10n.preload.sources, search.source.length > 0 ? search.source[ 0 ] : [] );
+	const source = sanitizeSources( SearchRegexi10n.preload.sources, search.source.length > 0 ? search.source : [] );
 
 	return {
 		searchPhrase,
