@@ -70,7 +70,7 @@ function searchState( state, action ) {
 	return getSimpleState( state, action );
 }
 
-const resetAll = () => ( { ...reset(), results: [], totals: [], progress: {} } );
+const resetAll = () => ( { ...reset(), results: [], totals: {}, progress: {}, status: null } );
 
 const reset = () => ( {
 	requestCount: 0,

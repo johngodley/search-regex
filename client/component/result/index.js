@@ -18,7 +18,6 @@ import Editor from 'component/editor';
 import ExternalLink from 'component/external-link';
 import './style.scss';
 
-
 function getReplacement( globalReplacement, replacement ) {
 	if ( replacement === null || replacement.length > 0 ) {
 		return replacement;
@@ -38,7 +37,7 @@ function ResultTitle( { view, title } ) {
 function Result( props ) {
 	const { result, globalReplacement, replacing } = props;
 	const { columns, actions, row_id, source_name, source_type, title, match_count } = result;
-	const isReplacing = replacing.indexOf( row_id ) !== -1;
+	const isReplacing = replacing && replacing.indexOf( row_id ) !== -1;
 
 	// State
 	const [ replacement, setReplacement ] = useState( '' );
