@@ -21,9 +21,9 @@ export function regexReplace( phrase, captures ) {
 	if ( phrase && captures.length > 0 ) {
 		return phrase
 			// Replace the captures - any $N that is not preceeded by a \
-			.replace( /(\\?)\$(\d{1,2})/g, ( match, escaped, number ) => {
+			.replace( /(\\?\$|\\?\\)+(\d{1,2})/g, ( match, escaped, number ) => {
 				number = parseInt( number, 10 );
-				if ( escaped.length > 0 ) {
+				if ( match.substr( 0, 2 ) === '\\$' ) {
 					return match.replace( '\\', '' );
 				}
 
