@@ -97,6 +97,10 @@ const DecodeError = ( { error } ) => {
 		return <p>{ __( 'Your WordPress REST API has been disabled. You will need to enable it for Search Regex to continue working' ) }</p>;
 	}
 
+	if ( typeof error.message === 'undefined' ) {
+		return <p>{ __( 'An unknown error occurred.' ) }</p>;
+	}
+
 	if ( error.message.indexOf( 'Unexpected token' ) !== -1 || error.message.indexOf( 'JSON parse error' ) !== -1 ) {
 		const php = extractPhpError( error.request );
 

@@ -16,7 +16,7 @@ import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from 'state/settings/type';
 import './style.scss';
 
 function ReplaceProgress( props ) {
-	const { progress, totals, requestCount, replaceCount, onNext, status, onCancel, phraseCount, isRegex } = props;
+	const { progress, totals, requestCount, replaceCount, onNext, status, onClear, phraseCount, isRegex } = props;
 	const total = isRegex ? totals.rows : totals.matched_rows;
 	const current = progress.rows === undefined ? 0 : progress.current + progress.rows;
 	const percent = total > 0 ? Math.round( ( current / total ) * 100 ) : 0;
@@ -42,7 +42,7 @@ function ReplaceProgress( props ) {
 					<p>{ __( 'Finished!' ) }</p>
 					<p>{ __( 'Rows updated: %s', { args: numberFormat( replaceCount ) } ) }</p>
 					<p>{ __( 'Phrases replaced: %s', { args: numberFormat( phraseCount ) } ) }</p>
-					<button className="button button-primary" onClick={ onCancel }>{ __( 'Finished!' ) }</button>
+					<button className="button button-primary" onClick={ onClear }>{ __( 'Finished!' ) }</button>
 				</>
 			) }
 		</div>
@@ -65,7 +65,7 @@ function mapStateToProps( state ) {
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		onCancel: () => {
+		onClear: () => {
 			dispatch( clear() );
 		},
 		onNext: ( page ) => {
