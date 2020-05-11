@@ -50,10 +50,11 @@ export const search = ( search, page, searchDirection = SEARCH_FORWARD ) => ( di
 	return dispatch( { type: SEARCH_START_FRESH, ...searchValues } );
 };
 
-export const searchMore = ( search, page, limit ) => ( dispatch, getState ) => {
+export const searchMore = ( search, page, perPage, limit ) => ( dispatch, getState ) => {
 	const searchValues = {
 		...getSearchValues( search, getState().search.sources ),
 		page,
+		perPage,
 		searchDirection: getState().search.searchDirection,
 		limit,
 	};

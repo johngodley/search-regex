@@ -289,7 +289,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				'description' => 'The maximum number of results per page',
 				'type' => 'integer',
 				'default' => 25,
-				'maximum' => 500,
+				'maximum' => 5000,
 				'minimum' => 25,
 			],
 			'searchDirection' => [

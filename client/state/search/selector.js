@@ -9,6 +9,7 @@ import { translate as __ } from 'lib/locale';
  */
 
 import { STATUS_COMPLETE } from 'state/settings/type';
+import { SEARCH_FORWARD, SEARCH_BACKWARD } from 'state/search/type';
 
 export const getSearchOptions = () => [
 	{
