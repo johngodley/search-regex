@@ -320,7 +320,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				$this->get_search_params(),
 				$this->get_paging_params()
 			),
-			$this->get_route( WP_REST_Server::READABLE, 'search', [ $this, 'permission_callback' ] ),
+			$this->get_route( WP_REST_Server::EDITABLE, 'search', [ $this, 'permission_callback' ] ),
 		] );
 
 		register_rest_route( $namespace, '/replace', [
@@ -339,7 +339,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		] );
 
 		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)', [
-			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
+			$this->get_route( WP_REST_Server::EDITABLE, 'loadRow', [ $this, 'permission_callback' ] ),
 		] );
 
 		$search_no_source = $this->get_search_params();

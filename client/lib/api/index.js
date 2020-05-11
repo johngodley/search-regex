@@ -86,12 +86,12 @@ export const SearchRegexApi = {
 		update: settings => postApiRequest( 'setting', settings ),
 	},
 	search: {
-		get: data => getApiRequest( 'search', data ),
+		get: data => postApiRequest( 'search', data ),
 		replace: data => postApiRequest( 'replace', data ),
 	},
 	source: {
 		deleteRow: ( source, rowId ) => postApiRequest( `source/${ source }/${ rowId }/delete` ),
-		loadRow: ( source, rowId ) => getApiRequest( `source/${ source }/${ rowId }` ),
+		loadRow: ( source, rowId ) => postApiRequest( `source/${ source }/${ rowId }` ),
 		saveRow: ( source, rowId, data ) => postApiRequest( `source/${ source }/${ rowId }`, data ),
 		replaceRow: ( source, rowId, data ) => postApiRequest( `source/${ source }/${ rowId }/replace`, data ),
 	},
