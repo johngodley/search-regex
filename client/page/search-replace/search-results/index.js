@@ -46,14 +46,16 @@ function SearchResults( props ) {
 	useEffect( () => {
 		if ( requestCount > MAX_REQUESTS ) {
 			onSetError( __( 'Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.' ) );
-		} else if ( searchFlags.regex && shouldLoadMore( status, requestCount, results, perPage ) && hasMoreResults( searchDirection, progress ) ) {
-			const searchSize = adjustPerPage( requestCount, perPage );
+		} else if ( searchFlags.regex ) {
+			if ( shouldLoadMore( status, requestCount, results, perPage ) && hasMoreResults( searchDirection, progress ) ) {
+				const searchSize = adjustPerPage( requestCount, perPage );
 
-			setTimeout( () => {
-				onSearchMore( search, searchDirection === SEARCH_FORWARD ? progress.next : progress.previous, searchSize, perPage - results.length );
-			}, SEARCH_MORE_DELAY );
-		} else if ( searchFlags.regex && ! hasMoreResults( searchDirection, progress ) ) {
-			onCancel();
+				setTimeout( () => {
+					onSearchMore( search, searchDirection === SEARCH_FORWARD ? progress.next : progress.previous, searchSize, perPage - results.length );
+				}, SEARCH_MORE_DELAY );
+			} else if ( ! shouldLoadMore( status, requestCount, results, perPage ) && requestCount > 0 ) {
+				onCancel();
+			}
 		}
 	}, [ requestCount ] );
 
