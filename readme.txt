@@ -80,6 +80,12 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 2.1 - ??? =
+- Support searching and replacing in multiple sources
+- Improve regex search speed
+- Row actions have moved to a dropdown
+- Add Japanese locale
+
 = 2.0.1 - 11th May 2010 =
 - Comment title now takes you to comment page
 - Improve regex performance when data has large gaps

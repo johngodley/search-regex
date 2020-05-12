@@ -15,7 +15,7 @@ import ResultContext from './result-context';
 const MORE_CONTEXTS = 2;
 
 function ResultColumns( props ) {
-	const { replacement, rowId, isReplacing, column } = props;
+	const { replacement, rowId, isReplacing, column, sourceType } = props;
 	const { contexts, context_count, match_count } = column;
 	const [ showMore, setShowMore ] = useState( false );
 	const visibleContexts = contexts.slice( 0, showMore ? contexts.length : MORE_CONTEXTS );
@@ -33,6 +33,7 @@ function ResultColumns( props ) {
 					rowId={ rowId }
 					contextReplacement={ replacement }
 					isReplacing={ isReplacing }
+					sourceType={ sourceType }
 				/>
 			) ) }
 

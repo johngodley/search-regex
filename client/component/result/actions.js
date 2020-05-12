@@ -11,13 +11,14 @@ import { connect } from 'react-redux';
  */
 
 import Dropdown from 'component/dropdown';
+import DropdownMenu from 'component/dropdown-menu';
 import Replace from 'component/replace';
 import ExternalLink from 'component/external-link';
 import { replaceRow } from 'state/search/action';
 import { deleteRow } from 'state/search/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 
-function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete, onEditor, description } ) {
+function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete, onEditor, description, sourceType } ) {
 	const reset = ( toggle ) => {
 		toggle();
 		setReplacement( '' );
@@ -25,7 +26,7 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 	const save = ( value, toggle ) => {
 		toggle();
 		setReplacement( '' );
-		onSave( value, result.row_id );
+		onSave( value, sourceType, result.row_id );
 	};
 	const clicked = ( ev, toggle ) => {
 		ev.preventDefault();
@@ -42,11 +43,28 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 		onEditor();
 	};
 
-	const actionList = [
+	const actionList = [];
+	const actionMap = {
+		edit: __( 'Edit Page' ),
+	};
+
+	const actionKeys = Object.keys( actions );
+	for ( let index = 0; index < actionKeys.length; index++ ) {
+		if ( actionMap[ actionKeys[ index ] ] ) {
+			actionList.push( <ExternalLink url={ actions[ actionKeys[ index ] ] } key={ actionKeys[ index ] }>{ actionMap[ actionKeys[ index ] ] }</ExternalLink> );
+		}
+	}
+
+	actionList.push( <a key="edit" href="#" onClick={ editor }>{ __( 'Inline Editor' ) }</a> );
+	actionList.push( <a key="delete" href="#" onClick={ deleteTheRow }>{ __( 'Delete Row' ) }</a> );
+
+	return (
 		<Dropdown
 			key="replace"
 			renderToggle={ ( isOpen, toggle ) => (
-				<a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>{ __( 'Replace' ) }</a>
+				<DropdownMenu
+					menu={ [ <a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>{ __( 'Replace Row' ) }</a> ].concat( actionList ) }
+				/>
 			) }
 			onHide={ () => setReplacement( '' ) }
 			hasArrow
@@ -65,23 +83,7 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 				/>
 			) }
 		/>
-	];
-
-	const actionMap = {
-		edit: __( 'Edit' ),
-	};
-	const actionKeys = Object.keys( actions );
-
-	for ( let index = 0; index < actionKeys.length; index++ ) {
-		if ( actionMap[ actionKeys[ index ] ] ) {
-			actionList.push( <ExternalLink url={ actions[ actionKeys[ index ] ] } key={ actionKeys[ index ] }>{ actionMap[ actionKeys[ index ] ] }</ExternalLink> );
-		}
-	}
-
-	actionList.push( <a key="edit" href="#" onClick={ editor }>{ __( 'Editor' ) }</a> );
-	actionList.push( <a key="delete" href="#" onClick={ deleteTheRow }>{ __( 'Delete' ) }</a> );
-
-	return actionList.reduce( ( prev, curr ) => [ prev, ' | ', curr ] );
+	)
 }
 
 function mapStateToProps( state ) {
@@ -97,8 +99,8 @@ function mapDispatchToProps( dispatch ) {
 		onDelete: ( sourceName, rowId ) => {
 			dispatch( deleteRow( sourceName, rowId ) );
 		},
-		onSave: ( replacement, rowId ) => {
-			dispatch( replaceRow( replacement, rowId ) );
+		onSave: ( replacement, source, rowId ) => {
+			dispatch( replaceRow( replacement, source, rowId ) );
 		},
 	};
 }

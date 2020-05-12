@@ -70,14 +70,25 @@ __( "Summary", "search-regex" ), // client/component/rest-api-status/index.js:13
 __( "Show Problems", "search-regex" ), // client/component/rest-api-status/index.js:134
 __( "Testing - %s\$", "search-regex" ), // client/component/rest-api-status/index.js:160
 __( "Check Again", "search-regex" ), // client/component/rest-api-status/index.js:167
-__( "Replace", "search-regex" ), // client/component/result/actions.js:49
-__( "Replacement for all matches in this row", "search-regex" ), // client/component/result/actions.js:63
-__( "Edit", "search-regex" ), // client/component/result/actions.js:71
-__( "Editor", "search-regex" ), // client/component/result/actions.js:81
-__( "Delete", "search-regex" ), // client/component/result/actions.js:82
-_n( "Replace %(count)s match.", "Replace %(count)s matches.", 1, "search-regex" ), // client/component/result/index.js:86
+__( "Edit Page", "search-regex" ), // client/component/result/actions.js:48
+__( "Inline Editor", "search-regex" ), // client/component/result/actions.js:58
+__( "Delete Row", "search-regex" ), // client/component/result/actions.js:59
+__( "Replace Row", "search-regex" ), // client/component/result/actions.js:66
+__( "Replacement for all matches in this row", "search-regex" ), // client/component/result/actions.js:81
+_n( "Replace %(count)s match.", "Replace %(count)s matches.", 1, "search-regex" ), // client/component/result/index.js:88
 __( "Maximum number of matches exceeded and hidden from view. These will be included in any replacements.", "search-regex" ), // client/component/result/restricted-matches.js:11
-_n( "Show %s more", "Show %s more", 1, "search-regex" ), // client/component/result/result-columns.js:42
+_n( "Show %s more", "Show %s more", 1, "search-regex" ), // client/component/result/result-columns.js:43
+__( "Settings saved", "search-regex" ), // client/state/message/reducer.js:30
+__( "Row deleted", "search-regex" ), // client/state/message/reducer.js:31
+__( "Row replaced", "search-regex" ), // client/state/message/reducer.js:32
+__( "Row updated", "search-regex" ), // client/state/message/reducer.js:33
+__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:17
+__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:21
+__( "25 per page ", "search-regex" ), // client/state/search/selector.js:28
+__( "50 per page ", "search-regex" ), // client/state/search/selector.js:32
+__( "100 per page", "search-regex" ), // client/state/search/selector.js:36
+__( "250 per page", "search-regex" ), // client/state/search/selector.js:40
+__( "500 per page", "search-regex" ), // client/state/search/selector.js:44
 __( "Search Regex", "search-regex" ), // client/page/home/index.js:26
 __( "Options", "search-regex" ), // client/page/home/index.js:27
 __( "Support", "search-regex" ), // client/page/home/index.js:28
@@ -103,19 +114,19 @@ __( "I'm a nice person and I have helped support the author of this plugin", "se
 __( "REST API", "search-regex" ), // client/page/options/options-form.js:55
 __( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:57
 __( "Update", "search-regex" ), // client/page/options/options-form.js:61
-__( "You are advised to backup your data before making modifications.", "search-regex" ), // client/page/search-replace/index.js:25
+__( "Please backup your data before making modifications.", "search-regex" ), // client/page/search-replace/index.js:25
 __( "Search and replace information in your database.", "search-regex" ), // client/page/search-replace/index.js:28
 __( "Search", "search-regex" ), // client/page/search-replace/search-actions.js:32
 __( "Replace All", "search-regex" ), // client/page/search-replace/search-actions.js:40
 __( "Cancel", "search-regex" ), // client/page/search-replace/search-actions.js:51
-__( "Search", "search-regex" ), // client/page/search-replace/search-form.js:54
-__( "Enter search phrase", "search-regex" ), // client/page/search-replace/search-form.js:61
-__( "Search Flags", "search-regex" ), // client/page/search-replace/search-form.js:70
-__( "Replace", "search-regex" ), // client/page/search-replace/search-form.js:78
-__( "Enter global replacement text", "search-regex" ), // client/page/search-replace/search-form.js:83
-__( "Source", "search-regex" ), // client/page/search-replace/search-form.js:89
-__( "Source Options", "search-regex" ), // client/page/search-replace/search-form.js:104
-__( "Results", "search-regex" ), // client/page/search-replace/search-form.js:116
+__( "Search", "search-regex" ), // client/page/search-replace/search-form.js:132
+__( "Enter search phrase", "search-regex" ), // client/page/search-replace/search-form.js:139
+__( "Search Flags", "search-regex" ), // client/page/search-replace/search-form.js:148
+__( "Replace", "search-regex" ), // client/page/search-replace/search-form.js:156
+__( "Enter global replacement text", "search-regex" ), // client/page/search-replace/search-form.js:161
+__( "Source", "search-regex" ), // client/page/search-replace/search-form.js:167
+__( "Source Options", "search-regex" ), // client/page/search-replace/search-form.js:185
+__( "Results", "search-regex" ), // client/page/search-replace/search-form.js:195
 __( "Need more help?", "search-regex" ), // client/page/support/help.js:14
 __( "Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}.", "search-regex" ), // client/page/support/help.js:16
 __( "If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide.", "search-regex" ), // client/page/support/help.js:22
@@ -129,17 +140,6 @@ __( "{{link}}Search Flags{{/link}} - additional qualifiers for your search, to e
 __( "{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches.", "search-regex" ), // client/page/support/search-help.js:27
 __( "{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments.", "search-regex" ), // client/page/support/search-help.js:32
 __( "{{link}}Source Flags{{/link}} - additional options for the selected source. For example, include post {{guid}}GUID{{/guid}} in the search.", "search-regex" ), // client/page/support/search-help.js:37
-__( "Settings saved", "search-regex" ), // client/state/message/reducer.js:30
-__( "Row deleted", "search-regex" ), // client/state/message/reducer.js:31
-__( "Row replaced", "search-regex" ), // client/state/message/reducer.js:32
-__( "Row updated", "search-regex" ), // client/state/message/reducer.js:33
-__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:10
-__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:14
-__( "25 per page ", "search-regex" ), // client/state/search/selector.js:21
-__( "50 per page ", "search-regex" ), // client/state/search/selector.js:25
-__( "100 per page", "search-regex" ), // client/state/search/selector.js:29
-__( "250 per page", "search-regex" ), // client/state/search/selector.js:33
-__( "500 per page", "search-regex" ), // client/state/search/selector.js:37
 _n( "%s database row in total", "%s database rows in total", 1, "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:28
 __( "First page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:34
 __( "Prev page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:35
@@ -152,11 +152,11 @@ __( "Page %(current)s of %(total)s", "search-regex" ), // client/page/search-rep
 __( "Next page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:49
 __( "Last page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:50
 __( "No more matching results found.", "search-regex" ), // client/page/search-replace/search-results/empty-results.js:11
-__( "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.", "search-regex" ), // client/page/search-replace/search-results/index.js:37
-__( "Source", "search-regex" ), // client/page/search-replace/search-results/index.js:61
-__( "Row ID", "search-regex" ), // client/page/search-replace/search-results/index.js:62
-__( "Matches", "search-regex" ), // client/page/search-replace/search-results/index.js:63
-__( "Matched Phrases", "search-regex" ), // client/page/search-replace/search-results/index.js:64
-__( "Actions", "search-regex" ), // client/page/search-replace/search-results/index.js:65
+__( "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.", "search-regex" ), // client/page/search-replace/search-results/index.js:48
+__( "Source", "search-regex" ), // client/page/search-replace/search-results/index.js:74
+__( "Row ID", "search-regex" ), // client/page/search-replace/search-results/index.js:75
+__( "Matches", "search-regex" ), // client/page/search-replace/search-results/index.js:76
+__( "Matched Phrases", "search-regex" ), // client/page/search-replace/search-results/index.js:77
+__( "Actions", "search-regex" ), // client/page/search-replace/search-results/index.js:78
 );
 /* THIS IS THE END OF THE GENERATED FILE */

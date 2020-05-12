@@ -23,8 +23,19 @@ import './style.scss';
 const hasMoreResults = ( searchDirection, progress ) => ( searchDirection === SEARCH_FORWARD && progress.next !== false ) || ( searchDirection === SEARCH_BACKWARD && progress.previous !== false );
 const shouldLoadMore = ( status, requestCount, results, perPage ) => status === STATUS_IN_PROGRESS && requestCount > 0 && results.length < perPage;
 
-const MAX_REQUESTS = 500;
-const SEARCH_MORE_DELAY = 450;
+const MAX_REQUESTS = 1000;
+const SEARCH_MORE_DELAY = 350;
+const REGEX_GRAB_MAX = 2000;
+const REGEX_GRAB_MIN = 3;
+const REGEX_GRAB_INCREMENT = 1.2;
+
+function adjustPerPage( requestCount, perPage ) {
+	if ( requestCount > REGEX_GRAB_MIN ) {
+		return Math.min( REGEX_GRAB_MAX, Math.round( perPage * requestCount * REGEX_GRAB_INCREMENT ) );
+	}
+
+	return perPage;
+}
 
 function SearchResults( props ) {
 	const { results, totals, progress, status, requestCount, search, searchDirection, showLoading, onCancel } = props;
@@ -36,8 +47,10 @@ function SearchResults( props ) {
 		if ( requestCount > MAX_REQUESTS ) {
 			onSetError( __( 'Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.' ) );
 		} else if ( searchFlags.regex && shouldLoadMore( status, requestCount, results, perPage ) && hasMoreResults( searchDirection, progress ) ) {
+			const searchSize = adjustPerPage( requestCount, perPage );
+
 			setTimeout( () => {
-				onSearchMore( search, searchDirection === SEARCH_FORWARD ? progress.next : progress.previous, perPage - results.length );
+				onSearchMore( search, searchDirection === SEARCH_FORWARD ? progress.next : progress.previous, searchSize, perPage - results.length );
 			}, SEARCH_MORE_DELAY );
 		} else if ( searchFlags.regex && ! hasMoreResults( searchDirection, progress ) ) {
 			onCancel();
@@ -107,8 +120,8 @@ function mapStateToProps( state ) {
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		onSearchMore: ( searchValue, page, limit ) => {
-			dispatch( searchMore( searchValue, page, limit ) );
+		onSearchMore: ( searchValue, page, perPage, limit ) => {
+			dispatch( searchMore( searchValue, page, perPage, limit ) );
 		},
 		onSetError: ( error ) => {
 			dispatch( setError( error ) );

@@ -50,16 +50,9 @@ use SearchRegex\Source_Flags;
  * @apiName Replace
  * @apiDescription Updates the database with the replaced search phrase.
  *
- * If you pass the optional `rowId`, `columnId`, and `posId` parameters then you can incrementally specify the exact search phrase to
- * replace. If you pass no data then the `replace` endpoint acts like `search`, and you will need to page through the results to
- * replace all matches.
- *
  * @apiGroup Search
  *
  * @apiUse SearchQueryParams
- * @apiParam {Integer} [rowId] Row ID of the item to replace
- * @apiParam {String} [columnId] Column ID of the item to replace
- * @apiParam {Integer} [posId] Positional ID of the item to replace
  * @apiParam {String} replacePhrase The value to replace matches with
  *
  * @apiUse SearchResults
@@ -114,6 +107,24 @@ use SearchRegex\Source_Flags;
  */
 
 /**
+ * @api {post} /search-regex/v1/source/:source/:rowId/replace Perform a replace on a row
+ * @apiVersion 1.0.0
+ * @apiName DeleteRow
+ * @apiDescription Removes an entire row of data from the source
+ *
+ * @apiGroup Source
+ *
+ * @apiParam (URL) {String} :source The source
+ * @apiParam {Integer} :rowId Row ID of the item to replace
+ * @apiParam {String} [columnId] Column ID of the item to replace
+ * @apiParam {Integer} [posId] Positional ID of the item to replace
+ *
+ * @apiUse SearchResult
+ * @apiUse 401Error
+ * @apiUse 404Error
+ */
+
+/**
  * @api {post} /search-regex/v1/source/:source/:rowId/delete Delete source row
  * @apiVersion 1.0.0
  * @apiName DeleteRow
@@ -124,7 +135,7 @@ use SearchRegex\Source_Flags;
  * @apiParam (URL) {String} :source The source
  * @apiParam (URL) {Integer} :rowId The source row ID
  *
- * @apiSuccess {Bool} result `true` if deleted, `false` otherwise ??? need a better result
+ * @apiSuccess {Bool} result `true` if deleted, `false` otherwise
  * @apiUse 401Error
  * @apiUse 404Error
  */
@@ -278,7 +289,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				'description' => 'The maximum number of results per page',
 				'type' => 'integer',
 				'default' => 25,
-				'maximum' => 500,
+				'maximum' => 5000,
 				'minimum' => 25,
 			],
 			'searchDirection' => [
@@ -309,7 +320,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				$this->get_search_params(),
 				$this->get_paging_params()
 			),
-			$this->get_route( WP_REST_Server::READABLE, 'search', [ $this, 'permission_callback' ] ),
+			$this->get_route( WP_REST_Server::EDITABLE, 'search', [ $this, 'permission_callback' ] ),
 		] );
 
 		register_rest_route( $namespace, '/replace', [
@@ -317,21 +328,6 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				$this->get_search_params(),
 				$this->get_paging_params(),
 				[
-					'rowId' => [
-						'description' => 'Optional row ID',
-						'type' => 'integer',
-						'default' => 0,
-					],
-					'columnId' => [
-						'description' => 'Optional column ID',
-						'type' => 'string',
-						'default' => null,
-						'validate_callback' => [ $this, 'validate_replace_column' ],
-					],
-					'posId' => [
-						'description' => 'Optional position ID',
-						'type' => 'integer',
-					],
 					'replacePhrase' => [
 						'description' => 'The value to replace matches with',
 						'type' => 'string',
@@ -339,11 +335,11 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 					],
 				]
 			),
-			$this->get_route( WP_REST_Server::EDITABLE, 'replace', [ $this, 'permission_callback' ] ),
+			$this->get_route( WP_REST_Server::EDITABLE, 'replaceAll', [ $this, 'permission_callback' ] ),
 		] );
 
 		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)', [
-			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
+			$this->get_route( WP_REST_Server::EDITABLE, 'loadRow', [ $this, 'permission_callback' ] ),
 		] );
 
 		$search_no_source = $this->get_search_params();
@@ -370,6 +366,30 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 
 		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)/delete', [
 			$this->get_route( WP_REST_Server::EDITABLE, 'deleteRow', [ $this, 'permission_callback' ] ),
+		] );
+
+		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)/replace', [
+			'args' => array_merge(
+				$this->get_search_params(),
+				[
+					'rowId' => [
+						'description' => 'Optional row ID',
+						'type' => 'integer',
+						'default' => 0,
+					],
+					'columnId' => [
+						'description' => 'Optional column ID',
+						'type' => 'string',
+						'default' => null,
+						'validate_callback' => [ $this, 'validate_replace_column' ],
+					],
+					'posId' => [
+						'description' => 'Optional position ID',
+						'type' => 'integer',
+					],
+				]
+			),
+			$this->get_route( WP_REST_Server::EDITABLE, 'replaceRow', [ $this, 'permission_callback' ] ),
 		] );
 	}
 
@@ -413,32 +433,13 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	}
 
 	/**
-	 * Perform a replacement on a row, on all rows
+	 * Perform a replacement on all rows
 	 *
 	 * @param WP_REST_Request $request The request.
 	 * @return WP_Error|array Return an array of results, or a WP_Error
 	 */
-	public function replace( WP_REST_Request $request ) {
+	public function replaceAll( WP_REST_Request $request ) {
 		$params = $request->get_params();
-
-		if ( $params['rowId'] > 0 ) {
-			// Get the Search/Replace pair, with our replacePhrase as the replacement value
-			list( $search, $replacer ) = $this->get_search_replace( $params, $params['replacePhrase'] );
-			$results = $search->get_row( $params['rowId'], $replacer );
-
-			if ( is_wp_error( $results ) ) {
-				return $results;
-			}
-
-			// Do the replacement
-			$replaced = $replacer->save_and_replace( $results, isset( $params['columnId'] ) ? $params['columnId'] : null, isset( $params['posId'] ) ? intval( $params['posId'], 10 ) : null );
-			if ( is_wp_error( $replaced ) ) {
-				return $replaced;
-			}
-
-			// Now perform a standard search with the original replacement value so the UI is refreshed
-			return $this->search( $request );
-		}
 
 		list( $search, $replacer ) = $this->get_search_replace( $params, $params['replacement'] );
 		$results = $search->get_results( $replacer, $params['page'], $params['perPage'] );
@@ -466,6 +467,47 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	}
 
 	/**
+	 * Perform a replacement on a row
+	 *
+	 * @param WP_REST_Request $request The request.
+	 * @return WP_Error|array Return an array of results, or a WP_Error
+	 */
+	public function replaceRow( WP_REST_Request $request ) {
+		$params = $request->get_params();
+
+		$flags = new Search_Flags( $params['searchFlags'] );
+		$sources = Source_Manager::get( $params['source'], $flags, new Source_Flags( $params['sourceFlags'] ) );
+
+		// Get the Search/Replace pair, with our replacePhrase as the replacement value
+		$search = new Search( $params['searchPhrase'], $sources, $flags );
+		$replacer = new Replace( $params['replacePhrase'], $sources, $flags );
+
+		// Get the row
+		$results = $search->get_row( $sources[0], $params['rowId'], $replacer );
+
+		if ( $results instanceof \WP_Error ) {
+			return $results;
+		}
+
+		// Do the replacement
+		$replaced = $replacer->save_and_replace( $results, isset( $params['columnId'] ) ? $params['columnId'] : null, isset( $params['posId'] ) ? intval( $params['posId'], 10 ) : null );
+		if ( is_wp_error( $replaced ) ) {
+			return $replaced;
+		}
+
+		// Get the row again
+		$results = $search->get_row( $sources[0], $params['rowId'], $replacer );
+
+		if ( $results instanceof \WP_Error ) {
+			return $results;
+		}
+
+		return [
+			'result' => $search->results_to_json( $results ),
+		];
+	}
+
+	/**
 	 * Save data to a row and column within a source
 	 *
 	 * @param WP_REST_Request $request The request.
@@ -486,7 +528,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		$search = new Search( $params['searchPhrase'], $sources, $flags );
 		$replacer = new Replace( $params['replacement'], $sources, $flags );
 
-		$row = $search->get_row( $params['rowId'], $replacer );
+		$row = $search->get_row( $sources[0], $params['rowId'], $replacer );
 		if ( is_wp_error( $row ) ) {
 			return $row;
 		}
@@ -527,7 +569,6 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	 */
 	public function deleteRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
-
 		$sources = Source_Manager::get( [ $params['source'] ], new Search_Flags(), new Source_Flags() );
 
 		return $sources[0]->delete_row( $params['rowId'] );
@@ -637,17 +678,18 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	 */
 	public function validate_source( $value, WP_REST_Request $request, $param ) {
 		$allowed = Source_Manager::get_all_source_names();
-		$valid = [];
 
 		add_filter( 'wp_revisions_to_keep', [ $this, 'disable_post_revisions' ] );
 
-		if ( is_array( $value ) ) {
-			$valid = array_filter( $value, function( $item ) use ( $allowed ) {
-				return array_search( $item, $allowed, true ) !== false;
-			} );
+		if ( ! is_array( $value ) ) {
+			$value = [ $value ];
 		}
 
-		if ( count( $valid ) > 0 ) {
+		$valid = array_filter( $value, function( $item ) use ( $allowed ) {
+			return array_search( $item, $allowed, true ) !== false;
+		} );
+
+		if ( count( $valid ) === count( $value ) ) {
 			return true;
 		}
 

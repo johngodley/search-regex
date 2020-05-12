@@ -12,10 +12,7 @@ class SearchApiTest extends Redirection_Api_Test {
 		];
 
 		return [
-			[ 'search', 'GET', $search_args ],
-			// [ 'source/post/1', 'GET', [] ],
-			// [ 'source/post/1', 'POST', [] ],
-			// [ 'source/post/1/delete', 'POST', [] ],
+			[ 'search', 'POST', $search_args ],
 		];
 	}
 

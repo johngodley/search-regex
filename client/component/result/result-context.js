@@ -11,7 +11,7 @@ import { translate as __ } from 'lib/locale';
 
 import HighlightMatches from 'component/highlight-matches';
 
-function ResultContext( { item, rowId, contextReplacement, isReplacing, column } ) {
+function ResultContext( { item, rowId, contextReplacement, isReplacing, column, sourceType } ) {
 	const { context, match_count, matches } = item;
 	const { column_id, column_label } = column;
 
@@ -23,6 +23,7 @@ function ResultContext( { item, rowId, contextReplacement, isReplacing, column }
 				source={ context }
 				matches={ matches }
 				count={ match_count }
+				sourceType={ sourceType }
 				contextReplacement={ contextReplacement }
 				columnId={ column_id }
 				rowId={ rowId }

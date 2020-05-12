@@ -3,8 +3,9 @@
  */
 import { SEARCH_START_FRESH } from 'state/search/type';
 import { setPageUrl } from 'lib/wordpress-url';
+import { removePostTypes } from 'lib/sources';
 
-function setUrlForPage( action ) {
+function setUrlForPage( action, state ) {
 	const { searchPhrase, searchFlags, source, sourceFlags, perPage } = action;
 	const defaults = {
 		searchPhrase: '',
@@ -15,13 +16,16 @@ function setUrlForPage( action ) {
 		sub: 'search',
 	};
 
-	setPageUrl( { searchPhrase, searchFlags, source, sourceFlags, perPage }, defaults );
+	// Remove custom page types if 'posts' is included
+	const filteredSource = removePostTypes( source, state.sources );
+
+	setPageUrl( { searchPhrase, searchFlags, source: filteredSource, sourceFlags, perPage }, defaults );
 }
 
-export const urlMiddleware = () => next => action => {
+export const urlMiddleware = ( store ) => next => action => {
 	switch ( action.type ) {
 		case SEARCH_START_FRESH:
-			setUrlForPage( action );
+			setUrlForPage( action, store.getState().search );
 			break;
 	}
 

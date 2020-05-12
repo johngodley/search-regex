@@ -63,38 +63,11 @@ const apiRequest = url => ( {
 	credentials: 'same-origin',
 } );
 
-const deleteApiRequest = ( path, params ) => {
-	const query = { ... params };
-	const body = {};
-
-	if ( params && params.items ) {
-		body.items = params.items;
-		delete query.items;
-	}
-
-	return {
-		headers: postApiheaders(),
-		...apiRequest( getSearchRegexApi( path, query ) ),
-		method: 'post',
-		body: body.items ? JSON.stringify( body ) : '{}',
-	};
-};
-
 const getApiRequest = ( path, params = {} ) => ( {
 	headers: getApiHeaders(),
 	...apiRequest( getSearchRegexApi( path, params ) ),
 	method: 'get',
 } );
-
-const uploadApiRequest = ( path, file ) => {
-	const request = { headers: postApiheaders(), ...apiRequest( getSearchRegexApi( path ) ), method: 'post' };
-
-	request.headers.delete( 'Content-Type' );
-	request.body = new FormData();
-	request.body.append( 'file', file );
-
-	return request;
-};
 
 const postApiRequest = ( path, params = {}, query = {} ) => {
 	const request = { headers: postApiheaders(), ...apiRequest( getSearchRegexApi( path, query ) ), method: 'post', params };
@@ -113,13 +86,14 @@ export const SearchRegexApi = {
 		update: settings => postApiRequest( 'setting', settings ),
 	},
 	search: {
-		get: data => getApiRequest( 'search', data ),
+		get: data => postApiRequest( 'search', data ),
 		replace: data => postApiRequest( 'replace', data ),
 	},
 	source: {
 		deleteRow: ( source, rowId ) => postApiRequest( `source/${ source }/${ rowId }/delete` ),
-		loadRow: ( source, rowId ) => getApiRequest( `source/${ source }/${ rowId }` ),
+		loadRow: ( source, rowId ) => postApiRequest( `source/${ source }/${ rowId }` ),
 		saveRow: ( source, rowId, data ) => postApiRequest( `source/${ source }/${ rowId }`, data ),
+		replaceRow: ( source, rowId, data ) => postApiRequest( `source/${ source }/${ rowId }/replace`, data ),
 	},
 	plugin: {
 		checkApi: ( url, post = false ) => {

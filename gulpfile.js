@@ -17,8 +17,8 @@ const pkg = require( './package.json' );
 const config = require( './.config.json' ); // Local config
 
 const LOCALE_PERCENT_COMPLETE = 40;
-const AVAILABLE_LANGUAGES_URL = 'https://translate.wordpress.org/api/projects/wp-plugins/search-regex/stable';
-const LOCALE_URL = 'https://translate.wordpress.org/projects/wp-plugins/search-regex/stable/$LOCALE/default/export-translations?format=';
+const AVAILABLE_LANGUAGES_URL = 'https://translate.wordpress.org/api/projects/wp-plugins/search-regex/dev';
+const LOCALE_URL = 'https://translate.wordpress.org/projects/wp-plugins/search-regex/dev/$LOCALE/default/export-translations?format=';
 const SVN_SOURCE_FILES = [
 	'./**',
 	'!node_modules/**',
@@ -159,6 +159,7 @@ function potJson( done ) {
 }
 
 function potDownload( cb ) {
+	console.log( 'Requesting locales from: ' + AVAILABLE_LANGUAGES_URL );
 	request( AVAILABLE_LANGUAGES_URL, ( error, response, body ) => {
 		if ( error || response.statusCode !== 200 ) {
 			console.error( 'Failed to download available languages from ' + AVAILABLE_LANGUAGES_URL, error );
@@ -169,6 +170,10 @@ function potDownload( cb ) {
 
 		for ( let x = 0; x < json.translation_sets.length; x++ ) {
 			const locale = json.translation_sets[ x ];
+
+			if ( parseInt( locale.percent_translated, 10 ) > 0 ) {
+				console.log( 'Locale ' + locale.wp_locale + ' is ' + locale.percent_translated + '% translated' );
+			}
 
 			if ( parseInt( locale.percent_translated, 10 ) > LOCALE_PERCENT_COMPLETE ) {
 				console.log( 'Downloading ' + locale.locale );

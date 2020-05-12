@@ -17,11 +17,11 @@ describe( 'WordPress URL', () => {
 		expect( getPageUrl( '?some=thing&other=thing' ) ).toEqual( { some: 'thing', other: 'thing' } );
 	} );
 
-	test( 'getPluginPage returns redirect when no page param provided', () => {
+	test( 'getPluginPage returns search when no page param provided', () => {
 		expect( getPluginPage( '?something' ) ).toEqual( 'search' );
 	} );
 
-	test( 'getPluginPage returns redirect when invalid page param provided', () => {
+	test( 'getPluginPage returns search when invalid page param provided', () => {
 		expect( getPluginPage( '?page=cats' ) ).toEqual( 'search' );
 	} );
 
@@ -35,9 +35,5 @@ describe( 'WordPress URL', () => {
 
 	test( 'getWordPressUrl returns existing URL with no params when defaulted', () => {
 		expect( getWordPressUrl( { cat: 'monkey' }, { cat: 'monkey' }, '?existing=thing' ) ).toEqual( '?existing=thing' );
-	} );
-
-	test( 'getWordPressUrl ignores filterby when filter has no value', () => {
-		expect( getWordPressUrl( { filterby: [] }, {}, '?existing=thing' ) ).toEqual( '?existing=thing' );
 	} );
 } );
