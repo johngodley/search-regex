@@ -3,8 +3,9 @@
  */
 
 import { getPageUrl } from 'lib/wordpress-url';
-import validateSearch from 'state/search/validate';
 import { getAllPostTypes } from 'lib/sources';
+import getPreload from 'lib/preload';
+import getValidatedSearch from 'state/search/validate';
 
 function addPostTypes( sources, allPostTypes ) {
 	if ( sources.indexOf( 'posts' ) !== -1 ) {
@@ -19,7 +20,7 @@ function getInitialSearchParams( sources ) {
 	const allPostTypes = getAllPostTypes( sources );
 	const initialSources = query.source ? addPostTypes( query.source, allPostTypes ) : [ 'post', 'page' ];
 
-	return validateSearch( {
+	return getValidatedSearch( {
 		searchPhrase: query.searchphrase ? query.searchphrase : '',
 		searchFlags: query.searchflags ? query.searchflags : [ 'case' ],
 
@@ -33,7 +34,7 @@ function getInitialSearchParams( sources ) {
 }
 
 export function getInitialSearch() {
-	const sources = SearchRegexi10n.preload && SearchRegexi10n.preload.sources ? SearchRegexi10n.preload.sources : [];
+	const sources = getPreload( 'sources', [] );
 
 	return {
 		results: [],
@@ -47,7 +48,6 @@ export function getInitialSearch() {
 		search: getInitialSearchParams( sources ),
 
 		searchDirection: null,
-		searchedPhrase: '',  // needed?
 
 		requestCount: 0,
 		totals: {},
@@ -57,7 +57,7 @@ export function getInitialSearch() {
 		showLoading: false,
 
 		sources,
-		sourceFlags: SearchRegexi10n.preload && SearchRegexi10n.preload.source_flags ? SearchRegexi10n.preload.source_flags : [],
+		sourceFlags: getPreload( 'source_flags', [] ),
 
 		rawData: null,
 

@@ -22,7 +22,7 @@ function SearchReplace( props ) {
 	return (
 		<>
 			<div className="inline-notice inline-warning">
-				<p>{ __( 'You are advised to backup your data before making modifications.' ) }</p>
+				<p>{ __( 'Please backup your data before making modifications.' ) }</p>
 			</div>
 
 			<p>{ __( 'Search and replace information in your database.' ) }</p>

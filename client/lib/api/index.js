@@ -63,38 +63,11 @@ const apiRequest = url => ( {
 	credentials: 'same-origin',
 } );
 
-const deleteApiRequest = ( path, params ) => {
-	const query = { ... params };
-	const body = {};
-
-	if ( params && params.items ) {
-		body.items = params.items;
-		delete query.items;
-	}
-
-	return {
-		headers: postApiheaders(),
-		...apiRequest( getSearchRegexApi( path, query ) ),
-		method: 'post',
-		body: body.items ? JSON.stringify( body ) : '{}',
-	};
-};
-
 const getApiRequest = ( path, params = {} ) => ( {
 	headers: getApiHeaders(),
 	...apiRequest( getSearchRegexApi( path, params ) ),
 	method: 'get',
 } );
-
-const uploadApiRequest = ( path, file ) => {
-	const request = { headers: postApiheaders(), ...apiRequest( getSearchRegexApi( path ) ), method: 'post' };
-
-	request.headers.delete( 'Content-Type' );
-	request.body = new FormData();
-	request.body.append( 'file', file );
-
-	return request;
-};
 
 const postApiRequest = ( path, params = {}, query = {} ) => {
 	const request = { headers: postApiheaders(), ...apiRequest( getSearchRegexApi( path, query ) ), method: 'post', params };

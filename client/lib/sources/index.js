@@ -1,5 +1,7 @@
+export const SOURCE_TYPE_POSTS = 'posttype';
+
 export function getAllPostTypes( sources ) {
-	const postTypes = sources.find( source => source.name === 'posttype' );
+	const postTypes = sources.find( source => source.name === SOURCE_TYPE_POSTS );
 
 	if ( postTypes ) {
 		return postTypes.sources.map( source => source.name );
