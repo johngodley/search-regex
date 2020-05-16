@@ -68,6 +68,7 @@ function SearchResults( props ) {
 				isLoading={ isLoading }
 				progress={ progress }
 				searchDirection={ searchDirection }
+				advanced={ !! searchFlags.regex }
 			/>
 
 			<table className={ classnames( 'wp-list-table', 'widefat', 'fixed', 'striped', 'items', 'searchregex-results' ) }>
