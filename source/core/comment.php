@@ -32,15 +32,15 @@ class Source_Comment extends Search_Source {
 		return $column;
 	}
 
-	public function get_search_conditions( $search ) {
+	public function get_search_conditions() {
 		global $wpdb;
 
 		// If searching a particular post type then just look there
 		if ( ! $this->source_flags->has_flag( 'comment_spam' ) ) {
-			return [ 'comment_approved=1' ];
+			return 'comment_approved=1';
 		}
 
-		return [];
+		return '';
 	}
 
 	public function get_actions( Result $result ) {

@@ -9,19 +9,28 @@ use SearchRegex\Search_Source;
  */
 class Source_Manager {
 	/**
-	 * Return an array of all the database sources. Note this is filtered with `searchregex_sources`
+	 * Return the source for the post table
 	 *
-	 * @return Array The array of database sources as name => class
+	 * @return Array
 	 */
-	public static function get_all_sources() {
+	private static function get_post_source() {
+		return [
+			'name' => 'posts',
+			'class' => 'SearchRegex\Source_Post',
+			'label' => __( 'All Post Types', 'search-regex' ),
+			'description' => __( 'Search all posts, pages, and custom post types.', 'search-regex' ),
+			'type' => 'core',
+		];
+	}
+
+	/**
+	 * Return all the core source types
+	 *
+	 * @return Array
+	 */
+	private static function get_core_sources() {
 		$core_sources = [
-			[
-				'name' => 'posts',
-				'class' => 'SearchRegex\Source_Post',
-				'label' => __( 'All Post Types', 'search-regex' ),
-				'description' => __( 'Search all posts, pages, and custom post types.', 'search-regex' ),
-				'type' => 'core',
-			],
+			self::get_post_source(),
 			[
 				'name' => 'post-meta',
 				'class' => 'SearchRegex\Source_Post_Meta',
@@ -66,21 +75,17 @@ class Source_Manager {
 			],
 		];
 
-		// Add on post types
-		/** @var Array */
-		$post_types = get_post_types( [], 'objects' );
-		$post_sources = [];
+		return apply_filters( 'searchregex_sources_core', $core_sources );
+	}
 
-		foreach ( $post_types as $type ) {
-			if ( strlen( $type->label ) > 0 ) {
-				$post_sources[] = [
-					'name' => $type->name,
-					'class' => 'SearchRegex\Source_Post',
-					'label' => $type->label,
-					'type' => 'posttype',
-				];
-			}
-		}
+	/**
+	 * Return an array of all the database sources. Note this is filtered with `searchregex_sources`
+	 *
+	 * @return Array The array of database sources as name => class
+	 */
+	public static function get_all_sources() {
+		$core_sources = self::get_core_sources();
+		$post_sources = self::get_all_custom_post_types();
 
 		// Load custom stuff here
 		$plugin_sources = glob( dirname( SEARCHREGEX_FILE ) . '/source/plugin/*.php' );
@@ -97,10 +102,26 @@ class Source_Manager {
 			return $source;
 		}, $plugin_sources );
 
-		$post_sources = apply_filters( 'searchregex_sources_posttype', $post_sources );
-		$core_sources = apply_filters( 'searchregex_sources_core', $core_sources );
-
 		return array_merge( array_values( $core_sources ), array_values( $post_sources ), array_values( $plugin_sources ) );
+	}
+
+	private static function get_all_custom_post_types() {
+		/** @var Array */
+		$post_types = get_post_types( [], 'objects' );
+		$post_sources = [];
+
+		foreach ( $post_types as $type ) {
+			if ( strlen( $type->label ) > 0 ) {
+				$post_sources[] = [
+					'name' => $type->name,
+					'class' => 'SearchRegex\Source_Post',
+					'label' => $type->label,
+					'type' => 'posttype',
+				];
+			}
+		}
+
+		return apply_filters( 'searchregex_sources_posttype', $post_sources );
 	}
 
 	/**
@@ -186,12 +207,30 @@ class Source_Manager {
 	 */
 	public static function get( $sources, Search_Flags $search_flags, Source_Flags $source_flags ) {
 		$handlers = [];
+		$cpts = [];
+		$all_cpts = array_map( function( array $source ) {
+			return $source['name'];
+		}, self::get_all_custom_post_types() );
 
+		// Create handlers for everything else
 		foreach ( $sources as $source ) {
-			$handler = self::get_handler_for_source( $source, $search_flags, $source_flags );
+			if ( in_array( $source, $all_cpts, true ) ) {
+				$cpts[] = $source;
+			} else {
+				$handler = self::get_handler_for_source( $source, $search_flags, $source_flags );
 
-			if ( $handler ) {
-				$handlers[] = $handler;
+				if ( $handler ) {
+					$handlers[] = $handler;
+				}
+			}
+		}
+
+		// Merge all CPTs together
+		if ( count( $cpts ) > 0 ) {
+			$handler = self::get_handler_for_source( 'post', $search_flags, $source_flags );
+			if ( $handler instanceof Source_Post ) {
+				$handler->set_custom_post_types( $cpts );
+				array_unshift( $handlers, $handler );
 			}
 		}
 

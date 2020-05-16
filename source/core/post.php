@@ -7,6 +7,23 @@ use SearchRegex\Result;
 
 class Source_Post extends Search_Source {
 	/**
+	 * Array of supported custom post types
+	 *
+	 * @var Array
+	 */
+	private $cpts = [];
+
+	/**
+	 * Set all the custom post types that this source supports
+	 *
+	 * @param Array $cpts Array of custom post type names.
+	 * @return void
+	 */
+	public function set_custom_post_types( array $cpts ) {
+		$this->cpts = $cpts;
+	}
+
+	/**
 	 * Get the custom post type from the source
 	 *
 	 * @param String $post_type Source post type.
@@ -66,15 +83,17 @@ class Source_Post extends Search_Source {
 		return [];
 	}
 
-	public function get_search_conditions( $search ) {
-		global $wpdb;
-
+	public function get_search_conditions() {
 		// If searching a particular post type then just look there
 		if ( $this->source_type !== 'posts' ) {
-			return [ $wpdb->prepare( 'post_type=%s', $this->source_type ) ];
+			return implode( ' OR ', array_map( function( $cpt ) {
+				global $wpdb;
+
+				return $wpdb->prepare( 'post_type=%s', $cpt );
+			}, $this->cpts ) );
 		}
 
-		return [];
+		return '';
 	}
 
 	public function get_info_columns() {
