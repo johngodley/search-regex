@@ -96,7 +96,7 @@ class Home extends React.Component {
 			SearchRegexi10n.versions,
 			'Buster: ' + SEARCHREGEX_VERSION + ' === ' + SearchRegexi10n.version,
 			'',
-			this.state.stack,
+			this.state.stack ? this.state.stack : '',
 		];
 
 		if ( this.state.info && this.state.info.componentStack ) {
@@ -112,7 +112,7 @@ class Home extends React.Component {
 						{ __( 'If you are using a caching system such as Cloudflare then please read this: ' ) }
 						<ExternalLink url="https://searchregex.com/support/problems/cloudflare/">{ __( 'clearing your cache.' ) }</ExternalLink>
 					</p>
-					<p><textarea readOnly={ true } rows={ debug.length + 3 } cols="120" value={ debug.join( '\n' ) } spellCheck={ false }></textarea></p>
+					<p><textarea readOnly={ true } rows={ debug.length + 6 } cols="120" value={ debug.join( '\n' ) } spellCheck={ false }></textarea></p>
 				</div>
 			);
 		}

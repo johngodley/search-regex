@@ -30,7 +30,7 @@ function SearchActions( { search, status, onSearch, onReplace, onCancel, replace
 				className="button button-primary"
 				type="submit"
 				value={ __( 'Search' ) }
-				onClick={ () => onSearch( search, 0, SEARCH_FORWARD ) }
+				onClick={ () => onSearch( 0, SEARCH_FORWARD ) }
 				disabled={ canSearch( status, searchPhrase ) || replaceAll }
 			/>
 
@@ -38,7 +38,7 @@ function SearchActions( { search, status, onSearch, onReplace, onCancel, replace
 				className="button button-delete"
 				type="submit"
 				value={ __( 'Replace All' ) }
-				onClick={ () => onReplace( search, 0, REPLACE_SIZE ) }
+				onClick={ () => onReplace( REPLACE_SIZE ) }
 				disabled={ canReplace( status, searchPhrase, replacement ) || replaceAll }
 			/>
 
@@ -63,11 +63,11 @@ function mapDispatchToProps( dispatch ) {
 		onCancel: () => {
 			dispatch( cancel() );
 		},
-		onSearch: ( searchValue, page, direction ) => {
-			dispatch( search( searchValue, page, direction ) );
+		onSearch: ( page, direction ) => {
+			dispatch( search( page, direction ) );
 		},
-		onReplace: ( replace, page, perPage ) => {
-			dispatch( replaceAll( replace, page, perPage ) );
+		onReplace: ( perPage ) => {
+			dispatch( replaceAll( perPage ) );
 		},
 	};
 }

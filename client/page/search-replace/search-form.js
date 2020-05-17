@@ -14,7 +14,7 @@ import Select from 'component/select';
 import MultiOptionDropdown from 'component/multi-option-dropdown';
 import Replace from 'component/replace';
 import { setSearch } from 'state/search/action';
-import { getSearchOptions, getPerPage } from 'state/search/selector';
+import { getAvailableSearchFlags, getAvailablePerPage } from 'state/search/selector';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import { getAllPostTypes } from 'lib/sources';
 
@@ -142,7 +142,7 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 						/>
 
 						<MultiOptionDropdown
-							options={ getSearchOptions() }
+							options={ getAvailableSearchFlags() }
 							selected={ searchFlags }
 							onApply={ ( searchFlags ) => onSetSearch( { searchFlags } ) }
 							title={ __( 'Search Flags' ) }
@@ -196,7 +196,7 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 					<td>
 						<Select
 							name="perPage"
-							items={ getPerPage() }
+							items={ getAvailablePerPage() }
 							value={ perPage }
 							onChange={ ( ev ) => onSetSearch( { perPage: parseInt( ev.target.value, 10 ) } ) }
 							isEnabled={ ! isBusy }

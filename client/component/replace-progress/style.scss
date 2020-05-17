@@ -4,15 +4,24 @@
 
 .searchregex-replaceall__progress {
 	position: relative;
+	display: flex;
+	align-items: center;
 }
 
 .searchregex-replaceall__status {
 	position: absolute;
-	top: 0;
 	left: 0;
 	width: 100%;
 	text-align: center;
 	font-size: 18px;
 	font-weight: bold;
-	margin-top: 20px;
+}
+
+.searchregex-replaceall__container {
+	width: 100%;
+}
+
+.searchregex-replaceall__stats {
+	text-align: center;
+	padding: 10px;
 }

@@ -101,6 +101,8 @@ class Search_Regex_Admin {
 			'Browser: ' . $this->get_user_agent(),
 			'JavaScript: ' . plugin_dir_url( SEARCHREGEX_FILE ) . 'search-regex.js',
 			'REST API: ' . searchregex_get_rest_api(),
+			'Memory: ' . ini_get( 'memory_limit' ),
+			'Timeout: ' . ini_get( 'max_execution_time' ),
 		);
 
 		if ( defined( 'SEARCHREGEX_DEV_MODE' ) && SEARCHREGEX_DEV_MODE ) {

@@ -12,7 +12,7 @@ import { translate as __ } from 'lib/locale';
 
 import ExternalLink from 'component/external-link';
 import ApiResultItem from './api-result-item';
-import { getApiNonce } from 'lib/api';
+import { getApiNonce } from 'lib/api/api-url';
 
 const isLoading = result => Object.keys( result ).length === 0 || result.GET.status === 'loading' || result.POST.status === 'loading';
 

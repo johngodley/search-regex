@@ -8,7 +8,7 @@ use SearchRegex\Source_Manager;
 use SearchRegex\Source_Flags;
 
 /**
- * @api {get} /search-regex/v1/search Search
+ * @api {post} /search-regex/v1/search Search
  * @apiVersion 1.0.0
  * @apiName Search
  * @apiDescription This performs the search matching of a search phrase in a search source. The search is designed to not timeout and exhaust server memory, and sometimes
@@ -339,7 +339,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		] );
 
 		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)', [
-			$this->get_route( WP_REST_Server::EDITABLE, 'loadRow', [ $this, 'permission_callback' ] ),
+			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
 		] );
 
 		$search_no_source = $this->get_search_params();
@@ -496,6 +496,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		}
 
 		// Get the row again
+		$replacer = new Replace( $params['replacement'], $sources, $flags );
 		$results = $search->get_row( $sources[0], $params['rowId'], $replacer );
 
 		if ( $results instanceof \WP_Error ) {
@@ -680,6 +681,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		$allowed = Source_Manager::get_all_source_names();
 
 		add_filter( 'wp_revisions_to_keep', [ $this, 'disable_post_revisions' ] );
+		add_filter( 'wp_insert_post_data', [ $this, 'wp_insert_post_data' ] );
 
 		if ( ! is_array( $value ) ) {
 			$value = [ $value ];
@@ -704,5 +706,21 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	 */
 	public function disable_post_revisions() {
 		return 0;
+	}
+
+	/**
+	 * Stops wp_update_post from changing the post_modified date
+	 *
+	 * @internal
+	 * @param Array $data Array of post data.
+	 * @return Array
+	 */
+	public function wp_insert_post_data( $data ) {
+		if ( isset( $data['post_modified'] ) ) {
+			unset( $data['post_modified'] );
+			unset( $data['post_modified_gmt'] );
+		}
+
+		return $data;
 	}
 }

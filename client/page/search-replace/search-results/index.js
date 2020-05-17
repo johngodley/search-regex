@@ -18,24 +18,13 @@ import Pagination from '../pagination';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import { searchMore, setError, cancel } from 'state/search/action';
 import { SEARCH_FORWARD, SEARCH_BACKWARD } from 'state/search/type';
+import { throttle, adjustPerPage } from 'lib/result-window';
 import './style.scss';
 
 const hasMoreResults = ( searchDirection, progress ) => ( searchDirection === SEARCH_FORWARD && progress.next !== false ) || ( searchDirection === SEARCH_BACKWARD && progress.previous !== false );
 const shouldLoadMore = ( status, requestCount, results, perPage ) => status === STATUS_IN_PROGRESS && requestCount > 0 && results.length < perPage;
 
 const MAX_REQUESTS = 1000;
-const SEARCH_MORE_DELAY = 350;
-const REGEX_GRAB_MAX = 2000;
-const REGEX_GRAB_MIN = 3;
-const REGEX_GRAB_INCREMENT = 1.2;
-
-function adjustPerPage( requestCount, perPage ) {
-	if ( requestCount > REGEX_GRAB_MIN ) {
-		return Math.min( REGEX_GRAB_MAX, Math.round( perPage * requestCount * REGEX_GRAB_INCREMENT ) );
-	}
-
-	return perPage;
-}
 
 function SearchResults( props ) {
 	const { results, totals, progress, status, requestCount, search, searchDirection, showLoading, onCancel } = props;
@@ -49,10 +38,9 @@ function SearchResults( props ) {
 		} else if ( searchFlags.regex ) {
 			if ( shouldLoadMore( status, requestCount, results, perPage ) && hasMoreResults( searchDirection, progress ) ) {
 				const searchSize = adjustPerPage( requestCount, perPage );
+				const page = searchDirection === SEARCH_FORWARD ? progress.next : progress.previous;
 
-				setTimeout( () => {
-					onSearchMore( search, searchDirection === SEARCH_FORWARD ? progress.next : progress.previous, searchSize, perPage - results.length );
-				}, SEARCH_MORE_DELAY );
+				throttle( () => onSearchMore( page, searchSize, perPage - results.length ) );
 			} else if ( ! shouldLoadMore( status, requestCount, results, perPage ) && requestCount > 0 ) {
 				onCancel();
 			}
@@ -68,6 +56,7 @@ function SearchResults( props ) {
 				isLoading={ isLoading }
 				progress={ progress }
 				searchDirection={ searchDirection }
+				advanced={ !! searchFlags.regex }
 			/>
 
 			<table className={ classnames( 'wp-list-table', 'widefat', 'fixed', 'striped', 'items', 'searchregex-results' ) }>
@@ -100,6 +89,7 @@ function SearchResults( props ) {
 				progress={ progress }
 				searchDirection={ searchDirection }
 				noTotal
+				advanced={ !! searchFlags.regex }
 			/>
 		</>
 	);
@@ -122,8 +112,8 @@ function mapStateToProps( state ) {
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		onSearchMore: ( searchValue, page, perPage, limit ) => {
-			dispatch( searchMore( searchValue, page, perPage, limit ) );
+		onSearchMore: ( page, perPage, limit ) => {
+			dispatch( searchMore( page, perPage, limit ) );
 		},
 		onSetError: ( error ) => {
 			dispatch( setError( error ) );

@@ -102,11 +102,10 @@ abstract class Search_Source {
 	 * Return an array of additional search conditions applied to each query. These will be ANDed together.
 	 * These conditions should be sanitized here, and won't be sanitized elsewhere.
 	 *
-	 * @param String $search Search phrase.
-	 * @return Array Array of SQL condition
+	 * @return String SQL conditions
 	 */
-	public function get_search_conditions( $search ) {
-		return [];
+	public function get_search_conditions() {
+		return '';
 	}
 
 	/**
@@ -179,9 +178,14 @@ abstract class Search_Source {
 	public function get_total_rows() {
 		global $wpdb;
 
+		$extra = $this->get_search_conditions();
+		if ( $extra ) {
+			$extra = ' WHERE (' . $extra . ')';
+		}
+
 		// This is a known and validated query
 		// phpcs:ignore
-		$result = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->get_table_name()}" );
+		$result = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->get_table_name()}" . $extra );
 		if ( $result === null ) {
 			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
 		}
@@ -224,10 +228,10 @@ abstract class Search_Source {
 		$columns = $this->get_query_columns();
 
 		// Add any source specific conditions
-		$source_conditions = $this->get_search_conditions( $search );
+		$source_conditions = $this->get_search_conditions();
 		$search_phrase = '';
-		if ( count( $source_conditions ) > 0 ) {
-			$search_phrase = ' WHERE ' . implode( ' AND ', $source_conditions );
+		if ( $source_conditions ) {
+			$search_phrase = ' WHERE (' . $source_conditions . ')';
 		}
 
 		// This is a known and validated query
@@ -356,12 +360,12 @@ abstract class Search_Source {
 		}
 
 		// Add any source specific conditions
-		$source_conditions = $this->get_search_conditions( $search );
+		$source_conditions = $this->get_search_conditions();
 
 		$search_phrase = '(' . implode( ' OR ', $source_matches ) . ')';
 		$conditions = '';
-		if ( count( $source_conditions ) > 0 ) {
-			$conditions = ' AND ' . implode( ' AND ', $source_conditions );
+		if ( $source_conditions ) {
+			$conditions = ' AND (' . $source_conditions . ')';
 		}
 
 		return $search_phrase . $conditions;

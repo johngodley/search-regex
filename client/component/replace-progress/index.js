@@ -2,28 +2,42 @@
  * External dependencies
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { translate as __, numberFormat } from 'lib/locale';
 import { Line } from 'rc-progress';
 import { connect } from 'react-redux';
+import { useDelta } from 'react-delta';
 
 /**
  * Internal dependencies
  */
 
+import { throttle, adjustPerPage } from 'lib/result-window';
 import { clear, replaceNext } from 'state/search/action';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from 'state/settings/type';
 import './style.scss';
+
+const DEFAULT_WINDOW_SIZE = 50;
 
 function ReplaceProgress( props ) {
 	const { progress, totals, requestCount, replaceCount, onNext, status, onClear, phraseCount, isRegex } = props;
 	const total = isRegex ? totals.rows : totals.matched_rows;
 	const current = progress.rows === undefined ? 0 : progress.current + progress.rows;
 	const percent = total > 0 ? Math.round( ( current / total ) * 100 ) : 0;
+	const deltaCount = useDelta( replaceCount );
+	const [ windowPage, setWindowPage ] = useState( 0 );
 
 	useEffect( () => {
 		if ( requestCount > 0 && progress.next !== false && replaceCount < total && status === STATUS_IN_PROGRESS ) {
-			onNext( progress.next );
+			if ( deltaCount && deltaCount.prev && deltaCount.prev < deltaCount.curr ) {
+				// Made a replace - scale down the window
+				setWindowPage( Math.max( 0, windowPage - 5 ) );
+			} else {
+				// No replacements, scale up the window
+				setWindowPage( windowPage + 1 );
+			}
+
+			throttle( () => onNext( progress.next, adjustPerPage( windowPage, DEFAULT_WINDOW_SIZE ) ) );
 		}
 	}, [ requestCount ] );
 
@@ -32,19 +46,22 @@ function ReplaceProgress( props ) {
 			<h3>{ __( 'Replace progress' ) }</h3>
 
 			<div className="searchregex-replaceall__progress">
-				<Line percent={ percent } strokeWidth="4" trailWidth="4" strokeLinecap="square" />
+				<div className="searchregex-replaceall__container"><Line percent={ percent } strokeWidth="4" trailWidth="4" strokeLinecap="square" /></div>
 
 				<div className="searchregex-replaceall__status">{ `${ percent }%` }</div>
 			</div>
 
-			{ status === STATUS_COMPLETE && (
-				<>
-					<p>{ __( 'Finished!' ) }</p>
-					<p>{ __( 'Rows updated: %s', { args: numberFormat( replaceCount ) } ) }</p>
-					<p>{ __( 'Phrases replaced: %s', { args: numberFormat( phraseCount ) } ) }</p>
+			<div className="searchregex-replaceall__stats">
+				<p>
+					{ __( '%s phrase replaced.', '%s phrases replaced.', {
+						count: phraseCount,
+						args: numberFormat( phraseCount ),
+					} ) }
+				</p>
+				{ status === STATUS_COMPLETE && (
 					<button className="button button-primary" onClick={ onClear }>{ __( 'Finished!' ) }</button>
-				</>
-			) }
+				) }
+			</div>
 		</div>
 	)
 }
@@ -68,8 +85,8 @@ function mapDispatchToProps( dispatch ) {
 		onClear: () => {
 			dispatch( clear() );
 		},
-		onNext: ( page ) => {
-			dispatch( replaceNext( page ) );
+		onNext: ( page, perPage ) => {
+			dispatch( replaceNext( page, perPage ) );
 		},
 	};
 }

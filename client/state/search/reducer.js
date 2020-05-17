@@ -54,7 +54,12 @@ function getAdvancedState( state, action ) {
 		results,
 		requestCount: state.requestCount + 1,
 		progress: mergeProgress( state.progress, action.progress, state.searchDirection, state.requestCount === 0 ),
-		totals: { ...state.totals, ...action.totals },
+		totals: {
+			...state.totals,
+			...action.totals,
+			matched_rows: state.progress.next,
+			matched_phrases: ( state.totals.matched_phrases || 0 ) + action.results.reduce( ( prev, current ) => prev + current.match_count, 0 ),
+		},
 		canCancel: status !== STATUS_COMPLETE,
 		showLoading: status !== STATUS_COMPLETE,
 	};
