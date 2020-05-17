@@ -112,8 +112,8 @@ function mapStateToProps( state ) {
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		onSearchMore: ( searchValue, page, perPage, limit ) => {
-			dispatch( searchMore( searchValue, page, perPage, limit ) );
+		onSearchMore: ( page, perPage, limit ) => {
+			dispatch( searchMore( page, perPage, limit ) );
 		},
 		onSetError: ( error ) => {
 			dispatch( setError( error ) );

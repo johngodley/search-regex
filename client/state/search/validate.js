@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 
-import { getSearchOptions, getPerPage } from './selector';
+import { getAvailableSearchFlags, getAvailablePerPage } from './selector';
 import getPreload from 'lib/preload';
 
 function sanitizeValue( value, array, defaultValue ) {
@@ -48,10 +48,13 @@ function sanitizeSourceFlags( source, sourceFlags, flags ) {
 
 	for ( let index = 0; index < source.length; index++ ) {
 		const current = source[ index ];
-		const flagsForCurrent = Object.keys( sourceFlags[ current ] );
 
-		// Remove flags that existing in this source
-		remainingFlags = remainingFlags.filter( flag => flagsForCurrent.indexOf( flag ) === -1 );
+		if ( sourceFlags[ current ] ) {
+			const flagsForCurrent = Object.keys( sourceFlags[ current ] );
+
+			// Remove flags that existing in this source
+			remainingFlags = remainingFlags.filter( flag => flagsForCurrent.indexOf( flag ) === -1 );
+		}
 	}
 
 	// Remove any flags not in one of the sources
@@ -86,13 +89,13 @@ export default function getValidatedSearch( search, initialSources = null, initi
 
 	return {
 		searchPhrase,
-		searchFlags: arrayToObject( sanitizeArray( searchFlags, getSearchOptions() ) ),
+		searchFlags: arrayToObject( sanitizeArray( searchFlags, getAvailableSearchFlags() ) ),
 
 		source,
 		sourceFlags: arrayToObject( sanitizeSourceFlags( source, flags, sourceFlags ) ),
 
 		replacement,
 
-		perPage: sanitizeValue( parseInt( perPage, 10 ), getPerPage(), 25 ),
+		perPage: sanitizeValue( parseInt( perPage, 10 ), getAvailablePerPage(), 25 ),
 	}
 }

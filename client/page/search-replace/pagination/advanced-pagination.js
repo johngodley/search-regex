@@ -40,8 +40,8 @@ function AdvancedPagination( props ) {
 				</div>
 			) }
 			<div className="pagination-links">
-				<Nav title={ __( 'First page' ) } button="«" className="first-page" enabled={ previous !== false && ! isLoading } onClick={ () => onChangePage( search, 0, SEARCH_FORWARD ) } />
-				<Nav title={ __( 'Prev page' ) } button="‹" className="prev-page" enabled={ previous !== false && ! isLoading } onClick={ () => onChangePage( search, previous, SEARCH_BACKWARD ) } />
+				<Nav title={ __( 'First page' ) } button="«" className="first-page" enabled={ previous !== false && ! isLoading } onClick={ () => onChangePage( 0, SEARCH_FORWARD ) } />
+				<Nav title={ __( 'Prev page' ) } button="‹" className="prev-page" enabled={ previous !== false && ! isLoading } onClick={ () => onChangePage( previous, SEARCH_BACKWARD ) } />
 
 				<span className="tablenav-paging-text">
 					{ __( 'Progress %(current)s%%', {
@@ -51,7 +51,7 @@ function AdvancedPagination( props ) {
 					} ) }
 				</span>
 
-				<Nav title={ __( 'Next page' ) } button="›" className="next-page" enabled={ next !== false && ! isLoading } onClick={ () => onChangePage( search, next, SEARCH_FORWARD ) } />
+				<Nav title={ __( 'Next page' ) } button="›" className="next-page" enabled={ next !== false && ! isLoading } onClick={ () => onChangePage( next, SEARCH_FORWARD ) } />
 			</div>
 		</div>
 	);
@@ -68,8 +68,8 @@ function mapStateToProps( state ) {
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		onChangePage: ( searchValue, page, searchDirection ) => {
-			dispatch( search( searchValue, page, searchDirection ) );
+		onChangePage: ( page, searchDirection ) => {
+			dispatch( search( page, searchDirection ) );
 		},
 	};
 }
