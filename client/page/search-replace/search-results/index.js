@@ -89,6 +89,7 @@ function SearchResults( props ) {
 				progress={ progress }
 				searchDirection={ searchDirection }
 				noTotal
+				advanced={ !! searchFlags.regex }
 			/>
 		</>
 	);
