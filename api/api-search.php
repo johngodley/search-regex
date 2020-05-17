@@ -496,6 +496,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		}
 
 		// Get the row again
+		$replacer = new Replace( $params['replacement'], $sources, $flags );
 		$results = $search->get_row( $sources[0], $params['rowId'], $replacer );
 
 		if ( $results instanceof \WP_Error ) {

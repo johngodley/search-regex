@@ -16,7 +16,6 @@ import Replace from 'component/replace';
 function Replacement( props ) {
 	const { typeOfReplacement, isReplacing, onUpdate, onSave, children, match } = props;
 	const save = ( replacedPhrase, toggle ) => {
-		onUpdate( '' );
 		onSave( replacedPhrase );
 		toggle();
 	};
