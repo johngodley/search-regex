@@ -680,6 +680,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 		$allowed = Source_Manager::get_all_source_names();
 
 		add_filter( 'wp_revisions_to_keep', [ $this, 'disable_post_revisions' ] );
+		add_filter( 'wp_insert_post_data', [ $this, 'wp_insert_post_data' ] );
 
 		if ( ! is_array( $value ) ) {
 			$value = [ $value ];
@@ -704,5 +705,21 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	 */
 	public function disable_post_revisions() {
 		return 0;
+	}
+
+	/**
+	 * Stops wp_update_post from changing the post_modified date
+	 *
+	 * @internal
+	 * @param Array $data Array of post data.
+	 * @return Array
+	 */
+	public function wp_insert_post_data( $data ) {
+		if ( isset( $data['post_modified'] ) ) {
+			unset( $data['post_modified'] );
+			unset( $data['post_modified_gmt'] );
+		}
+
+		return $data;
 	}
 }
