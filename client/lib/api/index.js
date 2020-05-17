@@ -18,7 +18,7 @@ export const SearchRegexApi = {
 	},
 	source: {
 		deleteRow: ( source, rowId ) => postApiRequest( `source/${ source }/${ rowId }/delete` ),
-		loadRow: ( source, rowId ) => postApiRequest( `source/${ source }/${ rowId }` ),
+		loadRow: ( source, rowId ) => getApiRequest( `source/${ source }/${ rowId }` ),
 		saveRow: ( source, rowId, data ) => postApiRequest( `source/${ source }/${ rowId }`, data ),
 		replaceRow: ( source, rowId, data ) => postApiRequest( `source/${ source }/${ rowId }/replace`, data ),
 	},
