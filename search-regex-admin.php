@@ -174,17 +174,16 @@ class Search_Regex_Admin {
 	 * @return Array
 	 */
 	private function get_preload_data() {
-		$sources = Source_Manager::get_all_grouped();
 		$all = Source_Manager::get_all_source_names();
-		$handler = Source_Manager::get( $all, new Search_Flags(), new Source_Flags() );
+		$handlers = Source_Manager::get( $all, new Search_Flags(), new Source_Flags() );
 		$flags = [];
 
-		foreach ( $handler as $pos => $source ) {
-			$flags[ $all[ $pos ] ] = $source->get_supported_flags();
+		foreach ( $handlers as $pos => $source ) {
+			$flags[ $source->get_type( [] ) ] = $source->get_supported_flags();
 		}
 
 		return [
-			'sources' => $sources,
+			'sources' => Source_Manager::get_all_grouped(),
 			'source_flags' => $flags,
 		];
 	}
