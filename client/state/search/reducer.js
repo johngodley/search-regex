@@ -73,10 +73,16 @@ function searchState( state, action ) {
 	return getSimpleState( state, action );
 }
 
+const resetTotals = () => ( {
+	matched_rows: 0,
+	matched_phrases: 0,
+	rows: 0,
+} );
+
 const resetAll = () => ( {
 	...reset(),
 	results: [],
-	totals: {},
+	totals: resetTotals(),
 	progress: {}
 } );
 
@@ -136,7 +142,7 @@ export default function redirects( state = {}, action ) {
 				...state,
 				requestCount: 0,
 				status: STATUS_IN_PROGRESS,
-				totals: action.page === 0 ? {} : state.totals,
+				totals: action.page === 0 ? resetTotals() : state.totals,
 				progress: action.page === 0 ? {} : state.progress,
 				results: [],
 				searchDirection: action.searchDirection,
@@ -190,7 +196,7 @@ export default function redirects( state = {}, action ) {
 				replaceCount: action.results.rows + state.replaceCount,
 				phraseCount: action.results.phrases + state.phraseCount,
 				requestCount: action.progress.next === false ? 0 : state.requestCount + 1,
-				progress: action.progress,
+				progress: hasReplaceFinished( state, action ) ? {} : action.progress,
 				totals: { ...state.totals, ...action.totals },
 				status: hasReplaceFinished( state, action ) ? STATUS_COMPLETE : STATUS_IN_PROGRESS,
 			};

@@ -54,7 +54,7 @@ function Result( props ) {
 				<span title={ source_type }>{ source_name }</span>
 			</td>
 			<td className="searchregex-result__row">
-				{ row_id }
+				{ numberFormat( row_id ) }
 			</td>
 
 			<td className="searchregex-result__row">

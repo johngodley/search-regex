@@ -50,7 +50,11 @@ export function getInitialSearch() {
 		searchDirection: null,
 
 		requestCount: 0,
-		totals: {},
+		totals: {
+			matched_rows: 0,
+			matched_phrases: 0,
+			rows: 0,
+		},
 		progress: {},
 
 		status: null,
