@@ -19,11 +19,14 @@ import './style.scss';
 
 const DEFAULT_WINDOW_SIZE = 50;
 
+const getTotal = ( isRegex, totals ) => isRegex ? totals.rows : totals.matched_rows;
+const getPercent = ( current, total ) => total > 0 ? Math.round( ( current / total ) * 100 ) : 0
+
 function ReplaceProgress( props ) {
 	const { progress, totals, requestCount, replaceCount, onNext, status, onClear, phraseCount, isRegex } = props;
-	const total = isRegex ? totals.rows : totals.matched_rows;
+	const total = getTotal( isRegex, totals );
 	const current = progress.rows === undefined ? 0 : progress.current + progress.rows;
-	const percent = total > 0 ? Math.round( ( current / total ) * 100 ) : 0;
+	const percent = status === STATUS_IN_PROGRESS ? getPercent( current, total ) : 100;
 	const deltaCount = useDelta( replaceCount );
 	const [ windowPage, setWindowPage ] = useState( 0 );
 

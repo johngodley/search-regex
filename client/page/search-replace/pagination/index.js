@@ -15,7 +15,7 @@ function Pagination( props ) {
 	const { totals, searchDirection, advanced } = props;
 	const { matched_rows, matched_phrases, rows } = totals;
 
-	if ( matched_rows === null ) {
+	if ( matched_rows === null || matched_rows === undefined || matched_rows === 0 ) {
 		return <div className="tablenav-pages"><div className="displaying-num">&nbsp;</div></div>;
 	}
 

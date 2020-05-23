@@ -12,17 +12,21 @@ import PropTypes from 'prop-types';
 import './style.scss';
 
 const Badge = props => {
-	const { children, className, onClick, title, onCancel } = props;
+	const { children, className, onClick, title, onCancel, isEnabled } = props;
 	const extra = {
 		title,
 		onClick,
+	};
+	const cancel = ( ev ) => {
+		ev.preventDefault();
+		isEnabled && onCancel( ev );
 	};
 
 	return (
 		<div className={ classnames( 'redirect-badge', className, onClick ? 'redirect-badge__click' : null ) } { ...extra }>
 			<div>
 				{ children }
-				{ onCancel && <span onClick={ onCancel }>⨯</span> }
+				{ onCancel && <span onClick={ cancel }>⨯</span> }
 			</div>
 		</div>
 	);

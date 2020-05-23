@@ -84,6 +84,9 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 - Support searching and replacing in multiple sources
 - Improve regex search and replace speed
 - Row actions have moved to a dropdown
+- Fix HTML entities in row titles
+- Handle unknown post types
+- Fix global replace showing 0% progress
 - Add Japanese locale
 - Add Dutch locale
 

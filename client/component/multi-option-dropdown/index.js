@@ -84,14 +84,14 @@ class MultiOptionDropdown extends React.Component {
 	}
 
 	getBadges() {
-		const { selected, options, badges, badgeValues, customBadge } = this.props;
+		const { selected, options, badges, badgeValues, customBadge, isEnabled } = this.props;
 		const keys = customBadge ? customBadge( this.getBadgeValues() ) : this.getBadgeValues();
 
 		if ( keys.length > 0 && badges ) {
 			return keys.slice( 0, MAX_BADGES ).map( key => {
 				const found = this.getOptionForKey( options, key );
 
-				return found && ( selected[ key ] || badgeValues ) ? <Badge key={ key } onCancel={ ev => this.removeFilter( key, ev ) }>{ found.label }</Badge> : null;
+				return found && ( selected[ key ] || badgeValues ) ? <Badge key={ key } onCancel={ ev => this.removeFilter( key, ev ) } isEnabled={ isEnabled }>{ found.label }</Badge> : null;
 			} ).concat(
 				[ keys.length > MAX_BADGES ? <span key="end">...</span> : null ],
 			);

@@ -60,7 +60,7 @@ class Result {
 			'source_name' => $this->source_name,
 			'columns' => $columns,
 			'actions' => $this->actions,
-			'title' => $this->result_title,
+			'title' => html_entity_decode( $this->result_title ),
 			'match_count' => \array_reduce( $columns, function( $carry, $column ) {
 				return $carry + $column['match_count'];
 			}, 0 ),

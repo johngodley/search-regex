@@ -1,18 +1,18 @@
 .searchregex-result__replaced,
 .searchregex-result__highlight {
-	background-color: yellow;
+	background-color: #f7d85d;
 	font-weight: bold;
 	padding: 1px;
 	cursor: pointer;
 }
 
 .searchregex-result__replaced {
-	background-color: orange;
+	background-color: #f38830;
 	display: inline;
 }
 
 .searchregex-result__deleted {
-	background-color: red;
+	background-color: #e53e3e;
 	color: white;
 }
 
