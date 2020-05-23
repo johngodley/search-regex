@@ -51,6 +51,11 @@ class Source_Post extends Search_Source {
 			return $post_type['name'];
 		}
 
+		// Handle post types when it's not registered
+		if ( isset( $row['post_type'] ) ) {
+			return $row['post_type'];
+		}
+
 		return $this->source_type;
 	}
 
@@ -60,7 +65,8 @@ class Source_Post extends Search_Source {
 			return $post_type['label'];
 		}
 
-		return $this->source_name;
+		// Handle post types when it's not registered
+		return isset( $row['post_type'] ) ? ucwords( $row['post_type'] ) : $this->source_name;
 	}
 
 	public function get_supported_flags() {
