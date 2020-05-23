@@ -34,6 +34,12 @@ const getState = ( state = {}, search = {} ) => ( {
 	},
 } );
 
+const emptyTotals = {
+	matched_phrases: 0,
+	matched_rows: 0,
+	rows: 0,
+};
+
 describe( 'search value reducer', () => {
 	test( 'unknown action returns same state', () => {
 		const original = getState();
@@ -81,7 +87,7 @@ describe( 'search cancel reducer', () => {
 describe( 'search reducer', () => {
 	test( 'starting a search on first page resets totals', () => {
 		const original = getState( { requestCount: 5, results: [ 5 ], progress: { thing: 1 }, totals: { thing: 2 } } );
-		const expected = getState( { requestCount: 0, status: STATUS_IN_PROGRESS, totals: {}, progress: {}, results: [], searchDirection: SEARCH_FORWARD, showLoading: true } );
+		const expected = getState( { requestCount: 0, status: STATUS_IN_PROGRESS, totals: emptyTotals, progress: {}, results: [], searchDirection: SEARCH_FORWARD, showLoading: true } );
 		const action = { type: SEARCH_START_FRESH, page: 0, searchDirection: SEARCH_FORWARD };
 
 		expect( reducer( original, action ) ).toEqual( expected );
@@ -121,7 +127,7 @@ describe( 'search reducer', () => {
 
 	test( 'complete simple searching when it hasnt been cancelled resets state', () => {
 		const original = getState( { status: STATUS_IN_PROGRESS, canCancel: true, showLoading: true } );
-		const expected = getState( { status: STATUS_COMPLETE, canCancel: false, showLoading: false, results: [ 1 ], progress: 1, totals: { rows: 1 } } );
+		const expected = getState( { status: STATUS_COMPLETE, canCancel: false, showLoading: false, results: [ 1 ], progress: 1, totals: { ...emptyTotals, rows: 1 } } );
 		const action = { type: SEARCH_COMPLETE, results: [ 1 ], progress: 1, totals: { rows: 1 } };
 
 		expect( reducer( original, action ) ).toEqual( expected );
