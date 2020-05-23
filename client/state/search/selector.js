@@ -90,11 +90,13 @@ export function hasReplaceFinished( state, action ) {
 	const total = getReplaceTotal( state, action );
 	const { totals } = state;
 
+	// This will catch regex replace
 	if ( action.progress.next === false || replaceCount >= total ) {
 		return true;
 	}
 
-	if ( totals.matched_rows > 0 && replaceCount >= totals.matched_rows ) {
+	// This catches non-regex replace when no more matches
+	if ( totals.matched_rows === 0 && replaceCount > 0 ) {
 		return true;
 	}
 
