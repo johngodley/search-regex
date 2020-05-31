@@ -38,8 +38,18 @@ abstract class Search_Source {
 	 * @param Array $row Database row, used in some sources to determine the type.
 	 * @return String Source type
 	 */
-	public function get_type( array $row ) {
+	public function get_type( array $row = [] ) {
 		return $this->source_type;
+	}
+
+	/**
+	 * Return true if the source matches the type, false otherwise
+	 *
+	 * @param String $type Source type.
+	 * @return boolean
+	 */
+	public function is_type( $type ) {
+		return $this->source_type === $type;
 	}
 
 	/**
