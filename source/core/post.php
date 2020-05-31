@@ -45,7 +45,7 @@ class Source_Post extends Search_Source {
 		return null;
 	}
 
-	public function get_type( array $row ) {
+	public function get_type( array $row = [] ) {
 		$post_type = isset( $row['post_type'] ) ? $this->get_post_type( $row['post_type'] ) : false;
 		if ( $post_type ) {
 			return $post_type['name'];
@@ -57,6 +57,16 @@ class Source_Post extends Search_Source {
 		}
 
 		return $this->source_type;
+	}
+
+	/**
+	 * Return true if the source matches the type, false otherwise
+	 *
+	 * @param String $type Source type.
+	 * @return boolean
+	 */
+	public function is_type( $type ) {
+		return in_array( $type, $this->cpts, true );
 	}
 
 	public function get_name( array $row ) {
@@ -162,7 +172,7 @@ class Source_Post extends Search_Source {
 			return true;
 		}
 
-		return new \WP_Error( 'searchregex', 'Failed to update post' );
+		return new \WP_Error( 'searchregex', 'Failed to update post.' );
 	}
 
 	public function delete_row( $row_id ) {

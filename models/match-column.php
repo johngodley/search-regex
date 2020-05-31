@@ -5,17 +5,46 @@ namespace SearchRegex;
 class Match_Column {
 	const CONTEXT_LIMIT = 20;
 
-	/** @var string Column ID */
+	/**
+	 * Column ID
+	 *
+	 * @var string
+	 **/
 	private $column_id;
-	/** @var string */
+
+	/**
+	 * Column label
+	 *
+	 * @var string
+	 **/
 	private $column_label;
-	/** @var Match_Context[] */
+
+	/**
+	 * Array of match contexts
+	 *
+	 * @var Match_Context[]
+	 **/
 	private $contexts;
-	/** @var int */
+
+	/**
+	 * Total number of match contexts
+	 *
+	 * @var int
+	 **/
 	private $context_count;
-	/** @var int */
+
+	/**
+	 * Total number of matches
+	 *
+	 * @var int
+	 **/
 	private $match_count;
-	/** @var string */
+
+	/**
+	 * Replacement phrase
+	 *
+	 * @var string
+	 **/
 	private $replacement;
 
 	/**
@@ -43,7 +72,7 @@ class Match_Column {
 	/**
 	 * Convert the Match_Context to JSON
 	 *
-	 * @return Array JSON data
+	 * @return Array{column_id: string, column_label: string, contexts: array, context_count: int, match_count: int, replacement: string} JSON data
 	 */
 	public function to_json() {
 		$contexts = [];
@@ -58,7 +87,7 @@ class Match_Column {
 			'contexts' => $contexts,
 			'context_count' => $this->context_count,
 			'match_count' => $this->match_count,
-			'replacement' => $this->replacement,  // TODO is this needed?
+			'replacement' => $this->replacement,
 		];
 	}
 

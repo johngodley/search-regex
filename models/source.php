@@ -8,13 +8,32 @@ use SearchRegex\Search_Regex;
  * Represents a source of data that can be searched. Typically maps directly to a database table
  */
 abstract class Search_Source {
-	/** @var Search_Flags */
+	/**
+	 * The search flags
+	 *
+	 * @var Search_Flags
+	 **/
 	protected $search_flags;
-	/** @var Source_Flags */
+
+	/**
+	 * The source flags
+	 *
+	 * @var Source_Flags
+	 **/
 	protected $source_flags;
-	/** @var String */
+
+	/**
+	 * The source type
+	 *
+	 * @var String
+	 **/
 	protected $source_type;
-	/** @var String */
+
+	/**
+	 * The source type name
+	 *
+	 * @var String
+	 **/
 	protected $source_name;
 
 	/**
@@ -38,8 +57,18 @@ abstract class Search_Source {
 	 * @param Array $row Database row, used in some sources to determine the type.
 	 * @return String Source type
 	 */
-	public function get_type( array $row ) {
+	public function get_type( array $row = [] ) {
 		return $this->source_type;
+	}
+
+	/**
+	 * Return true if the source matches the type, false otherwise
+	 *
+	 * @param String $type Source type.
+	 * @return boolean
+	 */
+	public function is_type( $type ) {
+		return $this->source_type === $type;
 	}
 
 	/**
@@ -141,7 +170,7 @@ abstract class Search_Source {
 	 * Get the total number of matches for this search
 	 *
 	 * @param String $search Search string.
-	 * @return Array<String,Int>|\WP_Error The number of matches as an array of 'matches' and 'rows', or WP_Error on error
+	 * @return Array{matches: int, rows: int}|\WP_Error The number of matches as an array of 'matches' and 'rows', or WP_Error on error
 	 */
 	public function get_total_matches( $search ) {
 		global $wpdb;
@@ -269,6 +298,38 @@ abstract class Search_Source {
 	}
 
 	/**
+	 * Get a set of matching rows from a given offset
+	 *
+	 * @param String $search The search string.
+	 * @param int    $offset The row offset.
+	 * @param int    $limit The number of rows to return.
+	 * @param Bool   $exclude_search_query Exclude the search query. Used for regular expression searches.
+	 * @return Array|\WP_Error The database rows, or WP_Error on error
+	 */
+	public function get_matched_rows_offset( $search, $offset, $limit, $exclude_search_query ) {
+		global $wpdb;
+
+		$search_query = $exclude_search_query ? $this->get_search_conditions() : $this->get_search_query( $search );
+		$columns = $this->get_query_columns();
+
+		if ( $search_query ) {
+			$search_query .= ' AND ';
+		}
+
+		// phpcs:ignore
+		$search_query .= $wpdb->prepare( " {$this->get_table_id() } > %d", $offset );
+
+		// This is a known and validated query
+		// phpcs:ignore
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT {$columns} FROM {$this->get_table_name()} WHERE {$search_query} ORDER BY {$this->get_table_id()} ASC LIMIT %d", $limit ), ARRAY_A );
+		if ( $results === false || $wpdb->last_error ) {
+			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
+		}
+
+		return $results;
+	}
+
+	/**
 	 * Save a replacement to the database
 	 *
 	 * @param int    $row_id The row ID to save.
@@ -369,5 +430,14 @@ abstract class Search_Source {
 		}
 
 		return $search_phrase . $conditions;
+	}
+
+	/**
+	 * Get search source flags
+	 *
+	 * @return Search_Flags
+	 */
+	public function get_flags() {
+		return $this->search_flags;
 	}
 }

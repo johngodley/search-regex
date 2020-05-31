@@ -17,7 +17,7 @@ import { clear, replaceNext } from 'state/search/action';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from 'state/settings/type';
 import './style.scss';
 
-const DEFAULT_WINDOW_SIZE = 50;
+const DEFAULT_WINDOW_SIZE = 200;
 
 const getTotal = ( isRegex, totals ) => isRegex ? totals.rows : totals.matched_rows;
 const getPercent = ( current, total ) => total > 0 ? Math.round( ( current / total ) * 100 ) : 0
@@ -25,13 +25,13 @@ const getPercent = ( current, total ) => total > 0 ? Math.round( ( current / tot
 function ReplaceProgress( props ) {
 	const { progress, totals, requestCount, replaceCount, onNext, status, onClear, phraseCount, isRegex } = props;
 	const total = getTotal( isRegex, totals );
-	const current = progress.rows === undefined ? 0 : progress.current + progress.rows;
-	const percent = status === STATUS_IN_PROGRESS ? getPercent( current, total ) : 100;
+	const current = progress.current === undefined ? 0 : progress.current;
+	const percent = Math.min( 100, status === STATUS_IN_PROGRESS ? getPercent( current, total ) : 100 );
 	const deltaCount = useDelta( replaceCount );
 	const [ windowPage, setWindowPage ] = useState( 0 );
 
 	useEffect( () => {
-		if ( requestCount > 0 && progress.next !== false && replaceCount < total && status === STATUS_IN_PROGRESS ) {
+		if ( requestCount > 0 && progress.next !== false && status === STATUS_IN_PROGRESS ) {
 			if ( deltaCount && deltaCount.prev && deltaCount.prev < deltaCount.curr ) {
 				// Made a replace - scale down the window
 				setWindowPage( Math.max( 0, windowPage - 5 ) );
@@ -49,16 +49,24 @@ function ReplaceProgress( props ) {
 			<h3>{ __( 'Replace progress' ) }</h3>
 
 			<div className="searchregex-replaceall__progress">
-				<div className="searchregex-replaceall__container"><Line percent={ percent } strokeWidth="4" trailWidth="4" strokeLinecap="square" /></div>
+				<div className="searchregex-replaceall__container">
+					<Line percent={ percent } strokeWidth="4" trailWidth="4" strokeLinecap="square" />
+				</div>
 
 				<div className="searchregex-replaceall__status">{ `${ percent }%` }</div>
 			</div>
 
 			<div className="searchregex-replaceall__stats">
+				<h4>{ __( 'Replace Information' ) }</h4>
 				<p>
-					{ __( '%s phrase replaced.', '%s phrases replaced.', {
+					{ __( '%s phrase.', '%s phrases.', {
 						count: phraseCount,
 						args: numberFormat( phraseCount ),
+					} ) }
+					&nbsp;
+					{ __( '%s row.', '%s rows.', {
+						count: replaceCount,
+						args: numberFormat( replaceCount ),
 					} ) }
 				</p>
 				{ status === STATUS_COMPLETE && (

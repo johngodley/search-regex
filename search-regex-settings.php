@@ -18,6 +18,7 @@ function searchregex_get_default_options() {
 	$defaults = [
 		'support' => false,
 		'rest_api' => SEARCHREGEX_API_JSON,
+		'actionDropdown' => true,
 	];
 
 	return \apply_filters( 'searchregex_default_options', $defaults );
@@ -38,6 +39,10 @@ function searchregex_set_options( array $settings = array() ) {
 
 	if ( isset( $settings['support'] ) ) {
 		$options['support'] = $settings['support'] ? true : false;
+	}
+
+	if ( isset( $settings['actionDropdown'] ) ) {
+		$options['actionDropdown'] = $settings['actionDropdown'] ? true : false;
 	}
 
 	\update_option( SEARCHREGEX_OPTION, \apply_filters( 'searchregex_save_options', $options ) );

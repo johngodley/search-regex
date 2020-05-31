@@ -66,6 +66,6 @@ abstract class Source_Meta extends Search_Source {
 			return true;
 		}
 
-		return new \WP_Error( 'searchregex', 'Failed to update meta data' );
+		return new \WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
 	}
 }

@@ -46,7 +46,7 @@ describe( 'search actions', () => {
 	} );
 
 	describe( 'replaceAll', () => {
-		function testReplace( replaceRequest, replaceResponse, action, actionType, page ) {
+		function testReplace( replaceRequest, replaceResponse, action, actionType, offset ) {
 			const initialStore = getInitialSearchStore( {
 				source: [ 'post' ],
 				searchPhrase: 'cat',
@@ -67,7 +67,7 @@ describe( 'search actions', () => {
 				sourceFlags: [],
 				replacePhrase: replaceResponse,
 				perPage: 25,
-				page,
+				offset,
 			} );
 			const response = getResponse( { results } );
 
@@ -75,11 +75,11 @@ describe( 'search actions', () => {
 		}
 
 		test( 'a replaceAll calls APi with correct parameters and returns action', () => {
-			return testReplace( 'cat', 'cat', () => actions.replaceAll( 25 ), SEARCH_REPLACE_ALL, 0 );
+			return testReplace( 'cat', 'cat', () => actions.replaceAll( 25 ), SEARCH_REPLACE_ALL, '0' );
 		} );
 
 		test( 'a delete replaceAll calls APi with correct parameters and returns action', () => {
-			return testReplace( null, '', () => actions.replaceAll( 25 ), SEARCH_REPLACE_ALL, 0 );
+			return testReplace( null, '', () => actions.replaceAll( 25 ), SEARCH_REPLACE_ALL, '0' );
 		} );
 
 		test( 'a replaceNext calls APi with correct parameters and returns action', () => {

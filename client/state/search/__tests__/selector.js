@@ -26,27 +26,6 @@ describe( 'search selectors', () => {
 		} );
 	} );
 
-	describe( 'hasReplaceFinished', () => {
-		const getAction = ( extra ) => ( { progress: { next: true }, results: { rows: 0 }, totals: {}, ...extra } );
-		const getState = ( state ) => ( { replaceCount: 0, totals: { rows: 0 }, ...state } );
-
-		test( 'hasReplaceFinished returns true if next is false', () => {
-			expect( hasReplaceFinished( getState(), getAction( { progress: { next: false } } ) ) ).toBe( true );
-		} );
-
-		test( 'hasReplaceFinished returns true if replaceCount is greater than total rows', () => {
-			expect( hasReplaceFinished( getState(), getAction( { results: { rows: 10 } } ) ) ).toBe( true );
-		} );
-
-		test( 'hasReplaceFinished returns true if replaceCount is greater than matched rows', () => {
-			expect( hasReplaceFinished( getState( { totals: { matched_rows: 5 } } ), getAction( { results: { rows: 10 }, totals: { matched_rows: 10 } } ) ) ).toBe( true );
-		} );
-
-		test( 'hasReplaceFinished returns false if next has a values', () => {
-			expect( hasReplaceFinished( getState( { totals: { matched_rows: 0 } } ), getAction( { progress: { next: true }, totals: { matched_rows: 10 } } ) ) ).toBe( false );
-		} );
-	} );
-
 	describe( 'isComplete', () => {
 		const getAction = ( progress ) => ( { progress } );
 
@@ -64,14 +43,6 @@ describe( 'search selectors', () => {
 
 		test( 'going backward and has a previous then it is not complete', () => {
 			expect( isComplete( getAction( { previous: true } ), [], SEARCH_BACKWARD ) ).toBe( false );
-		} );
-
-		test( 'number of results greater than perPage then it is complete', () => {
-			expect( isComplete( { progress: { next: true }, perPage: 1 }, [ 1, 2 ], SEARCH_FORWARD ) ).toBe( true );
-		} );
-
-		test( 'number of results less than perPage then it is not complete', () => {
-			expect( isComplete( { progress: { next: true }, perPage: 1 }, [], SEARCH_FORWARD ) ).toBe( false );
 		} );
 	} );
 

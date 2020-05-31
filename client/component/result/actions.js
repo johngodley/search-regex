@@ -18,7 +18,7 @@ import { replaceRow } from 'state/search/action';
 import { deleteRow } from 'state/search/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 
-function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete, onEditor, description, sourceType } ) {
+function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete, onEditor, description, sourceType, actionDropdown } ) {
 	const reset = ( toggle ) => {
 		toggle();
 		setReplacement( '' );
@@ -55,39 +55,43 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 		}
 	}
 
-	actionList.push( <a key="edit" href="#" onClick={ editor }>{ __( 'Inline Editor' ) }</a> );
+	actionList.push( <a key="inline-edit" href="#" onClick={ editor }>{ __( 'Inline Editor' ) }</a> );
 	actionList.push( <a key="delete" href="#" onClick={ deleteTheRow }>{ __( 'Delete Row' ) }</a> );
 
-	return (
-		<Dropdown
-			key="replace"
-			renderToggle={ ( isOpen, toggle ) => (
-				<DropdownMenu
-					menu={ [ <a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>{ __( 'Replace Row' ) }</a> ].concat( actionList ) }
-				/>
-			) }
-			onHide={ () => setReplacement( '' ) }
-			hasArrow
-			disabled={ isLoading }
-			align="right"
-			renderContent={ ( toggle ) => (
-				<Replace
-					className="searchregex-replace__modal"
-					canReplace
-					setReplace={ ( replace ) => setReplacement( replace ) }
-					autoFocus
-					onSave={ ( value ) => save( value, toggle ) }
-					onCancel={ () => reset( toggle ) }
-					placeholder={ __( 'Replacement for all matches in this row' ) }
-					description={ description }
-				/>
-			) }
-		/>
-	)
+	if ( actionDropdown ) {
+		return (
+			<Dropdown
+				key="replace"
+				renderToggle={ ( isOpen, toggle ) => (
+					<DropdownMenu
+						menu={ [ <a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>{ __( 'Replace Row' ) }</a> ].concat( actionList ) }
+					/>
+				) }
+				onHide={ () => setReplacement( '' ) }
+				hasArrow
+				disabled={ isLoading }
+				align="right"
+				renderContent={ ( toggle ) => (
+					<Replace
+						className="searchregex-replace__modal"
+						canReplace
+						setReplace={ ( replace ) => setReplacement( replace ) }
+						autoFocus
+						onSave={ ( value ) => save( value, toggle ) }
+						onCancel={ () => reset( toggle ) }
+						placeholder={ __( 'Replacement for all matches in this row' ) }
+						description={ description }
+					/>
+				) }
+			/>
+		);
+	}
+
+	return actionList.reduce( ( prev, curr ) => [ prev, ' | ', curr ] );
 }
 
 function mapStateToProps( state ) {
-	const { status } = state;
+	const { status } = state.search;
 
 	return {
 		isLoading: status === STATUS_IN_PROGRESS,

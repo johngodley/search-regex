@@ -52,6 +52,13 @@ class OptionsForm extends React.Component {
 						</label>
 					</TableRow>
 
+					<TableRow title={ __( 'Actions' ) }>
+						<label>
+							<input type="checkbox" checked={ this.state.actionDropdown } name="actionDropdown" onChange={ this.onChange } />
+							{ __( "Show row actions as dropdown menu." ) }
+						</label>
+					</TableRow>
+
 					<TableRow title={ __( 'REST API' ) }>
 						<Select items={ restApi() } name="rest_api" value={ parseInt( this.state.rest_api, 10 ) } onChange={ this.onChange } /> &nbsp;
 						<span className="sub">{ __( "How Search Regex uses the REST API - don't change unless necessary" ) }</span>

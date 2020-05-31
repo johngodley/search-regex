@@ -178,8 +178,8 @@ class Search_Regex_Admin {
 		$handlers = Source_Manager::get( $all, new Search_Flags(), new Source_Flags() );
 		$flags = [];
 
-		foreach ( $handlers as $pos => $source ) {
-			$flags[ $source->get_type( [] ) ] = $source->get_supported_flags();
+		foreach ( $handlers as $source ) {
+			$flags[ $source->get_type() ] = $source->get_supported_flags();
 		}
 
 		return [

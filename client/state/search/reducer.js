@@ -20,7 +20,7 @@ import {
 	SEARCH_START_MORE,
 } from './type';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from 'state/settings/type';
-import { isAlreadyFinished, hasReplaceFinished, isComplete, isAdvancedSearch } from './selector';
+import { isAlreadyFinished, isComplete, isAdvancedSearch } from './selector';
 
 function mergeProgress( existing, progress, direction, firstInSet ) {
 	return {
@@ -55,9 +55,8 @@ function getAdvancedState( state, action ) {
 		requestCount: state.requestCount + 1,
 		progress: mergeProgress( state.progress, action.progress, state.searchDirection, state.requestCount === 0 ),
 		totals: {
-			...state.totals,
-			...action.totals,
-			matched_rows: state.progress.next,
+			rows: action.totals.rows,
+			matched_rows: state.totals.matched_rows + action.progress.rows,
 			matched_phrases: ( state.totals.matched_phrases || 0 ) + action.results.reduce( ( prev, current ) => prev + current.match_count, 0 ),
 		},
 		canCancel: status !== STATUS_COMPLETE,
@@ -115,6 +114,18 @@ function replaceRows( existing, results, rowId ) {
 	}
 
 	return newResults;
+}
+
+function replaceAllProgress( state, action ) {
+	if ( state.progress.current ) {
+		return {
+			current: state.progress.current + action.progress.rows
+		};
+	}
+
+	return {
+		current: action.progress.rows,
+	}
 }
 
 export default function redirects( state = {}, action ) {
@@ -184,7 +195,13 @@ export default function redirects( state = {}, action ) {
 			};
 
 		case SEARCH_REPLACE_ALL:
-			return { ...state, ...resetAll(), replaceAll: true, status: STATUS_IN_PROGRESS, canCancel: true };
+			return {
+				...state,
+				...resetAll(),
+				replaceAll: true,
+				status: STATUS_IN_PROGRESS,
+				canCancel: true
+			};
 
 		case SEARCH_REPLACE_ALL_COMPLETE:
 			if ( isAlreadyFinished( state ) ) {
@@ -193,12 +210,21 @@ export default function redirects( state = {}, action ) {
 
 			return {
 				...state,
-				replaceCount: action.results.rows + state.replaceCount,
-				phraseCount: action.results.phrases + state.phraseCount,
+				replaceCount: action.replaced.rows + state.replaceCount,
+				phraseCount: action.replaced.phrases + state.phraseCount,
 				requestCount: action.progress.next === false ? 0 : state.requestCount + 1,
-				progress: hasReplaceFinished( state, action ) ? {} : action.progress,
-				totals: { ...state.totals, ...action.totals },
-				status: hasReplaceFinished( state, action ) ? STATUS_COMPLETE : STATUS_IN_PROGRESS,
+				status: action.progress.next === false ? STATUS_COMPLETE : STATUS_IN_PROGRESS,
+
+				// this needs to
+				progress: {
+					...replaceAllProgress( state, action ),
+					next: action.progress.next,
+				},
+
+				// this needs to record the original totals, then ignore subsequent ones
+				totals: state.totals.rows === 0 ? action.totals : state.totals,
+
+				canCancel: action.progress.next !== false,
 			};
 
 		case SEARCH_SAVE_ROW_COMPLETE:

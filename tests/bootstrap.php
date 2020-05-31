@@ -81,4 +81,49 @@ class Redirection_Api_Test extends WP_Ajax_UnitTestCase {
 			}
 		}
 	}
+
+	protected static function load_fixture( $filename, $limit ) {
+		$handle = fopen( dirname( __FILE__ ) . '/fixtures/' . $filename , 'r' );
+		if ( ! $handle ) {
+			return [];
+		}
+
+		$csv = [];
+		$row = 0;
+		$header = [];
+		while ( ( $data = fgetcsv( $handle, 10000, ',' ) ) !== false ) {
+			if ( $row === 0 ) {
+				$header = $data;
+			} else {
+				$csv[] = array_combine( $header, $data );
+			}
+
+			$row++;
+			if ( $row > $limit ) {
+				break;
+			}
+		}
+
+		fclose( $handle );
+		return $csv;
+	}
+
+	protected static function create_posts_from_csv( array $csv ) {
+		foreach ( $csv as $entry ) {
+			$post_id = wp_insert_post( $entry );
+			if ( $post_id instanceof WP_Error ) {
+				die( 'Failed to create post' );
+			}
+		}
+	}
+
+	protected static function create_comments_from_csv( array $csv ) {
+		foreach ( $csv as $entry ) {
+			$comment_id = wp_insert_comment( $entry );
+
+			if ( $comment_id instanceof WP_Error ) {
+				die( 'Failed to create comment' );
+			}
+		}
+	}
 }

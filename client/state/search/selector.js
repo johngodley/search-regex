@@ -80,30 +80,6 @@ export function getReplaceTotal( state, action ) {
 }
 
 /**
- * Return true if the replacement has finished, false otherwise
- * @param {Object} state Current state
- * @param {Object} action Current action
- * @returns {Boolean}
- */
-export function hasReplaceFinished( state, action ) {
-	const replaceCount = action.results.rows + state.replaceCount;
-	const total = getReplaceTotal( state, action );
-	const { totals } = state;
-
-	// This will catch regex replace
-	if ( action.progress.next === false || replaceCount >= total ) {
-		return true;
-	}
-
-	// This catches non-regex replace when no more matches
-	if ( totals.matched_rows === 0 && replaceCount > 0 ) {
-		return true;
-	}
-
-	return false;
-}
-
-/**
  * Has the search finished?
  * @param {Object} action Current action
  * @param {Array} results Array of results
@@ -118,11 +94,6 @@ export function isComplete( action, results, direction ) {
 
 	// If going back and no previous then complete
 	if ( direction === SEARCH_BACKWARD && action.progress.previous === false ) {
-		return true;
-	}
-
-	// If our results is greater than per page then stop
-	if ( results.length >= action.perPage ) {
 		return true;
 	}
 

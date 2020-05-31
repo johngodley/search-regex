@@ -8,15 +8,39 @@ use SearchRegex\Match_Context;
  * Represents a single match
  */
 class Match {
-	/** @var Int */
+	/**
+	 * Position ID
+	 *
+	 * @var Int
+	 **/
 	private $pos_id;
-	/** @var String */
+
+	/**
+	 * Matched string
+	 *
+	 * @var String
+	 **/
 	private $match;
-	/** @var Int */
+
+	/**
+	 * Context offset
+	 *
+	 * @var Int
+	 **/
 	private $context_offset = 0;
-	/** @var String */
+
+	/**
+	 * Replacement
+	 *
+	 * @var String
+	 **/
 	private $replacement;
-	/** @var String[] */
+
+	/**
+	 * Array of captured data
+	 *
+	 * @var String[]
+	 **/
 	private $captures;
 
 	/**

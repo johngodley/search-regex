@@ -27,7 +27,7 @@ const shouldLoadMore = ( status, requestCount, results, perPage ) => status === 
 const MAX_REQUESTS = 1000;
 
 function SearchResults( props ) {
-	const { results, totals, progress, status, requestCount, search, searchDirection, showLoading, onCancel } = props;
+	const { results, totals, progress, status, requestCount, search, searchDirection, showLoading, onCancel, actionDropdown } = props;
 	const { perPage, searchFlags } = search;
 	const { onSearchMore, onChangePage, onSetError } = props;
 	const isLoading = status === STATUS_IN_PROGRESS;
@@ -66,7 +66,7 @@ function SearchResults( props ) {
 						<th className="searchregex-result__row">{ __( 'Row ID' ) }</th>
 						<th className="searchregex-result__matches">{ __( 'Matches' ) }</th>
 						<th className="searchregex-result__match">{ __( 'Matched Phrases' ) }</th>
-						<th className="searchregex-result__action">{ __( 'Actions' ) }</th>
+						<th className={ classnames( 'searchregex-result__action', actionDropdown && 'searchregex-result__action__dropdown' ) }>{ __( 'Actions' ) }</th>
 					</tr>
 				</thead>
 
@@ -97,6 +97,7 @@ function SearchResults( props ) {
 
 function mapStateToProps( state ) {
 	const { results, status, progress, totals, requestCount, searchDirection, search, showLoading } = state.search;
+	const { actionDropdown } = state.settings.values;
 
 	return {
 		results,
@@ -107,6 +108,7 @@ function mapStateToProps( state ) {
 		requestCount,
 		search,
 		showLoading,
+		actionDropdown,
 	};
 }
 

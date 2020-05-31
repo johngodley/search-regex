@@ -143,3 +143,89 @@ describe( 'search reducer', () => {
 
 	// TODO SEARCH_COMPLETE and not cancelled
 } );
+
+describe( 'replace all reducer', () => {
+	test( 'start a global replace resets state', () => {
+		const original = getState();
+		const expected = getState( { status: STATUS_IN_PROGRESS, canCancel: true, replaceAll: true } );
+		const action = { type: SEARCH_REPLACE_ALL };
+
+		expect( reducer( original, action ) ).toEqual( expected );
+	} );
+
+	test( 'global replace action finishes and returns more rows', () => {
+		const original = getState( {
+			replaceCount: 0,
+			phraseCount: 0,
+			requestCount: 0,
+			canCancel: true,
+			replaceAll: true,
+			status: STATUS_IN_PROGRESS,
+			progress: {
+				current: 0,
+				next: 0,
+			},
+			totals: {
+				rows: 0,
+				matched_rows: 0,
+				matched_phrases: 0,
+			},
+		} );
+		const expected = getState( {
+			status: STATUS_IN_PROGRESS,
+			canCancel: true,
+			replaceAll: true,
+			requestCount: 1,
+			replaceCount: 5,
+			phraseCount: 5,
+			progress: {
+				next: 'next-1',
+				current: 5,
+			},
+			totals: {
+				rows: 5,
+			}
+		} );
+		const action = { type: SEARCH_REPLACE_ALL_COMPLETE, progress: { next: 'next-1', rows: 5 }, totals: { rows: 5 }, replaced: { rows: 5, phrases: 5 } };
+
+		expect( reducer( original, action ) ).toEqual( expected );
+	} );
+
+	test.only( 'global replace action finishes and returns end', () => {
+		const original = getState( {
+			replaceCount: 0,
+			phraseCount: 0,
+			requestCount: 0,
+			canCancel: true,
+			replaceAll: true,
+			status: STATUS_IN_PROGRESS,
+			progress: {
+				current: 0,
+				next: 0,
+			},
+			totals: {
+				rows: 0,
+				matched_rows: 0,
+				matched_phrases: 0,
+			},
+		} );
+		const expected = getState( {
+			status: STATUS_COMPLETE,
+			canCancel: true,
+			replaceAll: true,
+			canCancel: false,
+			replaceCount: 5,
+			phraseCount: 5,
+			progress: {
+				next: false,
+				current: 5,
+			},
+			totals: {
+				rows: 5,
+			}
+		} );
+		const action = { type: SEARCH_REPLACE_ALL_COMPLETE, progress: { next: false, rows: 5 }, totals: { rows: 5 }, replaced: { rows: 5, phrases: 5 } };
+
+		expect( reducer( original, action ) ).toEqual( expected );
+	} );
+} );
