@@ -59,7 +59,7 @@ export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
 	const replace = {
 		...getSearchValues( search, sources ),
 		replacePhrase: getReplacement( search.replacement ),
-		page: 0,
+		offset: '0',
 		perPage,
 	};
 
@@ -73,12 +73,12 @@ export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
  * @param {Integer} page
  * @returns {Promise} API fetch promise
  */
-export const replaceNext = ( page, perPage ) => ( dispatch, getState ) => {
+export const replaceNext = ( offset, perPage ) => ( dispatch, getState ) => {
 	const { search, sources } = getState().search;
 	const replace = {
 		...getSearchValues( search, sources ),
 		replacePhrase: getReplacement( search.replacement ),
-		page,
+		offset,
 		perPage,
 	};
 

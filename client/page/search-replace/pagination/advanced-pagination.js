@@ -18,7 +18,7 @@ const forwardPercent = ( total, current ) => current === false ? 100 : ( current
 const backPercent = ( total, current ) => current === 0 ? current : ( current / total ) * 100;
 
 function AdvancedPagination( props ) {
-	const { total, progress, onChangePage, isLoading, searchDirection, search, noTotal = false, totals } = props;
+	const { total, progress, onChangePage, isLoading, searchDirection, noTotal = false, totals } = props;
 	const { previous, next } = progress;
 
 	return (
@@ -31,7 +31,7 @@ function AdvancedPagination( props ) {
 						args: numberFormat( total ),
 					} ) }
 					&nbsp;&mdash;&nbsp;
-					{ __( 'searched = %(searched)s found = %(found)s', {
+					{ __( 'matched rows = %(searched)s, phrases = %(found)s', {
 						args: {
 							searched: numberFormat( totals.matched_rows ),
 							found: numberFormat( totals.matched_phrases ),
