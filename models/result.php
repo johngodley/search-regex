@@ -6,19 +6,53 @@ namespace SearchRegex;
  * Contains all information for a search result - a database row that contains matches
  */
 class Result {
-	/** @var Int */
+	/**
+	 * Row ID
+	 *
+	 * @var Int
+	 **/
 	private $row_id;
-	/** @var String */
+
+	/**
+	 * Source type
+	 *
+	 * @var String
+	 **/
 	private $source_type;
-	/** @var String */
+
+	/**
+	 * Source name
+	 *
+	 * @var String
+	 **/
 	private $source_name;
-	/** @var String */
+
+	/**
+	 * A title for the result. e.g. post title
+	 *
+	 * @var String
+	 **/
 	private $result_title;
-	/** @var Match_Column[] */
+
+	/**
+	 * Array of columns with matches
+	 *
+	 * @var Match_Column[]
+	 **/
 	private $columns;
-	/** @var String[] */
+
+	/**
+	 * Raw data for this result
+	 *
+	 * @var String[]
+	 **/
 	private $raw;
-	/** @var String[] */
+
+	/**
+	 * Array of actions that can be performed on this result
+	 *
+	 * @var String[]
+	 **/
 	private $actions = [];
 
 	/**
@@ -92,5 +126,14 @@ class Result {
 	 */
 	public function get_row_id() {
 		return $this->row_id;
+	}
+
+	/**
+	 * Get the result source type
+	 *
+	 * @return String
+	 */
+	public function get_source_type() {
+		return $this->source_type;
 	}
 }
