@@ -44,11 +44,13 @@ class Source_Comment extends Search_Source {
 	}
 
 	public function get_actions( Result $result ) {
-		$link = get_edit_comment_link( $result->get_row_id() );
+		$id = $result->get_row_id();
+		$link = get_edit_comment_link( $id );
+		$comment = get_comment( $id );
 		$raw = $result->get_raw();
 
-		if ( $link ) {
-			$view = get_comment_link( intval( $raw['comment_post_ID'], 10 ) );
+		if ( $link && is_object( $comment ) ) {
+			$view = get_comment_link( $comment );
 
 			return array_filter( [
 				'edit' => str_replace( '&amp;', '&', $link ),
