@@ -48,7 +48,7 @@ class Source_Comment extends Search_Source {
 		$raw = $result->get_raw();
 
 		if ( $link ) {
-			$view = get_permalink( intval( $raw['comment_post_ID'], 10 ) );
+			$view = get_comment_link( intval( $raw['comment_post_ID'], 10 ) );
 
 			return array_filter( [
 				'edit' => str_replace( '&amp;', '&', $link ),
