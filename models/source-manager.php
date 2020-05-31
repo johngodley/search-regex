@@ -29,15 +29,8 @@ class Source_Manager {
 	 * @return Array
 	 */
 	private static function get_core_sources() {
-		$core_sources = [
+		$sources = [
 			self::get_post_source(),
-			[
-				'name' => 'post-meta',
-				'class' => 'SearchRegex\Source_Post_Meta',
-				'label' => __( 'Post Meta', 'search-regex' ),
-				'description' => __( 'Search post meta names and values.', 'search-regex' ),
-				'type' => 'core',
-			],
 			[
 				'name' => 'comment',
 				'class' => 'SearchRegex\Source_Comment',
@@ -46,24 +39,10 @@ class Source_Manager {
 				'type' => 'core',
 			],
 			[
-				'name' => 'comment-meta',
-				'class' => 'SearchRegex\Source_Comment_Meta',
-				'label' => __( 'Comment Meta', 'search-regex' ),
-				'description' => __( 'Search comment meta names and values.', 'search-regex' ),
-				'type' => 'core',
-			],
-			[
 				'name' => 'user',
 				'class' => 'SearchRegex\Source_User',
 				'label' => __( 'Users', 'search-regex' ),
 				'description' => __( 'Search user email, URL, and name.', 'search-regex' ),
-				'type' => 'core',
-			],
-			[
-				'name' => 'user-meta',
-				'class' => 'SearchRegex\Source_User_Meta',
-				'label' => __( 'User Meta', 'search-regex' ),
-				'description' => __( 'Search user meta name and values.', 'search-regex' ),
 				'type' => 'core',
 			],
 			[
@@ -75,7 +54,40 @@ class Source_Manager {
 			],
 		];
 
-		return apply_filters( 'searchregex_sources_core', $core_sources );
+		return apply_filters( 'searchregex_sources_core', $sources );
+	}
+
+	/**
+	 * Return all the advanced source types
+	 *
+	 * @return Array
+	 */
+	private static function get_advanced_sources() {
+		$sources = [
+			[
+				'name' => 'post-meta',
+				'class' => 'SearchRegex\Source_Post_Meta',
+				'label' => __( 'Post Meta', 'search-regex' ),
+				'description' => __( 'Search post meta names and values.', 'search-regex' ),
+				'type' => 'advanced',
+			],
+			[
+				'name' => 'comment-meta',
+				'class' => 'SearchRegex\Source_Comment_Meta',
+				'label' => __( 'Comment Meta', 'search-regex' ),
+				'description' => __( 'Search comment meta names and values.', 'search-regex' ),
+				'type' => 'advanced',
+			],
+			[
+				'name' => 'user-meta',
+				'class' => 'SearchRegex\Source_User_Meta',
+				'label' => __( 'User Meta', 'search-regex' ),
+				'description' => __( 'Search user meta name and values.', 'search-regex' ),
+				'type' => 'advanced',
+			],
+		];
+
+		return apply_filters( 'searchregex_sources_advanced', $sources );
 	}
 
 	/**
@@ -85,6 +97,7 @@ class Source_Manager {
 	 */
 	public static function get_all_sources() {
 		$core_sources = self::get_core_sources();
+		$advanced_sources = self::get_advanced_sources();
 		$post_sources = self::get_all_custom_post_types();
 
 		// Load custom stuff here
@@ -102,9 +115,21 @@ class Source_Manager {
 			return $source;
 		}, $plugin_sources );
 
-		return array_merge( array_values( $core_sources ), array_values( $post_sources ), array_values( $plugin_sources ) );
+		return array_values(
+			array_merge(
+				array_values( $core_sources ),
+				array_values( $advanced_sources ),
+				array_values( $post_sources ),
+				array_values( $plugin_sources )
+			)
+		);
 	}
 
+	/**
+	 * Return an array of all the custom sources. Note this is filtered with `searchregex_sources_posttype`
+	 *
+	 * @return Array{name: string, class: string, label: string, type: string} The array of database sources as name => class
+	 */
 	private static function get_all_custom_post_types() {
 		/** @var Array */
 		$post_types = get_post_types( [], 'objects' );
@@ -135,7 +160,7 @@ class Source_Manager {
 		$groups = [
 			[
 				'name' => 'core',
-				'label' => __( 'Standard Types', 'search-regex' ),
+				'label' => __( 'Standard', 'search-regex' ),
 				'sources' => array_values( array_filter( $sources, function( $source ) {
 					return $source['type'] === 'core';
 				} ) ),
@@ -148,6 +173,13 @@ class Source_Manager {
 				} ) ),
 			],
 			[
+				'name' => 'advanced',
+				'label' => __( 'Advanced', 'search-regex' ),
+				'sources' => array_values( array_filter( $sources, function( $source ) {
+					return $source['type'] === 'advanced';
+				} ) ),
+			],
+			[
 				'name' => 'plugin',
 				'label' => __( 'Plugins', 'search-regex' ),
 				'sources' => array_values( array_filter( $sources, function( $source ) {
@@ -156,9 +188,9 @@ class Source_Manager {
 			],
 		];
 
-		return array_filter( apply_filters( 'searchregex_source_groups', $groups ), function( $group ) {
+		return array_values( array_filter( apply_filters( 'searchregex_source_groups', $groups ), function( $group ) {
 			return count( $group['sources'] ) > 0;
-		} );
+		} ) );
 	}
 
 	/**
@@ -208,6 +240,10 @@ class Source_Manager {
 	public static function get( $sources, Search_Flags $search_flags, Source_Flags $source_flags ) {
 		$handlers = [];
 		$cpts = [];
+
+		/**
+		 * @psalm-suppress InvalidArgument
+		 */
 		$all_cpts = array_map( function( array $source ) {
 			return $source['name'];
 		}, self::get_all_custom_post_types() );
