@@ -9,11 +9,25 @@ use SearchRegex\Match;
  * Performs plain and regular expressions of single and global replacements
  */
 class Replace {
-	/** @var String */
+	/**
+	 * The replacement phrase
+	 *
+	 * @var String
+	 **/
 	private $replace;
-	/** @var Search_Source[] */
+
+	/**
+	 * Our search sources
+	 *
+	 * @var Search_Source[]
+	 **/
 	private $sources = [];
-	/** @var Search_Flags */
+
+	/**
+	 * Our search flags
+	 *
+	 * @var Search_Flags
+	 **/
 	private $flags;
 
 	const BEFORE = '<SEARCHREGEX>';
@@ -121,12 +135,17 @@ class Replace {
 				continue;
 			}
 
-			$saved = $this->sources[0]->save( $result->get_row_id(), $column->get_column_id(), $replacement );
-			if ( is_wp_error( $saved ) && is_object( $saved ) ) {
-				return $saved;
-			}
+			foreach ( $this->sources as $source ) {
+				if ( $source->is_type( $result->get_source_type() ) ) {
+					$saved = $source->save( $result->get_row_id(), $column->get_column_id(), $replacement );
 
-			$phrases_replaced += $column->get_match_count();
+					if ( is_wp_error( $saved ) && is_object( $saved ) ) {
+						return $saved;
+					}
+
+					$phrases_replaced += $column->get_match_count();
+				}
+			}
 		}
 
 		return $phrases_replaced;

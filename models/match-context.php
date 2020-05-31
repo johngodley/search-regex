@@ -11,13 +11,32 @@ class Match_Context {
 	const CHARS_BEFORE = 50;
 	const CHARS_AFTER = 60;
 
-	/** @var Int */
+	/**
+	 * Context ID
+	 *
+	 * @var Int
+	 **/
 	private $context_id;
-	/** @var String|null */
+
+	/**
+	 * Context
+	 *
+	 * @var String|null
+	 **/
 	private $context = null;
-	/** @var Match[] */
+
+	/**
+	 * Array of matches
+	 *
+	 * @var Match[]
+	 **/
 	private $matches = [];
-	/** @var Int */
+
+	/**
+	 * Total number of matches
+	 *
+	 * @var Int
+	 **/
 	private $match_count = 0;
 
 	/**
@@ -41,7 +60,7 @@ class Match_Context {
 	/**
 	 * Convert the Match_Context to to_json
 	 *
-	 * @return Array JSON
+	 * @return Array{context_id: int, context: string|null, matches: array, match_count: int} JSON
 	 */
 	public function to_json() {
 		$matches = [];
