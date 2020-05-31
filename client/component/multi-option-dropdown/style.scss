@@ -74,6 +74,16 @@
 	}
 }
 
+.redirect-multioption__group {
+	h5 {
+		margin: 0;
+	}
+
+	input[type="checkbox"] {
+		margin-right: 7px;
+	}
+}
+
 .actions .button.redirect-multioption__button {
 	height: 28px;
 }
