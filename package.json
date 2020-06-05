@@ -17,7 +17,8 @@
     "doc": "apidoc -v -i api/ -o ./api-doc/",
     "phpcs": "phpcs ./models ./source ./search-regex-admin.php ./search-regex-capabilities.php ./search-regex-settings.php ./search-regex.php",
     "phpunit": "WP_TESTS_DIR=./../../../../test/trunk phpunit",
-    "psalm": "./vendor/vimeo/psalm/psalm --show-info=true"
+    "psalm": "./vendor/vimeo/psalm/psalm --show-info=true",
+    "checkjs": "tsc"
   },
   "repository": {
     "type": "git",
@@ -55,6 +56,11 @@
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-react": "^7.10.1",
     "@hot-loader/react-dom": "^16.13.0",
+    "@types/classnames": "^2.2.10",
+    "@types/eslint": "^6.8.1",
+    "@types/qs": "^6.9.3",
+    "@types/react-dom": "^16.9.8",
+    "@wordpress/prettier-config": "^0.2.0",
     "apidoc": "^0.23.0",
     "autoprefixer": "^9.8.0",
     "babel-core": "^7.0.0-bridge.0",
@@ -109,6 +115,7 @@
     "stylelint-config-wordpress": "^17.0.0",
     "through": "^2.3.8",
     "through2": "^3.0.1",
+    "typescript": "^3.9.3",
     "underscore": "^1.10.2",
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.8.0",
@@ -118,6 +125,7 @@
     "webpack-remove-debug": "^0.1.0"
   },
   "dependencies": {
+    "@wordpress/base-styles": "^1.9.0",
     "classnames": "^2.2.6",
     "debounce-promise": "^3.1.2",
     "interpolate-components": "^1.1.1",
