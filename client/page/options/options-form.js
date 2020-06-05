@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import { connect } from 'react-redux';
 
 /**
@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import { saveSettings } from 'state/settings/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import { FormTable, TableRow } from 'component/form-table';
-import Select from 'component/select';
+import { Select } from 'wp-plugin-library';
 
 export const restApi = () => [
 	{ value: 0, label: __( 'Default REST API' ) },

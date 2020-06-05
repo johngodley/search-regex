@@ -13,7 +13,7 @@ import {
 	SETTING_API_FAILED,
 	SETTING_API_TRY,
 } from './type';
-import { getApi, SearchRegexApi } from 'lib/api';
+import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
 
 export const loadSettings = () => ( dispatch, getState ) => {
 	if ( getState().settings.loadStatus === STATUS_COMPLETE ) {

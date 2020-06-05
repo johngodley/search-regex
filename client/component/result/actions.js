@@ -3,17 +3,15 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 
-import Dropdown from 'component/dropdown';
-import DropdownMenu from 'component/dropdown-menu';
+import { Dropdown, DropdownMenu, ExternalLink } from 'wp-plugin-library';
 import Replace from 'component/replace';
-import ExternalLink from 'component/external-link';
 import { replaceRow } from 'state/search/action';
 import { deleteRow } from 'state/search/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';

@@ -8,7 +8,7 @@ import {
 	SEARCH_LOAD_ROW_COMPLETE,
 	SEARCH_SAVE_ROW_COMPLETE,
 } from '../type';
-import { getApi, SearchRegexApi } from 'lib/api';
+import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
 
 export const deleteRow = ( source, rowId ) => ( dispatch ) => {
 	getApi( SearchRegexApi.source.deleteRow( source, rowId ) )

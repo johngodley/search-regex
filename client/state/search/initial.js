@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 
-import { getPageUrl } from 'lib/wordpress-url';
+import { getPageUrl } from 'wp-plugin-library/lib/wordpress-url';
 import { getAllPostTypes } from 'lib/sources';
 import getPreload from 'lib/preload';
 import getValidatedSearch from 'state/search/validate';

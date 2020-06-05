@@ -6,13 +6,13 @@
 import React from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { connect } from 'react-redux';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 
 /**
  * Internal dependencies
  */
 
-import ExternalLink from 'component/external-link';
+import { ExternalLink } from 'wp-plugin-library';
 import RestApiStatus from 'component/rest-api-status';
 import DecodeError from 'component/decode-error';
 import { clearErrors } from 'state/message/action';

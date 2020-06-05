@@ -4,14 +4,14 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 
-import Spinner from 'component/spinner';
+import { Spinner } from 'wp-plugin-library';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import { SEARCH_FORWARD } from 'state/search/type';
 import { cancel, search, replaceAll } from 'state/search/action';

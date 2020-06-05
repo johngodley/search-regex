@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 
-import ExternalLink from 'component/external-link';
+import { ExternalLink } from 'wp-plugin-library';
 
 const Help = () => {
 	return (

@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { translate as __, numberFormat } from 'lib/locale';
+import { translate as __, numberFormat } from 'wp-plugin-library/lib/locale';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 
@@ -12,10 +12,9 @@ import { connect } from 'react-redux';
  */
 
 import Actions from './actions';
-import Spinner from 'component/spinner';
+import { Spinner, ExternalLink } from 'wp-plugin-library';
 import ResultColumns from './result-columns';
 import Editor from 'component/editor';
-import ExternalLink from 'component/external-link';
 import './style.scss';
 
 function getReplacement( globalReplacement, replacement ) {

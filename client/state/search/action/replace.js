@@ -10,14 +10,14 @@ import {
 	SEARCH_REPLACE_ALL_MORE,
 } from '../type';
 import { getSearchValues, getReplacement } from '../selector';
-import { getApi, SearchRegexApi } from 'lib/api';
+import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
 
 /**
  * Replace within a single row. Can replace an individual phrase, everything in a column, or everything in a row
  *
  * @param {String} replacement String to replace the phrase with
  * @param {String} source The source name
- * @param {Integer} rowId Row ID
+ * @param {number} rowId Row ID
  * @param {String|null} columnId Optional column to replace
  * @param {String|null} posId Optional position in column to replace
  */
@@ -51,7 +51,7 @@ export const replaceRow = ( replacement, source, rowId, columnId = null, posId =
 
 /**
  * Action to replace all phrases with the replacement
- * @param {Integer} perPage Number of results per page
+ * @param {number} perPage Number of results per page
  * @returns {Promise} API fetch promise
  */
 export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
@@ -70,7 +70,7 @@ export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
 
 /**
  * Action to continue replacing all
- * @param {Integer} page
+ * @param {number} page
  * @returns {Promise} API fetch promise
  */
 export const replaceNext = ( offset, perPage ) => ( dispatch, getState ) => {

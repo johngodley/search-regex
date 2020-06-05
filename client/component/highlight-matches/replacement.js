@@ -4,13 +4,13 @@
 
 import React from 'react';
 import classnames from 'classnames';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 
 /**
  * Internal dependencies
  */
 
-import Dropdown from 'component/dropdown';
+import { Dropdown } from 'wp-plugin-library';
 import Replace from 'component/replace';
 
 function Replacement( props ) {

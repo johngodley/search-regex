@@ -3,15 +3,14 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 
-import Select from 'component/select';
-import MultiOptionDropdown from 'component/multi-option-dropdown';
+import { Select, MultiOptionDropdown } from 'wp-plugin-library';
 import Replace from 'component/replace';
 import { setSearch } from 'state/search/action';
 import { getAvailableSearchFlags, getAvailablePerPage } from 'state/search/selector';
@@ -116,7 +115,7 @@ function getSourceFlagOptions( options, source ) {
 	return sourceFlags;
 }
 
-function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceAll } ) {
+function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceAll, status } ) {
 	const { searchPhrase, searchFlags, sourceFlags, source, perPage } = search;
 	const sourceFlagsForSource = getSourceFlagOptions( sourceFlagOptions, source );
 	const isBusy = status === STATUS_IN_PROGRESS || replaceAll;
@@ -146,7 +145,7 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 							selected={ searchFlags }
 							onApply={ ( searchFlags ) => onSetSearch( { searchFlags } ) }
 							title={ __( 'Search Flags' ) }
-							isEnabled={ ! isBusy }
+							disabled={ isBusy }
 							badges
 						/>
 					</td>
@@ -171,7 +170,7 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 							selected={ convertSelectedSource( source, sources ) }
 							onApply={ ( newSources, change, group ) => onSetSearch( { source: convertToSource( newSources, change, group, sources ) } ) }
 							title=""
-							isEnabled={ ! isBusy }
+							disabled={ isBusy }
 							badges
 							badgeValues
 							customBadge={ ( badges ) => customBadge( badges, sources ) }
@@ -183,7 +182,7 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 								selected={ sourceFlags }
 								onApply={ ( sourceFlags ) => onSetSearch( { sourceFlags } ) }
 								title={ __( 'Source Options' ) }
-								isEnabled={ ! isBusy }
+								disabled={ isBusy }
 								badges
 								hideTitle
 							/>
@@ -199,7 +198,7 @@ function SearchForm( { search, onSetSearch, sources, sourceFlagOptions, replaceA
 							items={ getAvailablePerPage() }
 							value={ perPage }
 							onChange={ ( ev ) => onSetSearch( { perPage: parseInt( ev.target.value, 10 ) } ) }
-							isEnabled={ ! isBusy }
+							disabled={ isBusy }
 						/>
 					</td>
 				</tr>
@@ -217,13 +216,14 @@ function mapDispatchToProps( dispatch ) {
 }
 
 function mapStateToProps( state ) {
-	const { search, sources, sourceFlags, replaceAll } = state.search;
+	const { search, sources, sourceFlags, replaceAll, status } = state.search;
 
 	return {
 		search,
 		sources,
 		sourceFlagOptions: sourceFlags,
 		replaceAll,
+		status,
 	};
 }
 

@@ -3,14 +3,14 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 
-import Select from 'component/select';
+import { Select } from 'wp-plugin-library';
 import './style.scss';
 
 const getReplaceOptions = () => [
@@ -87,7 +87,7 @@ function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCanc
 			<div className="searchregex-replace__input">
 				{ replaceFlag === 'multi' ? (
 					<textarea
-						rows="4"
+						rows={ 4 }
 						{ ...value }
 					/>
 				) : (
@@ -102,7 +102,7 @@ function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCanc
 					name="replace_flags"
 					value={ replaceFlag }
 					onChange={ ( ev ) => setReplaceFlag( ev.target.value ) }
-					isEnabled={ canReplace }
+					disabled={ ! canReplace }
 				/>
 			</div>
 

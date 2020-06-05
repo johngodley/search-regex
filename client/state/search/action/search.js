@@ -9,11 +9,11 @@ import {
 	SEARCH_FORWARD,
 } from '../type';
 import { getSearchValues } from '../selector';
-import { getApi, SearchRegexApi } from 'lib/api';
+import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
 
 /**
  * Start a search for the current phrase and conditions
- * @param {Integer} page Page offset
+ * @param {number} page Page offset
  * @param {String} searchDirection Search direction - SEARCH_FORWARD or SEARCH_BACKWARD
  */
 export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, getState ) => {
@@ -31,10 +31,9 @@ export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, 
 
 /**
  * Continue a search for the current phrase and conditions. Only need for regular expression searches when the page isn't full
- * @param {Integer} page Page offset
- * @param {Integer} perPage Number of results per page
- * @param {Integer} limit How many results remaining to return
- * @param {String} searchDirection Search direction - SEARCH_FORWARD or SEARCH_BACKWARD
+ * @param {number} page Page offset
+ * @param {number} perPage Number of results per page
+ * @param {number} limit How many results remaining to return
  */
 export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => {
 	const { search, sources, searchDirection = SEARCH_FORWARD } = getState().search;

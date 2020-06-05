@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 import { SEARCH_START_FRESH } from 'state/search/type';
-import { setPageUrl } from 'lib/wordpress-url';
+import { setPageUrl } from 'wp-plugin-library/lib/wordpress-url';
 import { removePostTypes } from 'lib/sources';
 
 function setUrlForPage( action, state ) {

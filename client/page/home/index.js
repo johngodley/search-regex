@@ -4,21 +4,20 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 
-import { getPluginPage } from 'lib/wordpress-url';
+import { getPluginPage } from 'wp-plugin-library/lib/wordpress-url';
 import Options from 'page/options';
 import Support from 'page/support';
 import SearchReplace from 'page/search-replace';
 import Error from 'component/error';
-import Notice from 'component/notice';
-import Menu from 'component/menu';
-import ExternalLink from 'component/external-link';
+import { Notice, Menu, ExternalLink } from 'wp-plugin-library';
+import { has_page_access } from 'lib/capabilities';
 import { clearErrors } from 'state/message/action';
 import './style.scss';
 
@@ -27,6 +26,21 @@ const getTitles = () => ( {
 	options: __( 'Options' ),
 	support: __( 'Support' ),
 } );
+
+const getMenu = () => [
+	{
+		name: __( 'Search & Replace' ),
+		value: '',
+	},
+	{
+		name: __( 'Options' ),
+		value: 'options',
+	},
+	{
+		name: __( 'Support' ),
+		value: 'support',
+	},
+].filter( option => has_page_access( option.value ) || option.value === '' && has_page_access( 'search' ) );
 
 class Home extends React.Component {
 	constructor( props ) {
@@ -158,7 +172,7 @@ class Home extends React.Component {
 			<div className="wrap searchregex">
 				<h1 className="wp-heading-inline">{ title }</h1>
 
-				<Menu onChangePage={ this.onChangePage } current={ page } />
+				<Menu onChangePage={ this.onChangePage } menu={ getMenu() } home="search" urlBase={ SearchRegexi10n.pluginRoot } />
 				<Error />
 
 				{ this.getContent( page ) }

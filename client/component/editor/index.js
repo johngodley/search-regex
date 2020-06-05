@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import { connect } from 'react-redux';
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -11,9 +11,7 @@ import TextareaAutosize from 'react-textarea-autosize';
  * Internal dependencies
  */
 
-import Modal from 'component/modal';
-import Select from 'component/select';
-import Spinner from 'component/spinner';
+import { Modal, Select, Spinner } from 'wp-plugin-library';
 import { loadRow, saveRow } from 'state/search/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import './style.scss';
@@ -59,7 +57,7 @@ function Editor( { result, onClose, onLoad, rawData, onSave, status } ) {
 
 				<TextareaAutosize
 					value={ content }
-					rows="15"
+					rows={ 15 }
 					maxRows={ 30 }
 					onChange={ ( ev ) => setContent( ev.target.value ) }
 					disabled={ status === STATUS_IN_PROGRESS }
@@ -72,7 +70,7 @@ function Editor( { result, onClose, onLoad, rawData, onSave, status } ) {
 						value={ column }
 						items={ columns.map( ( { column_id, column_label } ) => ( { value: column_id, label: column_label } ) ) }
 						onChange={ ( ev ) => changeColumn( ev.target.value ) }
-						isEnabled={ status !== STATUS_IN_PROGRESS }
+						disabled={ status === STATUS_IN_PROGRESS }
 					/> }
 
 					<div>

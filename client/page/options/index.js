@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { loadSettings } from 'state/settings/action';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from 'state/settings/type';
 import OptionsForm from './options-form';
-import Placeholder from 'component/placeholder';
+import { Placeholder } from 'wp-plugin-library';
 import Donation from './donation';
 
 class Options extends React.Component {

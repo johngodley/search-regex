@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-library/lib/locale';
 import { connect } from 'react-redux';
 
 /**
