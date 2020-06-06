@@ -80,7 +80,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 2.1 - ??? =
+= 2.1 - 6th June 2020 =
 - Support searching and replacing in multiple sources
 - Improve regex search and replace speed
 - Row actions have moved to a dropdown
@@ -90,7 +90,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 - Add Japanese locale
 - Add Dutch locale
 
-= 2.0.1 - 11th May 2010 =
+= 2.0.1 - 11th May 2020 =
 - Comment title now takes you to comment page
 - Improve regex performance when data has large gaps
 - Use correct contact address

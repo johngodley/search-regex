@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Search Regex - Development (trunk) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-05-08 23:13:57+0000\n"
+"PO-Revision-Date: 2020-06-02 07:24:08+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -136,7 +136,7 @@ msgstr "投稿メタ情報"
 
 #: models/source-manager.php:22
 msgid "Search all posts, pages, and custom post types."
-msgstr "全ての投稿、ページ、カスタム投稿タイプから検索"
+msgstr "すべての投稿、固定ページ、カスタム投稿タイプから検索。"
 
 #: models/source-manager.php:21
 msgid "All Post Types"
@@ -400,7 +400,7 @@ msgstr "変更を加える前に、データをバックアップすることを
 
 #: search-regex-strings.php:105
 msgid "Update"
-msgstr "更新"
+msgstr "アップデート"
 
 #: search-regex-strings.php:104
 msgid "How Search Regex uses the REST API - don't change unless necessary"
@@ -586,7 +586,7 @@ msgstr "更新された行 : %s"
 
 #: search-regex-strings.php:53 search-regex-strings.php:56
 msgid "Finished!"
-msgstr "完了しました"
+msgstr "完了しました !"
 
 #: search-regex-strings.php:52
 msgid "Replace progress"
