@@ -1,11 +1,11 @@
-import { WORDPRESS_WRAP } from '../constant';
+import { WORDPRESS_WRAP } from '../../constant';
 
 /** @const {number} */
 const OFFSET_MAX = 20;
 
 /** @const {number} */
 const OFFSET_ARROW = 5;
-// /** @typedef {import('@wordpress/components').WPCompleter} WPCompleter */
+
 /**
  * @typedef DropdownPosition
  * @type
@@ -25,21 +25,21 @@ const OFFSET_ARROW = 5;
 /**
  * Adjust the dropdown position based on the alignment.
  *
- * @param {number} leftPos - left position.
- * @param {number} popoverWidth - width of popover.
+ * @param {number} toggleLeftPos - left position.
  * @param {number} toggleWidth - width of toggle button.
+ * @param {number} popoverWidth - width of popover.
  * @param {string} align - alignment.
  */
-function adjustForAlignment( leftPos, popoverWidth, toggleWidth, align ) {
+function adjustForAlignment( toggleLeftPos, toggleWidth, popoverWidth, align ) {
 	if ( align === 'right' ) {
-		return leftPos + toggleWidth - popoverWidth;
+		return toggleLeftPos + toggleWidth - popoverWidth;
 	}
 
 	if ( align === 'centre' ) {
-		return leftPos - ( popoverWidth + toggleWidth ) / 2;
+		return toggleLeftPos - ( popoverWidth / 2 );
 	}
 
-	return leftPos;
+	return toggleLeftPos;
 }
 
 /**
@@ -48,29 +48,24 @@ function adjustForAlignment( leftPos, popoverWidth, toggleWidth, align ) {
  * @param {DropdownPosition|null} position - The position.
  * @param {TogglePosition|null} togglePosition - The toggle position.
  * @param {string} align - Popover alignment.
- * @param {{current: HTMLElement|null}} ref - Our node.
+ * @param {HTMLElement|null} popoverRef - Our node.
  * @param {boolean} hasArrow - Show an arrow?
  */
-export function getAdjustedPosition( position, togglePosition, align, ref, hasArrow ) {
+export function getAdjustedPosition( position, togglePosition, align, popoverRef, hasArrow ) {
 	if ( position === null || togglePosition === null ) {
 		return {};
 	}
 
-	if ( ! ref.current ) {
+	if ( ! popoverRef ) {
 		return {
 			...position,
 			visibility: 'hidden', // Hide until ready otherwise we get a flicker
 		};
 	}
 
-	const width = position.width ? position.width : ref.current.getBoundingClientRect().width;
+	const width = position.width ? position.width : popoverRef.getBoundingClientRect().width;
 	const minLeftPos = togglePosition.parentWidth - width - OFFSET_MAX;
-	const adjustedLeft = adjustForAlignment(
-		togglePosition.left,
-		position.width ? position.width : width,
-		togglePosition.width,
-		align
-	);
+	const adjustedLeft = adjustForAlignment( togglePosition.left, togglePosition.width, position.width ? position.width : width, align );
 
 	return {
 		...position,
@@ -83,9 +78,8 @@ export function getAdjustedPosition( position, togglePosition, align, ref, hasAr
  * Get the dimensions of the node.
  *
  * @param {HTMLElement|null} ref - The dom node.
- * @param {number} offset - Our mysterious offset.
  */
-export function getDimensions( ref, offset ) {
+export function getDimensions( ref ) {
 	const parentNode = document.getElementById( WORDPRESS_WRAP );
 	if ( ref === null || parentNode === null ) {
 		return {};
@@ -95,7 +89,7 @@ export function getDimensions( ref, offset ) {
 	const { height, width, left, top } = ref.getBoundingClientRect();
 
 	return {
-		left: left - parentRect.left + ( offset ? offset : 0 ),
+		left: left - parentRect.left,
 		top: top - parentRect.top + 1,
 		width,
 		height,

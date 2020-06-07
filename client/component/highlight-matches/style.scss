@@ -4,11 +4,12 @@
 	font-weight: bold;
 	padding: 1px;
 	cursor: pointer;
+	display: inline;
+	padding: 3px;
 }
 
 .searchregex-result__replaced {
 	background-color: #f38830;
-	display: inline;
 }
 
 .searchregex-result__deleted {

@@ -13,6 +13,15 @@ import classnames from 'classnames';
 import { Select } from 'wp-plugin-library';
 import './style.scss';
 
+/**
+ * @callback SaveCallback
+ * @param {string} phrase
+ */
+
+/**
+ * @callback CancelCallback
+ */
+
 const getReplaceOptions = () => [
 	{
 		value: '',
@@ -51,34 +60,49 @@ function ReplaceContainer( { children, onSave, className } ) {
 	);
 }
 
-function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCancel, placeholder, description } ) {
+/**
+ *
+ * @param {*} param0
+ */
+
+/**
+ * A replacement dialog
+ *
+ * @param {object} props - Component props
+ * @param {boolean} props.canReplace - Whether we can replace this
+ * @param {string} props.className - Class
+ * @param {boolean} props.autoFocus - Whether to autofocus on the popup
+ * @param {string|React} props.placeholder - Placeholder string
+ * @param {string|React} props.description - Description string
+ * @param {SaveCallback} props.setReplace - Change the replacement string
+ * @param {SaveCallback} props.onSave - Change the replacement string
+ * @param {CancelCallback} props.onCancel - Change the replacement string
+ * @param {string} props.replace - Replacement string
+ * @returns React
+ */
+function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCancel, placeholder, description, replace } ) {
 	const ref = useRef( null );
-	const [ replace, setLocalReplace ] = useState( '' );
 	const [ replaceFlag, setReplaceFlag ] = useState( '' );
 
 	const value = {
 		id: 'replace',
 		value: replace === null ? '' : replace,
 		name: 'replace',
-		onChange: ( ev ) => setLocalReplace( ev.target.value ),
+		onChange: ( ev ) => setReplace( ev.target.value ),
 		disabled: ! canReplace || replaceFlag === 'remove',
 		placeholder: replaceFlag === 'remove' ? __( 'Search phrase will be removed' ) : placeholder,
 		ref,
 	};
 
+	// When replace flag is changed we reset the replace value
 	useEffect( () => {
-		setLocalReplace( replaceFlag === 'remove' ?  null : '' );
-		setReplace( replaceFlag === 'remove' ?  null : '' );
+		setReplace( replaceFlag === 'remove' ? null : '' );
 	}, [ replaceFlag ] );
-
-	useEffect( () => {
-		setReplace( replace );
-	}, [ replace ] );
 
 	// Autofocus
 	useEffect( () => {
 		setTimeout( () => {
-			autoFocus && ref && ref.current.focus();
+			autoFocus && ref?.current?.focus();
 		}, 50 );
 	}, [ ref ] );
 

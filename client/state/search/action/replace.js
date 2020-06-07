@@ -19,7 +19,7 @@ import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
  * @param {String} source The source name
  * @param {number} rowId Row ID
  * @param {String|null} columnId Optional column to replace
- * @param {String|null} posId Optional position in column to replace
+ * @param {number|null} posId Optional position in column to replace
  */
 export const replaceRow = ( replacement, source, rowId, columnId = null, posId = null ) => ( dispatch, getState ) => {
 	const { search, sources } = getState().search;

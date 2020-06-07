@@ -2,7 +2,7 @@
  * Determine if an event is outside of a wrapper.
  *
  * @param {Event} ev - Click event
- * @param {HTMLElement} containerRef - DOM node for the wrapper
+ * @param {HTMLElement|null} containerRef - DOM node for the wrapper
  * @listens click
  * @returns {boolean}}
  */
@@ -12,6 +12,10 @@ export default function isOutside( ev, containerRef ) {
 	}
 
 	if ( containerRef.contains( ev.target ) ) {
+		return false;
+	}
+
+	if ( ev.type === 'keydown' ) {
 		return false;
 	}
 

@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import React, { useRef, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 
 /**
  * Local dependencies
@@ -23,32 +23,28 @@ import PopoverArrow from './arrow';
  */
 function Popover( props ) {
 	const { position, children, togglePosition, align, hasArrow } = props;
-	const popoverRef = useRef( null );
-	const style = useMemo(
-		() =>
-			getAdjustedPosition(
-				position,
-				togglePosition,
-				align,
-				popoverRef,
-				hasArrow
-			),
-		[ position, togglePosition ]
-	);
-	const arrowStyle = useMemo(
-		() => adjustArrowStyle( style, popoverRef.current ),
-		[ style ]
+	const [ style, setStyle ] = useState( { arrow: {}, content: { visibility: 'none', ...position } } );
+	const popoverRef = useCallback(
+		( node ) => {
+			if ( node ) {
+				const content = getAdjustedPosition( position, togglePosition, align, node, hasArrow );
+
+				setStyle( {
+					content,
+					arrow: adjustArrowStyle( content, node ),
+				} );
+			}
+		},
+		[ position  ]
 	);
 
 	return (
 		<>
-			{ hasArrow && (
-				<PopoverArrow style={ arrowStyle } align={ align } />
-			) }
+			{ hasArrow && <PopoverArrow style={ style.arrow } align={ align } /> }
 
 			<div
 				className="wpl-popover__content"
-				style={ { ...style, visibility: position && position.left ? 'visible' : 'hidden' } }
+				style={ { ...style.content, visibility: position && position.left ? 'visible' : 'hidden' } }
 				ref={ popoverRef }
 			>
 				{ children }

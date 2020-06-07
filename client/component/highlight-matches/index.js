@@ -12,64 +12,160 @@ import { connect } from 'react-redux';
 
 import RestrictedMatches from 'component/result/restricted-matches';
 import Replacement from './replacement';
-import ReplacementPhrase from './replacement-phrase';
 import { replaceRow } from 'state/search/action';
 import { regexReplace, getMatchReplacement, getTypeOfReplacement } from './highlight-tools';
 import './style.scss';
 
+/**
+ * Return an empty array of replacements
+ *
+ * @param {Match[]} matches - Match array
+ * @returns {string[]}
+ */
 const resetMatches = ( matches ) => matches.map( () => '' );
 
+/**
+ * @typedef Match
+ * @type
+ * @property {number} context_offset - Offset in this context
+ * @property {string} match - Matched phrase
+ * @property {number} pos_id - Position ID
+ * @property {string} replacement - Replacement string
+ * @property {string[]} captures - Captured data
+ */
+
+/**
+ * @callback ReplaceCallback
+ * @param {string} replacedPhrase
+ * @param {string} source
+ * @param {number} rowId
+ * @param {string} columnId
+ * @param {number} pos_id
+ */
+
+/**
+ * @callback SpecificCallback
+ * @param {string} specific - Replacement
+ */
+
+/**
+ * Replace a word in the array
+ *
+ * @param {string[]} current Current replacements
+ * @param {number} index - Replacement index
+ * @param {string} word - Replacement word
+ */
 function replaceWord( current, index, word ) {
-	const clone = [ ...current ];
-
-	clone[ index ] = word;
-
-	return clone;
-}
-
-function getMatches( props, specific, setSpecific ) {
-	const { source, matches, contextReplacement, columnId, rowId, onReplace, isReplacing, sourceType } = props;
-	const display = [];
-	let offset = 0;
-
-	for ( let index = 0; index < matches.length; index++ ) {
-		const { context_offset, match, pos_id, replacement, captures } = matches[ index ];
-		const matchedWord = getMatchReplacement( [ specific[ index ], contextReplacement, replacement ], match );
-
-		display.push( source.substring( offset, context_offset ) );
-		display.push(
-			<Replacement
-				typeOfReplacement={ getTypeOfReplacement( matchedWord, match ) }
-				onSave={ ( phrase ) => onReplace( phrase, sourceType, rowId, columnId, pos_id ) }
-				onUpdate={ ( update ) => setSpecific( replaceWord( specific, index, update ) ) }
-				isReplacing={ isReplacing }
-				title={ match }
-				key={ index }
-			>
-				<ReplacementPhrase match={ regexReplace( matchedWord, captures ) } originalMatch={ match } />
-			</Replacement>
-		);
-
-		offset = context_offset + match.length;
+	console.log( 'replacing word: ' + index + ' == ' + word );
+	if ( current[ index ] === word ) {
+		console.log( 'returning same' );
+		return current;
 	}
 
-	display.push( source.substr( offset ) );
-
-	return display;
+	console.log( 'returning ', [ ...current.slice( 0, index ), word, ...current.slice( index + 1 ) ] );
+	return [ ...current.slice( 0, index ), word, ...current.slice( index + 1 ) ];
 }
 
-function HighlightMatches( props ) {
-	const { matches, count, contextReplacement } = props;
-	const [ specific, setSpecific ] = useState( resetMatches( matches ) );
-	const display = getMatches( props, specific, setSpecific );
-
-	useEffect( () => {
-		setSpecific( resetMatches( matches ) );
-	}, [ contextReplacement ] );
+/**
+ * Display a matched phrase.
+ *
+ * @param {object} props - Component props
+ * @param {string} props.beforePhrase - Text before the match
+ * @param {string} props.afterPhrase - Text after the match
+ * @param {string} props.matchedPhrase - Matched word
+ * @param {number} props.rowId - Row ID
+ * @param {string} props.columnId - Column ID
+ * @param {boolean} props.isReplacing - Is replacing
+ * @param {string} props.sourceType - Type of source
+ * @param {Match} props.match - Match
+ * @param {ReplaceCallback} props.onReplace - Perform a replacement
+ * @param {SpecificCallback} props.setSpecific - Set the current replacement value
+ */
+function Match( props ) {
+	const {
+		beforePhrase,
+		afterPhrase,
+		onReplace,
+		//setSpecific,
+		sourceType,
+		rowId,
+		columnId,
+		isReplacing,
+//		matchedPhrase,
+		contextReplacement,
+	} = props;
+	const { context_offset, match, pos_id, captures, replacement } = props.match;
+						// matchedPhrase={ getMatchReplacement(
+						// 	/*[ specific[ pos ], contextReplacement, match.replacement ],*/
+						// 	[ contextReplacement, match.replacement ],
+						// 	match.match
+						// ) }
 
 	return (
+		<>
+			{ beforePhrase }
+
+			<Replacement
+				onSave={ ( phrase ) => onReplace( phrase, sourceType, rowId, columnId, pos_id ) }
+				isReplacing={ isReplacing }
+				match={ match }
+				captures={ captures }
+				replacement={ [ contextReplacement, replacement ] }
+				key={ context_offset }
+			/>
+
+			{ afterPhrase }
+		</>
+	);
+}
+
+/**
+ * Highlight all matches in a context.
+ *
+ * @param {object} props - Component props
+ * @param {Match[]} props.matches
+ * @param {string} props.source - Source string.
+ * @param {number} props.rowId - Row ID
+ * @param {string} props.columnId - Column ID
+ * @param {boolean} props.isReplacing - Is replacing
+ * @param {string} props.sourceType - Type of source
+ * @param {string} props.contextReplacement - Phrase for this context
+ * @param {number} props.count - Number of matches.
+ * @param {ReplaceCallback} props.onReplace - Replace callback
+ */
+function HighlightMatches( props ) {
+	const { matches, count, contextReplacement, onReplace, isReplacing, sourceType, source, columnId, rowId } = props;
+//	const [ specific, setSpecific ] = useState( resetMatches( matches ) );
+	let offset = 0;
+
+	// useEffect(() => {
+	// 	console.log( 'reset contextreplacement' );
+	// 	setSpecific( resetMatches( matches ) );
+	// }, [ contextReplacement ]);
+console.log( 'highlight matches' );
+	return (
 		<div className="searchregex-match__context">
-			{ display }
+			{ matches.map( ( match, pos ) => {
+				const oldOffset = offset;
+
+				offset += match.context_offset + match.match.length;
+// 						setSpecific={ ( update ) => setSpecific( replaceWord( specific, pos, update ) ) }
+
+				return (
+					<Match
+						match={ match }
+						key={ match.pos_id }
+						sourceType={ sourceType }
+						columnId={ columnId }
+						rowId={ rowId }
+						onReplace={ onReplace }
+						isReplacing={ isReplacing }
+						beforePhrase={ source.substring( oldOffset, match.context_offset ) }
+						afterPhrase={ source.substr( offset ) }
+						contextReplacement={ contextReplacement }
+					/>
+				);
+			} ) }
 
 			{ matches.length !== count && <RestrictedMatches /> }
 		</div>
@@ -78,6 +174,13 @@ function HighlightMatches( props ) {
 
 function mapDispatchToProps( dispatch ) {
 	return {
+		/**
+		 * @param {string} replacedPhrase
+		 * @param {string} source
+		 * @param {number} rowId
+		 * @param {string} columnId
+		 * @param {number} pos_id
+		 */
 		onReplace: ( replacedPhrase, source, rowId, columnId, pos_id ) => {
 			dispatch( replaceRow( replacedPhrase, source, rowId, columnId, pos_id ) );
 		},

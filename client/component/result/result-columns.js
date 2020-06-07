@@ -14,6 +14,12 @@ import ResultContext from './result-context';
 
 const MORE_CONTEXTS = 2;
 
+/**
+ * @param {object} props - Component props
+ * @param {number} props.rowId - Row ID
+ * @param {boolean} props.isReplacing - Is replacing
+ * @param {string} props.sourceType - Type of source
+ */
 function ResultColumns( props ) {
 	const { replacement, rowId, isReplacing, column, sourceType } = props;
 	const { contexts, context_count, match_count } = column;

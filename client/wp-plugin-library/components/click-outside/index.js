@@ -35,11 +35,11 @@ export default function ClickOutside( props ) {
 	};
 
 	useEffect( () => {
-		addEventListener( 'click', outside );
+		addEventListener( 'mousedown', outside );
 		addEventListener( 'keydown', outside );
 
 		return () => {
-			removeEventListener( 'click', outside );
+			removeEventListener( 'mousedown', outside );
 			removeEventListener( 'keydown', outside );
 		};
 	}, [] );

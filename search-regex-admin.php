@@ -367,7 +367,6 @@ class Search_Regex_Admin {
 	 */
 	private function show_main() {
 		?>
-	<div id="react-modal"></div>
 	<div id="react-ui">
 		<div class="react-loading">
 			<h1><?php esc_html_e( 'Loading, please wait...', 'search-regex' ); ?></h1>

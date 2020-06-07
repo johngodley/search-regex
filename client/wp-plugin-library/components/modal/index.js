@@ -10,7 +10,11 @@ import ReactDOM from 'react-dom';
  */
 
 import ModalWrapper from './wrapper';
+import getPortal from '../../lib/portal';
 import './style.scss';
+
+/** @const {string} */
+export const MODAL_PORTAL = 'wpl-modal';
 
 /**
  * onClose callback.
@@ -27,6 +31,6 @@ import './style.scss';
  * @param {Boolean} props.padding - Include padding, defaults to `true`
  * @param {closeCallback} props.onClose - Function to call to close the modal
  */
-const Modal = ( props ) => ReactDOM.createPortal( <ModalWrapper { ...props } />, document.getElementById( 'react-modal' ) );
+const Modal = ( props ) => ReactDOM.createPortal( <ModalWrapper { ...props } />, getPortal( MODAL_PORTAL ) );
 
 export default Modal;
