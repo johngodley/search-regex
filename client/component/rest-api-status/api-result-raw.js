@@ -2,51 +2,44 @@
  * External dependencies
  */
 
-import React from 'react';
-import { translate as __ } from 'wp-plugin-library/lib/locale';
+import React, { useState } from 'react';
+import { translate as __ } from 'wp-plugin-lib/locale';
 
 const RAW_HIDE_LENGTH = 500;
 
-class ApiResultRaw extends React.Component {
-	constructor( props ) {
-		super( props );
+const doesNeedHiding = ( request ) =>
+	request && request.apiFetch.body && request.apiFetch.body.length > RAW_HIDE_LENGTH ? true : false;
 
-		const { request } = this.props.error;
-
-		this.state = { hide: this.doesNeedHiding( request ) };
-	}
-
-	doesNeedHiding( request ) {
-		return request && request.raw && request.raw.length > RAW_HIDE_LENGTH;
-	}
-
-	onShow = ev => {
+function ApiResultRaw( props ) {
+	const { request } = props.error;
+	const needHiding = doesNeedHiding( request );
+	const [ hide, setHide ] = useState( needHiding );
+	const toggle = ( ev ) => {
 		ev.preventDefault();
-		this.setState( { hide: false } );
+		setHide( ! hide );
+	};
+
+	if ( request && request.apiFetch.body ) {
+		return (
+			<>
+				{ hide && needHiding && (
+					<a className="api-result-hide" onClick={ toggle } href="#">
+						{ __( 'Show Full' ) }
+					</a>
+				) }
+				{ ! hide && needHiding && (
+					<a className="api-result-hide" onClick={ toggle } href="#">
+						{ __( 'Hide' ) }
+					</a>
+				) }
+				<pre>
+					{ hide ? request.apiFetch.body.substr( 0, RAW_HIDE_LENGTH ) + ' ...' : request.apiFetch.body }
+				</pre>
+			</>
+		);
 	}
 
-	onHide = ev => {
-		ev.preventDefault();
-		this.setState( { hide: true } );
-	}
-
-	render() {
-		const { request } = this.props.error;
-		const { hide } = this.state;
-		const needToHide = this.doesNeedHiding( request );
-
-		if ( request && request.raw ) {
-			return (
-				<React.Fragment>
-					{ needToHide && hide && <a className="api-result-hide" onClick={ this.onShow } href="#">{ __( 'Show Full' ) }</a> }
-					{ needToHide && ! hide && <a className="api-result-hide" onClick={ this.onHide } href="#">{ __( 'Hide' ) }</a> }
-					<pre>{ hide ? request.raw.substr( 0, RAW_HIDE_LENGTH ) + ' ...' : request.raw }</pre>
-				</React.Fragment>
-			);
-		}
-
-		return null;
-	}
+	return null;
 }
 
 export default ApiResultRaw;

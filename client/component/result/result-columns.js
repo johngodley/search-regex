@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { translate as __, numberFormat } from 'wp-plugin-library/lib/locale';
+import { translate as __, numberFormat } from 'wp-plugin-lib/locale';
 
 /**
  * Internal dependencies
@@ -45,7 +45,7 @@ function ResultColumns( props ) {
 
 			{ ! showMore && contexts.length > MORE_CONTEXTS && (
 				<p>
-					<button className="button button-secondary" onClick={ () => setShowMore( true ) }>
+					<button className="button button-secondary" onClick={ () => setShowMore( true ) } type="button">
 						{ __( 'Show %s more', 'Show %s more', {
 							count: remainingCount,
 							args: numberFormat( remainingCount ),

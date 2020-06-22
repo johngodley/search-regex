@@ -7,6 +7,44 @@ use SearchRegex\Search;
 use SearchRegex\Replace;
 
 /**
+ * @apiDefine SearchQueryParams Search query
+ * Query parameters for a search
+ *
+ * @apiSuccess {Object[]} results All the search results
+ * @apiSuccess {Integer} results.row_id The result row ID
+ * @apiSuccess {String} results.source_type The result source type
+ * @apiSuccess {String} results.source_name A displayable version of `source_type`
+ * @apiSuccess {Object[]} results.columns An array of columns with matches
+ * @apiSuccess {String} results.columns.column_id A column ID
+ * @apiSuccess {String} results.columns.column_label A displayable name for the `column_id`
+ * @apiSuccess {Object[]} results.columns.contexts An array of search contexts containing the search matches. This has a maximum size and cropping may occur (see `context_count`)
+ * @apiSuccess {String} results.columns.contexts.context_id A context ID
+ * @apiSuccess {String} results.columns.contexts.context The section of text from the column that contains all the matches in this context
+ * @apiSuccess {Object[]} results.columns.contexts.matches The matched phrases contained within this context. This has a maximum size and cropping may occur (see `match_count`)
+ * @apiSuccess {Integer} results.columns.contexts.matches.pos_id The position of the match within the row
+ * @apiSuccess {Integer} results.columns.contexts.matches.context_offset The position of the match within the context
+ * @apiSuccess {String} results.columns.contexts.matches.match The matched phrase
+ * @apiSuccess {String} results.columns.contexts.matches.replacement The matched phrase with the replacement applied to it
+ * @apiSuccess {String[]} results.columns.contexts.matches.captures If a regular expression search then this will contain any captured groups
+ * @apiSuccess {Integer} results.columns.contexts.match_count The total number of matched phrases, including any that have been cropped.
+ * @apiSuccess {Integer} results.columns.context_count The total possible number of contexts, including any from `contexts` that are cropped
+ * @apiSuccess {String} results.columns.match_count The number of matches
+ * @apiSuccess {String} results.columns.replacement The search phrase
+ * @apiSuccess {Object[]} results.actions An array of actions that can be performed on this result
+ * @apiSuccess {String} results.title A title for the result
+ * @apiSuccess {Object[]} totals The totals for this search
+ * @apiSuccess {Integer} totals.current The current search offset
+ * @apiSuccess {Integer} totals.rows The total number of rows for the source, including non-matches
+ * @apiSuccess {Integer} totals.matched_rows The number of matched rows if known, or `-1` if a regular expression match and unknown
+ * @apiSuccess {Integer} totals.matched_phrases The number of matched phraes if known, or `-1` if a regular expression match and unknown
+ * @apiSuccess {Object[]} progress The current search progress, and the previous and next set of results
+ * @apiSuccess {Integer} progress.current The current search offset
+ * @apiSuccess {Integer} progress.rows The number of rows contained within this result set
+ * @apiSuccess {Integer} progress.previous The offset for the previous set of results
+ * @apiSuccess {Integer} progress.next The offset for the next set of results
+ */
+
+/**
  * @apiDefine SearchResults Search results
  * Results for a Search Regex search
  *

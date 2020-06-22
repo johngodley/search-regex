@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { translate as __, numberFormat } from 'wp-plugin-library/lib/locale';
+import { translate as __, numberFormat } from 'wp-plugin-lib/locale';
 import { Line } from 'rc-progress';
 import { connect } from 'react-redux';
 import { useDelta } from 'react-delta';
@@ -70,7 +70,7 @@ function ReplaceProgress( props ) {
 					} ) }
 				</p>
 				{ status === STATUS_COMPLETE && (
-					<button className="button button-primary" onClick={ onClear }>{ __( 'Finished!' ) }</button>
+					<button type="button" className="button button-primary" onClick={ onClear }>{ __( 'Finished!' ) }</button>
 				) }
 			</div>
 		</div>

@@ -7,6 +7,7 @@ require_once __DIR__ . '/models/result.php';
 use SearchRegex\Source_Manager;
 use SearchRegex\Search_Flags;
 use SearchRegex\Source_Flags;
+use SearchRegex\Preset;
 
 class Search_Regex_Admin {
 	/** @var null|Search_Regex_Admin */
@@ -33,6 +34,30 @@ class Search_Regex_Admin {
 		add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10, 4 );
 		/** @psalm-suppress InvalidArgument */
 		add_filter( 'set-screen-option', [ $this, 'set_per_page' ], 10, 3 );
+
+		register_uninstall_hook( SEARCHREGEX_FILE, [ 'Search_Regex_Admin', 'plugin_uninstall' ] );
+	}
+
+	/**
+	 * Tidy the plugin up after being uninstalled
+	 *
+	 * @return void
+	 */
+	public static function plugin_uninstall() {
+		delete_option( SEARCHREGEX_OPTION );
+		delete_option( Preset::OPTION_NAME );
+	}
+
+	/**
+	 * Plugin is activated. Load the presets file
+	 *
+	 * @return void
+	 */
+	public static function plugin_activated() {
+		// If no existing presets then load the default presets
+		if ( get_option( Preset::OPTION_NAME, false ) === false ) {
+			Preset::import( dirname( __FILE__ ) . '/presets.json' );
+		}
 	}
 
 	/**
@@ -97,12 +122,10 @@ class Search_Regex_Admin {
 		$versions = array(
 			'Plugin: ' . SEARCHREGEX_VERSION,
 			'WordPress: ' . $wp_version . ' (' . ( is_multisite() ? 'multi' : 'single' ) . ')',
-			'PHP: ' . phpversion(),
+			'PHP: ' . phpversion() . ' ' . ini_get( 'memory_limit' ) . ' ' . ini_get( 'max_execution_time' ) . 's',
 			'Browser: ' . $this->get_user_agent(),
 			'JavaScript: ' . plugin_dir_url( SEARCHREGEX_FILE ) . 'search-regex.js',
 			'REST API: ' . searchregex_get_rest_api(),
-			'Memory: ' . ini_get( 'memory_limit' ),
-			'Timeout: ' . ini_get( 'max_execution_time' ),
 		);
 
 		if ( defined( 'SEARCHREGEX_DEV_MODE' ) && SEARCHREGEX_DEV_MODE ) {
@@ -185,6 +208,7 @@ class Search_Regex_Admin {
 		return [
 			'sources' => Source_Manager::get_all_grouped(),
 			'source_flags' => $flags,
+			'presets' => Preset::get_all(),
 		];
 	}
 
@@ -449,5 +473,7 @@ class Search_Regex_Admin {
 		return false;
 	}
 }
+
+register_activation_hook( SEARCHREGEX_FILE, array( 'Search_Regex_Admin', 'plugin_activated' ) );
 
 add_action( 'init', array( 'Search_Regex_Admin', 'init' ) );

@@ -18,9 +18,11 @@ import {
 	SEARCH_LOAD_ROW_COMPLETE,
 	SEARCH_SAVE_ROW_COMPLETE,
 	SEARCH_START_MORE,
+	SEARCH_TAG_VALUE,
 } from './type';
+import { PRESET_SELECT } from 'state/preset/type';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from 'state/settings/type';
-import { isAlreadyFinished, isComplete, isAdvancedSearch } from './selector';
+import { isAlreadyFinished, isComplete, isAdvancedSearch, getDefaultSearch, applyTagsToSearch } from './selector';
 
 function mergeProgress( existing, progress, direction, firstInSet ) {
 	return {
@@ -45,7 +47,10 @@ function getSimpleState( state, action ) {
 }
 
 function getAdvancedState( state, action ) {
-	const results = state.searchDirection === SEARCH_FORWARD ? state.results.concat( action.results ) : action.results.concat( state.results );
+	const results =
+		state.searchDirection === SEARCH_FORWARD
+			? state.results.concat( action.results )
+			: action.results.concat( state.results );
 	const status = isComplete( action, results, state.searchDirection ) ? STATUS_COMPLETE : state.status;
 
 	return {
@@ -57,7 +62,9 @@ function getAdvancedState( state, action ) {
 		totals: {
 			rows: action.totals.rows,
 			matched_rows: state.totals.matched_rows + action.progress.rows,
-			matched_phrases: ( state.totals.matched_phrases || 0 ) + action.results.reduce( ( prev, current ) => prev + current.match_count, 0 ),
+			matched_phrases:
+				( state.totals.matched_phrases || 0 ) +
+				action.results.reduce( ( prev, current ) => prev + current.match_count, 0 ),
 		},
 		canCancel: status !== STATUS_COMPLETE,
 		showLoading: status !== STATUS_COMPLETE,
@@ -82,29 +89,30 @@ const resetAll = () => ( {
 	...reset(),
 	results: [],
 	totals: resetTotals(),
-	progress: {}
+	progress: {},
 } );
 
 const reset = () => ( {
 	requestCount: 0,
 	replaceCount: 0,
 	phraseCount: 0,
-	status: STATUS_COMPLETE,
+	status: null,
 	replacing: [],
 	replaceAll: false,
 	canCancel: false,
 	showLoading: false,
+	tagged: {},
 } );
 
 function replaceRows( existing, results, rowId ) {
 	const newResults = [];
 
 	if ( results.length === 0 ) {
-		return existing.filter( item => item.row_id !== rowId );
+		return existing.filter( ( item ) => item.row_id !== rowId );
 	}
 
 	for ( let index = 0; index < existing.length; index++ ) {
-		const newResult = results.find( result => result.row_id === existing[ index ].row_id );
+		const newResult = results.find( ( result ) => result.row_id === existing[ index ].row_id );
 
 		if ( newResult ) {
 			newResults.push( newResult );
@@ -119,24 +127,55 @@ function replaceRows( existing, results, rowId ) {
 function replaceAllProgress( state, action ) {
 	if ( state.progress.current ) {
 		return {
-			current: state.progress.current + action.progress.rows
+			current: state.progress.current + action.progress.rows,
 		};
 	}
 
 	return {
 		current: action.progress.rows,
-	}
+	};
 }
 
-export default function redirects( state = {}, action ) {
+export default function searches( state = {}, action ) {
 	switch ( action.type ) {
+		case SEARCH_TAG_VALUE:
+			return {
+				...state,
+				tagValues: {
+					...state.tagValues,
+					[ `${ action.prefix }-${ action.tagName }-${ action.position }` ]: action.tagValue,
+				},
+				tagged: {
+					searchPhrase: '',
+					replacement: '',
+					...state.tagged,
+					...applyTagsToSearch( state.search, action.prefix, {
+						...action.preset.tagValues,
+						[ `${ action.prefix }-${ action.tagName }-${ action.position }` ]: action.tagValue,
+					} ),
+				},
+			};
+
+		// Update the search values when a preset is selected
+		case PRESET_SELECT:
+			return {
+				...state,
+				...resetAll(),
+				search: {
+					...state.search,
+					...( action.searchValues === null ? getDefaultSearch() : action.searchValues ),
+				},
+			};
+
 		// Change search values and clear any results, unless the change was the replace value
 		case SEARCH_VALUES:
+			const resetResults = action.searchValue.replacement !== undefined;
+
 			return {
 				...state,
 				search: { ...state.search, ...action.searchValue },
-				results: action.searchValue.replacement !== undefined ? state.results : [],
-				status: action.searchValue.replacement !== undefined ? state.status : null,
+				results: resetResults ? state.results : [],
+				status: resetResults ? state.status : null,
 			};
 
 		// Cancel or clear requests
@@ -191,7 +230,7 @@ export default function redirects( state = {}, action ) {
 				...state,
 				results: replaceRows( state.results, action.result, action.rowId ),
 				status: STATUS_COMPLETE,
-				replacing: state.replacing.filter( item => item !== action.rowId ),
+				replacing: state.replacing.filter( ( item ) => item !== action.rowId ),
 			};
 
 		case SEARCH_REPLACE_ALL:
@@ -200,7 +239,7 @@ export default function redirects( state = {}, action ) {
 				...resetAll(),
 				replaceAll: true,
 				status: STATUS_IN_PROGRESS,
-				canCancel: true
+				canCancel: true,
 			};
 
 		case SEARCH_REPLACE_ALL_COMPLETE:
@@ -231,21 +270,28 @@ export default function redirects( state = {}, action ) {
 			return {
 				...state,
 				status: STATUS_COMPLETE,
-				replacing: state.replacing.filter( item => item !== action.rowId ),
-				results: state.results.map( ( result ) => ( result.row_id === action.result.row_id ) ? action.result : result ),
+				replacing: state.replacing.filter( ( item ) => item !== action.rowId ),
+				results: state.results.map( ( result ) =>
+					result.row_id === action.result.row_id ? action.result : result
+				),
 				rawData: null,
 			};
 
 		case SEARCH_LOAD_ROW_COMPLETE:
 			return {
 				...state,
-				replacing: state.replacing.filter( item => item !== action.rowId ),
+				replacing: state.replacing.filter( ( item ) => item !== action.rowId ),
 				status: STATUS_COMPLETE,
 				rawData: action.row,
 			};
 
 		case SEARCH_REPLACE_ROW:
-			return { ...state, replacing: state.replacing.concat( action.rowId ), status: STATUS_IN_PROGRESS, rawData: null };
+			return {
+				...state,
+				replacing: state.replacing.concat( action.rowId ),
+				status: STATUS_IN_PROGRESS,
+				rawData: null,
+			};
 
 		case SEARCH_FAIL:
 			return { ...state, ...reset(), status: STATUS_FAILED };
@@ -253,8 +299,8 @@ export default function redirects( state = {}, action ) {
 		case SEARCH_DELETE_COMPLETE:
 			return {
 				...state,
-				results: state.results.filter( row => row.row_id !== action.rowId ),
-				replacing: state.replacing.filter( item => item !== action.rowId ),
+				results: state.results.filter( ( row ) => row.row_id !== action.rowId ),
+				replacing: state.replacing.filter( ( item ) => item !== action.rowId ),
 				status: STATUS_COMPLETE,
 			};
 	}

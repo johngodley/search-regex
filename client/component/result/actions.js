@@ -3,14 +3,14 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'wp-plugin-library/lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 
-import { Dropdown, DropdownMenu, ExternalLink } from 'wp-plugin-library';
+import { Dropdown, DropdownMenu, ExternalLink } from 'wp-plugin-components';
 import Replace from 'component/replace';
 import { replaceRow } from 'state/search/action';
 import { deleteRow } from 'state/search/action';

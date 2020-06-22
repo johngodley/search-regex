@@ -4,14 +4,14 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'wp-plugin-library/lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 
-import { Spinner } from 'wp-plugin-library';
+import { Spinner } from 'wp-plugin-components';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import { SEARCH_FORWARD } from 'state/search/type';
 import { cancel, search, replaceAll } from 'state/search/action';
@@ -21,7 +21,14 @@ const canReplace = ( status, searchPhrase, replacement ) => status === STATUS_IN
 
 const REPLACE_SIZE = 50;
 
-function SearchActions( { search, status, onSearch, onReplace, onCancel, replaceAll, canCancel } ) {
+/**
+ * Search actions
+ *
+ * @param {object} props - Component props
+ * @param {object} props.search - Search params
+ * @param {string} props.status - Search status
+ */
+function SearchActions( { search, status, onSearch, onReplace, onCancel, replaceAll, canCancel, onSavePreset } ) {
 	const { searchPhrase, replacement } = search;
 
 	return (
@@ -44,10 +51,7 @@ function SearchActions( { search, status, onSearch, onReplace, onCancel, replace
 
 			{ status === STATUS_IN_PROGRESS && canCancel && (
 				<>
-					<button
-						className="button button-delete"
-						onClick={ onCancel }
-					>
+					<button className="button button-delete" onClick={ onCancel } type="button">
 						{ __( 'Cancel' ) }
 					</button>
 

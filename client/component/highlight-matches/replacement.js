@@ -4,13 +4,13 @@
 
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
-import { translate as __ } from 'wp-plugin-library/lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 
 /**
  * Internal dependencies
  */
 
-import { Dropdown } from 'wp-plugin-library';
+import { Dropdown } from 'wp-plugin-components';
 import Replace from 'component/replace';
 import ReplacementPhrase from './replacement-phrase';
 import { regexReplace, getMatchReplacement, getTypeOfReplacement } from './highlight-tools';

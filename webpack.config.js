@@ -24,7 +24,12 @@ const config = {
 			{
 				test: /\.js$/,
 				exclude: /node_modules/,
-				loader: 'babel-loader?cacheDirectory',
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: [ '@babel/preset-env' ],
+					},
+				},
 			},
 			{
 				test: /\.json$/,
@@ -65,9 +70,9 @@ const config = {
 			},
 		} ),
 	],
-	watchOptions: {
-		ignored: [ /node_modules/ ],
-	},
+	// watchOptions: {
+	// 	ignored: [ /node_modules/ ],
+	// },
 	performance: {
 		hints: false,
 	},

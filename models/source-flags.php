@@ -48,4 +48,8 @@ class Source_Flags {
 	public function get_flags() {
 		return $this->flags;
 	}
+
+	public function to_json() {
+		return $this->flags;
+	}
 }

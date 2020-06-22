@@ -39,7 +39,7 @@
 
 	.wpl-popover__toggle,
 	select {
-		margin-left: 10px;
+		margin-left: 5px;
 	}
 }
 
@@ -55,6 +55,9 @@
 	}
 
 	.wpl-popover__toggle {
+		margin-left: 1px;
+		margin-right: 5px;
+
 		button {
 			min-width: 200px;
 			margin-right: 2px;
@@ -64,6 +67,13 @@
 	select {
 		min-width: 150px;
 		margin-right: 0;
+	}
+}
+
+.searchregex-search__search {
+	.wpl-popover__toggle {
+		margin-left: 5px;
+		margin-right: 0px;
 	}
 }
 
@@ -94,4 +104,20 @@
 		height: 28px;
 		margin-top: 10px;
 	}
+}
+
+.searchregex-search__tag__medium th {
+	width: 130px;
+}
+
+.searchregex-search__tag__long th {
+	width: 200px;
+}
+
+.searchregex-preset__description {
+	margin-top: 20px;
+	margin-bottom: 5px;
+	font-weight: normal;
+	font-size: 14px;
+	margin-left: 2px;
 }

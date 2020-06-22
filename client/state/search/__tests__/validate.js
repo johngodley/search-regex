@@ -28,8 +28,8 @@ const getSearch = ( flags = {} ) => ( {
 
 const getExpected = ( flags = {} ) => ( {
 	...getSearch(),
-	searchFlags: {},
-	sourceFlags: {},
+	searchFlags: [],
+	sourceFlags: [],
 	...flags,
 } );
 
@@ -64,7 +64,7 @@ describe( 'search validate', () => {
 
 	test( 'valid search flags', () => {
 		const search = getSearch( { searchFlags: [ 'case', 'regex' ] } );
-		const expected = getExpected( { searchFlags: { case: true, regex: true } } );
+		const expected = getExpected( { searchFlags: [ 'case', 'regex' ] } );
 
 		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
 	} );
@@ -78,7 +78,7 @@ describe( 'search validate', () => {
 
 	test( 'valid source flags', () => {
 		const search = getSearch( { source: [ 'comments' ], sourceFlags: [ 'guid' ] } );
-		const expected = getExpected( { source: [ 'comments' ], sourceFlags: { guid: true } } );
+		const expected = getExpected( { source: [ 'comments' ], sourceFlags: [ 'guid' ] } );
 
 		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
 	} );

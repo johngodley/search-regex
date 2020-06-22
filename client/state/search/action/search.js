@@ -9,7 +9,8 @@ import {
 	SEARCH_FORWARD,
 } from '../type';
 import { getSearchValues } from '../selector';
-import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
+import SearchRegexApi from 'lib/api-request';
+import apiFetch from 'wp-plugin-lib/api-fetch';
 
 /**
  * Start a search for the current phrase and conditions
@@ -17,9 +18,9 @@ import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
  * @param {String} searchDirection Search direction - SEARCH_FORWARD or SEARCH_BACKWARD
  */
 export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, getState ) => {
-	const { sources, search } = getState().search;
+	const { sources, search, tagged } = getState().search;
 	const searchValues = {
-		...getSearchValues( search, sources ),
+		...getSearchValues( search, tagged, sources ),
 		page,
 		searchDirection,
 	};
@@ -36,9 +37,9 @@ export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, 
  * @param {number} limit How many results remaining to return
  */
 export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => {
-	const { search, sources, searchDirection = SEARCH_FORWARD } = getState().search;
+	const { search, sources, tagged, searchDirection = SEARCH_FORWARD } = getState().search;
 	const searchValues = {
-		...getSearchValues( search, sources ),
+		...getSearchValues( search, tagged, sources ),
 		page,
 		perPage,
 		searchDirection,
@@ -50,8 +51,13 @@ export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => 
 	return getSearch( searchValues, dispatch );
 }
 
+/**
+ * Performs an API search
+ * @param {*} searchValues
+ * @param {*} dispatch
+ */
 const getSearch = ( searchValues, dispatch ) =>
-	getApi( SearchRegexApi.search.get( searchValues ) )
+	apiFetch( SearchRegexApi.search.get( searchValues ) )
 		.then( json => {
 			dispatch( { type: SEARCH_COMPLETE, ...json, perPage: searchValues.perPage } );
 		} )

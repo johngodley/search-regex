@@ -8,7 +8,7 @@ import React from 'react';
  * Internal dependencies
  */
 
-import { Placeholder } from 'wp-plugin-library';
+import { Placeholder } from 'wp-plugin-components';
 
 function TableLoading( { columns } ) {
 	const placeholders = [];

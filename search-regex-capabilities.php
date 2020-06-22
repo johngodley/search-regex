@@ -44,6 +44,7 @@ class Search_Regex_Capabilities {
 	const CAP_SEARCHREGEX_SEARCH = 'searchregex_cap_manage';
 	const CAP_SEARCHREGEX_OPTIONS = 'searchregex_cap_options';
 	const CAP_SEARCHREGEX_SUPPORT = 'searchregex_cap_support';
+	const CAP_SEARCHREGEX_PRESETS = 'searchregex_cap_preset';
 
 	/**
 	 * Determine if the current user has access to a named capability.
@@ -79,6 +80,7 @@ class Search_Regex_Capabilities {
 			self::CAP_SEARCHREGEX_SEARCH => 'search',
 			self::CAP_SEARCHREGEX_OPTIONS => 'options',
 			self::CAP_SEARCHREGEX_SUPPORT => 'support',
+			self::CAP_SEARCHREGEX_PRESETS => 'presets',
 		];
 
 		$available = [];
@@ -116,6 +118,7 @@ class Search_Regex_Capabilities {
 			self::CAP_SEARCHREGEX_SEARCH,
 			self::CAP_SEARCHREGEX_OPTIONS,
 			self::CAP_SEARCHREGEX_SUPPORT,
+			self::CAP_SEARCHREGEX_PRESETS,
 		];
 	}
 }

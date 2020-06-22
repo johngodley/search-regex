@@ -16,6 +16,41 @@ export const SEARCH_VALUES = 'SEARCH_VALUES';
 export const SEARCH_DELETE_COMPLETE = 'SEARCH_DELETE_COMPLETE';
 export const SEARCH_LOAD_ROW_COMPLETE = 'SEARCH_LOAD_ROW_COMPLETE';
 export const SEARCH_SAVE_ROW_COMPLETE = 'SEARCH_SAVE_ROW_COMPLETE';
+export const SEARCH_TAG_VALUE = 'SEARCH_TAG_VALUE';
 
 export const SEARCH_FORWARD = 'forward';
 export const SEARCH_BACKWARD = 'backward';
+
+/**
+ * All values associated with a search and replace.
+ *
+ * @typedef SearchValues
+ * @type
+ * @property {string} searchPhrase - Phrase to search for
+ * @property {string[]} searchFlags - Array of search flags
+ * @property {string[]} source - Array of sources to search
+ * @property {string[]} sourceFlags - Array of source flags
+ * @property {string} replacement - Replacement phrase
+ * @property {number} perPage - Per page
+ */
+
+/**
+ * Search source
+ *
+ * @typedef SearchSource
+ * @type
+ * @property {string} description - Description of this source
+ * @property {string} label - Title for this source
+ * @property {string} name - Name for this source
+ * @property {string} type - Which group the source belongs to
+ */
+
+ /**
+  * Search source group
+  *
+  * @typedef SearchSourceGroup
+  * @type
+  * @property {string} name - Name of source
+  * @property {string} label - Text label of source
+  * @property {SearchSource[]} sources - Array of SearchSource objects
+  */

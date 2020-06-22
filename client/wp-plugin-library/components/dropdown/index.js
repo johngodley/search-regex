@@ -14,7 +14,7 @@ import Popover from './popover';
 import ClickOutside from '../click-outside';
 import { getPosition, getDimensions } from './dimensions';
 import { DROPDOWN_PORTAL } from '../../constant';
-import getPortal from '../../lib/portal';
+import getPortal from '../../../wp-plugin-lib/portal';
 import isOutside from '../click-outside/is-outside';
 
 /**

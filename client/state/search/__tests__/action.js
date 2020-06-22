@@ -20,6 +20,10 @@ import {
 	SEARCH_START_MORE,
 	SEARCH_COMPLETE,
 } from 'state/search/type';
+import apiFetch from 'wp-plugin-lib/api-fetch';
+
+apiFetch.use( apiFetch.createRootURLMiddleware( '/wp-json/' ) );
+apiFetch.use( apiFetch.createNonceMiddleware( 'nonce' ) );
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore( middlewares );
@@ -51,8 +55,8 @@ describe( 'search actions', () => {
 				source: [ 'post' ],
 				searchPhrase: 'cat',
 				replacement: replaceRequest,
-				searchFlags: {},
-				sourceFlags: {},
+				searchFlags: [],
+				sourceFlags: [],
 			} );
 			const results = { rows: 1, phrases: 2 };
 			const expectedActions = [
@@ -97,8 +101,8 @@ describe( 'search actions', () => {
 				source: [ 'post' ],
 				searchPhrase: 'cat',
 				replacement: replaceRequest,
-				searchFlags: {},
-				sourceFlags: {},
+				searchFlags: [],
+				sourceFlags: [],
 			} );
 			const results = { rows: 1, phrases: 2 };
 			const expectedActions = [
@@ -137,8 +141,8 @@ describe( 'search actions', () => {
 			const initialStore = getInitialSearchStore( {
 				source: [ 'post' ],
 				searchPhrase: 'cat',
-				searchFlags: {},
-				sourceFlags: {},
+				searchFlags: [],
+				sourceFlags: [],
 				replacement: '',
 				perPage: 25,
 			} );

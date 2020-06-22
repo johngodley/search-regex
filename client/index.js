@@ -1,5 +1,5 @@
 /* global document, SearchRegexi10n */
-import 'wp-plugin-library/lib/polyfill';
+import 'wp-plugin-lib/polyfill';
 
 /**
  * External dependencies
@@ -7,7 +7,7 @@ import 'wp-plugin-library/lib/polyfill';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import i18n from 'wp-plugin-library/lib/locale';
+import i18n from 'wp-plugin-lib/locale';
 
 /**
  * Internal dependencies

@@ -13,14 +13,15 @@ import {
 	SETTING_API_FAILED,
 	SETTING_API_TRY,
 } from './type';
-import { getApi, SearchRegexApi } from 'wp-plugin-library/lib/api';
+import SearchRegexApi from 'lib/api-request';
+import apiFetch from 'wp-plugin-lib/api-fetch';
 
 export const loadSettings = () => ( dispatch, getState ) => {
 	if ( getState().settings.loadStatus === STATUS_COMPLETE ) {
 		return null;
 	}
 
-	getApi( SearchRegexApi.setting.get() )
+	apiFetch( SearchRegexApi.setting.get() )
 		.then( json => {
 			dispatch( { type: SETTING_LOAD_SUCCESS, values: json.settings } );
 		} )
@@ -32,7 +33,7 @@ export const loadSettings = () => ( dispatch, getState ) => {
 };
 
 export const saveSettings = settings => dispatch => {
-	getApi( SearchRegexApi.setting.update( settings ) )
+	apiFetch( SearchRegexApi.setting.update( settings ) )
 		.then( json => {
 			dispatch( { type: SETTING_SAVED, values: json.settings, warning: json.warning } );
 		} )
@@ -53,7 +54,7 @@ export const checkApi = api => dispatch => {
 		// Bit of a delay otherwise it can seem too fast...
 		setTimeout( () => {
 			// GET test
-			getApi( SearchRegexApi.plugin.checkApi( url ) )
+			apiFetch( SearchRegexApi.plugin.checkApi( url ) )
 				.then( () => {
 					dispatch( { type: SETTING_API_SUCCESS, id, method: 'GET' } );
 				} )
@@ -62,7 +63,7 @@ export const checkApi = api => dispatch => {
 				} );
 
 			// POST test
-			getApi( SearchRegexApi.plugin.checkApi( url, true ) )
+			apiFetch( SearchRegexApi.plugin.checkApi( url, true ) )
 				.then( () => {
 					dispatch( { type: SETTING_API_SUCCESS, id, method: 'POST' } );
 				} )

@@ -69,7 +69,7 @@ class Source_Post extends Search_Source {
 		return in_array( $type, $this->cpts, true );
 	}
 
-	public function get_name( array $row ) {
+	public function get_name( array $row = [] ) {
 		$post_type = isset( $row['post_type'] ) ? $this->get_post_type( $row['post_type'] ) : false;
 		if ( $post_type ) {
 			return $post_type['label'];

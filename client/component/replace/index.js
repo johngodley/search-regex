@@ -3,14 +3,14 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { translate as __ } from 'wp-plugin-library/lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 
-import { Select } from 'wp-plugin-library';
+import { Select } from 'wp-plugin-components';
 import './style.scss';
 
 /**
@@ -24,7 +24,7 @@ import './style.scss';
 
 const getReplaceOptions = () => [
 	{
-		value: '',
+		value: 'single',
 		label: __( 'Single' ),
 	},
 	{
@@ -60,10 +60,15 @@ function ReplaceContainer( { children, onSave, className } ) {
 	);
 }
 
-/**
- *
- * @param {*} param0
- */
+function getReplaceFlag( replace ) {
+	if ( replace === null ) {
+		return 'remove';
+	} else if ( replace.indexOf( '\n' ) !== -1 ) {
+		return 'multi';
+	}
+
+	return '';
+}
 
 /**
  * A replacement dialog
@@ -82,7 +87,7 @@ function ReplaceContainer( { children, onSave, className } ) {
  */
 function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCancel, placeholder, description, replace } ) {
 	const ref = useRef( null );
-	const [ replaceFlag, setReplaceFlag ] = useState( '' );
+	const [ replaceFlag, setReplaceFlag ] = useState( getReplaceFlag( replace ) );
 
 	const value = {
 		id: 'replace',
@@ -94,10 +99,25 @@ function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCanc
 		ref,
 	};
 
-	// When replace flag is changed we reset the replace value
+	function changeReplace( replaceFlag ) {
+		setReplaceFlag( replaceFlag );
+
+		if ( replaceFlag !== '' ) {
+			setReplace( replaceFlag === 'remove' ? null : '' );
+		}
+	}
+
 	useEffect( () => {
-		setReplace( replaceFlag === 'remove' ? null : '' );
-	}, [ replaceFlag ] );
+		const flag = getReplaceFlag( replace );
+
+		if ( replace === '' && replaceFlag === 'multi' && flag === '' ) {
+			return;
+		}
+
+		if ( flag !== replaceFlag ) {
+			setReplaceFlag( flag );
+		}
+	}, [ replace ] );
 
 	// Autofocus
 	useEffect( () => {
@@ -125,7 +145,7 @@ function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCanc
 					items={ getReplaceOptions() }
 					name="replace_flags"
 					value={ replaceFlag }
-					onChange={ ( ev ) => setReplaceFlag( ev.target.value ) }
+					onChange={ ( ev ) => changeReplace( ev.target.value ) }
 					disabled={ ! canReplace }
 				/>
 			</div>

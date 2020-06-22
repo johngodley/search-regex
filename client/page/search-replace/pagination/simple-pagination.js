@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { translate as __, numberFormat } from 'wp-plugin-library/lib/locale';
+import { translate as __, numberFormat } from 'wp-plugin-lib/locale';
 import { connect } from 'react-redux';
 
 /**

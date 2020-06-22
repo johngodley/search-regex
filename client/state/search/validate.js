@@ -62,21 +62,6 @@ function sanitizeSourceFlags( source, sourceFlags, flags ) {
 }
 
 /**
- * Convert an array of strings to an object of string => true
- * @param {Array} array
- * @returns Object
- */
-function arrayToObject( array ) {
-	const obj = {};
-
-	for ( let index = 0; index < array.length; index++)  {
-		obj[ array[ index ] ] = true;
-	}
-
-	return obj;
-}
-
-/**
  * Validate the search object
  * @param {object} search Search object
  * @param {object|null} initialSources Source information
@@ -89,13 +74,13 @@ export default function getValidatedSearch( search, initialSources = null, initi
 
 	return {
 		searchPhrase,
-		searchFlags: arrayToObject( sanitizeArray( searchFlags, getAvailableSearchFlags() ) ),
+		searchFlags:  sanitizeArray( searchFlags, getAvailableSearchFlags() ),
 
 		source,
-		sourceFlags: arrayToObject( sanitizeSourceFlags( source, flags, sourceFlags ) ),
+		sourceFlags:  sanitizeSourceFlags( source, flags, sourceFlags ),
 
 		replacement,
 
 		perPage: sanitizeValue( parseInt( perPage, 10 ), getAvailablePerPage(), 25 ),
-	}
+	};
 }

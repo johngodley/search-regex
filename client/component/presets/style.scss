@@ -1,0 +1,21 @@
+.searchregex-saved {
+	display: flex;
+}
+
+.wpl-modal_wrapper-padding .wpl-modal_content.searchregex-preset__name {
+	padding: 15px 20px;
+}
+
+.searchregex-preset__name form {
+	display: flex;
+	justify-content: space-between;
+
+	input[type="text"] {
+		width: 100%;
+	}
+
+	input[type="submit"],
+	button.button {
+		margin-left: 5px;
+	}
+}
