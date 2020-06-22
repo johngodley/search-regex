@@ -93,7 +93,7 @@
     "html-webpack-plugin": "^4.3.0",
     "i18n-calypso-cli": "^1.0.0",
     "imports-loader": "^1.0.0",
-    "jest": "26.0.1",
+    "jest": "25.5.4",
     "json-loader": "^0.5.7",
     "mocha": "^8.0.1",
     "node-fetch": "^2.6.0",
