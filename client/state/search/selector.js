@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 
 /**
  * Internal dependencies
@@ -10,7 +10,11 @@ import { translate as __ } from 'lib/locale';
 
 import { STATUS_COMPLETE } from 'state/settings/type';
 import { SEARCH_FORWARD, SEARCH_BACKWARD } from 'state/search/type';
-import { removePostTypes } from 'lib/sources';
+import { removePostTypes, getAllPostTypes } from 'lib/sources';
+import { getPageUrl } from 'wp-plugin-lib/wordpress-url';
+
+/** @typedef {import('./type.js').SearchValues} SearchValues */
+/** @typedef {import('./type.js').SearchSourceGroup} SearchSourceGroup */
 
 /**
  * Return all the search flags
@@ -29,7 +33,7 @@ export const getAvailableSearchFlags = () => [
 /**
  * Return all the per-page values
  */
-export const getAvailablePerPage = () => ( [
+export const getAvailablePerPage = () => [
 	{
 		value: 25,
 		label: __( '25 per page ' ),
@@ -50,7 +54,7 @@ export const getAvailablePerPage = () => ( [
 		value: 500,
 		label: __( '500 per page' ),
 	},
-] );
+];
 
 /**
  * Return true if the state is complete or has no status, false otherwise
@@ -82,7 +86,7 @@ export function getReplaceTotal( state, action ) {
 /**
  * Has the search finished?
  * @param {Object} action Current action
- * @param {Array} results Array of results
+ * @param {} results Array of results
  * @param {String} direction Current search direction
  * @returns {Boolean}
  */
@@ -102,26 +106,26 @@ export function isComplete( action, results, direction ) {
 
 /**
  * Is this an advanced (regex) search?
- * @param {Object} search Search object
+ *
+ * @param {SearchValues} search Search object
  * @returns {Boolean}
  */
 export const isAdvancedSearch = ( search ) => search.searchFlags.regex;
 
 /**
  * Apply any processing to the search values to make them suitable for the API
- * @param {Object} values Search value object
- * @param {Object} sources Available sources
- * @returns {Object}
+ *
+ * @param {SearchValues} values - Search value object
+ * @param {{searchPhrase: string, replacement: string}} tagged - Tagged search and replace values
+ * @param {SearchSourceGroup} sources - Available sources
+ * @returns {SearchValues}
  */
-export function getSearchValues( values, sources ) {
-	const { source, searchFlags, sourceFlags, replacement } = values;
-
+export function getSearchValues( values, tagged, sources ) {
 	return {
 		...values,
-		source: removePostTypes( source, sources ),
-		searchFlags: Object.keys( searchFlags ),
-		sourceFlags: Object.keys( sourceFlags ),
-		replacement: getReplacement( replacement ),
+		source: removePostTypes( values.source, sources ),
+		replacement: getReplacement( values.replacement ),
+		...( tagged?.searchPhrase ? tagged : {} ),
 	};
 }
 
@@ -132,4 +136,92 @@ export function getSearchValues( values, sources ) {
  */
 export function getReplacement( replacement ) {
 	return replacement ? replacement : '';
+}
+
+/**
+ * If the 'posts' type is present then ensure all post types are also included
+ *
+ * @param {string[]} sources - Array of source names
+ * @param {*} allPostTypes
+ * @returns {string[]}
+ */
+function addPostTypes( sources, allPostTypes ) {
+	if ( sources.indexOf( 'posts' ) !== -1 ) {
+		return sources.filter( ( item ) => allPostTypes.indexOf( item ) === -1 ).concat( allPostTypes );
+	}
+
+	return sources;
+}
+
+/**
+ * Get default search values
+ *
+ * @returns {SearchValues}
+ */
+export function getDefaultSearch() {
+	return {
+		searchPhrase: '',
+		searchFlags: [ 'case' ],
+		source: [ 'post', 'page' ],
+		sourceFlags: [],
+		replacement: '',
+		perPage: 25,
+	};
+}
+
+/**
+ * Get search values from query parameters
+ *
+ * @param {SearchSourceGroup} availableSources
+ * @param {object|null} [queryParams] - Optional query object, otherwise uses browser URL
+ * @returns {SearchValues}
+ */
+export function getQuerySearchParams( availableSources, queryParams = null ) {
+	const query = queryParams ? queryParams : getPageUrl();
+	const search = {};
+	const params = {
+		searchphrase: 'searchPhrase',
+		searchflags: 'searchFlags',
+		sourceflags: 'sourceFlags',
+		source: 'source',
+		replacement: 'replacement',
+		perpage: 'perPage',
+	};
+
+	// Copy any query params across
+	Object.keys( params ).forEach( ( key ) => {
+		if ( query[ key ] ) {
+			search[ params[ key ] ] = query[ key ];
+		}
+	} );
+
+	// Sanitize the sources
+	if ( search.source ) {
+		search.source = addPostTypes( search.source, getAllPostTypes( availableSources ) );
+	}
+
+	return search;
+}
+
+function applyTags( phrase, tags ) {
+	return tags.reduce( ( prev, current ) => {
+		return prev.replace( current.name, current.value );
+	}, phrase );
+}
+
+export function applyTagsToSearch( searchValues, prefix, tagValues ) {
+	const phrase = prefix === 'search' ? searchValues.searchPhrase : searchValues.replacement;
+	const tags = Object.keys( tagValues )
+		.filter( ( tagName ) => tagName.substr( 0, prefix.length ) === prefix && tagValues[ tagName ].length > 0 )
+		.map( ( tagName ) => {
+			return {
+				name: tagName.slice( prefix.length + 1 ).replace( /-\d*$/, '' ),
+				value: tagValues[ tagName ],
+			};
+		} );
+	const tagged = applyTags( phrase, tags );
+
+	return {
+		[ prefix === 'search' ? 'searchPhrase' : 'replacement' ]: tagged && tags.length > 0 ? tagged : '',
+	};
 }

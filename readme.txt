@@ -80,6 +80,12 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 2.2 - ??? =
+- Add presets
+- Save a search as a preset
+- Lock fields in a search
+- Create custom search templates
+
 = 2.1 - 6th June 2020 =
 - Support searching and replacing in multiple sources
 - Improve regex search and replace speed

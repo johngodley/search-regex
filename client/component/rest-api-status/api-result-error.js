@@ -8,7 +8,7 @@ import React from 'react';
  * External dependencies
  */
 
-import DecodeError from 'component/decode-error';
+import DecodeError from 'wp-plugin-components/error/decode-error';
 import ApiResultRaw from './api-result-raw';
 
 const getApiErrorName = error => {

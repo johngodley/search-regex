@@ -8,10 +8,11 @@ import {
 	SEARCH_LOAD_ROW_COMPLETE,
 	SEARCH_SAVE_ROW_COMPLETE,
 } from '../type';
-import { getApi, SearchRegexApi } from 'lib/api';
+import SearchRegexApi from 'lib/api-request';
+import apiFetch from 'wp-plugin-lib/api-fetch';
 
 export const deleteRow = ( source, rowId ) => ( dispatch ) => {
-	getApi( SearchRegexApi.source.deleteRow( source, rowId ) )
+	apiFetch( SearchRegexApi.source.deleteRow( source, rowId ) )
 		.then( json => {
 			dispatch( { type: SEARCH_DELETE_COMPLETE, rowId } );
 		} )
@@ -23,7 +24,7 @@ export const deleteRow = ( source, rowId ) => ( dispatch ) => {
 };
 
 export const loadRow = ( source, rowId ) => ( dispatch ) => {
-	getApi( SearchRegexApi.source.loadRow( source, rowId ) )
+	apiFetch( SearchRegexApi.source.loadRow( source, rowId ) )
 		.then( json => {
 			dispatch( { type: SEARCH_LOAD_ROW_COMPLETE, rowId, row: json.result } );
 		} )
@@ -36,9 +37,9 @@ export const loadRow = ( source, rowId ) => ( dispatch ) => {
 
 export const saveRow = ( source, rowId, columnId, content ) => ( dispatch, getState ) => {
 	const { searchPhrase, searchFlags, replacement, sourceFlags } = getState().search.search;
-	const searchValues = { searchPhrase, replacement, searchFlags: Object.keys( searchFlags ), sourceFlags: Object.keys( sourceFlags ) };
+	const searchValues = { searchPhrase, replacement, searchFlags, sourceFlags };
 
-	getApi( SearchRegexApi.source.saveRow( source, rowId, { ...searchValues, columnId, content } ) )
+	apiFetch( SearchRegexApi.source.saveRow( source, rowId, { ...searchValues, columnId, content } ) )
 		.then( json => {
 			dispatch( { type: SEARCH_SAVE_ROW_COMPLETE, ...json, rowId } );
 		} )

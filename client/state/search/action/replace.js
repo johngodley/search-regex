@@ -10,21 +10,22 @@ import {
 	SEARCH_REPLACE_ALL_MORE,
 } from '../type';
 import { getSearchValues, getReplacement } from '../selector';
-import { getApi, SearchRegexApi } from 'lib/api';
+import SearchRegexApi from 'lib/api-request';
+import apiFetch from 'wp-plugin-lib/api-fetch';
 
 /**
  * Replace within a single row. Can replace an individual phrase, everything in a column, or everything in a row
  *
  * @param {String} replacement String to replace the phrase with
  * @param {String} source The source name
- * @param {Integer} rowId Row ID
+ * @param {number} rowId Row ID
  * @param {String|null} columnId Optional column to replace
- * @param {String|null} posId Optional position in column to replace
+ * @param {number|null} posId Optional position in column to replace
  */
 export const replaceRow = ( replacement, source, rowId, columnId = null, posId = null ) => ( dispatch, getState ) => {
-	const { search, sources } = getState().search;
+	const { search, sources, tagged } = getState().search;
 	const replace = {
-		...getSearchValues( search, sources ),
+		...getSearchValues( search, tagged, sources ),
 		replacePhrase: replacement,
 	};
 
@@ -38,27 +39,28 @@ export const replaceRow = ( replacement, source, rowId, columnId = null, posId =
 
 	delete replace.source;
 
-	dispatch( { type: SEARCH_REPLACE_ROW, rowId } )
+	dispatch( { type: SEARCH_REPLACE_ROW, rowId } );
 
-	return getApi( SearchRegexApi.source.replaceRow( source, rowId, replace ) )
-		.then( json => {
+	return apiFetch( SearchRegexApi.source.replaceRow( source, rowId, replace ) )
+		.then( ( json ) => {
 			dispatch( { type: SEARCH_REPLACE_COMPLETE, ...json, perPage: search.perPage, rowId } );
 		} )
-		.catch( error => {
+		.catch( ( error ) => {
 			dispatch( { type: SEARCH_FAIL, error } );
 		} );
 };
 
 /**
  * Action to replace all phrases with the replacement
- * @param {Integer} perPage Number of results per page
+ * @param {number} perPage Number of results per page
  * @returns {Promise} API fetch promise
  */
 export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
-	const { search, sources } = getState().search;
+	const { search, sources, tagged } = getState().search;
+	const searchValues = getSearchValues( search, tagged, sources );
 	const replace = {
-		...getSearchValues( search, sources ),
-		replacePhrase: getReplacement( search.replacement ),
+		...searchValues,
+		replacePhrase: getReplacement( searchValues.replacement ),
 		offset: '0',
 		perPage,
 	};
@@ -70,14 +72,16 @@ export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
 
 /**
  * Action to continue replacing all
- * @param {Integer} page
+ * @param {number} page
  * @returns {Promise} API fetch promise
  */
 export const replaceNext = ( offset, perPage ) => ( dispatch, getState ) => {
-	const { search, sources } = getState().search;
+	const { search, sources, tagged } = getState().search;
+	const searchValues = getSearchValues( search, tagged, sources );
+
 	const replace = {
-		...getSearchValues( search, sources ),
-		replacePhrase: getReplacement( search.replacement ),
+		...searchValues,
+		replacePhrase: getReplacement( searchValues.replacement ),
 		offset,
 		perPage,
 	};
@@ -88,10 +92,10 @@ export const replaceNext = ( offset, perPage ) => ( dispatch, getState ) => {
 };
 
 const replaceAllRequest = ( values, dispatch ) =>
-	getApi( SearchRegexApi.search.replace( values ) )
-		.then( json => {
+	apiFetch( SearchRegexApi.search.replace( values ) )
+		.then( ( json ) => {
 			dispatch( { type: SEARCH_REPLACE_ALL_COMPLETE, ...json } );
 		} )
-		.catch( error => {
-			dispatch( { type: SEARCH_FAIL, error } )
+		.catch( ( error ) => {
+			dispatch( { type: SEARCH_FAIL, error } );
 		} );

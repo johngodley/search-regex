@@ -51,6 +51,9 @@ const SVN_SOURCE_FILES = [
 	'!psalm.xml',
 	'!composer.json',
 	'!composer.lock',
+	'!tsconfig.json',
+	'!search-regex.js.LICENSE.txt',
+	'!jsconfig.json',
 ];
 const versionHeader = md5 => `<?php
 

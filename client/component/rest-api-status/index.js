@@ -5,7 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 import classnames from 'classnames';
 
 /**
@@ -13,7 +13,7 @@ import classnames from 'classnames';
  */
 
 import ApiResult from './api-result';
-import Spinner from 'component/spinner';
+import { Spinner } from 'wp-plugin-components';
 import { restApi } from 'page/options/options-form';
 import { checkApi } from 'state/settings/action';
 import './style.scss';
@@ -129,9 +129,17 @@ class RestApiStatus extends React.Component {
 
 		return (
 			<div className="api-result-log">
-				<p><strong>{ __( 'Summary' ) }</strong>: { message }</p>
+				<p>
+					<strong>{ __( 'Summary' ) }</strong>: { message }
+				</p>
 
-				{ ! showing && <p><button className="button-secondary" onClick={ this.onShow }>{ __( 'Show Problems' ) }</button></p> }
+				{ ! showing && (
+					<p>
+						<button className="button-secondary" type="button" onClick={ this.onShow }>
+							{ __( 'Show Problems' ) }
+						</button>
+					</p>
+				) }
 			</div>
 		);
 	}

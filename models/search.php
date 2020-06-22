@@ -14,6 +14,7 @@ require_once __DIR__ . '/match-column.php';
 require_once __DIR__ . '/search-flags.php';
 require_once __DIR__ . '/source-flags.php';
 require_once __DIR__ . '/totals.php';
+require_once __DIR__ . '/preset.php';
 
 /**
  * Perform a search

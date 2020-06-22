@@ -77,7 +77,7 @@ abstract class Search_Source {
 	 * @param Array $row Database row, used in some sources to determine the type.
 	 * @return String A user viewable source name
 	 */
-	public function get_name( array $row ) {
+	public function get_name( array $row = [] ) {
 		return $this->source_name;
 	}
 

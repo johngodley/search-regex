@@ -59,31 +59,17 @@ describe( 'search selectors', () => {
 		];
 
 		test( 'post types are removed if all posts are searched', () => {
-			const search = { source: [ 'posts', 'post' ], searchFlags: {}, sourceFlags: {}, replacement: '' };
+			const search = { source: [ 'posts', 'post' ], searchFlags: [], sourceFlags: [], replacement: '' };
 			const expected = { source: [ 'posts' ], searchFlags: [], sourceFlags: [], replacement: '' };
 
-			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
-		} );
-
-		test( 'search flag object is converted to array', () => {
-			const search = { source: [ 'post' ], searchFlags: { regex: true }, sourceFlags: {}, replacement: '' };
-			const expected = { source: [ 'post' ], searchFlags: [ 'regex' ], sourceFlags: [], replacement: '' };
-
-			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
-		} );
-
-		test( 'source flag object is converted to array', () => {
-			const search = { source: [ 'post' ], searchFlags: {}, sourceFlags: { thing: true }, replacement: '' };
-			const expected = { source: [ 'post' ], searchFlags: [], sourceFlags: [ 'thing' ], replacement: '' };
-
-			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
+			expect( getSearchValues( search, {}, SOURCES ) ).toStrictEqual( expected );
 		} );
 
 		test( 'null replacement is converted to empty string', () => {
-			const search = { source: [ 'post' ], searchFlags: {}, sourceFlags: {}, replacement: null };
+			const search = { source: [ 'post' ], searchFlags: [], sourceFlags: [], replacement: null };
 			const expected = { source: [ 'post' ], searchFlags: [], sourceFlags: [], replacement: '' };
 
-			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
+			expect( getSearchValues( search, {}, SOURCES ) ).toStrictEqual( expected );
 		} );
 	} );
 

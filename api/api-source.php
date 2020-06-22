@@ -21,7 +21,7 @@ use SearchRegex\Source_Flags;
  */
 
 /**
- * @api {get} /search-regex/v1/source/:source/:rowId Load source row
+ * @api {get} /search-regex/v1/source/:source/:rowId Load row
  * @apiName LoadRow
  * @apiDescription Load a row of data from one source. This can be used to get the full data for a particular search.
  *
@@ -36,9 +36,9 @@ use SearchRegex\Source_Flags;
  */
 
 /**
- * @api {post} /search-regex/v1/source/:source/:rowId Save source row
+ * @api {post} /search-regex/v1/source/:source/:rowId Update row
  * @apiVersion 1.0.0
- * @apiName SaveRow
+ * @apiName UpdateRow
  * @apiDescription Save data to a column of a row of a source, returning the same row back with modified data
  *
  * @apiGroup Source
@@ -54,10 +54,10 @@ use SearchRegex\Source_Flags;
  */
 
 /**
- * @api {post} /search-regex/v1/source/:source/:rowId/replace Perform a replace on a row
+ * @api {post} /search-regex/v1/source/:source/:rowId/replace Replace a row
  * @apiVersion 1.0.0
- * @apiName DeleteRow
- * @apiDescription Removes an entire row of data from the source
+ * @apiName ReplaceRow
+ * @apiDescription Performs a replace on a row
  *
  * @apiGroup Source
  *
@@ -72,7 +72,7 @@ use SearchRegex\Source_Flags;
  */
 
 /**
- * @api {post} /search-regex/v1/source/:source/:rowId/delete Delete source row
+ * @api {post} /search-regex/v1/source/:source/:rowId/delete Delete row
  * @apiVersion 1.0.0
  * @apiName DeleteRow
  * @apiDescription Removes an entire row of data from the source

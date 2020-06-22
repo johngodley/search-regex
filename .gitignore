@@ -5,3 +5,4 @@ node_modules
 /api-doc
 /vendor
 /.DS_Store
+/search-regex.js.LICENSE.txt

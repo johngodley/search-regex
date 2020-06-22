@@ -3,13 +3,13 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 
 /**
  * Internal dependencies
  */
 
-import ExternalLink from 'component/external-link';
+import { ExternalLink } from 'wp-plugin-components';
 
 function SearchHelp() {
 	return (

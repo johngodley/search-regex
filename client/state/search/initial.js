@@ -2,39 +2,58 @@
  * Internal dependencies
  */
 
-import { getPageUrl } from 'lib/wordpress-url';
-import { getAllPostTypes } from 'lib/sources';
 import getPreload from 'lib/preload';
-import getValidatedSearch from 'state/search/validate';
+import { getQuerySearchParams, getDefaultSearch, applyTagsToSearch } from './selector';
+import getValidatedSearch from './validate';
+import { getPageUrl } from 'wp-plugin-lib/wordpress-url';
 
-function addPostTypes( sources, allPostTypes ) {
-	if ( sources.indexOf( 'posts' ) !== -1 ) {
-		return sources.filter( item => allPostTypes.indexOf( item ) === -1 ).concat( allPostTypes );
+function getInitialPreset() {
+	const query = getPageUrl();
+	const preset = getPreload( 'presets', [] ).find( ( item ) => item.id === query.preset );
+
+	if ( preset ) {
+		return preset.search;
 	}
 
-	return sources;
+	return {};
 }
 
-function getInitialSearchParams( sources ) {
+function getTagValues( searchPhrase ) {
 	const query = getPageUrl();
-	const allPostTypes = getAllPostTypes( sources );
-	const initialSources = query.source ? addPostTypes( query.source, allPostTypes ) : [ 'post', 'page' ];
+	const preset = getPreload( 'presets', [] ).find( ( item ) => item.id === query.preset );
+	const tagValues = {};
 
-	return getValidatedSearch( {
-		searchPhrase: query.searchphrase ? query.searchphrase : '',
-		searchFlags: query.searchflags ? query.searchflags : [ 'case' ],
+	if ( preset?.tags ) {
+		for ( let index = 0; index < preset.tags.length; index++ ) {
+			for ( let subIndex = 0; subIndex < 10; subIndex++ ) {
+				const searchName = `search-${ preset.tags[ index ].name.toLowerCase() }-${ subIndex }`;
 
-		source: initialSources,
-		sourceFlags: query.sourceflags ? query.sourceflags : [],
+				if ( query[ searchName ] ) {
+					tagValues[ `search-${ preset.tags[ index ].name }-${ subIndex }` ] = query[ searchName ];
+				} else {
+					break;
+				}
+			}
+		}
+	}
 
-		replacement: '',
-
-		perPage: query.perpage ? query.perpage : 25,
-	} );
+	return {
+		tagged: {
+			searchPhrase:
+				Object.keys( tagValues ).length > 0 ? applyTagsToSearch( { searchPhrase }, 'search', tagValues ).searchPhrase : '',
+			replacement: '',
+		},
+		tagValues,
+	};
 }
 
 export function getInitialSearch() {
 	const sources = getPreload( 'sources', [] );
+	const search = getValidatedSearch( {
+		...getDefaultSearch(),
+		...getInitialPreset(),
+		...getQuerySearchParams( sources ),
+	} );
 
 	return {
 		results: [],
@@ -45,7 +64,9 @@ export function getInitialSearch() {
 		replaceCount: 0,
 		phraseCount: 0,
 
-		search: getInitialSearchParams( sources ),
+		search,
+
+		...getTagValues( search.searchPhrase ),
 
 		searchDirection: null,
 

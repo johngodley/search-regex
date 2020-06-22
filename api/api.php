@@ -6,6 +6,7 @@ require_once __DIR__ . '/api-replace.php';
 require_once __DIR__ . '/api-source.php';
 require_once __DIR__ . '/api-settings.php';
 require_once __DIR__ . '/api-plugin.php';
+require_once __DIR__ . '/api-preset.php';
 
 define( 'SEARCHREGEX_API_NAMESPACE', 'search-regex/v1' );
 
@@ -47,5 +48,6 @@ class Search_Regex_Api {
 		$this->routes[] = new Search_Regex_Api_Source( SEARCHREGEX_API_NAMESPACE );
 		$this->routes[] = new Search_Regex_Api_Plugin( SEARCHREGEX_API_NAMESPACE );
 		$this->routes[] = new Search_Regex_Api_Settings( SEARCHREGEX_API_NAMESPACE );
+		$this->routes[] = new Search_Regex_Api_Preset( SEARCHREGEX_API_NAMESPACE );
 	}
 }

@@ -4,15 +4,18 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 
 /**
  * Internal dependencies
  */
 
-import ExternalLink from 'component/external-link';
+import { ExternalLink } from 'wp-plugin-components';
 import ApiResultItem from './api-result-item';
-import { getApiNonce } from 'lib/api/api-url';
+
+function getApiNonce() {
+	return SearchRegexi10n.api.WP_API_nonce;
+}
 
 const isLoading = result => Object.keys( result ).length === 0 || result.GET.status === 'loading' || result.POST.status === 'loading';
 

@@ -1,191 +1,111 @@
-/* global SEARCHREGEX_VERSION, SearchRegexi10n */
 /**
  * External dependencies
  */
 
-import React from 'react';
-import { translate as __ } from 'lib/locale';
+import React, { useState } from 'react';
+import { translate as __ } from 'wp-plugin-lib/locale';
 import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
  */
 
-import { getPluginPage } from 'lib/wordpress-url';
-import Options from 'page/options';
-import Support from 'page/support';
-import SearchReplace from 'page/search-replace';
-import Error from 'component/error';
-import Notice from 'component/notice';
-import Menu from 'component/menu';
-import ExternalLink from 'component/external-link';
-import { clearErrors } from 'state/message/action';
+import { getPluginPage } from 'lib/plugin';
+import { Snackbar, Menu, ErrorBoundary, Error } from 'wp-plugin-components';
+import { has_page_access } from 'lib/capabilities';
+import { clearErrors, clearNotices } from 'state/message/action';
+import DebugReport from './debug';
+import ErrorDetails from './error-details';
+import CrashHandler from './crash-handler';
+import PageRouter from './page-router';
+import PageContent from './page-content';
 import './style.scss';
 
 const getTitles = () => ( {
 	search: __( 'Search Regex' ),
 	options: __( 'Options' ),
 	support: __( 'Support' ),
+	presets: __( 'Presets' ),
 } );
 
-class Home extends React.Component {
-	constructor( props ) {
-		super( props );
+const getMenu = () =>
+	[
+		{
+			name: __( 'Search & Replace' ),
+			value: '',
+		},
+		{
+			name: __( 'Presets' ),
+			value: 'presets',
+		},
+		{
+			name: __( 'Options' ),
+			value: 'options',
+		},
+		{
+			name: __( 'Support' ),
+			value: 'support',
+		},
+	].filter( ( option ) => has_page_access( option.value ) || ( option.value === '' && has_page_access( 'search' ) ) );
 
-		this.state = {
-			page: getPluginPage(),
-			clicked: 0,
-			stack: false,
-			error: SEARCHREGEX_VERSION !== SearchRegexi10n.version,
-			info: false,
-		};
+function Home( props ) {
+	const { onClearErrors, errors, onClearNotices, notices } = props;
+	const [ page, setPage ] = useState( getPluginPage() );
 
-		window.addEventListener( 'popstate', this.onPageChanged );
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( { error: true, stack: error, info } );
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener( 'popstate', this.onPageChanged );
-	}
-
-	onPageChanged = () => {
-		const page = getPluginPage();
-
-		this.changePage( page );
-		this.setState( { page, clicked: this.state.clicked + 1 } );
-	}
-
-	onChangePage = ( page, url ) => {
-		if ( page === '' ) {
-			page = 'search';
-		}
-
-		this.props.onClear();
-
-		history.pushState( {}, null, url );
-
-		this.changePage( page );
-		this.setState( {
-			page,
-			clicked: this.state.clicked + 1,
-		} );
-	}
-
-	changePage( page ) {
-	}
-
-	getContent( page ) {
-		const { clicked } = this.state;
-
-		switch ( page ) {
-			case 'support':
-				return <Support />;
-
-			case 'options':
-				return <Options />;
-		}
-
-		return <SearchReplace />;
-	}
-
-	renderError() {
-		const debug = [
-			SearchRegexi10n.versions,
-			'Buster: ' + SEARCHREGEX_VERSION + ' === ' + SearchRegexi10n.version,
-			'',
-			this.state.stack ? this.state.stack : '',
-		];
-
-		if ( this.state.info && this.state.info.componentStack ) {
-			debug.push( this.state.info.componentStack );
-		}
-
-		if ( SEARCHREGEX_VERSION !== SearchRegexi10n.version ) {
-			return (
-				<div className="red-error">
-					<h2>{ __( 'Cached Search Regex detected' ) }</h2>
-					<p>{ __( 'Please clear your browser cache and reload this page.' ) }</p>
-					<p>
-						{ __( 'If you are using a caching system such as Cloudflare then please read this: ' ) }
-						<ExternalLink url="https://searchregex.com/support/problems/cloudflare/">{ __( 'clearing your cache.' ) }</ExternalLink>
-					</p>
-					<p><textarea readOnly={ true } rows={ debug.length + 6 } cols="120" value={ debug.join( '\n' ) } spellCheck={ false }></textarea></p>
-				</div>
-			);
-		}
-
-		return (
-			<div className="red-error">
-				<h2>{ __( 'Something went wrong 🙁' ) }</h2>
-
-				<p>
-					{ __( 'Search Regex is not working. Try clearing your browser cache and reloading this page.' ) } &nbsp;
-					{ __( 'If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.' ) }
-				</p>
-
-				<p>
-					{ __( "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details.", {
-						components: {
-							link: <ExternalLink url="https://github.com/johngodley/searchregex/issues" />,
-						},
-					} ) }
-				</p>
-				<p>
-					{ __( 'Please mention {{code}}%s{{/code}}, and explain what you were doing at the time', {
-						components: {
-							code: <code />,
-						},
-						args: this.state.page,
-					} ) }
-				</p>
-				<p><textarea readOnly={ true } rows={ debug.length + 8 } cols="120" value={ debug.join( '\n' ) } spellCheck={ false }></textarea></p>
-			</div>
-		);
-	}
-
-	render() {
-		const { error, page } = this.state;
-		const title = getTitles()[ page ];
-
-		if ( error ) {
-			return this.renderError();
-		}
-
-		return (
+	return (
+		<ErrorBoundary renderCrash={ CrashHandler } extra={ { page } }>
 			<div className="wrap searchregex">
-				<h1 className="wp-heading-inline">{ title }</h1>
+				<PageRouter page={ page } setPage={ setPage } onPageChange={ onClearErrors }>
+					<h1 className="wp-heading-inline">{ getTitles()[ page ] }</h1>
 
-				<Menu onChangePage={ this.onChangePage } current={ page } />
-				<Error />
+					<Menu
+						onChangePage={ ( newPage ) => setPage( newPage === '' ? 'search' : newPage ) }
+						menu={ getMenu() }
+						home="search"
+						urlBase={ SearchRegexi10n.pluginRoot }
+					/>
 
-				{ this.getContent( page ) }
+					<Error
+						errors={ errors }
+						onClear={ onClearErrors }
+						renderDebug={ DebugReport }
+						versions={ SearchRegexi10n.versions }
+					>
+						<ErrorDetails />
+					</Error>
 
-				<Notice />
+					<PageContent page={ page } />
+
+					<Snackbar notices={ notices } onClear={ onClearNotices } />
+				</PageRouter>
 			</div>
-		);
-	}
+		</ErrorBoundary>
+	);
 }
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		onClear: () => {
+		onClearErrors: () => {
 			dispatch( clearErrors() );
+		},
+		onClearNotices: () => {
+			dispatch( clearNotices() );
 		},
 	};
 }
 
 function mapStateToProps( state ) {
-	const { message: { errors } } = state;
+	const {
+		message: { errors, notices },
+	} = state;
 
 	return {
 		errors,
+		notices,
 	};
 }
 
 export default connect(
 	mapStateToProps,
-	mapDispatchToProps,
+	mapDispatchToProps
 )( Home );

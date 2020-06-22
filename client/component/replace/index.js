@@ -3,19 +3,28 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { translate as __ } from 'lib/locale';
+import { translate as __ } from 'wp-plugin-lib/locale';
 import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 
-import Select from 'component/select';
+import { Select } from 'wp-plugin-components';
 import './style.scss';
+
+/**
+ * @callback SaveCallback
+ * @param {string} phrase
+ */
+
+/**
+ * @callback CancelCallback
+ */
 
 const getReplaceOptions = () => [
 	{
-		value: '',
+		value: 'single',
 		label: __( 'Single' ),
 	},
 	{
@@ -51,34 +60,69 @@ function ReplaceContainer( { children, onSave, className } ) {
 	);
 }
 
-function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCancel, placeholder, description } ) {
+function getReplaceFlag( replace ) {
+	if ( replace === null ) {
+		return 'remove';
+	} else if ( replace.indexOf( '\n' ) !== -1 ) {
+		return 'multi';
+	}
+
+	return '';
+}
+
+/**
+ * A replacement dialog
+ *
+ * @param {object} props - Component props
+ * @param {boolean} props.canReplace - Whether we can replace this
+ * @param {string} props.className - Class
+ * @param {boolean} props.autoFocus - Whether to autofocus on the popup
+ * @param {string|React} props.placeholder - Placeholder string
+ * @param {string|React} props.description - Description string
+ * @param {SaveCallback} props.setReplace - Change the replacement string
+ * @param {SaveCallback} props.onSave - Change the replacement string
+ * @param {CancelCallback} props.onCancel - Change the replacement string
+ * @param {string} props.replace - Replacement string
+ * @returns React
+ */
+function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCancel, placeholder, description, replace } ) {
 	const ref = useRef( null );
-	const [ replace, setLocalReplace ] = useState( '' );
-	const [ replaceFlag, setReplaceFlag ] = useState( '' );
+	const [ replaceFlag, setReplaceFlag ] = useState( getReplaceFlag( replace ) );
 
 	const value = {
 		id: 'replace',
 		value: replace === null ? '' : replace,
 		name: 'replace',
-		onChange: ( ev ) => setLocalReplace( ev.target.value ),
+		onChange: ( ev ) => setReplace( ev.target.value ),
 		disabled: ! canReplace || replaceFlag === 'remove',
 		placeholder: replaceFlag === 'remove' ? __( 'Search phrase will be removed' ) : placeholder,
 		ref,
 	};
 
-	useEffect( () => {
-		setLocalReplace( replaceFlag === 'remove' ?  null : '' );
-		setReplace( replaceFlag === 'remove' ?  null : '' );
-	}, [ replaceFlag ] );
+	function changeReplace( replaceFlag ) {
+		setReplaceFlag( replaceFlag );
+
+		if ( replaceFlag !== '' ) {
+			setReplace( replaceFlag === 'remove' ? null : '' );
+		}
+	}
 
 	useEffect( () => {
-		setReplace( replace );
+		const flag = getReplaceFlag( replace );
+
+		if ( replace === '' && replaceFlag === 'multi' && flag === '' ) {
+			return;
+		}
+
+		if ( flag !== replaceFlag ) {
+			setReplaceFlag( flag );
+		}
 	}, [ replace ] );
 
 	// Autofocus
 	useEffect( () => {
 		setTimeout( () => {
-			autoFocus && ref && ref.current.focus();
+			autoFocus && ref?.current?.focus();
 		}, 50 );
 	}, [ ref ] );
 
@@ -87,7 +131,7 @@ function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCanc
 			<div className="searchregex-replace__input">
 				{ replaceFlag === 'multi' ? (
 					<textarea
-						rows="4"
+						rows={ 4 }
 						{ ...value }
 					/>
 				) : (
@@ -101,8 +145,8 @@ function Replace( { canReplace, setReplace, className, autoFocus, onSave, onCanc
 					items={ getReplaceOptions() }
 					name="replace_flags"
 					value={ replaceFlag }
-					onChange={ ( ev ) => setReplaceFlag( ev.target.value ) }
-					isEnabled={ canReplace }
+					onChange={ ( ev ) => changeReplace( ev.target.value ) }
+					disabled={ ! canReplace }
 				/>
 			</div>
 

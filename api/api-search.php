@@ -1,6 +1,7 @@
 <?php
 
 use SearchRegex\Search;
+use SearchRegex\Saved_Search;
 
 /**
  * @api {post} /search-regex/v1/search Search
@@ -92,7 +93,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 				$this->get_search_params(),
 				$this->get_paging_params()
 			),
-			$this->get_route( WP_REST_Server::EDITABLE, 'search', [ $this, 'permission_callback' ] ),
+			$this->get_route( WP_REST_Server::EDITABLE, 'route_search', [ $this, 'permission_callback' ] ),
 		] );
 	}
 
@@ -102,7 +103,7 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	 * @param WP_REST_Request $request The request.
 	 * @return WP_Error|array Return an array of results, or a WP_Error
 	 */
-	public function search( WP_REST_Request $request ) {
+	public function route_search( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
 		list( $search, $replacer ) = $this->get_search_replace( $params, $params['replacement'] );

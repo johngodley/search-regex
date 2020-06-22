@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { translate as __, numberFormat } from 'lib/locale';
+import { translate as __, numberFormat } from 'wp-plugin-lib/locale';
 
 /**
  * Internal dependencies
@@ -14,6 +14,12 @@ import ResultContext from './result-context';
 
 const MORE_CONTEXTS = 2;
 
+/**
+ * @param {object} props - Component props
+ * @param {number} props.rowId - Row ID
+ * @param {boolean} props.isReplacing - Is replacing
+ * @param {string} props.sourceType - Type of source
+ */
 function ResultColumns( props ) {
 	const { replacement, rowId, isReplacing, column, sourceType } = props;
 	const { contexts, context_count, match_count } = column;
@@ -39,7 +45,7 @@ function ResultColumns( props ) {
 
 			{ ! showMore && contexts.length > MORE_CONTEXTS && (
 				<p>
-					<button className="button button-secondary" onClick={ () => setShowMore( true ) }>
+					<button className="button button-secondary" onClick={ () => setShowMore( true ) } type="button">
 						{ __( 'Show %s more', 'Show %s more', {
 							count: remainingCount,
 							args: numberFormat( remainingCount ),

@@ -9,17 +9,18 @@ import {
 	SEARCH_FORWARD,
 } from '../type';
 import { getSearchValues } from '../selector';
-import { getApi, SearchRegexApi } from 'lib/api';
+import SearchRegexApi from 'lib/api-request';
+import apiFetch from 'wp-plugin-lib/api-fetch';
 
 /**
  * Start a search for the current phrase and conditions
- * @param {Integer} page Page offset
+ * @param {number} page Page offset
  * @param {String} searchDirection Search direction - SEARCH_FORWARD or SEARCH_BACKWARD
  */
 export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, getState ) => {
-	const { sources, search } = getState().search;
+	const { sources, search, tagged } = getState().search;
 	const searchValues = {
-		...getSearchValues( search, sources ),
+		...getSearchValues( search, tagged, sources ),
 		page,
 		searchDirection,
 	};
@@ -31,15 +32,14 @@ export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, 
 
 /**
  * Continue a search for the current phrase and conditions. Only need for regular expression searches when the page isn't full
- * @param {Integer} page Page offset
- * @param {Integer} perPage Number of results per page
- * @param {Integer} limit How many results remaining to return
- * @param {String} searchDirection Search direction - SEARCH_FORWARD or SEARCH_BACKWARD
+ * @param {number} page Page offset
+ * @param {number} perPage Number of results per page
+ * @param {number} limit How many results remaining to return
  */
 export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => {
-	const { search, sources, searchDirection = SEARCH_FORWARD } = getState().search;
+	const { search, sources, tagged, searchDirection = SEARCH_FORWARD } = getState().search;
 	const searchValues = {
-		...getSearchValues( search, sources ),
+		...getSearchValues( search, tagged, sources ),
 		page,
 		perPage,
 		searchDirection,
@@ -51,8 +51,13 @@ export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => 
 	return getSearch( searchValues, dispatch );
 }
 
+/**
+ * Performs an API search
+ * @param {*} searchValues
+ * @param {*} dispatch
+ */
 const getSearch = ( searchValues, dispatch ) =>
-	getApi( SearchRegexApi.search.get( searchValues ) )
+	apiFetch( SearchRegexApi.search.get( searchValues ) )
 		.then( json => {
 			dispatch( { type: SEARCH_COMPLETE, ...json, perPage: searchValues.perPage } );
 		} )
