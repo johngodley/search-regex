@@ -72,7 +72,7 @@ function SearchResults( props ) {
 
 				<tbody>
 					{ results.map( ( result, pos ) => (
-						<Result key={ pos } result={ result } /> )
+						<Result key={ result.row_id } result={ result } /> )
 					) }
 
 					{ showLoading && <TableLoading columns={ 4 } /> }

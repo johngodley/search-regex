@@ -16,7 +16,27 @@ import { replaceRow } from 'state/search/action';
 import { deleteRow } from 'state/search/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 
-function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete, onEditor, description, sourceType, actionDropdown } ) {
+/**
+ *
+ * @param {object} props - Component props
+ * @param {boolean} props.isLoading
+ * @param {string} props.description
+ * @param {string} props.replacement
+ * @param {string} props.sourceType
+ */
+function Actions( {
+	setReplacement,
+	replacement,
+	actions,
+	isLoading,
+	onSave,
+	result,
+	onDelete,
+	onEditor,
+	description,
+	sourceType,
+	actionDropdown,
+} ) {
 	const reset = ( toggle ) => {
 		toggle();
 		setReplacement( '' );
@@ -49,12 +69,24 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 	const actionKeys = Object.keys( actions );
 	for ( let index = 0; index < actionKeys.length; index++ ) {
 		if ( actionMap[ actionKeys[ index ] ] ) {
-			actionList.push( <ExternalLink url={ actions[ actionKeys[ index ] ] } key={ actionKeys[ index ] }>{ actionMap[ actionKeys[ index ] ] }</ExternalLink> );
+			actionList.push(
+				<ExternalLink url={ actions[ actionKeys[ index ] ] } key={ actionKeys[ index ] }>
+					{ actionMap[ actionKeys[ index ] ] }
+				</ExternalLink>
+			);
 		}
 	}
 
-	actionList.push( <a key="inline-edit" href="#" onClick={ editor }>{ __( 'Inline Editor' ) }</a> );
-	actionList.push( <a key="delete" href="#" onClick={ deleteTheRow }>{ __( 'Delete Row' ) }</a> );
+	actionList.push(
+		<a key="inline-edit" href="#" onClick={ editor }>
+			{ __( 'Inline Editor' ) }
+		</a>
+	);
+	actionList.push(
+		<a key="delete" href="#" onClick={ deleteTheRow }>
+			{ __( 'Delete Row' ) }
+		</a>
+	);
 
 	if ( actionDropdown ) {
 		return (
@@ -62,7 +94,11 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 				key="replace"
 				renderToggle={ ( isOpen, toggle ) => (
 					<DropdownMenu
-						menu={ [ <a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>{ __( 'Replace Row' ) }</a> ].concat( actionList ) }
+						menu={ [
+							<a href="#" onClick={ ( ev ) => clicked( ev, toggle ) }>
+								{ __( 'Replace Row' ) }
+							</a>,
+						].concat( actionList ) }
 					/>
 				) }
 				onHide={ () => setReplacement( '' ) }
@@ -73,12 +109,13 @@ function Actions( { setReplacement, actions, isLoading, onSave, result, onDelete
 					<Replace
 						className="searchregex-replace__modal"
 						canReplace
-						setReplace={ ( replace ) => setReplacement( replace ) }
 						autoFocus
 						onSave={ ( value ) => save( value, toggle ) }
 						onCancel={ () => reset( toggle ) }
 						placeholder={ __( 'Replacement for all matches in this row' ) }
 						description={ description }
+						setReplace={ ( replace ) => setReplacement( replace ) }
+						replace={ replacement }
 					/>
 				) }
 			/>

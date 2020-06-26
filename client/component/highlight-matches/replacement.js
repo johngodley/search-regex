@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import classnames from 'classnames';
 import { translate as __ } from 'wp-plugin-lib/locale';
 
@@ -51,12 +51,7 @@ function Replacement( props ) {
 		setSpecific( '' );
 		toggle && toggle();
 	};
-	useEffect(() => {
-		console.log( 'creating replacement' );
-		return () => {
-			console.log( 'closing replacement' );
-		};
-	}, []);
+
 	return (
 		<Dropdown
 			className={ classnames( {
