@@ -260,4 +260,28 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 
 		return $sources[0]->delete_row( $params['rowId'] );
 	}
+
+	/**
+	 * Validate the replacement column
+	 *
+	 * @param Array|String    $value The value to validate.
+	 * @param WP_REST_Request $request The request.
+	 * @param Array           $param The array of parameters.
+	 * @return Bool|WP_Error true or false
+	 */
+	public function validate_replace_column( $value, WP_REST_Request $request, $param ) {
+		$params = $request->get_params();
+		$sources = Source_Manager::get( [ $params['source'] ], new Search_Flags(), new Source_Flags() );
+		$columns = [];
+
+		foreach ( $sources as $source ) {
+			$columns = array_merge( $columns, $source->get_columns() );
+		}
+
+		if ( in_array( $value, $columns, true ) ) {
+			return true;
+		}
+
+		return new WP_Error( 'rest_invalid_param', 'Invalid column detected', array( 'status' => 400 ) );
+	}
 }
