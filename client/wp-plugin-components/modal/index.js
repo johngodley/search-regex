@@ -11,10 +11,8 @@ import ReactDOM from 'react-dom';
 
 import ModalWrapper from './wrapper';
 import getPortal from '../../wp-plugin-lib/portal';
+import { MODAL_PORTAL } from '../constant';
 import './style.scss';
-
-/** @const {string} */
-export const MODAL_PORTAL = 'wpl-modal';
 
 /**
  * onClose callback.

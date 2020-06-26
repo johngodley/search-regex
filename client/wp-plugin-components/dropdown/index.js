@@ -46,6 +46,7 @@ import isOutside from '../click-outside/is-outside';
  * @param {('left'|'right'|'centre')} [props.align='left'] - Align the dropdown on the `left` or `right`.
  * @param {number} [props.widthAdjust=0] - Change the dropdown menu to match the width of the toggle.
  * @param {boolean} [props.hasArrow=false] - Show a small arrow pointing at the toggle when the dropdown is toggled.
+ * @param {boolean} [props.disabled=false] - Is the dropdown disabled
  * @param {toggleCallback} [props.onHide] - Callback when the dropdown is hidden.
  * @param {contentRender} props.renderContent - Called when the dropdown menu should be shown
  * @param {toggleRender} props.renderToggle - Called to display the toggle.

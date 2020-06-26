@@ -15,7 +15,7 @@ import './style.scss';
  *
  * @param {object} props - Component props
  * @param {object[]} props.menu - Array of menu items (React components)
- * @param {boolean} props.disabled - Disable the menu
+ * @param {boolean} [props.disabled=false] - Disable the menu
  * @param {('left'|'right')} [props.align] - Which side the menu appears on
  */
 function DropdownMenu( { menu, align = 'right', disabled = false } ) {
