@@ -14,7 +14,7 @@ import { translate as __ } from 'wp-plugin-lib/locale';
 import Preset from './preset';
 import { exportPresets, uploadPreset, importClipboard, setClipboard, clearPresetError } from 'state/preset/action';
 import './style.scss';
-import { Uploader, Placeholder, Spinner, Error } from 'wp-plugin-components';
+import { Uploader, Placeholder, Spinner, Error, ExternalLink } from 'wp-plugin-components';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from 'state/settings/type';
 
 function PresetDebug( { debug } ) {
@@ -92,6 +92,10 @@ function PresetManagement( props ) {
 					) }
 				</tbody>
 			</table>
+
+			<p>
+				<ExternalLink url="https://searchregex.com/preset/">{ __( 'Download presets!' ) }</ExternalLink>
+			</p>
 
 			<div className="searchregex-presetactions">
 				{ presets.length > 0 && (

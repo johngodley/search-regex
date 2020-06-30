@@ -284,7 +284,8 @@ class Search_Regex_Api_Route {
 	public function validate_source_flags( $value, WP_REST_Request $request, $param ) {
 		if ( is_array( $value ) ) {
 			$params = $request->get_params();
-			$sources = Source_Manager::get( is_array( $params['source'] ) ? $params['source'] : [ $params['source'] ], new Search_Flags(), new Source_Flags( $value ) );
+			$search = isset( $params['search'] ) ? $params['search'] : $params;
+			$sources = Source_Manager::get( is_array( $search['source'] ) ? $search['source'] : [ $search['source'] ], new Search_Flags(), new Source_Flags( $value ) );
 
 			// Get the sanitized flags from all the sources
 			$allowed = [];

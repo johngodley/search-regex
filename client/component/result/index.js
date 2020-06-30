@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import Actions from './actions';
 import { Spinner, ExternalLink } from 'wp-plugin-components';
 import ResultColumns from './result-columns';
+import { getPreset, getDefaultPresetValues } from 'state/preset/selector';
 import Editor from 'component/editor';
 import './style.scss';
 
@@ -57,16 +58,14 @@ function Result( props ) {
 			<td className="searchregex-result__table">
 				<span title={ source_type }>{ source_name }</span>
 			</td>
-			<td className="searchregex-result__row">
-				{ numberFormat( row_id ) }
-			</td>
+			<td className="searchregex-result__row">{ numberFormat( row_id ) }</td>
 
-			<td className="searchregex-result__row">
-				{ match_count }
-			</td>
+			<td className="searchregex-result__row">{ match_count }</td>
 
 			<td className="searchregex-result__match">
-				<h2><ResultTitle view={ actions.view } title={ title } /></h2>
+				<h2>
+					<ResultTitle view={ actions.view } title={ title } />
+				</h2>
 
 				{ columns.map( ( column ) => (
 					<ResultColumns
@@ -80,8 +79,15 @@ function Result( props ) {
 				) ) }
 			</td>
 
-			<td className={ classnames( 'searchregex-result__action', actionDropdown && 'searchregex-result__action__dropdown' ) }>
-				{ isReplacing ? <Spinner /> : (
+			<td
+				className={ classnames(
+					'searchregex-result__action',
+					actionDropdown && 'searchregex-result__action__dropdown'
+				) }
+			>
+				{ isReplacing ? (
+					<Spinner />
+				) : (
 					<Actions
 						actions={ actions }
 						setReplacement={ setReplacement }
@@ -89,6 +95,7 @@ function Result( props ) {
 						onEditor={ () => setEditor( true ) }
 						sourceType={ source_type }
 						actionDropdown={ actionDropdown }
+						replacement={ replacement }
 						description={ __( 'Replace %(count)s match.', 'Replace %(count)s matches.', {
 							count: match_count,
 							args: {
@@ -98,24 +105,22 @@ function Result( props ) {
 					/>
 				) }
 
-				{ editor && (
-					<Editor
-						onClose={ () => setEditor( false ) }
-						result={ result }
-					/>
-				) }
+				{ editor && <Editor onClose={ () => setEditor( false ) } result={ result } /> }
 			</td>
 		</tr>
 	);
 }
 
 function mapStateToProps( state ) {
-	const { replacing, search, tagged } = state.search;
+	const { replacing, search } = state.search;
+	const { presets, currentPreset } = state.preset;
 	const { actionDropdown } = state.settings.values;
+	const preset = getPreset( presets, currentPreset );
+	const defaultValues = getDefaultPresetValues( preset );
 
 	return {
 		replacing,
-		globalReplacement: tagged.replacement === undefined ? search.replacement : tagged.replacement,
+		globalReplacement: preset && defaultValues.replacement === search.replacement ? '' : search.replacement,
 		actionDropdown,
 	};
 }

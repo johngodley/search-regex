@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
  * Internal dependencies
  */
 
-import { Spinner } from 'wp-plugin-components';
+import { Spinner, Button } from 'wp-plugin-components';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import { SEARCH_FORWARD } from 'state/search/type';
 import { cancel, search, replaceAll } from 'state/search/action';
@@ -28,32 +28,33 @@ const REPLACE_SIZE = 50;
  * @param {object} props.search - Search params
  * @param {string} props.status - Search status
  */
-function SearchActions( { search, status, onSearch, onReplace, onCancel, replaceAll, canCancel, onSavePreset } ) {
+function SearchActions( { search, status, onSearch, onReplace, onCancel, replaceAll, canCancel } ) {
 	const { searchPhrase, replacement } = search;
 
 	return (
 		<div className="searchregex-search__action">
-			<input
-				className="button button-primary"
-				type="submit"
-				value={ __( 'Search' ) }
+			<Button
+				isPrimary
+				isSubmit
 				onClick={ () => onSearch( 0, SEARCH_FORWARD ) }
 				disabled={ canSearch( status, searchPhrase ) || replaceAll }
-			/>
+			>
+				{ __( 'Search' ) }
+			</Button>
 
-			<input
-				className="button button-delete"
-				type="submit"
-				value={ __( 'Replace All' ) }
+			<Button
+				isDestructive
 				onClick={ () => onReplace( REPLACE_SIZE ) }
 				disabled={ canReplace( status, searchPhrase, replacement ) || replaceAll }
-			/>
+			>
+				{ __( 'Replace All' ) }
+			</Button>
 
 			{ status === STATUS_IN_PROGRESS && canCancel && (
 				<>
-					<button className="button button-delete" onClick={ onCancel } type="button">
+					<Button isDestructive onClick={ onCancel }>
 						{ __( 'Cancel' ) }
-					</button>
+					</Button>
 
 					<Spinner />
 				</>

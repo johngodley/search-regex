@@ -3,55 +3,16 @@
  */
 
 import getPreload from 'lib/preload';
-import { getQuerySearchParams, getDefaultSearch, applyTagsToSearch } from './selector';
+import { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from './selector';
 import getValidatedSearch from './validate';
 import { getPageUrl } from 'wp-plugin-lib/wordpress-url';
 
-function getInitialPreset() {
-	const query = getPageUrl();
-	const preset = getPreload( 'presets', [] ).find( ( item ) => item.id === query.preset );
-
-	if ( preset ) {
-		return preset.search;
-	}
-
-	return {};
-}
-
-function getTagValues( searchPhrase ) {
-	const query = getPageUrl();
-	const preset = getPreload( 'presets', [] ).find( ( item ) => item.id === query.preset );
-	const tagValues = {};
-
-	if ( preset?.tags ) {
-		for ( let index = 0; index < preset.tags.length; index++ ) {
-			for ( let subIndex = 0; subIndex < 10; subIndex++ ) {
-				const searchName = `search-${ preset.tags[ index ].name.toLowerCase() }-${ subIndex }`;
-
-				if ( query[ searchName ] ) {
-					tagValues[ `search-${ preset.tags[ index ].name }-${ subIndex }` ] = query[ searchName ];
-				} else {
-					break;
-				}
-			}
-		}
-	}
-
-	return {
-		tagged: {
-			searchPhrase:
-				Object.keys( tagValues ).length > 0 ? applyTagsToSearch( { searchPhrase }, 'search', tagValues ).searchPhrase : '',
-			replacement: '',
-		},
-		tagValues,
-	};
-}
-
 export function getInitialSearch() {
+	const query = getPageUrl();
 	const sources = getPreload( 'sources', [] );
 	const search = getValidatedSearch( {
 		...getDefaultSearch(),
-		...getInitialPreset(),
+		...getSearchFromPreset( getPreload( 'presets', [] ).find( ( item ) => item.id === query.preset ) ),
 		...getQuerySearchParams( sources ),
 	} );
 
@@ -65,8 +26,6 @@ export function getInitialSearch() {
 		phraseCount: 0,
 
 		search,
-
-		...getTagValues( search.searchPhrase ),
 
 		searchDirection: null,
 

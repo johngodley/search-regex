@@ -97,13 +97,13 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	 * @param String $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
-		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)', [
 			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
 		] );
 
 		$search_no_source = $this->get_search_params();
 		unset( $search_no_source['source'] );
-		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)', [
 			'args' => array_merge(
 				$search_no_source,
 				[
@@ -123,11 +123,11 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 			$this->get_route( WP_REST_Server::EDITABLE, 'saveRow', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)/delete', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)/delete', [
 			$this->get_route( WP_REST_Server::EDITABLE, 'deleteRow', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z]+)/(?P<rowId>[\d]+)/replace', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)/replace', [
 			'args' => array_merge(
 				$this->get_search_params(),
 				[
@@ -259,5 +259,29 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 		$sources = Source_Manager::get( [ $params['source'] ], new Search_Flags(), new Source_Flags() );
 
 		return $sources[0]->delete_row( $params['rowId'] );
+	}
+
+	/**
+	 * Validate the replacement column
+	 *
+	 * @param Array|String    $value The value to validate.
+	 * @param WP_REST_Request $request The request.
+	 * @param Array           $param The array of parameters.
+	 * @return Bool|WP_Error true or false
+	 */
+	public function validate_replace_column( $value, WP_REST_Request $request, $param ) {
+		$params = $request->get_params();
+		$sources = Source_Manager::get( [ $params['source'] ], new Search_Flags(), new Source_Flags() );
+		$columns = [];
+
+		foreach ( $sources as $source ) {
+			$columns = array_merge( $columns, $source->get_columns() );
+		}
+
+		if ( in_array( $value, $columns, true ) ) {
+			return true;
+		}
+
+		return new WP_Error( 'rest_invalid_param', 'Invalid column detected', array( 'status' => 400 ) );
 	}
 }

@@ -11,7 +11,21 @@ import {
 } from '../type';
 import { getSearchValues, getReplacement } from '../selector';
 import SearchRegexApi from 'lib/api-request';
+import { getPreset, getDefaultPresetValues } from 'state/preset/selector';
 import apiFetch from 'wp-plugin-lib/api-fetch';
+
+function getReplaceValue( replacement, { presets, currentPreset } ) {
+	const preset = getPreset( presets, currentPreset );
+
+	// If no replacement then default to the preset replace value, but with all the tags removed
+	if ( preset && replacement === '' ) {
+		const defaults = getDefaultPresetValues( preset );
+
+		return getReplacement( defaults.replacement );
+	}
+
+	return getReplacement( replacement );
+}
 
 /**
  * Replace within a single row. Can replace an individual phrase, everything in a column, or everything in a row
@@ -23,10 +37,12 @@ import apiFetch from 'wp-plugin-lib/api-fetch';
  * @param {number|null} posId Optional position in column to replace
  */
 export const replaceRow = ( replacement, source, rowId, columnId = null, posId = null ) => ( dispatch, getState ) => {
-	const { search, sources, tagged } = getState().search;
+	const { search, sources } = getState().search;
+	const replaceValue = getReplaceValue( replacement, getState().preset )
 	const replace = {
-		...getSearchValues( search, tagged, sources ),
-		replacePhrase: replacement,
+		...getSearchValues( search, sources ),
+		replacePhrase: getReplacement( replaceValue ),
+		replacement: replaceValue,
 	};
 
 	if ( columnId ) {
@@ -56,11 +72,13 @@ export const replaceRow = ( replacement, source, rowId, columnId = null, posId =
  * @returns {Promise} API fetch promise
  */
 export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
-	const { search, sources, tagged } = getState().search;
-	const searchValues = getSearchValues( search, tagged, sources );
+	const { search, sources } = getState().search;
+	const searchValues = getSearchValues( search, sources );
+	const replaceValue = getReplaceValue( search.replacement, getState().preset )
 	const replace = {
 		...searchValues,
-		replacePhrase: getReplacement( searchValues.replacement ),
+		replacePhrase: getReplacement( replaceValue ),
+		replacement: replaceValue,
 		offset: '0',
 		perPage,
 	};
@@ -76,12 +94,13 @@ export const replaceAll = ( perPage ) => ( dispatch, getState ) => {
  * @returns {Promise} API fetch promise
  */
 export const replaceNext = ( offset, perPage ) => ( dispatch, getState ) => {
-	const { search, sources, tagged } = getState().search;
-	const searchValues = getSearchValues( search, tagged, sources );
-
+	const { search, sources } = getState().search;
+	const searchValues = getSearchValues( search, sources );
+	const replaceValue = getReplaceValue( search.replacement, getState().preset )
 	const replace = {
 		...searchValues,
-		replacePhrase: getReplacement( searchValues.replacement ),
+		replacement: replaceValue,
+		replacePhrase: getReplacement( replaceValue ),
 		offset,
 		perPage,
 	};

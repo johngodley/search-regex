@@ -28,7 +28,7 @@ apiFetch.use( apiFetch.createNonceMiddleware( 'nonce' ) );
 const middlewares = [ thunk ];
 const mockStore = configureMockStore( middlewares );
 
-const getInitialSearchStore = ( search ) => ( { search: { search } } );
+const getInitialSearchStore = ( search, preset = { presets: [], currentPreset: null } ) => ( { search: { search }, preset } );
 const getRequest = ( url, body ) => ( { url, body } );
 const getResponse = ( body ) => ( { body } );
 
@@ -78,19 +78,19 @@ describe( 'search actions', () => {
 			return testAction( initialStore, request, response, action(), expectedActions );
 		}
 
-		test( 'a replaceAll calls APi with correct parameters and returns action', () => {
+		test( 'a replaceAll calls API with correct parameters and returns action', () => {
 			return testReplace( 'cat', 'cat', () => actions.replaceAll( 25 ), SEARCH_REPLACE_ALL, '0' );
 		} );
 
-		test( 'a delete replaceAll calls APi with correct parameters and returns action', () => {
+		test( 'a delete replaceAll calls API with correct parameters and returns action', () => {
 			return testReplace( null, '', () => actions.replaceAll( 25 ), SEARCH_REPLACE_ALL, '0' );
 		} );
 
-		test( 'a replaceNext calls APi with correct parameters and returns action', () => {
+		test( 'a replaceNext calls API with correct parameters and returns action', () => {
 			return testReplace( 'cat', 'cat', () => actions.replaceNext( 1, 25 ), SEARCH_REPLACE_ALL_MORE, 1 );
 		} );
 
-		test( 'a delete replaceNext calls APi with correct parameters and returns action', () => {
+		test( 'a delete replaceNext calls API with correct parameters and returns action', () => {
 			return testReplace( null, '', () => actions.replaceNext( 1, 25 ), SEARCH_REPLACE_ALL_MORE, 1 );
 		} );
 	} );

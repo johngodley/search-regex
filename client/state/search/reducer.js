@@ -18,11 +18,10 @@ import {
 	SEARCH_LOAD_ROW_COMPLETE,
 	SEARCH_SAVE_ROW_COMPLETE,
 	SEARCH_START_MORE,
-	SEARCH_TAG_VALUE,
 } from './type';
 import { PRESET_SELECT } from 'state/preset/type';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from 'state/settings/type';
-import { isAlreadyFinished, isComplete, isAdvancedSearch, getDefaultSearch, applyTagsToSearch } from './selector';
+import { isAlreadyFinished, isComplete, isAdvancedSearch, getSearchFromPreset } from './selector';
 
 function mergeProgress( existing, progress, direction, firstInSet ) {
 	return {
@@ -101,7 +100,6 @@ const reset = () => ( {
 	replaceAll: false,
 	canCancel: false,
 	showLoading: false,
-	tagged: {},
 } );
 
 function replaceRows( existing, results, rowId ) {
@@ -138,24 +136,6 @@ function replaceAllProgress( state, action ) {
 
 export default function searches( state = {}, action ) {
 	switch ( action.type ) {
-		case SEARCH_TAG_VALUE:
-			return {
-				...state,
-				tagValues: {
-					...state.tagValues,
-					[ `${ action.prefix }-${ action.tagName }-${ action.position }` ]: action.tagValue,
-				},
-				tagged: {
-					searchPhrase: '',
-					replacement: '',
-					...state.tagged,
-					...applyTagsToSearch( state.search, action.prefix, {
-						...action.preset.tagValues,
-						[ `${ action.prefix }-${ action.tagName }-${ action.position }` ]: action.tagValue,
-					} ),
-				},
-			};
-
 		// Update the search values when a preset is selected
 		case PRESET_SELECT:
 			return {
@@ -163,7 +143,7 @@ export default function searches( state = {}, action ) {
 				...resetAll(),
 				search: {
 					...state.search,
-					...( action.searchValues === null ? getDefaultSearch() : action.searchValues ),
+					...getSearchFromPreset( action.preset ),
 				},
 			};
 

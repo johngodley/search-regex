@@ -76,7 +76,7 @@ export const deletePreset = ( id ) => ( dispatch ) => {
  * @param {string} presetId
  * @param {SearchValues} searchValues
  */
-export const setPreset = ( presetId, searchValues ) => ( { type: PRESET_SELECT, presetId, searchValues } );
+export const setPreset = ( preset ) => ( { type: PRESET_SELECT, preset } );
 
 export const clearPresetError = () => ( { type: PRESET_CLEAR } );
 

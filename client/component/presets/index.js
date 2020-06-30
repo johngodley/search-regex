@@ -59,7 +59,7 @@ function Presets( props ) {
 	const changePreset = ( ev ) => {
 		const preset = presets.find( ( item ) => item.id === ev.target.value );
 
-		onChangePreset( ev.target.value, preset ? preset.search : null );
+		onChangePreset( preset );
 	};
 	const updatePreset = ( ev ) => {
 		ev.preventDefault();
@@ -130,8 +130,8 @@ function mapDispatchToProps( dispatch ) {
 		 * @param {string} id - Preset name
 		 * @param {SearchValues} searchValues - The preset search values
 		 */
-		onChangePreset: ( id, searchValues ) => {
-			dispatch( setPreset( id, searchValues ) );
+		onChangePreset: ( preset ) => {
+			dispatch( setPreset( preset ) );
 		},
 
 		/**

@@ -3,7 +3,6 @@
  */
 import {
 	isAlreadyFinished,
-	hasReplaceFinished,
 	isComplete,
 	getSearchValues,
 	getReplacement,
@@ -62,14 +61,14 @@ describe( 'search selectors', () => {
 			const search = { source: [ 'posts', 'post' ], searchFlags: [], sourceFlags: [], replacement: '' };
 			const expected = { source: [ 'posts' ], searchFlags: [], sourceFlags: [], replacement: '' };
 
-			expect( getSearchValues( search, {}, SOURCES ) ).toStrictEqual( expected );
+			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
 		} );
 
 		test( 'null replacement is converted to empty string', () => {
 			const search = { source: [ 'post' ], searchFlags: [], sourceFlags: [], replacement: null };
 			const expected = { source: [ 'post' ], searchFlags: [], sourceFlags: [], replacement: '' };
 
-			expect( getSearchValues( search, {}, SOURCES ) ).toStrictEqual( expected );
+			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
 		} );
 	} );
 

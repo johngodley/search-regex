@@ -14,37 +14,36 @@ import { PRESET_SELECT } from './preset/type';
  * @param {object} presetState Preset state
  */
 function setUrlForPage( action, searchState, presetState ) {
-	const { tagValues } = searchState;
-	const { searchPhrase, searchFlags, source, sourceFlags, perPage } = action;
+	const { searchFlags, source, sourceFlags, perPage, searchPhrase } = action;
 	const preset = presetState.presets.find( ( pres ) => pres.id === presetState.currentPreset );
 
 	const defaults = {
 		searchPhrase: '',
-		searchFlags: [],
-		source: [],
+		searchFlags: [ 'case' ],
+		source: [ 'post', 'page' ],
 		sourceFlags: [],
 		perPage: 25,
 		sub: 'search',
-		...( preset ? preset.search : {} ),
-		tagValues: [],
 	};
 
 	// Remove custom page types if 'posts' is included
 	const filteredSource = removePostTypes( source, searchState.sources );
 
-	setPageUrl(
-		{
-			page: 'search-regex.php',
-			searchPhrase: Object.keys( tagValues ).length === 0 ? searchPhrase : '',
-			searchFlags,
-			source: filteredSource,
-			sourceFlags,
-			perPage,
-			preset: presetState.currentPreset,
-			...tagValues,
-		},
-		defaults
-	);
+	if ( preset ) {
+		setPageUrl( { page: 'search-regex.php', preset: preset.id }, {} );
+	} else {
+		setPageUrl(
+			{
+				page: 'search-regex.php',
+				searchPhrase,
+				searchFlags,
+				source: filteredSource,
+				sourceFlags,
+				perPage,
+			},
+			defaults
+		);
+	}
 }
 
 export const urlMiddleware = ( store ) => ( next ) => ( action ) => {
@@ -54,8 +53,8 @@ export const urlMiddleware = ( store ) => ( next ) => ( action ) => {
 			break;
 
 		case PRESET_SELECT:
-			if ( action.presetId ) {
-				setPageUrl( { page: 'search-regex.php', preset: action.presetId }, getPageUrl() );
+			if ( action.preset ) {
+				setPageUrl( { page: 'search-regex.php', preset: action.preset.id }, getPageUrl() );
 			} else {
 				removeFromPageUrl( 'preset' );
 			}

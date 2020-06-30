@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { translate as __ } from 'wp-plugin-lib/locale';
 import { connect } from 'react-redux';
 
@@ -13,16 +13,7 @@ import { connect } from 'react-redux';
 import RestrictedMatches from 'component/result/restricted-matches';
 import Replacement from './replacement';
 import { replaceRow } from 'state/search/action';
-import { regexReplace, getMatchReplacement, getTypeOfReplacement } from './highlight-tools';
 import './style.scss';
-
-/**
- * Return an empty array of replacements
- *
- * @param {Match[]} matches - Match array
- * @returns {string[]}
- */
-const resetMatches = ( matches ) => matches.map( () => '' );
 
 /**
  * @typedef Match
@@ -49,24 +40,6 @@ const resetMatches = ( matches ) => matches.map( () => '' );
  */
 
 /**
- * Replace a word in the array
- *
- * @param {string[]} current Current replacements
- * @param {number} index - Replacement index
- * @param {string} word - Replacement word
- */
-function replaceWord( current, index, word ) {
-	console.log( 'replacing word: ' + index + ' == ' + word );
-	if ( current[ index ] === word ) {
-		console.log( 'returning same' );
-		return current;
-	}
-
-	console.log( 'returning ', [ ...current.slice( 0, index ), word, ...current.slice( index + 1 ) ] );
-	return [ ...current.slice( 0, index ), word, ...current.slice( index + 1 ) ];
-}
-
-/**
  * Display a matched phrase.
  *
  * @param {object} props - Component props
@@ -80,26 +53,19 @@ function replaceWord( current, index, word ) {
  * @param {Match} props.match - Match
  * @param {ReplaceCallback} props.onReplace - Perform a replacement
  * @param {SpecificCallback} props.setSpecific - Set the current replacement value
+ * @param {string} props.contextReplacement - Global replacement
  */
 function Match( props ) {
 	const {
 		beforePhrase,
-		afterPhrase,
 		onReplace,
-		//setSpecific,
 		sourceType,
 		rowId,
 		columnId,
 		isReplacing,
-//		matchedPhrase,
 		contextReplacement,
 	} = props;
 	const { context_offset, match, pos_id, captures, replacement } = props.match;
-						// matchedPhrase={ getMatchReplacement(
-						// 	/*[ specific[ pos ], contextReplacement, match.replacement ],*/
-						// 	[ contextReplacement, match.replacement ],
-						// 	match.match
-						// ) }
 
 	return (
 		<>
@@ -113,8 +79,6 @@ function Match( props ) {
 				replacement={ [ contextReplacement, replacement ] }
 				key={ context_offset }
 			/>
-
-			{ afterPhrase }
 		</>
 	);
 }
@@ -135,21 +99,14 @@ function Match( props ) {
  */
 function HighlightMatches( props ) {
 	const { matches, count, contextReplacement, onReplace, isReplacing, sourceType, source, columnId, rowId } = props;
-//	const [ specific, setSpecific ] = useState( resetMatches( matches ) );
 	let offset = 0;
 
-	// useEffect(() => {
-	// 	console.log( 'reset contextreplacement' );
-	// 	setSpecific( resetMatches( matches ) );
-	// }, [ contextReplacement ]);
-console.log( 'highlight matches' );
 	return (
 		<div className="searchregex-match__context">
-			{ matches.map( ( match, pos ) => {
+			{ matches.map( ( match ) => {
 				const oldOffset = offset;
 
-				offset += match.context_offset + match.match.length;
-// 						setSpecific={ ( update ) => setSpecific( replaceWord( specific, pos, update ) ) }
+				offset = match.context_offset + match.match.length;
 
 				return (
 					<Match
@@ -161,11 +118,12 @@ console.log( 'highlight matches' );
 						onReplace={ onReplace }
 						isReplacing={ isReplacing }
 						beforePhrase={ source.substring( oldOffset, match.context_offset ) }
-						afterPhrase={ source.substr( offset ) }
 						contextReplacement={ contextReplacement }
 					/>
 				);
 			} ) }
+
+			{ source.substring( offset ) }
 
 			{ matches.length !== count && <RestrictedMatches /> }
 		</div>

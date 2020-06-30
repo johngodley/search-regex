@@ -1,4 +1,4 @@
-import { DROPDOWN_PORTAL, PORTAL_WRAPPER } from '../../wp-plugin-components/constant';
+import { PORTAL_WRAPPER } from '../../wp-plugin-components/constant';
 
 /**
  * Get a portal node, or create it if it doesn't exist.
@@ -15,7 +15,7 @@ export default function getPortal( portalName ) {
 		portal = document.createElement( 'div' );
 
 		if ( wrapper && wrapper.parentNode ) {
-			portal.setAttribute( 'id', DROPDOWN_PORTAL );
+			portal.setAttribute( 'id', portalName );
 			wrapper.parentNode.appendChild( portal );
 		}
 	}

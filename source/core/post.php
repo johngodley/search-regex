@@ -176,7 +176,7 @@ class Source_Post extends Search_Source {
 	}
 
 	public function delete_row( $row_id ) {
-		if ( wp_delete_post( $row_id ) ) {
+		if ( wp_delete_post( $row_id, true ) ) {
 			return true;
 		}
 

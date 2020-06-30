@@ -240,11 +240,15 @@ class Preset {
 
 		// Sanitize sources and ensure source flags are allowed by those sources
 		if ( isset( $search['source'] ) && is_array( $search['source'] ) ) {
-			$sources = Source_Manager::get( $search['source'], $this->search_flags, $this->source_flags );
+			$sources = array_map( function( $source ) {
+				$sources = Source_Manager::get( [ $source ], $this->search_flags, $this->source_flags );
+				if ( $sources ) {
+					return $source;
+				}
 
-			$this->source = array_map( function( $source ) {
-				return $source->get_type();
-			}, $sources );
+				return false;
+			}, $search['source'] );
+			$this->source = array_values( array_filter( $sources ) );
 		} else {
 			// No source, no flags
 			$this->source_flags->set_allowed_flags( [] );
