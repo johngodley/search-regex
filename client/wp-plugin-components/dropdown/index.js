@@ -80,7 +80,7 @@ function Dropdown( props ) {
 	 * @param {Event} ev - Event
 	 */
 	const hide = ( ev ) => {
-		if ( isOutside( ev, toggleRef.current ) === false ) {
+		if ( isOutside( ev, toggleRef.current ) === false && ev.key !== 'Escape' ) {
 			return;
 		}
 

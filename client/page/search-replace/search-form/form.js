@@ -14,21 +14,35 @@ import classnames from 'classnames';
 import Replace from 'component/replace';
 import { Select, MultiOptionDropdown } from 'wp-plugin-components';
 import { getAvailableSearchFlags, getAvailablePerPage } from 'state/search/selector';
-import { isLocked, hasTags, getHeaderClass } from 'state/preset/selector';
-import { setTagValue } from 'state/search/action';
+import { isLocked, hasTags, getHeaderClass, getDefaultPresetValues } from 'state/preset/selector';
+import Search from 'component/search';
 import { convertToSource, getSourcesForDropdown, customBadge, getSourceFlagOptions } from './utils';
-import TaggedPhrases from './tagged-phrase';
 
 /** @typedef {import('state/search/type.js').SearchValues} SearchValues */
 /** @typedef {import('state/search/type.js').SearchSourceGroup} SearchSourceGroup */
 /** @typedef {import('state/preset/type').PresetValue} PresetValue */
-/** @typedef {import('./tagged-phrase').ChangeCallback} ChangeCallback */
+/** @typedef {import('component/tagged-phrase').ChangeCallback} ChangeCallback */
 /** @typedef {import('state/preset/type.js').PresetTag} PresetTag */
+/** @typedef {import('react').SyntheticEvent} SyntheticEvent */
 
 /**
  * @callback SetSearch
  * @param {SearchValues} searchValue
  */
+
+function showPresetValue( search, replace, defaults ) {
+	if ( defaults ) {
+		if ( search !== defaults.searchPhrase && search !== '' ) {
+			return true;
+		}
+
+		if ( replace !== '' && replace !== defaults.replacement ) {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 /**
  * Search form
@@ -40,24 +54,21 @@ import TaggedPhrases from './tagged-phrase';
  * @param {Object.<string,string>} props.sourceFlagOptions - Array of all the source options
  * @param {SearchValues} props.search - Search values
  * @param {PresetValue|null} [props.preset] - Preset
- * @param {ChangeCallback} [props.onSetTag] - Set a tag value
- * @param {PresetTag[]} [props.tagValues] - Tag values
  */
-function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset, onSetTag, tagValues, tagged } ) {
+function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset } ) {
 	const { searchPhrase, searchFlags, sourceFlags, source, perPage, replacement } = search;
 	const sourceFlagsForSource = getSourceFlagOptions( sourceFlagOptions, source );
 	const locked = preset ? preset.locked : [];
 	const tags = preset ? preset.tags : [];
 	const headerClass = getHeaderClass( tags );
+	const defaultValues = getDefaultPresetValues( preset );
 
-	/**
-	 * @param {Event} ev - Event
-	 */
-	const setSearchValue = ( ev ) => {
-		if ( ev?.target ) {
-			onSetSearch( { [ ev.target.name ]: ev.target.value } );
-		}
-	};
+	function setTaggedReplace( replacement ) {
+		const defaults = getDefaultPresetValues( preset );
+
+		// If the replace is the default non-tagged replace then reset it to an empty string
+		onSetSearch( { replacement: replacement === defaults.replacement ? '' : replacement } );
+	}
 
 	return (
 		<>
@@ -71,19 +82,16 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 			) }
 
 			{ ( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
-				! hasTags( tags, searchPhrase ) && (
+				! hasTags( tags, preset?.search?.searchPhrase ?? '' ) && (
 					<tr className={ classnames( 'searchregex-search__search', headerClass ) }>
 						<th>{ __( 'Search' ) }</th>
 
 						<td>
 							{ ! isLocked( locked, 'searchPhrase' ) && (
-								<input
-									type="text"
-									value={ searchPhrase }
-									name="searchPhrase"
-									placeholder={ __( 'Enter search phrase' ) }
-									onChange={ setSearchValue }
+								<Search
 									disabled={ isBusy }
+									value={ searchPhrase }
+									onChange={ ( value ) => onSetSearch( { searchPhrase: value } ) }
 								/>
 							) }
 
@@ -103,24 +111,22 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 				) }
 
 			{ ( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
-				hasTags( tags, searchPhrase ) && (
-					<TaggedPhrases
-						phrase={ searchPhrase }
-						tags={ tags }
-						prefix="search"
-						onChange={ onSetTag }
-						tagValues={ tagValues }
-						className={ classnames( headerClass ) }
+				hasTags( tags, preset?.search?.searchPhrase ?? '' ) && (
+					<Search
+						disabled={ isBusy }
+						value={ searchPhrase }
 						preset={ preset }
+						onChange={ ( value ) => onSetSearch( { searchPhrase: value } ) }
+						className={ headerClass }
 					/>
 				) }
 
-			{ ! isLocked( locked, 'replacement' ) && ! hasTags( tags, replacement ) && (
+			{ ! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
 				<tr className={ classnames( 'searchregex-search__replace', headerClass ) }>
 					<th>{ __( 'Replace' ) }</th>
 					<td>
 						<Replace
-							canReplace={ ! isBusy }
+							disabled={ isBusy }
 							setReplace={ ( replacement ) => onSetSearch( { replacement } ) }
 							replace={ replacement }
 							placeholder={ __( 'Enter global replacement text' ) }
@@ -129,15 +135,14 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 				</tr>
 			) }
 
-			{ ! isLocked( locked, 'replacement' ) && hasTags( tags, replacement ) && (
-				<TaggedPhrases
-					phrase={ replacement }
-					tags={ tags }
-					prefix="replace"
-					onChange={ onSetTag }
-					tagValues={ tagValues }
-					className={ classnames( headerClass ) }
+			{ ! isLocked( locked, 'replacement' ) && hasTags( tags, preset?.search?.replacement ?? '' ) && (
+				<Replace
 					preset={ preset }
+					disabled={ isBusy }
+					setReplace={ setTaggedReplace }
+					replace={ replacement }
+					placeholder={ __( 'Enter global replacement text' ) }
+					className={ headerClass }
 				/>
 			) }
 
@@ -189,15 +194,14 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 				</tr>
 			) }
 
-			{ tagged.searchPhrase || tagged.replacement ? (
+			{ showPresetValue( searchPhrase, replacement, defaultValues ) ? (
 				<tr className={ classnames( headerClass ) }>
 					<th />
 					<td>
-						<code>{ tagged.searchPhrase ? tagged.searchPhrase : <em>{ __( 'Empty' ) }</em> }</code>
-						{ tagged.replacement && (
+						<code>{ searchPhrase }</code>
+						{ replacement && (
 							<>
-								&nbsp;→&nbsp;
-								<code>{ tagged.replacement }</code>
+								&nbsp;→&nbsp; <code>{ replacement }</code>
 							</>
 						) }
 					</td>
@@ -207,32 +211,16 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 	);
 }
 
-function mapDispatchToProps( dispatch ) {
-	return {
-		/**
-		 * @param {string} prefix - Tag prefix
-		 * @param {string} tagName - Tag name
-		 * @param {number} position - Tag position
-		 * @param {string} tagValue - Tag value
-		 */
-		onSetTag: ( prefix, tagName, position, tagValue, preset ) => {
-			dispatch( setTagValue( prefix, tagName, position, tagValue, preset ) );
-		},
-	};
-}
-
 function mapStateToProps( state ) {
-	const { sources, sourceFlags, tagged, tagValues } = state.search;
+	const { sources, sourceFlags } = state.search;
 
 	return {
 		sources,
 		sourceFlagOptions: sourceFlags,
-		tagValues,
-		tagged,
 	};
 }
 
 export default connect(
 	mapStateToProps,
-	mapDispatchToProps
+	null
 )( Form );

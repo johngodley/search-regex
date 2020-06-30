@@ -18,9 +18,9 @@ import apiFetch from 'wp-plugin-lib/api-fetch';
  * @param {String} searchDirection Search direction - SEARCH_FORWARD or SEARCH_BACKWARD
  */
 export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, getState ) => {
-	const { sources, search, tagged } = getState().search;
+	const { sources, search } = getState().search;
 	const searchValues = {
-		...getSearchValues( search, tagged, sources ),
+		...getSearchValues( search, sources ),
 		page,
 		searchDirection,
 	};
@@ -37,9 +37,9 @@ export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, 
  * @param {number} limit How many results remaining to return
  */
 export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => {
-	const { search, sources, tagged, searchDirection = SEARCH_FORWARD } = getState().search;
+	const { search, sources, searchDirection = SEARCH_FORWARD } = getState().search;
 	const searchValues = {
-		...getSearchValues( search, tagged, sources ),
+		...getSearchValues( search, sources ),
 		page,
 		perPage,
 		searchDirection,

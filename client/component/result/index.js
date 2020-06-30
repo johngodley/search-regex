@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import Actions from './actions';
 import { Spinner, ExternalLink } from 'wp-plugin-components';
 import ResultColumns from './result-columns';
+import { getPreset, getDefaultPresetValues } from 'state/preset/selector';
 import Editor from 'component/editor';
 import './style.scss';
 
@@ -111,12 +112,15 @@ function Result( props ) {
 }
 
 function mapStateToProps( state ) {
-	const { replacing, search, tagged } = state.search;
+	const { replacing, search } = state.search;
+	const { presets, currentPreset } = state.preset;
 	const { actionDropdown } = state.settings.values;
+	const preset = getPreset( presets, currentPreset );
+	const defaultValues = getDefaultPresetValues( preset );
 
 	return {
 		replacing,
-		globalReplacement: ! tagged?.replacement ? search.replacement : tagged.replacement,
+		globalReplacement: preset && defaultValues.replacement === search.replacement ? '' : search.replacement,
 		actionDropdown,
 	};
 }

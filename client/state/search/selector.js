@@ -12,6 +12,7 @@ import { STATUS_COMPLETE } from 'state/settings/type';
 import { SEARCH_FORWARD, SEARCH_BACKWARD } from 'state/search/type';
 import { removePostTypes, getAllPostTypes } from 'lib/sources';
 import { getPageUrl } from 'wp-plugin-lib/wordpress-url';
+import { getDefaultPresetValues } from 'state/preset/selector';
 
 /** @typedef {import('./type.js').SearchValues} SearchValues */
 /** @typedef {import('./type.js').SearchSourceGroup} SearchSourceGroup */
@@ -116,16 +117,14 @@ export const isAdvancedSearch = ( search ) => search.searchFlags.regex;
  * Apply any processing to the search values to make them suitable for the API
  *
  * @param {SearchValues} values - Search value object
- * @param {{searchPhrase: string, replacement: string}} tagged - Tagged search and replace values
  * @param {SearchSourceGroup} sources - Available sources
  * @returns {SearchValues}
  */
-export function getSearchValues( values, tagged, sources ) {
+export function getSearchValues( values, sources ) {
 	return {
 		...values,
 		source: removePostTypes( values.source, sources ),
 		replacement: getReplacement( values.replacement ),
-		...( tagged?.searchPhrase ? tagged : {} ),
 	};
 }
 
@@ -203,25 +202,14 @@ export function getQuerySearchParams( availableSources, queryParams = null ) {
 	return search;
 }
 
-function applyTags( phrase, tags ) {
-	return tags.reduce( ( prev, current ) => {
-		return prev.replace( current.name, current.value );
-	}, phrase );
-}
+export function getSearchFromPreset( preset ) {
+	if ( preset ) {
+		return {
+			...preset.search,
+			...getDefaultPresetValues( preset ),
+			replacement: '',
+		};
+	}
 
-export function applyTagsToSearch( searchValues, prefix, tagValues ) {
-	const phrase = prefix === 'search' ? searchValues.searchPhrase : searchValues.replacement;
-	const tags = Object.keys( tagValues )
-		.filter( ( tagName ) => tagName.substr( 0, prefix.length ) === prefix && tagValues[ tagName ].length > 0 )
-		.map( ( tagName ) => {
-			return {
-				name: tagName.slice( prefix.length + 1 ).replace( /-\d*$/, '' ),
-				value: tagValues[ tagName ],
-			};
-		} );
-	const tagged = applyTags( phrase, tags );
-
-	return {
-		[ prefix === 'search' ? 'searchPhrase' : 'replacement' ]: tagged && tags.length > 0 ? tagged : '',
-	};
+	return getDefaultSearch();
 }

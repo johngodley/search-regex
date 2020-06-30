@@ -54,10 +54,6 @@ class Search_Regex_Admin {
 	 * @return void
 	 */
 	public static function plugin_activated() {
-		// If no existing presets then load the default presets
-		if ( get_option( Preset::OPTION_NAME, false ) === false ) {
-			Preset::import( dirname( __FILE__ ) . '/presets.json' );
-		}
 	}
 
 	/**

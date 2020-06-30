@@ -1,6 +1,9 @@
 /** @typedef {import('state/preset/type.js').PresetValue} PresetValue */
 /** @typedef {import('state/preset/type.js').PresetTag} PresetTag */
 
+const HEADER_SHORT = 12;
+const HEADER_MEDIUM = 30;
+
 /**
  * Get preset by ID
  *
@@ -31,9 +34,11 @@ export function isLocked( locked, field ) {
  * @returns {boolean}
  */
 export function hasTags( tags, phrase ) {
-	for ( let index = 0; index < tags.length; index++ ) {
-		if ( phrase.indexOf( tags[ index ].name ) !== -1 ) {
-			return true;
+	if ( phrase ) {
+		for ( let index = 0; index < tags.length; index++ ) {
+			if ( phrase.indexOf( tags[ index ].name ) !== -1 ) {
+				return true;
+			}
 		}
 	}
 
@@ -57,7 +62,7 @@ export function getMatchedTags( tags, phrase ) {
  * @param {PresetTag[]} tags
  * @returns {number}
  */
-export function getLongestTag( tags ) {
+function getLongestTag( tags ) {
 	let longest = 0;
 
 	for ( let index = 0; index < tags.length; index++ ) {
@@ -66,9 +71,6 @@ export function getLongestTag( tags ) {
 
 	return longest;
 }
-
-const HEADER_SHORT = 12;
-const HEADER_MEDIUM = 30;
 
 /**
  * Get tags as header values
@@ -85,12 +87,27 @@ export function getHeaderClass( tags ) {
 	};
 }
 
+function applyTags( phrase, tags ) {
+	return tags.reduce( ( prev, current ) => {
+		return prev.replace( current.name, current.value );
+	}, phrase );
+}
+
 /**
- * @param {Object.<string,TagValue>} values - Tag values
- * @param {string} prefix - Tag prefix
- * @param {string} tagName - Tag name
- * @param {number} position - Tag position
+ * Get the default preset values for a preset with tags
+ *
+ * @param {PresetValue} preset
+ * @returns {{searchPhrase: string, replacement: string}|null}
  */
-export function getTagValue( values, prefix, tagName, position ) {
-	return values[ `${ prefix }-${ tagName }-${ position }` ] ?? '';
+export function getDefaultPresetValues( preset ) {
+	if ( ! preset ) {
+		return null;
+	}
+
+	const emptyTags = preset.tags.map( ( tag ) => ( { name: tag.name, value: '' } ) );
+
+	return {
+		searchPhrase: applyTags( preset.search.searchPhrase, emptyTags ),
+		replacement: applyTags( preset.search.replacement, emptyTags ),
+	};
 }

@@ -113,7 +113,7 @@ export default function presets( state = {}, action ) {
 		case PRESET_SELECT:
 			return {
 				...state,
-				currentPreset: action.presetId,
+				currentPreset: action.preset ? action.preset.id : '',
 			};
 	}
 

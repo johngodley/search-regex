@@ -2,7 +2,6 @@
 <ruleset name="WordPress Coding Standards for Gutenberg Plugin">
 	<description>Coding standard for Search Regex plugin. Based on WordPress coding standards, but without the annoying Yoda and alignment options</description>
 
-	<rule ref="PHPCompatibility"/>
 	<config name="testVersion" value="5.5-"/>
 
 	<rule ref="WordPress-Core">

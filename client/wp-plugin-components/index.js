@@ -15,3 +15,7 @@ export { default as Uploader } from './uploader';
 export { default as Error } from './error';
 export { default as ErrorBoundary } from './error-boundary';
 export { default as Notice } from './notice';
+export { default as Table } from './table';
+export { default as TableRow } from './table-row';
+export { default as Form } from './form';
+export { default as Button } from './button';

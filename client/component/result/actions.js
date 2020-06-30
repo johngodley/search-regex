@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
  */
 
 import { Dropdown, DropdownMenu, ExternalLink } from 'wp-plugin-components';
-import Replace from 'component/replace';
+import ReplaceForm from 'component/replace-form';
 import { replaceRow } from 'state/search/action';
 import { deleteRow } from 'state/search/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
@@ -106,10 +106,9 @@ function Actions( {
 				disabled={ isLoading }
 				align="right"
 				renderContent={ ( toggle ) => (
-					<Replace
+					<ReplaceForm
 						className="searchregex-replace__modal"
 						canReplace
-						autoFocus
 						onSave={ ( value ) => save( value, toggle ) }
 						onCancel={ () => reset( toggle ) }
 						placeholder={ __( 'Replacement for all matches in this row' ) }

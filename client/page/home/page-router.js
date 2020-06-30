@@ -32,7 +32,7 @@ function PageRouter( props ) {
 	useEffect(() => {
 		onPageChange();
 
-		if ( previousPage.current ) {
+		if ( previousPage.current && previousPage.current !== page) {
 			history.pushState( {}, '', getWordPressUrl( { sub: page }, { sub: 'search' }, '?page=search-regex.php' ) );
 		}
 

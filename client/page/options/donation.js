@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { FormTable, TableRow } from 'component/form-table';
+import { Table, TableRow } from 'wp-plugin-components';
 import './donation.scss';
 
 const MIN = 16;
@@ -135,11 +135,11 @@ class Donation extends React.Component {
 
 		return (
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" className="donation">
-				<FormTable>
+				<Table className="form-table">
 					<TableRow title={ __( 'Plugin Support' ) + ':' }>
 						{ support ? this.renderSupported() : this.renderUnsupported() }
 					</TableRow>
-				</FormTable>
+				</Table>
 			</form>
 		);
 	}

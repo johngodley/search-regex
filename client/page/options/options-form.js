@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
  */
 import { saveSettings } from 'state/settings/action';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
-import { FormTable, TableRow } from 'component/form-table';
+import { Table, TableRow } from 'wp-plugin-components';
 import { Select } from 'wp-plugin-components';
 
 export const restApi = () => [
@@ -44,7 +44,7 @@ class OptionsForm extends React.Component {
 
 		return (
 			<form onSubmit={ this.onSubmit }>
-				<FormTable>
+				<Table className="form-table">
 					<TableRow title="">
 						<label>
 							<input type="checkbox" checked={ this.state.support } name="support" onChange={ this.onChange } />
@@ -55,7 +55,7 @@ class OptionsForm extends React.Component {
 					<TableRow title={ __( 'Actions' ) }>
 						<label>
 							<input type="checkbox" checked={ this.state.actionDropdown } name="actionDropdown" onChange={ this.onChange } />
-							{ __( "Show row actions as dropdown menu." ) }
+							{ __( "Show TableRow actions as dropdown menu." ) }
 						</label>
 					</TableRow>
 
@@ -63,7 +63,7 @@ class OptionsForm extends React.Component {
 						<Select items={ restApi() } name="rest_api" value={ parseInt( this.state.rest_api, 10 ) } onChange={ this.onChange } /> &nbsp;
 						<span className="sub">{ __( "How Search Regex uses the REST API - don't change unless necessary" ) }</span>
 					</TableRow>
-				</FormTable>
+				</Table>
 
 				<input className="button-primary" type="submit" name="update" value={ __( 'Update' ) } disabled={ saveStatus === STATUS_IN_PROGRESS } />
 			</form>

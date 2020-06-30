@@ -11,7 +11,7 @@ import { translate as __ } from 'wp-plugin-lib/locale';
  */
 
 import { Dropdown } from 'wp-plugin-components';
-import Replace from 'component/replace';
+import ReplaceForm from 'component/replace-form';
 import ReplacementPhrase from './replacement-phrase';
 import { regexReplace, getMatchReplacement, getTypeOfReplacement } from './highlight-tools';
 
@@ -68,12 +68,11 @@ function Replacement( props ) {
 			hasArrow
 			align="centre"
 			renderContent={ ( toggle ) => (
-				<Replace
+				<ReplaceForm
 					className="searchregex-replace__modal"
 					canReplace
 					setReplace={ setSpecific }
 					replace={ specific }
-					autoFocus
 					onSave={ ( value ) => save( value, toggle ) }
 					onCancel={ () => reset( toggle ) }
 					placeholder={ __( 'Replacement for this match' ) }
