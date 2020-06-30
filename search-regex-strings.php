@@ -4,8 +4,8 @@ $search_regex_strings = array(
 __( "Editing %s", "search-regex" ), // client/component/editor/index.js:53
 __( "Save", "search-regex" ), // client/component/editor/index.js:89
 __( "Close", "search-regex" ), // client/component/editor/index.js:92
-__( "Replacement for this match", "search-regex" ), // client/component/highlight-matches/replacement.js:84
-__( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:85
+__( "Replacement for this match", "search-regex" ), // client/component/highlight-matches/replacement.js:78
+__( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:79
 __( "Saving preset", "search-regex" ), // client/component/presets/index.js:38
 __( "No preset", "search-regex" ), // client/component/presets/index.js:42
 __( "Save search as new preset", "search-regex" ), // client/component/presets/index.js:74
@@ -15,12 +15,12 @@ __( "Enter a name for your preset", "search-regex" ), // client/component/preset
 __( "Enter preset name", "search-regex" ), // client/component/presets/index.js:100
 __( "Save", "search-regex" ), // client/component/presets/index.js:106
 __( "Cancel", "search-regex" ), // client/component/presets/index.js:109
-__( "Single", "search-regex" ), // client/component/replace/index.js:28
-__( "Multi", "search-regex" ), // client/component/replace/index.js:32
-__( "Remove", "search-regex" ), // client/component/replace/index.js:36
-__( "Search phrase will be removed", "search-regex" ), // client/component/replace/index.js:98
-__( "Replace", "search-regex" ), // client/component/replace/index.js:161
-__( "Cancel", "search-regex" ), // client/component/replace/index.js:164
+__( "Single", "search-regex" ), // client/component/replace/index.js:30
+__( "Multi", "search-regex" ), // client/component/replace/index.js:34
+__( "Remove", "search-regex" ), // client/component/replace/index.js:38
+__( "Search phrase will be removed", "search-regex" ), // client/component/replace/index.js:80
+__( "Replace", "search-regex" ), // client/component/replace-form/index.js:60
+__( "Cancel", "search-regex" ), // client/component/replace-form/index.js:66
 __( "Replace progress", "search-regex" ), // client/component/replace-progress/index.js:49
 __( "Replace Information", "search-regex" ), // client/component/replace-progress/index.js:60
 _n( "%s phrase.", "%s phrases.", 1, "search-regex" ), // client/component/replace-progress/index.js:62
@@ -42,14 +42,15 @@ __( "Summary", "search-regex" ), // client/component/rest-api-status/index.js:13
 __( "Show Problems", "search-regex" ), // client/component/rest-api-status/index.js:139
 __( "Testing - %s\$", "search-regex" ), // client/component/rest-api-status/index.js:168
 __( "Check Again", "search-regex" ), // client/component/rest-api-status/index.js:175
-__( "Edit Page", "search-regex" ), // client/component/result/actions.js:46
-__( "Inline Editor", "search-regex" ), // client/component/result/actions.js:56
-__( "Delete Row", "search-regex" ), // client/component/result/actions.js:57
-__( "Replace Row", "search-regex" ), // client/component/result/actions.js:65
-__( "Replacement for all matches in this row", "search-regex" ), // client/component/result/actions.js:80
-_n( "Replace %(count)s match.", "Replace %(count)s matches.", 1, "search-regex" ), // client/component/result/index.js:92
+__( "Edit Page", "search-regex" ), // client/component/result/actions.js:66
+__( "Inline Editor", "search-regex" ), // client/component/result/actions.js:82
+__( "Delete Row", "search-regex" ), // client/component/result/actions.js:87
+__( "Replace Row", "search-regex" ), // client/component/result/actions.js:99
+__( "Replacement for all matches in this row", "search-regex" ), // client/component/result/actions.js:114
+_n( "Replace %(count)s match.", "Replace %(count)s matches.", 1, "search-regex" ), // client/component/result/index.js:99
 __( "Maximum number of matches exceeded and hidden from view. These will be included in any replacements.", "search-regex" ), // client/component/result/restricted-matches.js:11
 _n( "Show %s more", "Show %s more", 1, "search-regex" ), // client/component/result/result-columns.js:49
+__( "Enter search phrase", "search-regex" ), // client/component/search/index.js:53
 __( "Cached Search Regex detected", "search-regex" ), // client/page/home/crash-handler.js:33
 __( "Please clear your browser cache and reload this page.", "search-regex" ), // client/page/home/crash-handler.js:35
 __( "If you are using a caching system such as Cloudflare then please read this: ", "search-regex" ), // client/page/home/crash-handler.js:37
@@ -87,7 +88,7 @@ __( "Raw REST API", "search-regex" ), // client/page/options/options-form.js:19
 __( "Relative REST API", "search-regex" ), // client/page/options/options-form.js:20
 __( "I'm a nice person and I have helped support the author of this plugin", "search-regex" ), // client/page/options/options-form.js:51
 __( "Actions", "search-regex" ), // client/page/options/options-form.js:55
-__( "Show row actions as dropdown menu.", "search-regex" ), // client/page/options/options-form.js:58
+__( "Show TableRow actions as dropdown menu.", "search-regex" ), // client/page/options/options-form.js:58
 __( "REST API", "search-regex" ), // client/page/options/options-form.js:62
 __( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:64
 __( "Update", "search-regex" ), // client/page/options/options-form.js:68
@@ -97,19 +98,20 @@ __( "Name", "search-regex" ), // client/page/preset-management/index.js:77
 __( "Search", "search-regex" ), // client/page/preset-management/index.js:78
 __( "Flags", "search-regex" ), // client/page/preset-management/index.js:79
 __( "There are no presets", "search-regex" ), // client/page/preset-management/index.js:90
-__( "Export JSON", "search-regex" ), // client/page/preset-management/index.js:99
-__( "Import JSON", "search-regex" ), // client/page/preset-management/index.js:104
-__( "Import a JSON file", "search-regex" ), // client/page/preset-management/index.js:113
-__( "Click 'Add File' or drag and drop here.", "search-regex" ), // client/page/preset-management/index.js:114
-__( "File selected", "search-regex" ), // client/page/preset-management/index.js:119
-__( "Importing", "search-regex" ), // client/page/preset-management/index.js:127
-_n( "Uploaded %(total)d preset", "Uploaded %(total)d presets", 1, "search-regex" ), // client/page/preset-management/index.js:139
-__( "Done", "search-regex" ), // client/page/preset-management/index.js:148
-__( "Import preset from clipboard", "search-regex" ), // client/page/preset-management/index.js:155
-__( "Unable to import preset", "search-regex" ), // client/page/preset-management/index.js:161
-__( "Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset.", "search-regex" ), // client/page/preset-management/index.js:168
-__( "Paste a single preset JSON.", "search-regex" ), // client/page/preset-management/index.js:175
-__( "Import", "search-regex" ), // client/page/preset-management/index.js:187
+__( "Download presets!", "search-regex" ), // client/page/preset-management/index.js:97
+__( "Export JSON", "search-regex" ), // client/page/preset-management/index.js:103
+__( "Import JSON", "search-regex" ), // client/page/preset-management/index.js:108
+__( "Import a JSON file", "search-regex" ), // client/page/preset-management/index.js:117
+__( "Click 'Add File' or drag and drop here.", "search-regex" ), // client/page/preset-management/index.js:118
+__( "File selected", "search-regex" ), // client/page/preset-management/index.js:123
+__( "Importing", "search-regex" ), // client/page/preset-management/index.js:131
+_n( "Uploaded %(total)d preset", "Uploaded %(total)d presets", 1, "search-regex" ), // client/page/preset-management/index.js:143
+__( "Done", "search-regex" ), // client/page/preset-management/index.js:152
+__( "Import preset from clipboard", "search-regex" ), // client/page/preset-management/index.js:159
+__( "Unable to import preset", "search-regex" ), // client/page/preset-management/index.js:165
+__( "Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset.", "search-regex" ), // client/page/preset-management/index.js:172
+__( "Paste a single preset JSON.", "search-regex" ), // client/page/preset-management/index.js:179
+__( "Import", "search-regex" ), // client/page/preset-management/index.js:191
 __( "no phrase", "search-regex" ), // client/page/preset-management/phrase.js:70
 __( "remove phrase", "search-regex" ), // client/page/preset-management/phrase.js:74
 __( "Search", "search-regex" ), // client/page/preset-management/preset-edit.js:56
@@ -145,9 +147,9 @@ __( "Delete", "search-regex" ), // client/page/preset-management/preset.js:102
 __( "Copy to clipboard", "search-regex" ), // client/page/preset-management/preset.js:107
 __( "Please backup your data before making modifications.", "search-regex" ), // client/page/search-replace/index.js:38
 __( "Search and replace information in your database.", "search-regex" ), // client/page/search-replace/index.js:41
-__( "Search", "search-regex" ), // client/page/search-replace/search-actions.js:39
-__( "Replace All", "search-regex" ), // client/page/search-replace/search-actions.js:47
-__( "Cancel", "search-regex" ), // client/page/search-replace/search-actions.js:55
+__( "Search", "search-regex" ), // client/page/search-replace/search-actions.js:42
+__( "Replace All", "search-regex" ), // client/page/search-replace/search-actions.js:50
+__( "Cancel", "search-regex" ), // client/page/search-replace/search-actions.js:56
 __( "Need more help?", "search-regex" ), // client/page/support/help.js:14
 __( "Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}.", "search-regex" ), // client/page/support/help.js:16
 __( "If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide.", "search-regex" ), // client/page/support/help.js:27
@@ -166,13 +168,13 @@ __( "Row deleted", "search-regex" ), // client/state/message/reducer.js:34
 __( "Row replaced", "search-regex" ), // client/state/message/reducer.js:35
 __( "Row updated", "search-regex" ), // client/state/message/reducer.js:36
 __( "Preset saved", "search-regex" ), // client/state/message/reducer.js:37
-__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:25
-__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:29
-__( "25 per page ", "search-regex" ), // client/state/search/selector.js:39
-__( "50 per page ", "search-regex" ), // client/state/search/selector.js:43
-__( "100 per page", "search-regex" ), // client/state/search/selector.js:47
-__( "250 per page", "search-regex" ), // client/state/search/selector.js:51
-__( "500 per page", "search-regex" ), // client/state/search/selector.js:55
+__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:26
+__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:30
+__( "25 per page ", "search-regex" ), // client/state/search/selector.js:40
+__( "50 per page ", "search-regex" ), // client/state/search/selector.js:44
+__( "100 per page", "search-regex" ), // client/state/search/selector.js:48
+__( "250 per page", "search-regex" ), // client/state/search/selector.js:52
+__( "500 per page", "search-regex" ), // client/state/search/selector.js:56
 __( "View notice", "search-regex" ), // client/wp-plugin-components/snackbar/index.js:70
 __( "Add File", "search-regex" ), // client/wp-plugin-components/uploader/content.js:45
 __( "Upload", "search-regex" ), // client/wp-plugin-components/uploader/content.js:54
@@ -189,15 +191,14 @@ __( "Prev page", "search-regex" ), // client/page/search-replace/pagination/simp
 __( "Page %(current)s of %(total)s", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:41
 __( "Next page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:49
 __( "Last page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:50
-__( "Search", "search-regex" ), // client/page/search-replace/search-form/form.js:76
-__( "Enter search phrase", "search-regex" ), // client/page/search-replace/search-form/form.js:84
-__( "Search Flags", "search-regex" ), // client/page/search-replace/search-form/form.js:95
-__( "Replace", "search-regex" ), // client/page/search-replace/search-form/form.js:120
-__( "Enter global replacement text", "search-regex" ), // client/page/search-replace/search-form/form.js:126
-__( "Source", "search-regex" ), // client/page/search-replace/search-form/form.js:146
-__( "Source Options", "search-regex" ), // client/page/search-replace/search-form/form.js:167
-__( "Results", "search-regex" ), // client/page/search-replace/search-form/form.js:179
-__( "Empty", "search-regex" ), // client/page/search-replace/search-form/form.js:196
+__( "Search", "search-regex" ), // client/page/search-replace/search-form/form.js:87
+__( "Search Flags", "search-regex" ), // client/page/search-replace/search-form/form.js:103
+__( "Replace", "search-regex" ), // client/page/search-replace/search-form/form.js:126
+__( "Enter global replacement text", "search-regex" ), // client/page/search-replace/search-form/form.js:132
+__( "Enter global replacement text", "search-regex" ), // client/page/search-replace/search-form/form.js:144
+__( "Source", "search-regex" ), // client/page/search-replace/search-form/form.js:151
+__( "Source Options", "search-regex" ), // client/page/search-replace/search-form/form.js:172
+__( "Results", "search-regex" ), // client/page/search-replace/search-form/form.js:184
 __( "Preset", "search-regex" ), // client/page/search-replace/search-form/index.js:46
 __( "No more matching results found.", "search-regex" ), // client/page/search-replace/search-results/empty-results.js:11
 __( "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.", "search-regex" ), // client/page/search-replace/search-results/index.js:37
