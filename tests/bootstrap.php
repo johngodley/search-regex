@@ -19,7 +19,7 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
 
-class Redirection_Api_Test extends WP_Ajax_UnitTestCase {
+class SearchRegex_Api_Test extends WP_Ajax_UnitTestCase {
 	protected function callApi( $endpoint, array $params = array(), $method = 'GET' ) {
 		$request = new WP_REST_Request( $method, '/search-regex/v1/' . $endpoint );
 

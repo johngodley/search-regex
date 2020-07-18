@@ -5,7 +5,7 @@ use SearchRegex\Search_Flags;
 use SearchRegex\Source_Flags;
 use SearchRegex\Source_Manager;
 
-class TotalsTest extends Redirection_Api_Test {
+class TotalsTest extends SearchRegex_Api_Test {
 	public static function setUpBeforeClass() {
 		$posts = self::load_fixture( 'posts.csv', 100 );
 		$comments = self::load_fixture( 'comments.csv', 100 );

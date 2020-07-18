@@ -1,6 +1,6 @@
 <?php
 
-class RedirectionApiSettingsTest extends Redirection_Api_Test {
+class SearchRegexApiSettingsTest extends SearchRegex_Api_Test {
 	private function get_endpoints() {
 		return [
 			[ 'setting', 'GET', [] ],

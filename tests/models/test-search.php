@@ -6,7 +6,7 @@ use SearchRegex\Search_Flags;
 use SearchRegex\Source_Flags;
 use SearchRegex\Source_Manager;
 
-class SearchTest extends Redirection_Api_Test {
+class SearchTest extends SearchRegex_Api_Test {
 	public static function setUpBeforeClass() {
 		global $wpdb;
 

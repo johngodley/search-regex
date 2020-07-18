@@ -2,7 +2,7 @@
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-class RedirectionApiPluginTest extends Redirection_Api_Test {
+class SearchRegexApiPluginTest extends SearchRegex_Api_Test {
 	private function get_endpoints() {
 		return [
 			[ 'plugin/test', 'GET', [] ],

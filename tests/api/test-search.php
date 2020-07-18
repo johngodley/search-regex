@@ -4,7 +4,7 @@ use SearchRegex\Match;
 use SearchRegex\Match_Context;
 use SearchRegex\Search_Flags;
 
-class SearchApiTest extends Redirection_Api_Test {
+class SearchApiTest extends SearchRegex_Api_Test {
 	private function get_endpoints() {
 		$search_args = [
 			'searchPhrase' => 'cat',
