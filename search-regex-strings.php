@@ -8,24 +8,24 @@ __( "Replacement for this match", "search-regex" ), // client/component/highligh
 __( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:79
 __( "Saving preset", "search-regex" ), // client/component/presets/index.js:38
 __( "No preset", "search-regex" ), // client/component/presets/index.js:42
-__( "Save search as new preset", "search-regex" ), // client/component/presets/index.js:74
-__( "Update current preset", "search-regex" ), // client/component/presets/index.js:82
-__( "Saving Preset", "search-regex" ), // client/component/presets/index.js:91
-__( "Enter a name for your preset", "search-regex" ), // client/component/presets/index.js:92
-__( "Enter preset name", "search-regex" ), // client/component/presets/index.js:100
-__( "Save", "search-regex" ), // client/component/presets/index.js:106
-__( "Cancel", "search-regex" ), // client/component/presets/index.js:109
+__( "Save search as new preset", "search-regex" ), // client/component/presets/index.js:75
+__( "Update current preset", "search-regex" ), // client/component/presets/index.js:83
+__( "Saving Preset", "search-regex" ), // client/component/presets/index.js:92
+__( "Enter a name for your preset", "search-regex" ), // client/component/presets/index.js:93
+__( "Enter preset name", "search-regex" ), // client/component/presets/index.js:101
+__( "Save", "search-regex" ), // client/component/presets/index.js:104
+__( "Cancel", "search-regex" ), // client/component/presets/index.js:112
 __( "Single", "search-regex" ), // client/component/replace/index.js:30
 __( "Multi", "search-regex" ), // client/component/replace/index.js:34
 __( "Remove", "search-regex" ), // client/component/replace/index.js:38
 __( "Search phrase will be removed", "search-regex" ), // client/component/replace/index.js:80
 __( "Replace", "search-regex" ), // client/component/replace-form/index.js:60
 __( "Cancel", "search-regex" ), // client/component/replace-form/index.js:66
-__( "Replace progress", "search-regex" ), // client/component/replace-progress/index.js:49
-__( "Replace Information", "search-regex" ), // client/component/replace-progress/index.js:60
-_n( "%s phrase.", "%s phrases.", 1, "search-regex" ), // client/component/replace-progress/index.js:62
-_n( "%s row.", "%s rows.", 1, "search-regex" ), // client/component/replace-progress/index.js:67
-__( "Finished!", "search-regex" ), // client/component/replace-progress/index.js:73
+__( "Replace progress", "search-regex" ), // client/component/replace-progress/index.js:50
+__( "Replace Information", "search-regex" ), // client/component/replace-progress/index.js:61
+_n( "%s phrase.", "%s phrases.", 1, "search-regex" ), // client/component/replace-progress/index.js:63
+_n( "%s row.", "%s rows.", 1, "search-regex" ), // client/component/replace-progress/index.js:68
+__( "Finished!", "search-regex" ), // client/component/replace-progress/index.js:74
 __( "Working!", "search-regex" ), // client/component/rest-api-status/api-result-pass.js:15
 __( "Show Full", "search-regex" ), // client/component/rest-api-status/api-result-raw.js:27
 __( "Hide", "search-regex" ), // client/component/rest-api-status/api-result-raw.js:32
@@ -77,6 +77,21 @@ __( "Search & Replace", "search-regex" ), // client/page/home/index.js:34
 __( "Presets", "search-regex" ), // client/page/home/index.js:38
 __( "Options", "search-regex" ), // client/page/home/index.js:42
 __( "Support", "search-regex" ), // client/page/home/index.js:46
+__( "You've supported this plugin - thank you!", "search-regex" ), // client/page/options/donation.js:82
+__( "I'd like to support some more.", "search-regex" ), // client/page/options/donation.js:83
+__( "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.", "search-regex" ), // client/page/options/donation.js:99
+__( "You get useful software and I get to carry on making it better.", "search-regex" ), // client/page/options/donation.js:104
+__( "Support 💰", "search-regex" ), // client/page/options/donation.js:127
+__( "Plugin Support", "search-regex" ), // client/page/options/donation.js:139
+__( "Default REST API", "search-regex" ), // client/page/options/options-form.js:18
+__( "Raw REST API", "search-regex" ), // client/page/options/options-form.js:19
+__( "Relative REST API", "search-regex" ), // client/page/options/options-form.js:20
+__( "I'm a nice person and I have helped support the author of this plugin", "search-regex" ), // client/page/options/options-form.js:51
+__( "Actions", "search-regex" ), // client/page/options/options-form.js:55
+__( "Show TableRow actions as dropdown menu.", "search-regex" ), // client/page/options/options-form.js:58
+__( "REST API", "search-regex" ), // client/page/options/options-form.js:62
+__( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:64
+__( "Update", "search-regex" ), // client/page/options/options-form.js:68
 __( "Create An Issue", "search-regex" ), // client/page/preset-management/index.js:30
 __( "Email", "search-regex" ), // client/page/preset-management/index.js:39
 __( "Name", "search-regex" ), // client/page/preset-management/index.js:77
@@ -134,22 +149,7 @@ __( "Please backup your data before making modifications.", "search-regex" ), //
 __( "Search and replace information in your database.", "search-regex" ), // client/page/search-replace/index.js:41
 __( "Search", "search-regex" ), // client/page/search-replace/search-actions.js:42
 __( "Replace All", "search-regex" ), // client/page/search-replace/search-actions.js:50
-__( "Cancel", "search-regex" ), // client/page/search-replace/search-actions.js:56
-__( "You've supported this plugin - thank you!", "search-regex" ), // client/page/options/donation.js:82
-__( "I'd like to support some more.", "search-regex" ), // client/page/options/donation.js:83
-__( "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.", "search-regex" ), // client/page/options/donation.js:99
-__( "You get useful software and I get to carry on making it better.", "search-regex" ), // client/page/options/donation.js:104
-__( "Support 💰", "search-regex" ), // client/page/options/donation.js:127
-__( "Plugin Support", "search-regex" ), // client/page/options/donation.js:139
-__( "Default REST API", "search-regex" ), // client/page/options/options-form.js:18
-__( "Raw REST API", "search-regex" ), // client/page/options/options-form.js:19
-__( "Relative REST API", "search-regex" ), // client/page/options/options-form.js:20
-__( "I'm a nice person and I have helped support the author of this plugin", "search-regex" ), // client/page/options/options-form.js:51
-__( "Actions", "search-regex" ), // client/page/options/options-form.js:55
-__( "Show TableRow actions as dropdown menu.", "search-regex" ), // client/page/options/options-form.js:58
-__( "REST API", "search-regex" ), // client/page/options/options-form.js:62
-__( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:64
-__( "Update", "search-regex" ), // client/page/options/options-form.js:68
+__( "Cancel", "search-regex" ), // client/page/search-replace/search-actions.js:57
 __( "Need more help?", "search-regex" ), // client/page/support/help.js:14
 __( "Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}.", "search-regex" ), // client/page/support/help.js:16
 __( "If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide.", "search-regex" ), // client/page/support/help.js:27
@@ -175,10 +175,10 @@ __( "50 per page ", "search-regex" ), // client/state/search/selector.js:44
 __( "100 per page", "search-regex" ), // client/state/search/selector.js:48
 __( "250 per page", "search-regex" ), // client/state/search/selector.js:52
 __( "500 per page", "search-regex" ), // client/state/search/selector.js:56
+__( "View notice", "search-regex" ), // client/wp-plugin-components/snackbar/index.js:70
 __( "Add File", "search-regex" ), // client/wp-plugin-components/uploader/content.js:45
 __( "Upload", "search-regex" ), // client/wp-plugin-components/uploader/content.js:54
 __( "Cancel", "search-regex" ), // client/wp-plugin-components/uploader/content.js:57
-__( "View notice", "search-regex" ), // client/wp-plugin-components/snackbar/index.js:70
 _n( "%s database row in total", "%s database rows in total", 1, "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:29
 __( "matched rows = %(searched)s, phrases = %(found)s", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:34
 __( "First page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:43
@@ -201,12 +201,14 @@ __( "Source Options", "search-regex" ), // client/page/search-replace/search-for
 __( "Results", "search-regex" ), // client/page/search-replace/search-form/form.js:184
 __( "Preset", "search-regex" ), // client/page/search-replace/search-form/index.js:46
 __( "No more matching results found.", "search-regex" ), // client/page/search-replace/search-results/empty-results.js:11
-__( "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.", "search-regex" ), // client/page/search-replace/search-results/index.js:37
+__( "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.", "search-regex" ), // client/page/search-replace/search-results/index.js:38
 __( "Source", "search-regex" ), // client/page/search-replace/search-results/index.js:65
 __( "Row ID", "search-regex" ), // client/page/search-replace/search-results/index.js:66
 __( "Matches", "search-regex" ), // client/page/search-replace/search-results/index.js:67
 __( "Matched Phrases", "search-regex" ), // client/page/search-replace/search-results/index.js:68
 __( "Actions", "search-regex" ), // client/page/search-replace/search-results/index.js:69
+__( "Show debug", "search-regex" ), // client/wp-plugin-components/error/debug/index.js:69
+__( "Debug Information", "search-regex" ), // client/wp-plugin-components/error/debug/index.js:79
 __( "WordPress did not return a response. This could mean an error occurred or that the request was blocked. Please check your server error_log.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:75
 __( "Your REST API is probably being blocked by a security plugin. Please disable this, or configure it to allow REST API requests.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:87
 __( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:93
@@ -226,8 +228,6 @@ __( "WordPress returned an unexpected message. This could be a PHP error from an
 __( "Possible cause", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:200
 __( "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:212
 __( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:218
-__( "Show debug", "search-regex" ), // client/wp-plugin-components/error/debug/index.js:69
-__( "Debug Information", "search-regex" ), // client/wp-plugin-components/error/debug/index.js:79
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:22
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-fixed.js:19
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-known.js:26
