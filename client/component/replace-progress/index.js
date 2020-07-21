@@ -14,6 +14,7 @@ import { useDelta } from 'react-delta';
 
 import { throttle, adjustPerPage } from 'lib/result-window';
 import { clear, replaceNext } from 'state/search/action';
+import { isAdvancedSearch } from 'state/search/selector';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from 'state/settings/type';
 import './style.scss';
 
@@ -87,7 +88,7 @@ function mapStateToProps( state ) {
 		requestCount,
 		replaceCount,
 		phraseCount,
-		isRegex: search.searchFlags.regex !== undefined,
+		isRegex: isAdvancedSearch( search.searchFlags ),
 	};
 }
 

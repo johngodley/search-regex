@@ -71,7 +71,7 @@ function getAdvancedState( state, action ) {
 }
 
 function searchState( state, action ) {
-	if ( isAdvancedSearch( state.search ) ) {
+	if ( isAdvancedSearch( state.search.searchFlags ) ) {
 		return getAdvancedState( state, action );
 	}
 
@@ -164,6 +164,7 @@ export default function searches( state = {}, action ) {
 			return {
 				...state,
 				...( action.clearAll ? resetAll() : reset() ),
+				status: STATUS_COMPLETE,
 			};
 
 		// Start a new search

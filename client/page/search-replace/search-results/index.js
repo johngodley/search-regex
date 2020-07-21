@@ -18,6 +18,7 @@ import Pagination from '../pagination';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
 import { searchMore, setError, cancel } from 'state/search/action';
 import { SEARCH_FORWARD, SEARCH_BACKWARD } from 'state/search/type';
+import { isAdvancedSearch } from 'state/search/selector';
 import { throttle, adjustPerPage } from 'lib/result-window';
 import './style.scss';
 
@@ -29,13 +30,13 @@ const MAX_REQUESTS = 1000;
 function SearchResults( props ) {
 	const { results, totals, progress, status, requestCount, search, searchDirection, showLoading, onCancel, actionDropdown } = props;
 	const { perPage, searchFlags } = search;
-	const { onSearchMore, onChangePage, onSetError } = props;
+	const { onSearchMore, onSetError } = props;
 	const isLoading = status === STATUS_IN_PROGRESS;
 
 	useEffect( () => {
 		if ( requestCount > MAX_REQUESTS ) {
 			onSetError( __( 'Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term.' ) );
-		} else if ( searchFlags.regex ) {
+		} else if ( isAdvancedSearch( searchFlags ) ) {
 			if ( shouldLoadMore( status, requestCount, results, perPage ) && hasMoreResults( searchDirection, progress ) ) {
 				const searchSize = adjustPerPage( requestCount, perPage );
 				const page = searchDirection === SEARCH_FORWARD ? progress.next : progress.previous;
@@ -51,12 +52,11 @@ function SearchResults( props ) {
 		<>
 			<Pagination
 				totals={ totals }
-				onChangePage={ onChangePage }
 				perPage={ perPage }
 				isLoading={ isLoading }
 				progress={ progress }
 				searchDirection={ searchDirection }
-				advanced={ !! searchFlags.regex }
+				advanced={ isAdvancedSearch( searchFlags ) }
 			/>
 
 			<table className={ classnames( 'wp-list-table', 'widefat', 'fixed', 'striped', 'items', 'searchregex-results' ) }>
@@ -83,13 +83,12 @@ function SearchResults( props ) {
 
 			<Pagination
 				totals={ totals }
-				onChangePage={ onChangePage }
 				perPage={ perPage }
 				isLoading={ isLoading }
 				progress={ progress }
 				searchDirection={ searchDirection }
 				noTotal
-				advanced={ !! searchFlags.regex }
+				advanced={ isAdvancedSearch( searchFlags ) }
 			/>
 		</>
 	);
