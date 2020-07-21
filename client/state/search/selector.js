@@ -111,7 +111,7 @@ export function isComplete( action, results, direction ) {
  * @param {SearchValues} search Search object
  * @returns {Boolean}
  */
-export const isAdvancedSearch = ( search ) => search.searchFlags.regex;
+export const isAdvancedSearch = ( searchFlags ) => searchFlags.indexOf( 'regex' ) !== -1;
 
 /**
  * Apply any processing to the search values to make them suitable for the API

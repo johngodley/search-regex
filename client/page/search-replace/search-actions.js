@@ -52,6 +52,7 @@ function SearchActions( { search, status, onSearch, onReplace, onCancel, replace
 
 			{ status === STATUS_IN_PROGRESS && canCancel && (
 				<>
+					&nbsp;
 					<Button isDestructive onClick={ onCancel }>
 						{ __( 'Cancel' ) }
 					</Button>

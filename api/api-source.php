@@ -97,7 +97,7 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	 * @param String $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/(?P<rowId>[\d]+)', [
 			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
 		] );
 
@@ -123,11 +123,11 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 			$this->get_route( WP_REST_Server::EDITABLE, 'saveRow', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)/delete', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/(?P<rowId>[\d]+)/delete', [
 			$this->get_route( WP_REST_Server::EDITABLE, 'deleteRow', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)/replace', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/(?P<rowId>[\d]+)/replace', [
 			'args' => array_merge(
 				$this->get_search_params(),
 				[
