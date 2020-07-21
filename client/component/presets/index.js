@@ -52,6 +52,7 @@ function Presets( props ) {
 	};
 	const savePreset = ( ev ) => {
 		ev.preventDefault();
+		ev.stopPropagation();
 		onSavePreset( presetName, search );
 		showName( false );
 		setPresetName( '' );
@@ -99,13 +100,15 @@ function Presets( props ) {
 							onChange={ ( ev ) => setPresetName( ev.target.value ) }
 							placeholder={ __( 'Enter preset name' ) }
 						/>
-						<input
-							type="submit"
-							className="button button-primary"
-							disabled={ presetName.length === 0 }
-							value={ __( 'Save' ) }
-						/>
-						<button className="button button-secondary" onClick={ () => showName( false ) } type="button">
+						<button className="button button-primary" disabled={ presetName.length === 0 }>
+							{ __( 'Save' ) }
+						</button>
+
+						<button
+							className="button button-secondary"
+							onClick={ () => showName( false ) }
+							type="button"
+						>
 							{ __( 'Cancel' ) }
 						</button>
 					</form>
