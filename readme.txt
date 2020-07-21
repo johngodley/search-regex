@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.3
-Tested up to: 5.4
+Tested up to: 5.4.2
 Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
@@ -79,6 +79,12 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Entirely new rewrite of the plugin. Requires minimum PHP 5.6.
 
 == Changelog ==
+
+= 2.2.1 - 22nd July 2020 =
+- Fix regular expression search having no pagination buttons
+- Fix saving a preset with no search phrase showing an error
+- Fix inline editor not working on sources with an underscore
+- Add edit link for TablePress tables
 
 = 2.2 - 18th July 2020 =
 - Add presets
