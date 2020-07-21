@@ -32,8 +32,7 @@ class Search_Regex_Admin {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10, 4 );
-		/** @psalm-suppress InvalidArgument */
-		add_filter( 'set-screen-option', [ $this, 'set_per_page' ], 10, 3 );
+		add_filter( 'searchregex_result_actions', [ $this, 'extra_actions' ], 10, 3 );
 
 		register_uninstall_hook( SEARCHREGEX_FILE, [ 'Search_Regex_Admin', 'plugin_uninstall' ] );
 	}
@@ -467,6 +466,23 @@ class Search_Regex_Admin {
 		}
 
 		return false;
+	}
+
+	public function extra_actions( $actions, $type, $result ) {
+		if ( $type === 'tablepress_table' ) {
+			$tables = json_decode( get_option( 'tablepress_tables' ), true );
+
+			if ( is_array( $tables ) ) {
+				foreach ( $tables['table_post'] as $id => $post_id ) {
+					if ( $post_id === $result->get_row_id() ) {
+						$actions['edit'] = 'admin.php?page=tablepress&action=edit&table_id=' . rawurlencode( $id );
+						break;
+					}
+				}
+			}
+		}
+
+		return $actions;
 	}
 }
 
