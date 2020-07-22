@@ -85,6 +85,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 - Fix saving a preset with no search phrase showing an error
 - Fix inline editor not working on sources with an underscore
 - Add edit link for TablePress tables
+- Increase maximum per-page size
 
 = 2.2 - 18th July 2020 =
 - Add presets

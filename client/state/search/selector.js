@@ -55,6 +55,14 @@ export const getAvailablePerPage = () => [
 		value: 500,
 		label: __( '500 per page' ),
 	},
+	{
+		value: 1000,
+		label: __( '1000 per page' ),
+	},
+	{
+		value: 2000,
+		label: __( '2000 per page' ),
+	},
 ];
 
 /**
