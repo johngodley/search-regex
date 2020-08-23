@@ -19,6 +19,7 @@ function searchregex_get_default_options() {
 		'support' => false,
 		'rest_api' => SEARCHREGEX_API_JSON,
 		'actionDropdown' => true,
+		'defaultPreset' => 0,
 	];
 
 	return \apply_filters( 'searchregex_default_options', $defaults );
@@ -43,6 +44,10 @@ function searchregex_set_options( array $settings = array() ) {
 
 	if ( isset( $settings['actionDropdown'] ) ) {
 		$options['actionDropdown'] = $settings['actionDropdown'] ? true : false;
+	}
+
+	if ( isset( $settings['defaultPreset'] ) ) {
+		$options['defaultPreset'] = preg_replace( '/[^A-Fa-f0-9]*/', '', $settings['defaultPreset'] );
 	}
 
 	\update_option( SEARCHREGEX_OPTION, \apply_filters( 'searchregex_save_options', $options ) );

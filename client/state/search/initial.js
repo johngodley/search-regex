@@ -12,7 +12,11 @@ export function getInitialSearch() {
 	const sources = getPreload( 'sources', [] );
 	const search = getValidatedSearch( {
 		...getDefaultSearch(),
-		...getSearchFromPreset( getPreload( 'presets', [] ).find( ( item ) => item.id === query.preset ) ),
+		...getSearchFromPreset(
+			getPreload( 'presets', [] ).find(
+				( item ) => item.id === query.preset || item.id === SearchRegexi10n.settings.defaultPreset
+			)
+		),
 		...getQuerySearchParams( sources ),
 	} );
 

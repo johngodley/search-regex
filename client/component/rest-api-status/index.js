@@ -14,7 +14,7 @@ import classnames from 'classnames';
 
 import ApiResult from './api-result';
 import { Spinner } from 'wp-plugin-components';
-import { restApi } from 'page/options/options-form';
+import { getRestApi } from 'page/options/options-form';
 import { checkApi } from 'state/settings/action';
 import './style.scss';
 
@@ -145,7 +145,7 @@ class RestApiStatus extends React.Component {
 	}
 
 	render() {
-		const routeNames = restApi();
+		const routeNames = getRestApi();
 		const { apiTest, routes, current, allowChange } = this.props;
 		const { showing } = this.state;
 		const percent = this.getPercent( apiTest, routeNames );
