@@ -2,6 +2,9 @@ dist: xenial
 
 language: generic
 
+services:
+  - mysql
+
 php:
     - '5.6'
     - '7.1'
