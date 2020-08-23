@@ -215,7 +215,6 @@ export function getSearchFromPreset( preset ) {
 		return {
 			...preset.search,
 			...getDefaultPresetValues( preset ),
-			replacement: '',
 		};
 	}
 

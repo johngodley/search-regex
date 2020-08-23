@@ -72,14 +72,14 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 
 	return (
 		<>
-			{ preset?.description && (
+			{ preset && preset.description ? (
 				<tr>
 					<th />
 					<td>
 						<h3 className="searchregex-preset__description">{ preset.description }</h3>
 					</td>
 				</tr>
-			) }
+			) : null }
 
 			{ ( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
 				! hasTags( tags, preset?.search?.searchPhrase ?? '' ) && (
