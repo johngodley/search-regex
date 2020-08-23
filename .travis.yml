@@ -9,6 +9,9 @@ php:
     - '5.6'
     - '7.1'
 
+node_js:
+  - 12
+
 before_script:
   - |
     composer config --list --global
