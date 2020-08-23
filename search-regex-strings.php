@@ -88,7 +88,7 @@ __( "Raw REST API", "search-regex" ), // client/page/options/options-form.js:19
 __( "Relative REST API", "search-regex" ), // client/page/options/options-form.js:20
 __( "I'm a nice person and I have helped support the author of this plugin", "search-regex" ), // client/page/options/options-form.js:51
 __( "Actions", "search-regex" ), // client/page/options/options-form.js:55
-__( "Show TableRow actions as dropdown menu.", "search-regex" ), // client/page/options/options-form.js:58
+__( "Show row actions as dropdown menu.", "search-regex" ), // client/page/options/options-form.js:58
 __( "REST API", "search-regex" ), // client/page/options/options-form.js:62
 __( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:64
 __( "Update", "search-regex" ), // client/page/options/options-form.js:68
@@ -175,6 +175,8 @@ __( "50 per page ", "search-regex" ), // client/state/search/selector.js:44
 __( "100 per page", "search-regex" ), // client/state/search/selector.js:48
 __( "250 per page", "search-regex" ), // client/state/search/selector.js:52
 __( "500 per page", "search-regex" ), // client/state/search/selector.js:56
+__( "1000 per page", "search-regex" ), // client/state/search/selector.js:60
+__( "2000 per page", "search-regex" ), // client/state/search/selector.js:64
 __( "View notice", "search-regex" ), // client/wp-plugin-components/snackbar/index.js:70
 __( "Add File", "search-regex" ), // client/wp-plugin-components/uploader/content.js:45
 __( "Upload", "search-regex" ), // client/wp-plugin-components/uploader/content.js:54

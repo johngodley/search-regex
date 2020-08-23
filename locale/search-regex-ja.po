@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Search Regex - Development (trunk) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-06-19 07:55:50+0000\n"
+"PO-Revision-Date: 2020-08-16 10:02:04+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,244 +13,244 @@ msgstr ""
 
 #: search-regex-strings.php:238
 msgid "Your admin pages are being cached. Clear this cache and try again. There may be multiple caches involved."
-msgstr ""
+msgstr "管理画面のページがキャッシュされています。このキャッシュを消去し再度お試しください。複数のキャッシュが関与している可能性があります。"
 
 #: search-regex-strings.php:235
 msgid "This is usually fixed by doing one of the following:"
-msgstr ""
+msgstr "これは、以下のいずれかを行うことで通常は解決されます:"
 
 #: search-regex-strings.php:234
 msgid "You are using an old or cached session"
-msgstr ""
+msgstr "古いか、キャッシュされたセッションを使用中です"
 
-#: search-regex-strings.php:230
+#: search-regex-strings.php:211
 msgid "Debug Information"
-msgstr ""
+msgstr "デバッグ情報"
 
-#: search-regex-strings.php:229
+#: search-regex-strings.php:210
 msgid "Show debug"
-msgstr ""
+msgstr "デバッグを表示"
 
-#: search-regex-strings.php:225
+#: search-regex-strings.php:227
 msgid "WordPress returned an unexpected message. This could be a PHP error from another plugin, or data inserted by your theme."
-msgstr ""
+msgstr "WordPress が予期せぬメッセージを返しました。これは、他のプラグインによるPHPエラー、または利用中のテーマによって挿入されたデータの可能性があります。"
 
-#: search-regex-strings.php:224
+#: search-regex-strings.php:226
 msgid "Your WordPress REST API has been disabled. You will need to enable it to continue."
-msgstr ""
+msgstr "WordPress REST API が無効になっています。 続行するには有効化する必要があります。"
+
+#: search-regex-strings.php:221
+msgid "Your REST API is being redirected. Please remove the redirection for the API."
+msgstr "お使いの REST API はリダイレクトされています。API のリダイレクトを削除してください。"
 
 #: search-regex-strings.php:219
-msgid "Your REST API is being redirected. Please remove the redirection for the API."
-msgstr ""
+msgid "A security plugin or firewall is blocking access. You will need to whitelist the REST API."
+msgstr "セキュリティ用のプラグインかファイアーウォールがアクセスを遮断しています。REST API をホワイトリストに登録する必要があります。"
+
+#: search-regex-strings.php:218
+msgid "Your server configuration is blocking access to the REST API. You will need to fix this."
+msgstr "お使いのサーバーの設定が REST API へのアクセスを遮断しています。これを修正する必要があります。"
 
 #: search-regex-strings.php:217
-msgid "A security plugin or firewall is blocking access. You will need to whitelist the REST API."
-msgstr ""
+msgid "Check your {{link}}Site Health{{/link}} and fix any issues."
+msgstr "{{link}}サイトヘルス{{/link}}を確認し、問題を修正してください。"
 
 #: search-regex-strings.php:216
-msgid "Your server configuration is blocking access to the REST API. You will need to fix this."
-msgstr ""
+msgid "Can you access your {{api}}REST API{{/api}} without it redirecting? You will need to fix any errors."
+msgstr "リダイレクトなしに {{/api}}REST API{{/api}} にアクセスできますか? エラーがあれば修正する必要があります。"
 
 #: search-regex-strings.php:215
-msgid "Check your {{link}}Site Health{{/link}} and fix any issues."
-msgstr ""
-
-#: search-regex-strings.php:214
-msgid "Can you access your {{api}}REST API{{/api}} without it redirecting? You will need to fix any errors."
-msgstr ""
-
-#: search-regex-strings.php:213
 msgid "Your REST API is returning a 404 page. This is almost certainly a plugin or server configuration issue and not a problem with Redirection."
-msgstr ""
+msgstr "REST API が 404 ページを返しました。ほとんどの場合、これはプラグインやサーバーの設定の問題なので、リダイレクトの問題ではありません。"
 
 #: search-regex-strings.php:202
 msgid "Preset"
-msgstr ""
+msgstr "プリセット"
+
+#: search-regex-strings.php:180
+msgid "Upload"
+msgstr "アップロード"
 
 #: search-regex-strings.php:179
-msgid "Upload"
-msgstr ""
-
-#: search-regex-strings.php:178
 msgid "Add File"
-msgstr ""
+msgstr "ファイルの追加"
 
 #: search-regex-strings.php:170
 msgid "Preset saved"
-msgstr ""
+msgstr "プリセットを保存しました"
 
-#: search-regex-strings.php:132
+#: search-regex-strings.php:147
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "クリップボードにコピー"
 
-#: search-regex-strings.php:129
+#: search-regex-strings.php:144
 msgid "Are you sure you want to delete this preset?"
-msgstr ""
+msgstr "このプリセットを削除しますか ?"
 
-#: search-regex-strings.php:128
+#: search-regex-strings.php:143
 msgid "Locked fields"
 msgstr ""
 
-#: search-regex-strings.php:123
+#: search-regex-strings.php:138
 msgid "For example, create tag {{code}}URL{{/code}} and title {{code}}Image URL{{/code}}. Your search could be {{code}}<img src=\"URL\">{{/code}}. When the preset is used it will ask the user for the {{code}}Image URL{{/code}} instead of the full search phrase."
 msgstr ""
 
-#: search-regex-strings.php:122
+#: search-regex-strings.php:137
 msgid "A tag creates a custom input field. Insert the tag anywhere in the search or replace field and when the preset is used it will be replaced with a custom text field with the tag label."
 msgstr ""
 
-#: search-regex-strings.php:121
+#: search-regex-strings.php:136
 msgid "Enter tag which is used in the field"
 msgstr ""
 
-#: search-regex-strings.php:120
+#: search-regex-strings.php:135
 msgid "Tag"
-msgstr ""
+msgstr "タグ"
 
-#: search-regex-strings.php:119
+#: search-regex-strings.php:134
 msgid "Enter tag title shown to user"
-msgstr ""
+msgstr "ユーザーに表示されるタグのタイトルを入力"
 
-#: search-regex-strings.php:117
+#: search-regex-strings.php:132
 msgid "Tags"
-msgstr ""
+msgstr "タグ"
 
-#: search-regex-strings.php:116
+#: search-regex-strings.php:131
 msgid "Locking a field removes it from the search form and prevents changes."
 msgstr ""
 
-#: search-regex-strings.php:115
+#: search-regex-strings.php:130
 msgid "Fields"
 msgstr ""
 
-#: search-regex-strings.php:114
+#: search-regex-strings.php:129
 msgid "Locked Fields"
 msgstr ""
 
-#: search-regex-strings.php:113
+#: search-regex-strings.php:128
 msgid "Advanced preset"
 msgstr ""
 
-#: search-regex-strings.php:112
+#: search-regex-strings.php:127
 msgid "Describe the preset"
-msgstr ""
+msgstr "プリセットを説明します"
 
-#: search-regex-strings.php:111
+#: search-regex-strings.php:126
 msgid "Preset Description"
-msgstr ""
+msgstr "プリセットの説明"
 
-#: search-regex-strings.php:110
+#: search-regex-strings.php:125
 msgid "Give the preset a name"
-msgstr ""
+msgstr "プリセットに名前をつけてください"
 
-#: search-regex-strings.php:109
+#: search-regex-strings.php:124
 msgid "Preset Name"
-msgstr ""
+msgstr "プリセット名"
 
-#: search-regex-strings.php:108
+#: search-regex-strings.php:123
 msgid "Edit preset"
-msgstr ""
+msgstr "プリセットの編集"
 
-#: search-regex-strings.php:107
+#: search-regex-strings.php:122
 msgid "Results per page"
 msgstr ""
 
-#: search-regex-strings.php:106
+#: search-regex-strings.php:121
 msgid "Source Flags"
 msgstr ""
 
-#: search-regex-strings.php:101
+#: search-regex-strings.php:116
 msgid "remove phrase"
-msgstr ""
+msgstr "語句の削除"
 
-#: search-regex-strings.php:100
+#: search-regex-strings.php:115
 msgid "no phrase"
-msgstr ""
+msgstr "語句なし"
 
-#: search-regex-strings.php:99
+#: search-regex-strings.php:114
 msgid "Import"
-msgstr ""
+msgstr "インポート"
 
-#: search-regex-strings.php:98
+#: search-regex-strings.php:113
 msgid "Paste a single preset JSON."
-msgstr ""
+msgstr "単一のプリセットの JSON データを貼り付けしてください。"
 
-#: search-regex-strings.php:97
+#: search-regex-strings.php:112
 msgid "Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset."
-msgstr ""
+msgstr "JSON のデータは正しいプリセットかを、ご確認ください。不完全なコピーや、プリセット以外のデータを貼り付けした可能性があります。"
 
-#: search-regex-strings.php:96
+#: search-regex-strings.php:111
 msgid "Unable to import preset"
-msgstr ""
+msgstr "プリセットをインポートできません"
 
-#: search-regex-strings.php:95
+#: search-regex-strings.php:110
 msgid "Import preset from clipboard"
-msgstr ""
+msgstr "クリップボードからプリセットをインポート"
 
-#: search-regex-strings.php:94
+#: search-regex-strings.php:109
 msgid "Done"
-msgstr ""
+msgstr "完了"
 
-#: search-regex-strings.php:93
+#: search-regex-strings.php:108
 msgid "Uploaded %(total)d preset"
 msgid_plural "Uploaded %(total)d presets"
 msgstr[0] ""
 
-#: search-regex-strings.php:92
+#: search-regex-strings.php:107
 msgid "Importing"
-msgstr ""
+msgstr "インポート中"
 
-#: search-regex-strings.php:91
+#: search-regex-strings.php:106
 msgid "File selected"
 msgstr ""
 
-#: search-regex-strings.php:90
+#: search-regex-strings.php:105
 msgid "Click 'Add File' or drag and drop here."
-msgstr ""
+msgstr "「ファイルの追加」をクリック、またはここへドロップ。"
 
-#: search-regex-strings.php:89
+#: search-regex-strings.php:104
 msgid "Import a JSON file"
-msgstr ""
+msgstr "JSON ファイルのインポート"
 
-#: search-regex-strings.php:88
+#: search-regex-strings.php:103
 msgid "Import JSON"
-msgstr ""
+msgstr "JSON のインポート"
 
-#: search-regex-strings.php:87
+#: search-regex-strings.php:102
 msgid "Export JSON"
-msgstr ""
+msgstr "JSON のエクスポート"
 
-#: search-regex-strings.php:86
+#: search-regex-strings.php:101
 msgid "Download presets!"
 msgstr ""
 
-#: search-regex-strings.php:85
+#: search-regex-strings.php:100
 msgid "There are no presets"
-msgstr ""
+msgstr "プリセットはありません"
 
-#: search-regex-strings.php:84
+#: search-regex-strings.php:99
 msgid "Flags"
-msgstr ""
+msgstr "フラグ"
 
 #: search-regex-strings.php:75 search-regex-strings.php:77
 msgid "Presets"
-msgstr ""
+msgstr "プリセット"
 
 #: search-regex-strings.php:63
 msgid "If that did not help then {{strong}}create an issue{{/strong}} or send it in an {{strong}}email{{/strong}}."
-msgstr ""
+msgstr "解決しない場合、{{strong}}問題 (issue) のトピックを作成するか{{/strong}}、{{strong}}メール{{/strong}}を送信してください。"
 
 #: search-regex-strings.php:62
 msgid "Please check the {{link}}support site{{/link}} before proceeding further."
-msgstr ""
+msgstr "先に進める前に、{{link}}サポート用サイト{{/link}}をご確認ください。"
 
 #: search-regex-strings.php:15
 msgid "Enter preset name"
-msgstr ""
+msgstr "プリセット名を入力"
 
 #: search-regex-strings.php:14
 msgid "Enter a name for your preset"
-msgstr ""
+msgstr "プリセットの名前を入力してください"
 
 #: search-regex-strings.php:13
 msgid "Saving Preset"
@@ -258,15 +258,15 @@ msgstr ""
 
 #: search-regex-strings.php:12
 msgid "Update current preset"
-msgstr ""
+msgstr "現在のプリセットを更新"
 
 #: search-regex-strings.php:11
 msgid "Save search as new preset"
-msgstr ""
+msgstr "検索を新規プリセットとして保存"
 
 #: search-regex-strings.php:10
 msgid "No preset"
-msgstr ""
+msgstr "プリセットはありません"
 
 #: search-regex-strings.php:9
 msgid "Saving preset"
@@ -274,55 +274,55 @@ msgstr ""
 
 #: models/source-manager.php:177
 msgid "Advanced"
-msgstr "高度な設定"
+msgstr "高度"
 
 #: models/source-manager.php:163
 msgid "Standard"
-msgstr "スタンダード"
+msgstr "標準"
 
 #: search-regex-strings.php:183
 msgid "matched rows = %(searched)s, phrases = %(found)s"
-msgstr ""
+msgstr "一致した行 = %(searched)s、語句 = %(found)s"
 
-#: search-regex-strings.php:133
+#: search-regex-strings.php:148
 msgid "Please backup your data before making modifications."
-msgstr ""
+msgstr "変更を加える前に、データをバックアップすることを強くおすすめします。"
 
-#: search-regex-strings.php:149
+#: search-regex-strings.php:91
 msgid "Show TableRow actions as dropdown menu."
-msgstr ""
+msgstr "行への操作をドロップダウンメニューで表示"
 
 #: search-regex-strings.php:48
 msgid "Replace Row"
-msgstr ""
+msgstr "行を置換"
 
 #: search-regex-strings.php:47
 msgid "Delete Row"
-msgstr ""
+msgstr "行を削除"
 
 #: search-regex-strings.php:46
 msgid "Inline Editor"
-msgstr ""
+msgstr "インラインエディター"
 
 #: search-regex-strings.php:45
 msgid "Edit Page"
-msgstr ""
+msgstr "行を編集"
 
 #: search-regex-strings.php:27
 msgid "%s row."
 msgid_plural "%s rows."
-msgstr[0] ""
+msgstr[0] "%s行。"
 
 #: search-regex-strings.php:26
 msgid "%s phrase."
 msgid_plural "%s phrases."
-msgstr[0] ""
+msgstr[0] "%s語句。"
 
 #: search-regex-strings.php:25
 msgid "Replace Information"
-msgstr ""
+msgstr "置換情報"
 
-#: search-regex-strings.php:221
+#: search-regex-strings.php:223
 msgid "An unknown error occurred."
 msgstr "不明なエラーが発生しました"
 
@@ -366,8 +366,8 @@ msgstr "スパムコメントを含む"
 msgid "Comment"
 msgstr "コメント"
 
-#: search-regex-strings.php:82 source/core/meta.php:19
-#: source/core/options.php:19 source/core/comment.php:22
+#: source/core/meta.php:19 source/core/comment.php:22
+#: source/core/options.php:19 search-regex-strings.php:97
 msgid "Name"
 msgstr "名前"
 
@@ -375,13 +375,13 @@ msgstr "名前"
 msgid "Search your redirects"
 msgstr "リダイレクトの検索"
 
-#: search-regex-strings.php:118 source/core/post.php:123
-#: source/plugin/redirection.php:28
+#: source/plugin/redirection.php:28 source/core/post.php:123
+#: search-regex-strings.php:133
 msgid "Title"
 msgstr "タイトル"
 
-#: source/core/comment.php:24 source/core/user.php:36
-#: source/plugin/redirection.php:27
+#: source/plugin/redirection.php:27 source/core/comment.php:24
+#: source/core/user.php:36
 msgid "URL"
 msgstr "URL"
 
@@ -396,11 +396,11 @@ msgstr "プラグイン"
 
 #: models/source-manager.php:170
 msgid "Specific Post Types"
-msgstr "特定の投稿タイプ"
+msgstr "特定の投稿種別"
 
 #: models/source-manager.php:52
 msgid "Search all WordPress options."
-msgstr "WordPress の全ての設定から検索"
+msgstr "WordPress のすべての設定から検索。"
 
 #: models/source-manager.php:51
 msgid "WordPress Options"
@@ -408,7 +408,7 @@ msgstr "WordPress 設定"
 
 #: models/source-manager.php:85
 msgid "Search user meta name and values."
-msgstr "ユーザーの名前と値から検索"
+msgstr "ユーザーのメタ情報の名前と値を検索"
 
 #: models/source-manager.php:84
 msgid "User Meta"
@@ -432,7 +432,7 @@ msgstr "コメントメタ情報"
 
 #: models/source-manager.php:38
 msgid "Search comment content, URL, and author, with optional support for spam comments."
-msgstr "コメント本文、URL、投稿者、及び、追加のスパムコメント対策用設定などから検索"
+msgstr "コメント本文、URL、投稿者、また追加のスパムコメント対策用設定などから検索"
 
 #: models/source-manager.php:37
 msgid "Comments"
@@ -454,79 +454,79 @@ msgstr "すべての投稿、固定ページ、カスタム投稿タイプから
 msgid "All Post Types"
 msgstr "すべての投稿タイプ"
 
-#: search-regex-admin.php:396
+#: search-regex-admin.php:395
 msgid "Please enable JavaScript"
-msgstr "JavaScript を有効にしてください。"
+msgstr "JavaScript を有効にしてください"
 
-#: search-regex-admin.php:392
+#: search-regex-admin.php:391
 msgid "Loading, please wait..."
-msgstr "読み込み中です。少々お待ちください。"
+msgstr "読み込み中、少々お待ちください..."
 
-#: search-regex-admin.php:375
+#: search-regex-admin.php:374
 msgid "Create Issue"
 msgstr "問題を報告"
 
-#: search-regex-admin.php:372
-msgid "<code>SearchRegexi10n</code> is not defined. This usually means another plugin is blocking Search Regex from loading. Please disable all plugins and try again."
-msgstr "<code>SearchRegexi10n</code> が定義されていません。別のプラグインが Search Regex の機能をブロックしているようです。一度全てのプラグインを無効にしてから、もう一度お試しください。"
-
 #: search-regex-admin.php:371
+msgid "<code>SearchRegexi10n</code> is not defined. This usually means another plugin is blocking Search Regex from loading. Please disable all plugins and try again."
+msgstr "<code>SearchRegexi10n</code> が定義されていません。別のプラグインが Search Regex の機能をブロックしているようです。一度すべてのプラグインを無効にしてから、もう一度お試しください。"
+
+#: search-regex-admin.php:370
 msgid "If you think Search Regex is at fault then create an issue."
 msgstr "Search Regex に問題がある場合は、問題を報告してください。"
 
-#: search-regex-admin.php:370
+#: search-regex-admin.php:369
 msgid "Please see the <a href=\"https://searchregex.com/support/problems/\">list of common problems</a>."
 msgstr "お手数ですが<a href=\"https://searchregex.com/support/problems/\">開発者のウェブサイト</a>をご覧ください。"
 
-#: search-regex-admin.php:369
+#: search-regex-admin.php:368
 msgid "Please note that Search Regex requires the WordPress REST API to be enabled. If you have disabled this then you won't be able to use Search Regex"
-msgstr "Search Regex では、WordPress REST API を 有効にする必要があります。これを無効にすると、Search Regex を使用できません。"
+msgstr "Search Regex では、WordPress の REST API を 有効にする必要があります。無効にすると、Search Regex を使用できません。"
 
-#: search-regex-admin.php:367
+#: search-regex-admin.php:366
 msgid "Also check if your browser is able to load <code>search-regex.js</code>:"
 msgstr "また、使用しているブラウザが <code>search-regex.js</code> を読み込めるかどうか確認してください。"
 
-#: search-regex-admin.php:365
+#: search-regex-admin.php:364
 msgid "This may be caused by another plugin - look at your browser's error console for more details."
 msgstr "この問題は、使用中の別のプラグインが原因である可能性があります。詳細はブラウザのエラーコンソールを確認してください。"
 
-#: search-regex-admin.php:364
+#: search-regex-admin.php:363
 msgid "Unable to load Search Regex ☹️"
 msgstr "Search Regex を読み込めません☹️"
 
-#: search-regex-admin.php:349
+#: search-regex-admin.php:348
 msgid "Unable to load Search Regex"
-msgstr "Search Regex を読み込めません。"
+msgstr "Search Regex を読み込めません"
 
 #. translators: 1: Expected WordPress version, 2: Actual WordPress version
-#: search-regex-admin.php:346
+#: search-regex-admin.php:345
 msgid "Search Regex requires WordPress v%1$1s, you are using v%2$2s - please update your WordPress"
 msgstr "Search Regex には WordPress v%1$1s が必要です。このサイトでは v%2$2s を使用しています。WordPress 本体を更新してください。"
 
-#: search-regex-admin.php:250
+#: search-regex-admin.php:249
 msgid "Search Regex Support"
-msgstr "Search Regex サポート"
+msgstr "Search Regex ヘルプ"
 
 #. translators: URL
-#: search-regex-admin.php:241
+#: search-regex-admin.php:240
 msgid "You can find full documentation about using Search Regex on the <a href=\"%s\" target=\"_blank\">searchregex.com</a> support site."
 msgstr "Search Regex の完全版マニュアルは、<a href=\"%s\" target=\"_blank\">searchregex.com</a> にあります。"
 
-#: search-regex-admin.php:66
+#: search-regex-admin.php:65
 msgid "Settings"
 msgstr "設定"
 
-#: search-regex-strings.php:148 search-regex-strings.php:209
+#: search-regex-strings.php:90 search-regex-strings.php:209
 msgid "Actions"
 msgstr "操作"
 
 #: search-regex-strings.php:208
 msgid "Matched Phrases"
-msgstr "一致するフレーズ"
+msgstr "一致した語句"
 
 #: search-regex-strings.php:207
 msgid "Matches"
-msgstr "一致"
+msgstr "一致数"
 
 #: search-regex-strings.php:206
 msgid "Row ID"
@@ -534,11 +534,11 @@ msgstr "行の ID"
 
 #: search-regex-strings.php:204
 msgid "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term."
-msgstr "ページリクエストの最大値を超えたため、検索が停止しました。検索語句をより具体的にしてください。"
+msgstr "ページリクエストの上限値を超えたため、検索が停止しました。検索語句をより具体的にしてください。"
 
 #: search-regex-strings.php:203
 msgid "No more matching results found."
-msgstr "一致する結果が見つかりませんでした。"
+msgstr "これ以上の一致結果はありません。"
 
 #: search-regex-strings.php:193
 msgid "Last page"
@@ -551,7 +551,7 @@ msgstr "%(total)s ページ中 %(current)s ページ"
 #: search-regex-strings.php:188
 msgid "Matches: %(phrases)s across %(rows)s database row."
 msgid_plural "Matches: %(phrases)s across %(rows)s database rows."
-msgstr[0] "一致 : %(phrases)s 全体  %(rows)s データベース行"
+msgstr[0] "一致: %(phrases)s件 (データベース内の%(rows)s行中)"
 
 #: search-regex-strings.php:187 search-regex-strings.php:192
 msgid "Next page"
@@ -596,7 +596,7 @@ msgstr "25件 / ページ"
 
 #: search-regex-strings.php:172
 msgid "Ignore Case"
-msgstr "大文字と小文字を区別しない"
+msgstr "大文字小文字の区別なし"
 
 #: search-regex-strings.php:171
 msgid "Regular Expression"
@@ -618,37 +618,37 @@ msgstr "行の削除"
 msgid "Settings saved"
 msgstr "設定を保存"
 
-#: search-regex-strings.php:165 search-regex-admin.php:233
+#: search-regex-admin.php:232 search-regex-strings.php:165
 msgid "{{link}}Source Flags{{/link}} - additional options for the selected source. For example, include post {{guid}}GUID{{/guid}} in the search."
-msgstr "{{link}}Source Flags{{/ link}} - 選択ソースの追加オプションです。たとえば、検索に投稿 {{guid}}GUID{{/ guid}} を含められます。"
+msgstr "{{link}}検索フラグ{{/ link}} - 選択した入力元用の追加のオプションです。たとえば、検索に投稿 {{guid}}GUID{{/ guid}} を含めます。"
 
-#: search-regex-strings.php:164 search-regex-admin.php:246
+#: search-regex-admin.php:245 search-regex-strings.php:164
 msgid "{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments."
-msgstr "{{link}}Source{{/ link}} - 検索するデータのソースです。投稿、ページ、コメントなどのことです。"
+msgstr "{{link}}入力元{{/ link}} - 検索したいデータの入力元です。投稿、ページ、コメントなどです。"
 
-#: search-regex-strings.php:163 search-regex-admin.php:245
+#: search-regex-admin.php:244 search-regex-strings.php:163
 msgid "{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches."
-msgstr "{{link}}Regular expression{{/ link}} - テキストのマッチングパターンを定義する方法。より高度な検索が可能です。"
+msgstr "{{link}}正規表現{{/ link}} - 文字列一致のパターンを定義する記法です。より高度な検索が可能です。"
 
-#: search-regex-strings.php:162 search-regex-admin.php:244
+#: search-regex-admin.php:243 search-regex-strings.php:162
 msgid "{{link}}Search Flags{{/link}} - additional qualifiers for your search, to enable case insensitivity, and to enable regular expression support."
-msgstr "{{link}}Search Flags{{/ link}} - 検索の追加情報です。大文字と小文字を区別せず、正規表現サポートを有効にします。"
+msgstr "{{link}}検索フラグ{{/ link}} - 検索を修飾します。大文字小文字を区別しない、また正規表現の対応を有効にします。"
 
-#: search-regex-strings.php:161 search-regex-admin.php:242
+#: search-regex-admin.php:241 search-regex-strings.php:161
 msgid "The following concepts are used by Search Regex:"
-msgstr "Search Regexのコンセプトは次の通り : "
+msgstr "Search Regex では以下の概念が採用されています : "
 
 #: search-regex-strings.php:160
 msgid "Quick Help"
-msgstr "クイックヘルプ"
+msgstr "簡易ヘルプ"
 
 #: search-regex-strings.php:159
 msgid "Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, that is also written by me."
-msgstr "このプラグインが気に入りましたか ? 開発者の他のプラグイン {{link}}Redirection{{/ link}} のご使用はいかがですか ? "
+msgstr "このプラグインが気に入りましたか ? 開発者のほかのプラグイン {{link}}Redirection{{/ link}} のご使用はいかがですか ? "
 
-#: search-regex-strings.php:158 source/plugin/redirection.php:81
+#: source/plugin/redirection.php:81 search-regex-strings.php:158
 msgid "Redirection"
-msgstr "リダイレクト"
+msgstr "Redirection"
 
 #: search-regex-strings.php:157
 msgid "If you want to submit information that you don't want in a public repository then send it directly via {{email}}email{{/email}} - include as much information as you can!"
@@ -656,7 +656,7 @@ msgstr "不要な情報を公開リポジトリに送信する場合は、{{emai
 
 #: search-regex-strings.php:156
 msgid "Please note that any support is provide on as-time-is-available basis and is not guaranteed. I do not provide paid support."
-msgstr "できる限りサポートしますが、サポートには限界がありますので、ご了承ください。有料サポートはありません。"
+msgstr "できる限りサポートしますが、限界がありますことをご了承ください。有料サポートはありません。"
 
 #: search-regex-strings.php:155
 msgid "If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide."
@@ -664,112 +664,112 @@ msgstr "バグ報告する場合は、{{report}}Reporting Bugs{{/report}} ガイ
 
 #: search-regex-strings.php:154
 msgid "Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}."
-msgstr "Search Regex に関する詳しいマニュアル等は、{{site}}https://searchregex.com{{/site}} にあります。"
+msgstr "Search Regex に関する包括的な説明文書は、{{site}}https://searchregex.com{{/site}} にあります。"
 
 #: search-regex-strings.php:153
 msgid "Need more help?"
-msgstr "ヘルプが必要ですか ?"
+msgstr "サポートが必要ですか ?"
 
 #: search-regex-strings.php:201
 msgid "Results"
-msgstr "結果"
+msgstr "結果表示数"
 
 #: search-regex-strings.php:200
 msgid "Source Options"
-msgstr "ソース設定"
+msgstr "入力元の設定"
 
-#: search-regex-strings.php:105 search-regex-strings.php:199
+#: search-regex-strings.php:120 search-regex-strings.php:199
 #: search-regex-strings.php:205
 msgid "Source"
-msgstr "ソース"
+msgstr "入力元"
 
 #: search-regex-strings.php:197 search-regex-strings.php:198
 msgid "Enter global replacement text"
-msgstr "グローバル置換テキストを入力してください。"
+msgstr "全体の置換用の文字列を入力"
 
-#: search-regex-strings.php:104 search-regex-strings.php:195
+#: search-regex-strings.php:119 search-regex-strings.php:195
 msgid "Search Flags"
-msgstr "フラグを検索"
+msgstr "検索フラグ"
 
 #: search-regex-strings.php:53
 msgid "Enter search phrase"
-msgstr "検索フレーズを入力してください。"
+msgstr "検索語句を入力"
 
-#: search-regex-strings.php:136
+#: search-regex-strings.php:151
 msgid "Replace All"
-msgstr "全て置換する"
+msgstr "すべて置換"
 
-#: search-regex-strings.php:83 search-regex-strings.php:102
-#: search-regex-strings.php:126 search-regex-strings.php:135
+#: search-regex-strings.php:98 search-regex-strings.php:117
+#: search-regex-strings.php:141 search-regex-strings.php:150
 #: search-regex-strings.php:194
 msgid "Search"
 msgstr "検索"
 
-#: search-regex-strings.php:134
+#: search-regex-strings.php:149
 msgid "Search and replace information in your database."
-msgstr "データベース内の情報を検索して置換します。"
+msgstr "使用しているデータベースの情報を検索し置換します。"
 
-#: search-regex-strings.php:152
+#: search-regex-strings.php:94
 msgid "Update"
-msgstr "アップデート"
+msgstr "更新"
 
-#: search-regex-strings.php:151
+#: search-regex-strings.php:93
 msgid "How Search Regex uses the REST API - don't change unless necessary"
-msgstr "Search Regex の REST API - むやみに変更しないでください。"
+msgstr "Search Regex による REST API の利用方法 - 必要なく変更しないでください。"
 
-#: search-regex-strings.php:150
+#: search-regex-strings.php:92
 msgid "REST API"
 msgstr "REST API"
 
-#: search-regex-strings.php:147
+#: search-regex-strings.php:89
 msgid "I'm a nice person and I have helped support the author of this plugin"
-msgstr "私はこのプラグインの作者のサポートをしてきました。"
+msgstr "すでにこのプラグインの作者を支援しました"
 
-#: search-regex-strings.php:146
+#: search-regex-strings.php:88
 msgid "Relative REST API"
 msgstr "Relative REST API"
 
-#: search-regex-strings.php:145
+#: search-regex-strings.php:87
 msgid "Raw REST API"
 msgstr "Raw REST API"
 
-#: search-regex-strings.php:144
+#: search-regex-strings.php:86
 msgid "Default REST API"
-msgstr "デフォルト REST API"
+msgstr "既定の REST API"
 
-#: search-regex-strings.php:143
+#: search-regex-strings.php:85
 msgid "Plugin Support"
-msgstr "プラグインサポート"
+msgstr "プラグインの支援"
 
-#: search-regex-strings.php:142
+#: search-regex-strings.php:84
 msgid "Support 💰"
-msgstr "サポート :"
+msgstr "支援💰"
 
-#: search-regex-strings.php:141
+#: search-regex-strings.php:83
 msgid "You get useful software and I get to carry on making it better."
 msgstr "私はこのプラグインをもっと便利にしていきます。"
 
-#: search-regex-strings.php:140
+#: search-regex-strings.php:82
 msgid "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}."
 msgstr "Search Regex は無料で使用できます。人生はすばらしくてステキです ! 開発には多大な時間と労力が必要でしたが、{{strong}}少額の寄付{{/ strong}}でこの開発を支援することができます。"
 
-#: search-regex-strings.php:139
+#: search-regex-strings.php:81
 msgid "I'd like to support some more."
-msgstr "もう少しサポートしたいです。"
+msgstr "もっと支援したいです。"
 
-#: search-regex-strings.php:138
+#: search-regex-strings.php:80
 msgid "You've supported this plugin - thank you!"
-msgstr "このプラグインに寄付してくださってありがとうございます ! "
+msgstr "このプラグインを支援していただき、ありがとうございます。"
 
 #: search-regex-strings.php:61
 msgid "Please mention {{code}}%s{{/code}}, and explain what you were doing at the time."
-msgstr ""
+msgstr "{{code}}%s{{/code}} について記載し、そのとき何をしていたか詳しく説明してください。"
 
 #: search-regex-strings.php:60
 msgid "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details."
 msgstr "問題が解決しない場合は、ブラウザのエラーコンソールを開き、詳細を記載した{{link}}new issue{{/link}} を作成してください。"
 
-#: search-regex-strings.php:59 search-regex-admin.php:366
+#: search-regex-admin.php:365 search-regex-strings.php:59
 msgid "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache."
 msgstr "キャッシュプラグインまたは CDN サービス( CloudFlare、OVHなど )を使用している場合は、そのキャッシュを削除すると解決することがあります。"
 
@@ -796,22 +796,22 @@ msgstr "キャッシュされた正規表現が検出されました。"
 #: search-regex-strings.php:52
 msgid "Show %s more"
 msgid_plural "Show %s more"
-msgstr[0] "%s をもっと見る"
+msgstr[0] "さらに%s件表示"
 
 #: search-regex-strings.php:51
 msgid "Maximum number of matches exceeded and hidden from view. These will be included in any replacements."
-msgstr "マッチングの最大値を超えたため、結果が表示されません。これらは置換に含まれます。"
+msgstr "一致の上限数を超えたので結果は表示されません。これらはすべての置換に含まれます。"
 
 #: search-regex-strings.php:50
 msgid "Replace %(count)s match."
 msgid_plural "Replace %(count)s matches."
-msgstr[0] "%(count)s 一致を置換"
+msgstr[0] "%(count)s件の一致を置換します。"
 
-#: search-regex-strings.php:131
+#: search-regex-strings.php:146
 msgid "Delete"
 msgstr "削除"
 
-#: search-regex-strings.php:130
+#: search-regex-strings.php:145
 msgid "Edit"
 msgstr "編集"
 
@@ -837,11 +837,11 @@ msgstr "概要"
 
 #: search-regex-strings.php:40
 msgid "You are using a broken REST API route. Changing to a working API should fix the problem."
-msgstr "壊れた REST API ルートが使用されています。動作している API に変更すると、問題が解決するはずです。"
+msgstr "壊れた REST API ルートが使用されています。問題の解決には、機能している API に変更する必要があります。"
 
 #: search-regex-strings.php:39
 msgid "Your REST API is not working and the plugin will not be able to continue until this is fixed."
-msgstr "REST API が機能していません。修正が必要です。"
+msgstr "お使いの REST API が機能していません。これが修正されるまで本プラグインは続行できません。"
 
 #: search-regex-strings.php:38
 msgid "There are some problems connecting to your REST API. It is not necessary to fix these problems and the plugin is able to work."
@@ -853,15 +853,15 @@ msgstr "利用できません"
 
 #: search-regex-strings.php:36
 msgid "Not working but fixable"
-msgstr "機能しませんが修正可能です。"
+msgstr "機能していないが修正可能"
 
 #: search-regex-strings.php:35
 msgid "Working but some issues"
-msgstr "機能していますが問題があります。"
+msgstr "機能中だが問題あり"
 
 #: search-regex-strings.php:34
 msgid "Good"
-msgstr "Good"
+msgstr "良好"
 
 #: search-regex-strings.php:33
 msgid "Current API"
@@ -877,7 +877,7 @@ msgstr "非表示"
 
 #: search-regex-strings.php:30
 msgid "Show Full"
-msgstr "全て表示"
+msgstr "すべて表示"
 
 #: search-regex-strings.php:29
 msgid "Working!"
@@ -885,26 +885,26 @@ msgstr "稼働中"
 
 #: search-regex-strings.php:28
 msgid "Finished!"
-msgstr "完了しました !"
+msgstr "完了 !"
 
 #: search-regex-strings.php:24
 msgid "Replace progress"
 msgstr "置換の進行状況"
 
 #: search-regex-strings.php:17 search-regex-strings.php:23
-#: search-regex-strings.php:125 search-regex-strings.php:137
-#: search-regex-strings.php:180
+#: search-regex-strings.php:140 search-regex-strings.php:152
+#: search-regex-strings.php:181
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: search-regex-strings.php:22 search-regex-strings.php:103
-#: search-regex-strings.php:127 search-regex-strings.php:196
+#: search-regex-strings.php:22 search-regex-strings.php:118
+#: search-regex-strings.php:142 search-regex-strings.php:196
 msgid "Replace"
 msgstr "置換"
 
 #: search-regex-strings.php:21
 msgid "Search phrase will be removed"
-msgstr "検索フレーズは削除されます"
+msgstr "検索語句は削除されます"
 
 #: search-regex-strings.php:20
 msgid "Remove"
@@ -912,19 +912,19 @@ msgstr "削除"
 
 #: search-regex-strings.php:19
 msgid "Multi"
-msgstr "複数"
+msgstr "複数行"
 
 #: search-regex-strings.php:18
 msgid "Single"
-msgstr "シングル"
+msgstr "単一行"
 
-#: search-regex-strings.php:181
+#: search-regex-strings.php:178
 msgid "View notice"
 msgstr "通知を表示"
 
 #: search-regex-strings.php:8
 msgid "Replace single phrase."
-msgstr "単一のフレーズを置き換えます。"
+msgstr "単一の語句を置換します。"
 
 #: search-regex-strings.php:7
 msgid "Replacement for this match"
@@ -932,7 +932,7 @@ msgstr "この一致項目の置換"
 
 #: search-regex-strings.php:74 search-regex-strings.php:79
 msgid "Support"
-msgstr "サポート"
+msgstr "ヘルプ"
 
 #: search-regex-strings.php:73 search-regex-strings.php:78
 msgid "Options"
@@ -965,7 +965,7 @@ msgstr "次はどうしますか？"
 #: search-regex-strings.php:231 search-regex-strings.php:232
 #: search-regex-strings.php:233
 msgid "Something went wrong 🙁"
-msgstr "エラーが発生しました。"
+msgstr "何かがうまくいきません 🙁"
 
 #: search-regex-strings.php:237
 msgid "Log out, clear your browser cache, and log in again - your browser has cached an old session."
@@ -977,23 +977,23 @@ msgstr "ページを再読み込みしてください - 現在のセッション
 
 #: search-regex-strings.php:66
 msgid "Include these details in your report along with a description of what you were doing and a screenshot."
-msgstr "これらの問題の詳細を、実行内容の説明とスクリーンショットをあわせてレポートに含めてください。"
+msgstr "これらの問題の詳細を、実行内容の説明とスクリーンショットをあわせて報告してください。"
 
-#: search-regex-strings.php:65 search-regex-strings.php:81
-#: source/core/comment.php:23
+#: source/core/comment.php:23 search-regex-strings.php:65
+#: search-regex-strings.php:96
 msgid "Email"
 msgstr "メールアドレス"
 
-#: search-regex-strings.php:64 search-regex-strings.php:80
+#: search-regex-strings.php:64 search-regex-strings.php:95
 msgid "Create An Issue"
-msgstr "問題を報告する"
+msgstr "問題を報告"
 
 #: search-regex-strings.php:6
 msgid "Close"
 msgstr "閉じる"
 
 #: search-regex-strings.php:5 search-regex-strings.php:16
-#: search-regex-strings.php:124
+#: search-regex-strings.php:139
 msgid "Save"
 msgstr "保存"
 
@@ -1001,32 +1001,32 @@ msgstr "保存"
 msgid "Editing %s"
 msgstr "%s 編集中"
 
-#: search-regex-strings.php:227
+#: search-regex-strings.php:229
 msgid "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy."
 msgstr "ブラウザのセキュリティにより、リクエストを実行できません。これは通常、WordPress とサイトの URL 設定に一貫性がないか、リクエストがサイトの CORS ポリシーによってブロックされたことが原因です。"
 
-#: search-regex-strings.php:226
+#: search-regex-strings.php:228
 msgid "Possible cause"
 msgstr "考えられる原因"
 
-#: search-regex-strings.php:222
+#: search-regex-strings.php:224
 msgid "This could be a security plugin, or your server is out of memory or has an external error. Please check your server error log"
-msgstr "これはセキュリティプラグインが原因であるか、サーバーのメモリが不足しているか、外部エラーが発生しています。ご契約のレンタルサーバーなどのエラーログを確認してください。"
+msgstr "これはセキュリティのプラグインが原因か、サーバーのメモリの不足、または外部エラーが発生しています。ご契約のレンタルサーバーなどのエラーログを確認してください。"
 
-#: search-regex-strings.php:220
+#: search-regex-strings.php:222
 msgid "Your server has rejected the request for being too big. You will need to reconfigure it to continue."
-msgstr ""
+msgstr "リクエストが大きすぎるためサーバーに拒否されました。続行するには再設定が必要です。"
 
-#: search-regex-strings.php:211
+#: search-regex-strings.php:213
 msgid "Your REST API is probably being blocked by a security plugin. Please disable this, or configure it to allow REST API requests."
 msgstr "REST API がセキュリティプラグインによってブロックされている可能性があります。これを無効にするか、REST API リクエストを許可するように設定してください。"
 
-#: search-regex-strings.php:212 search-regex-strings.php:218
-#: search-regex-strings.php:223 search-regex-strings.php:228
+#: search-regex-strings.php:214 search-regex-strings.php:220
+#: search-regex-strings.php:225 search-regex-strings.php:230
 msgid "Read this REST API guide for more information."
 msgstr "詳細は、この REST API ガイドをお読みください。"
 
-#: search-regex-strings.php:210
+#: search-regex-strings.php:212
 msgid "WordPress did not return a response. This could mean an error occurred or that the request was blocked. Please check your server error_log."
 msgstr "WordPress は応答を返しませんでした。これは、エラーが発生したか、要求がブロックされたことを意味します。サーバーのエラーログを確認してください。"
 
@@ -1036,7 +1036,7 @@ msgstr "John Godley"
 
 #. Description of the plugin
 msgid "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support"
-msgstr "正規表現のサポートにより、投稿、ページ、コメント、メタデータ全体に検索＆置換機能を追加します。"
+msgstr "投稿、ページ、コメント、メタデータにわたって、正規表現に完全に対応した検索と置換機能を追加します"
 
 #. Plugin URI of the plugin
 msgid "https://searchregex.com/"
