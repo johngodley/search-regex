@@ -99,6 +99,11 @@ class Search_Regex_Api_Replace extends Search_Regex_Api_Route {
 			return $replaced;
 		}
 
+		// This is 'protection' to stop things looping.
+		if ( $results['next'] === $params['offset'] ) {
+			$results['next'] = false;
+		}
+
 		// Return pointers to the next data
 		return [
 			'replaced' => $replaced,
