@@ -55,7 +55,7 @@ class OptionsForm extends React.Component {
 					<TableRow title={ __( 'Actions' ) }>
 						<label>
 							<input type="checkbox" checked={ this.state.actionDropdown } name="actionDropdown" onChange={ this.onChange } />
-							{ __( "Show TableRow actions as dropdown menu." ) }
+							{ __( "Show row actions as dropdown menu." ) }
 						</label>
 					</TableRow>
 
