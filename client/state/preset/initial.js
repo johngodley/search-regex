@@ -7,10 +7,11 @@ import { getPageUrl } from 'wp-plugin-lib/wordpress-url';
 
 export function getInitialPreset() {
 	const query = getPageUrl();
+	const { defaultPreset } = SearchRegexi10n.settings;
 
 	return {
 		presets: getPreload( 'presets', [] ),
-		currentPreset: query.preset ? query.preset : '',
+		currentPreset: query.preset ? query.preset : defaultPreset,
 		uploadStatus: null,
 		isUploading: false,
 		clipboardStatus: null,

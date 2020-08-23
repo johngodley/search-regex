@@ -53,6 +53,10 @@ export const urlMiddleware = ( store ) => ( next ) => ( action ) => {
 			break;
 
 		case PRESET_SELECT:
+			if ( action.currentOnly ) {
+				break;
+			}
+
 			if ( action.preset ) {
 				setPageUrl( { page: 'search-regex.php', preset: action.preset.id }, getPageUrl() );
 			} else {
