@@ -10,7 +10,7 @@ php:
     - '7.1'
 
 before_script:
-  - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+  - composer global require "phpunit/phpunit=5.7.*"
 
 jobs:
     include:
