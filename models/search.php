@@ -254,9 +254,9 @@ class Search {
 		$remaining_limit = $limit;
 		$last_row_id = false;
 
-		if ( count( $parts ) === 2 ) {
-			$current_source = $parts[0];
-			$offset = intval( $parts[1], 10 );
+		if ( count( $parts ) > 1 ) {
+			$current_source = implode( '-', array_slice( $parts, 0, -1 ) );
+			$offset = intval( $parts[ count( $parts ) - 1 ], 10 );
 		}
 
 		foreach ( $this->sources as $source_pos => $source ) {
