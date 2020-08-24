@@ -27,7 +27,7 @@ function CrashHandler( stack, errorInfo, extra ) {
 
 	return (
 		<Error
-			errors={ debug }
+			errors={ [ debug.join( '\n' ) ] }
 			renderDebug={ DebugReport }
 			type="fixed"
 			links={ getErrorLinks() }
@@ -49,14 +49,6 @@ function CrashHandler( stack, errorInfo, extra ) {
 						},
 					}
 				) }
-			</p>
-			<p>
-				{ __( 'Please mention {{code}}%s{{/code}}, and explain what you were doing at the time.', {
-					components: {
-						code: <code />,
-					},
-					args: extra?.page,
-				} ) }
 			</p>
 		</Error>
 	);
