@@ -131,10 +131,13 @@ class Search_Regex_Admin {
 
 		wp_enqueue_style( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'search-regex.css', array(), $build );
 
+		$translations = $this->get_i18n_data();
+
 		wp_localize_script( 'search-regex', 'SearchRegexi10n', array(
 			'api' => [
 				'WP_API_root' => esc_url_raw( searchregex_get_rest_api() ),
 				'WP_API_nonce' => wp_create_nonce( 'wp_rest' ),
+				'site_health' => admin_url( 'site-health.php' ),
 				'current' => $options['rest_api'],
 				'routes' => [
 					SEARCHREGEX_API_JSON => searchregex_get_rest_api( SEARCHREGEX_API_JSON ),
@@ -144,8 +147,11 @@ class Search_Regex_Admin {
 			],
 			'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
 			'pluginRoot' => $this->get_plugin_url(),
-			'locale' => $this->get_i18n_data(),
-			'localeSlug' => get_locale(),
+			'locale' => [
+				'translations' => $translations,
+				'localeSlug' => get_locale(),
+				'plurals' => isset( $translations['plural-forms'] ) ? $translations['plural-forms'] : 'nplurals=2; plural=n != 1;',
+			],
 			'settings' => $options,
 			'preload' => $preload,
 			'versions' => implode( "\n", $versions ),
