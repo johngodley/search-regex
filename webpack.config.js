@@ -80,7 +80,6 @@ const config = {
 
 if ( isProduction() ) {
 	config.plugins.push( new webpack.LoaderOptionsPlugin( { minimize: true } ) );
-	config.module.rules.push( { test: /\.js$/, loader: 'webpack-remove-debug' } );
 } else {
 	config.output.publicPath = getDevUrl;
 	config.devtool = 'inline-source-map';

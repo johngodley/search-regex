@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.3
-Tested up to: 5.4.2
+Tested up to: 5.5
 Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
@@ -79,6 +79,11 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Entirely new rewrite of the plugin. Requires minimum PHP 5.6.
 
 == Changelog ==
+
+= 2.3 - 24th August 2020 =
+- Add option to set a default preset
+- Fix global replace not working in post meta
+- Fix replace value not being used in a preset
 
 = 2.2.1 - 22nd July 2020 =
 - Fix regular expression search having no pagination buttons
