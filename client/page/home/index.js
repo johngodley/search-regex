@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { translate as __ } from 'wp-plugin-lib/locale';
+import { translate as __ } from 'i18n-calypso';
 import { connect } from 'react-redux';
 
 /**
@@ -19,6 +19,8 @@ import ErrorDetails from './error-details';
 import CrashHandler from './crash-handler';
 import PageRouter from './page-router';
 import PageContent from './page-content';
+import getErrorLinks from 'lib/error-links';
+import CacheDetect from './cache-detect';
 import './style.scss';
 
 const getTitles = () => ( {
@@ -52,6 +54,10 @@ function Home( props ) {
 	const { onClearErrors, errors, onClearNotices, notices } = props;
 	const [ page, setPage ] = useState( getPluginPage() );
 
+	if ( SEARCHREGEX_VERSION !== SearchRegexi10n.version ) {
+		return <CacheDetect />;
+	}
+
 	return (
 		<ErrorBoundary renderCrash={ CrashHandler } extra={ { page } }>
 			<div className="wrap searchregex">
@@ -62,6 +68,7 @@ function Home( props ) {
 						onChangePage={ ( newPage ) => setPage( newPage === '' ? 'search' : newPage ) }
 						menu={ getMenu() }
 						home="search"
+						currentPage={ page }
 						urlBase={ SearchRegexi10n.pluginRoot }
 					/>
 
@@ -70,6 +77,7 @@ function Home( props ) {
 						onClear={ onClearErrors }
 						renderDebug={ DebugReport }
 						versions={ SearchRegexi10n.versions }
+						links={ getErrorLinks() }
 					>
 						<ErrorDetails />
 					</Error>

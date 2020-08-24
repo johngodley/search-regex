@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import classnames from 'classnames';
-import { translate as __ } from 'wp-plugin-lib/locale';
+import { translate as __ } from 'i18n-calypso';
 
 /**
  * Internal dependencies

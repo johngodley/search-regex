@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { translate as __, numberFormat } from 'wp-plugin-lib/locale';
+import { translate as __, numberFormat } from 'i18n-calypso';
 import { Line } from 'rc-progress';
 import { connect } from 'react-redux';
 import { useDelta } from 'react-delta';

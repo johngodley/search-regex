@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'wp-plugin-lib/locale';
+import { translate as __ } from 'i18n-calypso';
 
 /**
  * Internal dependencies
@@ -20,16 +20,6 @@ function ErrorDetails() {
 			<h3>{ __( 'What do I do next?' ) }</h3>
 
 			<ol>
-				<li>
-					{ __(
-						'Take a look at the {{link}}plugin status{{/link}}. It may be able to identify and "magic fix" the problem.',
-						{
-							components: {
-								link: <a href="?page=search-regex.php&sub=support" />,
-							},
-						}
-					) }
-				</li>
 				<li>
 					{ __(
 						'{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches.',
