@@ -5,7 +5,7 @@ import { getPageUrl } from 'wp-plugin-lib/wordpress-url';
  *
  * @param {string} url
  */
-export function getPluginPage( url ) {
+export function getPluginPage( url = '' ) {
 	const params = getPageUrl( url );
 
 	if ( params.sub && ALLOWED_PAGES.indexOf( params.sub ) !== -1 ) {

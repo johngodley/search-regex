@@ -10,10 +10,12 @@ import { translate as __ } from 'i18n-calypso';
  */
 import { ExternalLink, Error } from 'wp-plugin-components';
 import DebugReport from './debug';
+import getErrorLinks from 'lib/error-links';
 
 function CrashHandler( stack, errorInfo, extra ) {
 	const debug = [
 		SearchRegexi10n.versions,
+		'Query: ' + document.location.search,
 		'Buster: ' + SEARCHREGEX_VERSION + ' === ' + SearchRegexi10n.version,
 		'',
 		stack ? stack : '',
@@ -23,30 +25,16 @@ function CrashHandler( stack, errorInfo, extra ) {
 		debug.push( errorInfo.componentStack );
 	}
 
-	if ( SEARCHREGEX_VERSION !== SearchRegexi10n.version ) {
-		return (
-			<Error
-				errors={ debug }
-				versions={ SearchRegexi10n.versions }
-				renderDebug={ DebugReport }
-				type="fixed"
-				title={ __( 'Cached Search Regex detected' ) }
-			>
-				<p>{ __( 'Please clear your browser cache and reload this page.' ) }</p>
-				<p>
-					{ __( 'If you are using a caching system such as Cloudflare then please read this: ' ) }
-					<ExternalLink url="https://searchregex.com/support/problems/cloudflare/">
-						{ __( 'clearing your cache.' ) }
-					</ExternalLink>
-				</p>
-			</Error>
-		);
-	}
-
 	return (
-		<Error errors={ debug } versions={ SearchRegexi10n.versions } renderDebug={ DebugReport } type="fixed">
+		<Error
+			errors={ debug }
+			renderDebug={ DebugReport }
+			type="fixed"
+			links={ getErrorLinks() }
+		>
 			<p>
-				{ __( 'Search Regex is not working. Try clearing your browser cache and reloading this page.' ) } &nbsp;
+				{ __( 'Search Regex is not working. Try clearing your browser cache and reloading this page.' ) }{' '}
+				&nbsp;
 				{ __(
 					'If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.'
 				) }
