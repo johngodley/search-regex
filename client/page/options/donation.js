@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'wp-plugin-lib/locale';
+import { translate as __ } from 'i18n-calypso';
 import PropTypes from 'prop-types';
 
 /**
@@ -94,16 +94,14 @@ class Donation extends React.Component {
 
 		return (
 			<div>
-				<label>
-					<p>
-						{ __( 'Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.', {
-							components: {
-								strong: <strong />,
-							},
-						} ) }
-						&nbsp;{ __( 'You get useful software and I get to carry on making it better.' ) }
-					</p>
-				</label>
+				<p>
+					{ __( 'Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.', {
+						components: {
+							strong: <strong />,
+						},
+					} ) }
+					&nbsp;{ __( 'You get useful software and I get to carry on making it better.' ) }
+				</p>
 
 				<input type="hidden" name="cmd" value="_xclick" />
 				<input type="hidden" name="business" value="admin@urbangiraffe.com" />

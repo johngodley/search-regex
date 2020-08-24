@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { translate as __ } from 'wp-plugin-lib/locale';
+import { translate as __ } from 'i18n-calypso';
 
 import { ExternalLink, Notice } from 'wp-plugin-components';
 
@@ -74,7 +74,7 @@ const Help = () => {
 			<h2>{ __( 'Redirection' ) }</h2>
 			<p>
 				{ __(
-					'Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, that is also written by me.',
+					'Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, from the same author.',
 					{
 						components: {
 							link: <ExternalLink url="https://redirection.me" />,

@@ -7,7 +7,7 @@ import 'wp-plugin-lib/polyfill';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import i18n from 'wp-plugin-lib/locale';
+import i18n from 'i18n-calypso';
 
 /**
  * Internal dependencies

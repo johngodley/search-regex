@@ -1,10 +1,22 @@
-dist: trusty
+dist: xenial
 
 language: generic
+
+services:
+  - mysql
 
 php:
     - '5.6'
     - '7.1'
+
+node_js:
+  - 12
+
+before_script:
+  - |
+    composer config --list --global
+    export PATH=`composer config --list --global | grep '\[home\]' | { read a; echo "${a#* }/vendor/bin:$PATH"; }`
+    composer global require "phpunit/phpunit=5.7.*"
 
 jobs:
     include:
