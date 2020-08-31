@@ -191,7 +191,6 @@ class Search {
 			// Move on to the next absolute offset
 			$current_offset += $num_rows;
 
-			//echo "remaining_limit = $remaining_limit\n";
 			if ( $remaining_limit <= 0 ) {
 				break;
 			}
