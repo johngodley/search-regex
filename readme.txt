@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.3
-Tested up to: 5.5
+Tested up to: 5.5.1
 Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
@@ -80,7 +80,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 2.3 - 24th August 2020 =
+= 2.3 - 6th September 2020 =
 - Add option to set a default preset
 - Fix global replace not working in post meta
 - Fix replace value not being used in a preset

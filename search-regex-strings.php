@@ -178,7 +178,7 @@ __( "250 per page", "search-regex" ), // client/state/search/selector.js:52
 __( "500 per page", "search-regex" ), // client/state/search/selector.js:56
 __( "1000 per page", "search-regex" ), // client/state/search/selector.js:60
 __( "2000 per page", "search-regex" ), // client/state/search/selector.js:64
-__( "View notice", "search-regex" ), // client/wp-plugin-components/snackbar/index.js:70
+__( "View notice", "search-regex" ), // client/wp-plugin-components/snackbar/index.js:75
 __( "Add File", "search-regex" ), // client/wp-plugin-components/uploader/content.js:45
 __( "Upload", "search-regex" ), // client/wp-plugin-components/uploader/content.js:54
 __( "Cancel", "search-regex" ), // client/wp-plugin-components/uploader/content.js:57
@@ -231,6 +231,9 @@ __( "WordPress returned an unexpected message. This could be a PHP error from an
 __( "Possible cause", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:199
 __( "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:211
 __( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:217
+__( "Bad data", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:17
+__( "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:19
+__( "Plrease review your data and try again.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:20
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:22
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-fixed.js:19
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-known.js:26

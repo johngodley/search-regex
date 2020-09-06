@@ -894,27 +894,39 @@ msgstr ""
 msgid "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy."
 msgstr ""
 
-#: search-regex-strings.php:234, search-regex-strings.php:235, search-regex-strings.php:236
+#: search-regex-strings.php:234
+msgid "Bad data"
+msgstr ""
+
+#: search-regex-strings.php:235
+msgid "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request."
+msgstr ""
+
+#: search-regex-strings.php:236
+msgid "Plrease review your data and try again."
+msgstr ""
+
+#: search-regex-strings.php:237, search-regex-strings.php:238, search-regex-strings.php:239
 msgid "Something went wrong 🙁"
 msgstr ""
 
-#: search-regex-strings.php:237
+#: search-regex-strings.php:240
 msgid "You are using an old or cached session"
 msgstr ""
 
-#: search-regex-strings.php:238
+#: search-regex-strings.php:241
 msgid "This is usually fixed by doing one of the following:"
 msgstr ""
 
-#: search-regex-strings.php:239
+#: search-regex-strings.php:242
 msgid "Reload the page - your current session is old."
 msgstr ""
 
-#: search-regex-strings.php:240
+#: search-regex-strings.php:243
 msgid "Log out, clear your browser cache, and log in again - your browser has cached an old session."
 msgstr ""
 
-#: search-regex-strings.php:241
+#: search-regex-strings.php:244
 msgid "Your admin pages are being cached. Clear this cache and try again. There may be multiple caches involved."
 msgstr ""
 
