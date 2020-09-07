@@ -80,6 +80,10 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 2.3.1 - 7th September 2020 =
+- Fix locales not loading
+- Fix startup error on some sites
+
 = 2.3 - 6th September 2020 =
 - Add option to set a default preset
 - Fix global replace not working in post meta
