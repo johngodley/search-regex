@@ -16,8 +16,12 @@ import i18n from 'i18n-calypso';
 import App from './app';
 
 const show = dom => {
-	i18n.setLocale( { '': { localeSlug: SearchRegexi10n.localeSlug } } );
-	i18n.addTranslations( SearchRegexi10n.locale );
+	// sigh
+	document.querySelector( '.jquery-migrate-deprecation-notice' ) &&
+		document.querySelector( '.jquery-migrate-deprecation-notice' ).remove();
+
+	i18n.setLocale( { '': { localeSlug: SearchRegexi10n.locale.localeSlug } } );
+	i18n.addTranslations( SearchRegexi10n.locale.translations );
 
 	ReactDOM.render( <App />, document.getElementById( dom ) );
 };

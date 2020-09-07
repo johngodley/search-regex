@@ -285,7 +285,7 @@ class Search_Regex_Admin {
 			$locale_data = @file_get_contents( $i18n_json );
 
 			if ( $locale_data ) {
-				return json_decode( $locale_data );
+				return json_decode( $locale_data, true );
 			}
 		}
 
