@@ -80,6 +80,9 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 2.3.2 - 8th September 2020 =
+- Fix locale pluralization throwing an error
+
 = 2.3.1 - 7th September 2020 =
 - Fix locales not loading
 - Fix startup error on some sites

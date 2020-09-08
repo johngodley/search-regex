@@ -1,6 +1,6 @@
 {
   "name": "search-regex",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support",
   "main": "search-regex.php",
   "sideEffects": true,

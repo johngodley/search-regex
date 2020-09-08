@@ -22,6 +22,7 @@ const show = dom => {
 
 	i18n.setLocale( { '': { localeSlug: SearchRegexi10n.locale.localeSlug } } );
 	i18n.addTranslations( SearchRegexi10n.locale.translations );
+	i18n.configure( SearchRegexi10n.locale );
 
 	ReactDOM.render( <App />, document.getElementById( dom ) );
 };
