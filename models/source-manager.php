@@ -252,6 +252,8 @@ class Source_Manager {
 		foreach ( $sources as $source ) {
 			if ( in_array( $source, $all_cpts, true ) ) {
 				$cpts[] = $source;
+			} elseif ( $source === 'posts' ) {
+				$cpts = $all_cpts;
 			} else {
 				$handler = self::get_handler_for_source( $source, $search_flags, $source_flags );
 
@@ -264,6 +266,7 @@ class Source_Manager {
 		// Merge all CPTs together
 		if ( count( $cpts ) > 0 ) {
 			$handler = self::get_handler_for_source( 'post', $search_flags, $source_flags );
+
 			if ( $handler instanceof Source_Post ) {
 				$handler->set_custom_post_types( $cpts );
 				array_unshift( $handlers, $handler );
