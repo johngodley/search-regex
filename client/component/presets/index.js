@@ -30,7 +30,16 @@ import { STATUS_IN_PROGRESS } from 'state/settings/type';
  * @param {} props.onUpdatePreset
  */
 function Presets( props ) {
-	const { presets, currentPreset, onChangePreset, onSavePreset, search, status, onUpdatePreset } = props;
+	const {
+		presets,
+		currentPreset,
+		onChangePreset,
+		onSavePreset,
+		search,
+		status,
+		onUpdatePreset,
+		searchStatus,
+	} = props;
 	const [ askName, showName ] = useState( false );
 	const [ presetName, setPresetName ] = useState( '' );
 	const savingItem = [
@@ -117,7 +126,7 @@ function Presets( props ) {
 			<Select
 				name="saved-search"
 				value={ currentPreset }
-				disabled={ status === STATUS_IN_PROGRESS }
+				disabled={ status === STATUS_IN_PROGRESS || searchStatus === STATUS_IN_PROGRESS }
 				items={ status === STATUS_IN_PROGRESS ? savingItem : items }
 				onChange={ changePreset }
 			/>
@@ -164,6 +173,7 @@ function mapStateToProps( state ) {
 		currentPreset,
 		search,
 		status,
+		searchStatus: state.search.status,
 	};
 }
 
