@@ -20,9 +20,8 @@ const show = dom => {
 	document.querySelector( '.jquery-migrate-deprecation-notice' ) &&
 		document.querySelector( '.jquery-migrate-deprecation-notice' ).remove();
 
-	i18n.setLocale( { '': { localeSlug: SearchRegexi10n.locale.localeSlug } } );
+	i18n.setLocale( { '': SearchRegexi10n.locale } );
 	i18n.addTranslations( SearchRegexi10n.locale.translations );
-	i18n.configure( SearchRegexi10n.locale );
 
 	ReactDOM.render( <App />, document.getElementById( dom ) );
 };
