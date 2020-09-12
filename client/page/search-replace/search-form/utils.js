@@ -32,7 +32,10 @@ function ensureOneSource( selected ) {
  */
 export function convertToSource( selected, optionValue, sources ) {
 	const allPostTypes = getAllPostTypes( sources );
-	const postTypesEnabled = allPostTypes.reduce( ( prev, current ) => selected.indexOf( current ) !== -1 ? prev + 1 : prev, 0 );
+	const postTypesEnabled = allPostTypes.reduce(
+		( prev, current ) => ( selected.indexOf( current ) !== -1 ? prev + 1 : prev ),
+		0
+	);
 
 	// 'all post types' enabled - add all post types
 	if ( optionValue === 'posts' && selected.indexOf( 'posts' ) !== -1 ) {
@@ -46,18 +49,18 @@ export function convertToSource( selected, optionValue, sources ) {
 
 	// A specific post type was checked and 'all post types' is enabled - disable 'all post types', and enable all post types except this one
 	if ( allPostTypes.indexOf( optionValue ) !== -1 && selected.indexOf( 'posts' ) !== -1 ) {
-		return selected
-			// Remove 'all post types'
-			.filter( ( source ) => source !== 'posts' )
-			// Add all post types
-			.concat( allPostTypes )
-			// Remove the one that was just disabled
-			.filter( ( source ) => source !== optionValue );
+		return (
+			selected
+				// Remove 'all post types'
+				.filter( ( source ) => source !== 'posts' )
+				// Remove the one that was just disabled
+				.filter( ( source ) => source !== optionValue )
+		);
 	}
 
 	// All individual post types were selected, so enable the 'all post types'
 	if ( allPostTypes.length === postTypesEnabled ) {
-		return selected.concat( [ 'posts' ] );
+		return selected.filter( ( source ) => source !== 'posts' ).concat( [ 'posts' ] );
 	}
 
 	// Just return what is selected
