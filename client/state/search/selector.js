@@ -37,11 +37,11 @@ export const getAvailableSearchFlags = () => [
 export const getAvailablePerPage = () => [
 	{
 		value: 25,
-		label: __( '25 per page ' ),
+		label: __( '25 per page' ),
 	},
 	{
 		value: 50,
-		label: __( '50 per page ' ),
+		label: __( '50 per page' ),
 	},
 	{
 		value: 100,
