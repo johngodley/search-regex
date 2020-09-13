@@ -6,15 +6,15 @@ __( "Save", "search-regex" ), // client/component/editor/index.js:89
 __( "Close", "search-regex" ), // client/component/editor/index.js:92
 __( "Replacement for this match", "search-regex" ), // client/component/highlight-matches/replacement.js:78
 __( "Replace single phrase.", "search-regex" ), // client/component/highlight-matches/replacement.js:79
-__( "Saving preset", "search-regex" ), // client/component/presets/index.js:38
-__( "No preset", "search-regex" ), // client/component/presets/index.js:42
-__( "Save search as new preset", "search-regex" ), // client/component/presets/index.js:75
-__( "Update current preset", "search-regex" ), // client/component/presets/index.js:83
-__( "Saving Preset", "search-regex" ), // client/component/presets/index.js:92
-__( "Enter a name for your preset", "search-regex" ), // client/component/presets/index.js:93
-__( "Enter preset name", "search-regex" ), // client/component/presets/index.js:101
-__( "Save", "search-regex" ), // client/component/presets/index.js:104
-__( "Cancel", "search-regex" ), // client/component/presets/index.js:112
+__( "Saving preset", "search-regex" ), // client/component/presets/index.js:47
+__( "No preset", "search-regex" ), // client/component/presets/index.js:51
+__( "Save search as new preset", "search-regex" ), // client/component/presets/index.js:84
+__( "Update current preset", "search-regex" ), // client/component/presets/index.js:92
+__( "Saving Preset", "search-regex" ), // client/component/presets/index.js:101
+__( "Enter a name for your preset", "search-regex" ), // client/component/presets/index.js:102
+__( "Enter preset name", "search-regex" ), // client/component/presets/index.js:110
+__( "Save", "search-regex" ), // client/component/presets/index.js:113
+__( "Cancel", "search-regex" ), // client/component/presets/index.js:121
 __( "Single", "search-regex" ), // client/component/replace/index.js:30
 __( "Multi", "search-regex" ), // client/component/replace/index.js:34
 __( "Remove", "search-regex" ), // client/component/replace/index.js:38
@@ -51,13 +51,13 @@ _n( "Replace %(count)s match.", "Replace %(count)s matches.", 1, "search-regex" 
 __( "Maximum number of matches exceeded and hidden from view. These will be included in any replacements.", "search-regex" ), // client/component/result/restricted-matches.js:11
 _n( "Show %s more", "Show %s more", 1, "search-regex" ), // client/component/result/result-columns.js:49
 __( "Enter search phrase", "search-regex" ), // client/component/search/index.js:53
-__( "Cached Search Regex detected", "search-regex" ), // client/page/home/cache-detect.js:21
+__( "Cached Search Regex detected", "search-regex" ), // client/page/home/cache-detect.js:20
 __( "Please clear your browser cache and reload this page.", "search-regex" ), // client/page/home/cache-detect.js:23
 __( "If you are using a caching system such as Cloudflare then please read this: ", "search-regex" ), // client/page/home/cache-detect.js:25
 __( "clearing your cache.", "search-regex" ), // client/page/home/cache-detect.js:27
-__( "Search Regex is not working. Try clearing your browser cache and reloading this page.", "search-regex" ), // client/page/home/crash-handler.js:36
-__( "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.", "search-regex" ), // client/page/home/crash-handler.js:38
-__( "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details.", "search-regex" ), // client/page/home/crash-handler.js:44
+__( "Search Regex is not working. Try clearing your browser cache and reloading this page.", "search-regex" ), // client/page/home/crash-handler.js:25
+__( "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.", "search-regex" ), // client/page/home/crash-handler.js:27
+__( "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details.", "search-regex" ), // client/page/home/crash-handler.js:33
 __( "Please check the {{link}}support site{{/link}} before proceeding further.", "search-regex" ), // client/page/home/debug.js:17
 __( "If that did not help then {{strong}}create an issue{{/strong}} or send it in an {{strong}}email{{/strong}}.", "search-regex" ), // client/page/home/debug.js:23
 __( "Create An Issue", "search-regex" ), // client/page/home/debug.js:31
@@ -171,8 +171,8 @@ __( "Row updated", "search-regex" ), // client/state/message/reducer.js:36
 __( "Preset saved", "search-regex" ), // client/state/message/reducer.js:37
 __( "Regular Expression", "search-regex" ), // client/state/search/selector.js:26
 __( "Ignore Case", "search-regex" ), // client/state/search/selector.js:30
-__( "25 per page ", "search-regex" ), // client/state/search/selector.js:40
-__( "50 per page ", "search-regex" ), // client/state/search/selector.js:44
+__( "25 per page", "search-regex" ), // client/state/search/selector.js:40
+__( "50 per page", "search-regex" ), // client/state/search/selector.js:44
 __( "100 per page", "search-regex" ), // client/state/search/selector.js:48
 __( "250 per page", "search-regex" ), // client/state/search/selector.js:52
 __( "500 per page", "search-regex" ), // client/state/search/selector.js:56
@@ -233,7 +233,7 @@ __( "Unable to make request due to browser security. This is typically because y
 __( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:217
 __( "Bad data", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:17
 __( "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:19
-__( "Plrease review your data and try again.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:20
+__( "Please review your data and try again.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:20
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:22
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-fixed.js:19
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-known.js:26

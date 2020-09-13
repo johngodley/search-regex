@@ -707,11 +707,11 @@ msgid "Ignore Case"
 msgstr ""
 
 #: search-regex-strings.php:174
-msgid "25 per page "
+msgid "25 per page"
 msgstr ""
 
 #: search-regex-strings.php:175
-msgid "50 per page "
+msgid "50 per page"
 msgstr ""
 
 #: search-regex-strings.php:176
@@ -903,7 +903,7 @@ msgid "There was a problem making a request to your site. This could indicate yo
 msgstr ""
 
 #: search-regex-strings.php:236
-msgid "Plrease review your data and try again."
+msgid "Please review your data and try again."
 msgstr ""
 
 #: search-regex-strings.php:237, search-regex-strings.php:238, search-regex-strings.php:239

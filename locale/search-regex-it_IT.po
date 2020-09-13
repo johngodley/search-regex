@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Search Regex - Development (trunk) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-07-19 16:12:28+0000\n"
+"PO-Revision-Date: 2020-09-10 19:01:16+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,39 +13,39 @@ msgstr ""
 
 #: search-regex-strings.php:236
 msgid "Plrease review your data and try again."
-msgstr ""
+msgstr "Controlla i dati e prova di nuovo."
 
 #: search-regex-strings.php:235
 msgid "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request."
-msgstr ""
+msgstr "Si è verificato un problema nel fare una richiesta al tuo sito. Forse hai fornito dei dati diversi da quelli richiesti oppure il plugin ha inviato una richiesta errata."
 
 #: search-regex-strings.php:234
 msgid "Bad data"
-msgstr ""
+msgstr "Dati errati"
 
 #: search-regex-strings.php:218
 msgid "Your REST API is returning a 404 page. This is almost certainly an external plugin or server configuration issue."
-msgstr ""
+msgstr "La REST API restituisce una pagina 404. Molto probabilmente è un problema generato da un plugin esterno o dalla configurazione del server."
 
 #: search-regex-strings.php:180
 msgid "2000 per page"
-msgstr ""
+msgstr "2000 per pagina"
 
 #: search-regex-strings.php:179
 msgid "1000 per page"
-msgstr ""
+msgstr "1000 per pagina"
 
 #: search-regex-strings.php:92
 msgid "Set a preset to use by default when Search Regex is loaded."
-msgstr ""
+msgstr "Imposta un preset da usare in modo predefinito quando Search Regex viene caricato."
 
 #: search-regex-strings.php:91
 msgid "No default preset"
-msgstr ""
+msgstr "Nessun preset predefinito"
 
 #: search-regex-strings.php:90
 msgid "Default Preset"
-msgstr ""
+msgstr "Preset predefinito"
 
 #: search-regex-strings.php:244
 msgid "Your admin pages are being cached. Clear this cache and try again. There may be multiple caches involved."
@@ -93,7 +93,7 @@ msgstr "Controlla il tuo {{link}}Salute del sito (Site Health){{/link}} e correg
 
 #: search-regex-strings.php:219
 msgid "Can you access your {{api}}REST API{{/api}} without it redirecting? If not then you will need to fix any issues."
-msgstr ""
+msgstr "Riesci ad accedere alla tua {{api}}REST API{{/api}} senza alcun reindirizzamento? Se non ci riesci, devi correggere tutti gli errori."
 
 #: search-regex-strings.php:205
 msgid "Preset"
@@ -323,7 +323,7 @@ msgstr "Fai un backup dei tuoi dati prima di apportare modifiche."
 
 #: search-regex-strings.php:89
 msgid "Show row actions as dropdown menu."
-msgstr ""
+msgstr "Mostra le azioni di riga come menu a discesa."
 
 #: search-regex-strings.php:48
 msgid "Replace Row"
@@ -681,7 +681,7 @@ msgstr "Aiuto veloce"
 
 #: search-regex-strings.php:160
 msgid "Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, from the same author."
-msgstr ""
+msgstr "Ti piace questo plugin? Potresti considerare {{link}}Redirection{{/link}}, un plugin per gestire i reindirizzamenti, realizzato dallo stesso autore."
 
 #: search-regex-strings.php:159 source/plugin/redirection.php:81
 msgid "Redirection"
