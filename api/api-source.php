@@ -97,6 +97,10 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	 * @param String $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
+		register_rest_route( $namespace, '/source', [
+			$this->get_route( WP_REST_Server::READABLE, 'getSources', [ $this, 'permission_callback' ] ),
+		] );
+
 		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/(?P<rowId>[\d]+)', [
 			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
 		] );
@@ -150,6 +154,25 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 			),
 			$this->get_route( WP_REST_Server::EDITABLE, 'replaceRow', [ $this, 'permission_callback' ] ),
 		] );
+	}
+
+	/**
+	 * Get list of all sources
+	 *
+	 * @param WP_REST_Request $request The request.
+	 * @return WP_Error|array Return an array of sources, or a WP_Error
+	 */
+	public function getSources( WP_REST_Request $request ) {
+		$sources = Source_Manager::get_all_sources();
+
+		return array_map( function( $source ) {
+			return [
+				'name' => $source['name'],
+				'label' => $source['label'],
+				'description' => $source['description'],
+				'type' => $source['type'],
+			];
+		}, $sources );
 	}
 
 	/**
