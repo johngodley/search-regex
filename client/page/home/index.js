@@ -19,7 +19,7 @@ import ErrorDetails from './error-details';
 import CrashHandler from './crash-handler';
 import PageRouter from './page-router';
 import PageContent from './page-content';
-import getErrorLinks from 'lib/error-links';
+import { getErrorLinks, getErrorDetails } from 'lib/error-links';
 import CacheDetect from './cache-detect';
 import './style.scss';
 
@@ -76,7 +76,7 @@ function Home( props ) {
 						errors={ errors }
 						onClear={ onClearErrors }
 						renderDebug={ DebugReport }
-						versions={ SearchRegexi10n.versions }
+						details={ getErrorDetails() }
 						links={ getErrorLinks() }
 					>
 						<ErrorDetails />

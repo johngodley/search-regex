@@ -9,16 +9,16 @@ import { translate as __ } from 'i18n-calypso';
  * Internal dependencies
  */
 import { ExternalLink, Error } from 'wp-plugin-components';
+import { getErrorLinks, getErrorDetails, getCacheBuster } from 'lib/error-links';
 
 function CacheDetect() {
 	return (
 		<Error
-			errors={ [
-				SearchRegexi10n.versions + '\nServer: ' + SearchRegexi10n.version + ' !== ' + SEARCHREGEX_VERSION,
-			] }
-			versions={ SearchRegexi10n.versions }
+			errors={ '' }
+			details={ getErrorDetails().concat( [ getCacheBuster() ] ) }
 			type="fixed"
 			title={ __( 'Cached Search Regex detected' ) }
+			links={ getErrorLinks() }
 		>
 			<p>{ __( 'Please clear your browser cache and reload this page.' ) }</p>
 			<p>

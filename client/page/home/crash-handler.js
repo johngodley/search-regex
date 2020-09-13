@@ -10,27 +10,16 @@ import { translate as __ } from 'i18n-calypso';
  */
 import { ExternalLink, Error } from 'wp-plugin-components';
 import DebugReport from './debug';
-import getErrorLinks from 'lib/error-links';
+import { getErrorLinks, getErrorDetails } from 'lib/error-links';
 
 function CrashHandler( stack, errorInfo, extra ) {
-	const debug = [
-		SearchRegexi10n.versions,
-		'Query: ' + document.location.search,
-		'Buster: ' + SEARCHREGEX_VERSION + ' === ' + SearchRegexi10n.version,
-		'',
-		stack ? stack : '',
-	];
-
-	if ( errorInfo ) {
-		debug.push( errorInfo.componentStack );
-	}
-
 	return (
 		<Error
-			errors={ [ debug.join( '\n' ) ] }
+			errors={ '' }
 			renderDebug={ DebugReport }
 			type="fixed"
 			links={ getErrorLinks() }
+			details={ getErrorDetails().concat( [ stack, errorInfo ? errorInfo.componentStack : '' ] ) }
 		>
 			<p>
 				{ __( 'Search Regex is not working. Try clearing your browser cache and reloading this page.' ) }{' '}
