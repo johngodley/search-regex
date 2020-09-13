@@ -4,7 +4,7 @@
 Plugin Name: Search Regex
 Plugin URI: https://searchregex.com/
 Description: Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support
-Version: 2.3.2
+Version: 2.3.3
 Author: John Godley
 Text Domain: search-regex
 Domain Path: /locale

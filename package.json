@@ -1,6 +1,6 @@
 {
   "name": "search-regex",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support",
   "main": "search-regex.php",
   "sideEffects": true,
@@ -73,9 +73,9 @@
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "chai": "^4.2.0",
-    "css-loader": "^4.2.2",
+    "css-loader": "^4.3.0",
     "download": "^8.0.0",
-    "eslint": "^7.8.1",
+    "eslint": "^7.9.0",
     "eslint-config-wpcalypso": "^6.1.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-flowtype": "^5.2.0",
@@ -103,7 +103,7 @@
     "null-loader": "^4.0.0",
     "path": "^0.12.7",
     "postcss-focus": "^4.0.0",
-    "postcss-loader": "^3.0.0",
+    "postcss-loader": "^4.0.1",
     "postcss-preset-env": "^6.7.0",
     "postcss-reporter": "^6.0.1",
     "precss": "^4.0.0",
@@ -115,7 +115,7 @@
     "sass-loader": "^10.0.2",
     "shared-git-hooks": "^1.2.1",
     "style-loader": "1.2.1",
-    "stylelint": "^13.7.0",
+    "stylelint": "^13.7.1",
     "stylelint-config-wordpress": "^17.0.0",
     "through": "^2.3.8",
     "through2": "^4.0.2",
@@ -144,13 +144,13 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-delta": "^1.1.0",
     "react-dom": "^16.13.1",
-    "react-dropzone": "^11.0.3",
+    "react-dropzone": "^11.1.0",
     "react-highlight-words": "^0.16.0",
     "react-redux": "^7.2.1",
     "react-textarea-autosize": "^8.2.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "whatwg-fetch": "^3.4.0"
+    "whatwg-fetch": "^3.4.1"
   },
   "eslintConfig": {
     "env": {

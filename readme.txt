@@ -80,6 +80,10 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 2.3.3 - 13th September 2020 =
+- Fix replace in 'all post types'
+- Fix duplicate sources when deselecting a post source
+
 = 2.3.2 - 8th September 2020 =
 - Fix locale pluralization throwing an error
 
