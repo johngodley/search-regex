@@ -82,6 +82,7 @@ class Source_Post extends Search_Source {
 	public function get_supported_flags() {
 		return [
 			'post_guid' => __( 'Search GUID', 'search-regex' ),
+			'post_draft' => __( 'Exclude drafts', 'search-regex' ),
 		];
 	}
 
@@ -100,16 +101,22 @@ class Source_Post extends Search_Source {
 	}
 
 	public function get_search_conditions() {
+		$parts = [];
+
 		// If searching a particular post type then just look there
 		if ( $this->source_type !== 'posts' ) {
-			return implode( ' OR ', array_map( function( $cpt ) {
+			$parts[] = implode( ' OR ', array_map( function( $cpt ) {
 				global $wpdb;
 
 				return $wpdb->prepare( 'post_type=%s', $cpt );
 			}, $this->cpts ) );
 		}
 
-		return '';
+		if ( $this->source_flags->has_flag( 'post_draft' ) ) {
+			$parts[] = "post_status != 'draft'";
+		}
+
+		return implode( ' AND ', $parts );
 	}
 
 	public function get_info_columns() {
