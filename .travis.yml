@@ -49,6 +49,8 @@ jobs:
 
         - name: Jest tests
           before_install:
+            - nvm install 12.14.0
+            - nvm use 12.14.0
             - yarn install --ignore-engines
           script:
             - yarn test
