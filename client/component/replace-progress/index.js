@@ -51,7 +51,7 @@ function ReplaceProgress( props ) {
 
 			<div className="searchregex-replaceall__progress">
 				<div className="searchregex-replaceall__container">
-					<Line percent={ percent } strokeWidth="4" trailWidth="4" strokeLinecap="square" />
+					<Line percent={ percent } strokeWidth={ 4 } trailWidth={ 4 } strokeLinecap="square" />
 				</div>
 
 				<div className="searchregex-replaceall__status">{ `${ percent }%` }</div>
@@ -62,12 +62,12 @@ function ReplaceProgress( props ) {
 				<p>
 					{ __( '%s phrase.', '%s phrases.', {
 						count: phraseCount,
-						args: numberFormat( phraseCount ),
+						args: numberFormat( phraseCount, 0 ),
 					} ) }
 					&nbsp;
 					{ __( '%s row.', '%s rows.', {
 						count: replaceCount,
-						args: numberFormat( replaceCount ),
+						args: numberFormat( replaceCount, 0 ),
 					} ) }
 				</p>
 				{ status === STATUS_COMPLETE && (

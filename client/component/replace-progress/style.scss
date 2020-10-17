@@ -29,3 +29,11 @@
 		margin-top: 20px;
 	}
 }
+
+.rc-progress-line-path {
+	transition: stroke-dashoffset 0s ease 0s, stroke-dasharray 5s ease 0.5s, stroke linear 0.5s !important;
+}
+
+.rc-progress-line-trail {
+	animation: wpl-loading-fade 1.6s ease-in-out infinite;
+}
