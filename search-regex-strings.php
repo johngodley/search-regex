@@ -15,17 +15,6 @@ __( "Enter a name for your preset", "search-regex" ), // client/component/preset
 __( "Enter preset name", "search-regex" ), // client/component/presets/index.js:110
 __( "Save", "search-regex" ), // client/component/presets/index.js:113
 __( "Cancel", "search-regex" ), // client/component/presets/index.js:121
-__( "Single", "search-regex" ), // client/component/replace/index.js:30
-__( "Multi", "search-regex" ), // client/component/replace/index.js:34
-__( "Remove", "search-regex" ), // client/component/replace/index.js:38
-__( "Search phrase will be removed", "search-regex" ), // client/component/replace/index.js:80
-__( "Replace", "search-regex" ), // client/component/replace-form/index.js:60
-__( "Cancel", "search-regex" ), // client/component/replace-form/index.js:66
-__( "Replace progress", "search-regex" ), // client/component/replace-progress/index.js:50
-__( "Replace Information", "search-regex" ), // client/component/replace-progress/index.js:61
-_n( "%s phrase.", "%s phrases.", 1, "search-regex" ), // client/component/replace-progress/index.js:63
-_n( "%s row.", "%s rows.", 1, "search-regex" ), // client/component/replace-progress/index.js:68
-__( "Finished!", "search-regex" ), // client/component/replace-progress/index.js:74
 __( "Working!", "search-regex" ), // client/component/rest-api-status/api-result-pass.js:15
 __( "Show Full", "search-regex" ), // client/component/rest-api-status/api-result-raw.js:27
 __( "Hide", "search-regex" ), // client/component/rest-api-status/api-result-raw.js:32
@@ -42,6 +31,17 @@ __( "Summary", "search-regex" ), // client/component/rest-api-status/index.js:13
 __( "Show Problems", "search-regex" ), // client/component/rest-api-status/index.js:139
 __( "Testing - %s\$", "search-regex" ), // client/component/rest-api-status/index.js:168
 __( "Check Again", "search-regex" ), // client/component/rest-api-status/index.js:175
+__( "Single", "search-regex" ), // client/component/replace/index.js:30
+__( "Multi", "search-regex" ), // client/component/replace/index.js:34
+__( "Remove", "search-regex" ), // client/component/replace/index.js:38
+__( "Search phrase will be removed", "search-regex" ), // client/component/replace/index.js:80
+__( "Replace", "search-regex" ), // client/component/replace-form/index.js:60
+__( "Cancel", "search-regex" ), // client/component/replace-form/index.js:66
+__( "Replace progress", "search-regex" ), // client/component/replace-progress/index.js:50
+__( "Replace Information", "search-regex" ), // client/component/replace-progress/index.js:61
+_n( "%s phrase.", "%s phrases.", 1, "search-regex" ), // client/component/replace-progress/index.js:63
+_n( "%s row.", "%s rows.", 1, "search-regex" ), // client/component/replace-progress/index.js:68
+__( "Finished!", "search-regex" ), // client/component/replace-progress/index.js:74
 __( "Edit Page", "search-regex" ), // client/component/result/actions.js:66
 __( "Inline Editor", "search-regex" ), // client/component/result/actions.js:82
 __( "Delete Row", "search-regex" ), // client/component/result/actions.js:87
@@ -51,13 +51,20 @@ _n( "Replace %(count)s match.", "Replace %(count)s matches.", 1, "search-regex" 
 __( "Maximum number of matches exceeded and hidden from view. These will be included in any replacements.", "search-regex" ), // client/component/result/restricted-matches.js:11
 _n( "Show %s more", "Show %s more", 1, "search-regex" ), // client/component/result/result-columns.js:49
 __( "Enter search phrase", "search-regex" ), // client/component/search/index.js:53
-__( "Cached Search Regex detected", "search-regex" ), // client/page/home/cache-detect.js:20
-__( "Please clear your browser cache and reload this page.", "search-regex" ), // client/page/home/cache-detect.js:23
-__( "If you are using a caching system such as Cloudflare then please read this: ", "search-regex" ), // client/page/home/cache-detect.js:25
-__( "clearing your cache.", "search-regex" ), // client/page/home/cache-detect.js:27
-__( "Search Regex is not working. Try clearing your browser cache and reloading this page.", "search-regex" ), // client/page/home/crash-handler.js:25
-__( "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.", "search-regex" ), // client/page/home/crash-handler.js:27
-__( "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details.", "search-regex" ), // client/page/home/crash-handler.js:33
+__( "Settings saved", "search-regex" ), // client/state/message/reducer.js:33
+__( "Row deleted", "search-regex" ), // client/state/message/reducer.js:34
+__( "Row replaced", "search-regex" ), // client/state/message/reducer.js:35
+__( "Row updated", "search-regex" ), // client/state/message/reducer.js:36
+__( "Preset saved", "search-regex" ), // client/state/message/reducer.js:37
+__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:26
+__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:30
+__( "25 per page", "search-regex" ), // client/state/search/selector.js:40
+__( "50 per page", "search-regex" ), // client/state/search/selector.js:44
+__( "100 per page", "search-regex" ), // client/state/search/selector.js:48
+__( "250 per page", "search-regex" ), // client/state/search/selector.js:52
+__( "500 per page", "search-regex" ), // client/state/search/selector.js:56
+__( "1000 per page", "search-regex" ), // client/state/search/selector.js:60
+__( "2000 per page", "search-regex" ), // client/state/search/selector.js:64
 __( "Please check the {{link}}support site{{/link}} before proceeding further.", "search-regex" ), // client/page/home/debug.js:17
 __( "If that did not help then {{strong}}create an issue{{/strong}} or send it in an {{strong}}email{{/strong}}.", "search-regex" ), // client/page/home/debug.js:23
 __( "Create An Issue", "search-regex" ), // client/page/home/debug.js:31
@@ -75,6 +82,13 @@ __( "Search & Replace", "search-regex" ), // client/page/home/index.js:36
 __( "Presets", "search-regex" ), // client/page/home/index.js:40
 __( "Options", "search-regex" ), // client/page/home/index.js:44
 __( "Support", "search-regex" ), // client/page/home/index.js:48
+__( "Cached Search Regex detected", "search-regex" ), // client/page/home/cache-detect.js:20
+__( "Please clear your browser cache and reload this page.", "search-regex" ), // client/page/home/cache-detect.js:23
+__( "If you are using a caching system such as Cloudflare then please read this: ", "search-regex" ), // client/page/home/cache-detect.js:25
+__( "clearing your cache.", "search-regex" ), // client/page/home/cache-detect.js:27
+__( "Search Regex is not working. Try clearing your browser cache and reloading this page.", "search-regex" ), // client/page/home/crash-handler.js:25
+__( "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.", "search-regex" ), // client/page/home/crash-handler.js:27
+__( "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details.", "search-regex" ), // client/page/home/crash-handler.js:33
 __( "You've supported this plugin - thank you!", "search-regex" ), // client/page/options/donation.js:82
 __( "I'd like to support some more.", "search-regex" ), // client/page/options/donation.js:83
 __( "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.", "search-regex" ), // client/page/options/donation.js:98
@@ -93,28 +107,6 @@ __( "Set a preset to use by default when Search Regex is loaded.", "search-regex
 __( "REST API", "search-regex" ), // client/page/options/options-form.js:88
 __( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:97
 __( "Update", "search-regex" ), // client/page/options/options-form.js:106
-__( "Create An Issue", "search-regex" ), // client/page/preset-management/index.js:30
-__( "Email", "search-regex" ), // client/page/preset-management/index.js:39
-__( "Name", "search-regex" ), // client/page/preset-management/index.js:77
-__( "Search", "search-regex" ), // client/page/preset-management/index.js:78
-__( "Flags", "search-regex" ), // client/page/preset-management/index.js:79
-__( "There are no presets", "search-regex" ), // client/page/preset-management/index.js:90
-__( "Download presets!", "search-regex" ), // client/page/preset-management/index.js:97
-__( "Export JSON", "search-regex" ), // client/page/preset-management/index.js:103
-__( "Import JSON", "search-regex" ), // client/page/preset-management/index.js:108
-__( "Import a JSON file", "search-regex" ), // client/page/preset-management/index.js:117
-__( "Click 'Add File' or drag and drop here.", "search-regex" ), // client/page/preset-management/index.js:118
-__( "File selected", "search-regex" ), // client/page/preset-management/index.js:123
-__( "Importing", "search-regex" ), // client/page/preset-management/index.js:131
-_n( "Uploaded %(total)d preset", "Uploaded %(total)d presets", 1, "search-regex" ), // client/page/preset-management/index.js:143
-__( "Done", "search-regex" ), // client/page/preset-management/index.js:152
-__( "Import preset from clipboard", "search-regex" ), // client/page/preset-management/index.js:159
-__( "Unable to import preset", "search-regex" ), // client/page/preset-management/index.js:165
-__( "Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset.", "search-regex" ), // client/page/preset-management/index.js:172
-__( "Paste a single preset JSON.", "search-regex" ), // client/page/preset-management/index.js:179
-__( "Import", "search-regex" ), // client/page/preset-management/index.js:191
-__( "no phrase", "search-regex" ), // client/page/preset-management/phrase.js:70
-__( "remove phrase", "search-regex" ), // client/page/preset-management/phrase.js:74
 __( "Search", "search-regex" ), // client/page/preset-management/preset-edit.js:56
 __( "Replace", "search-regex" ), // client/page/preset-management/preset-edit.js:60
 __( "Search Flags", "search-regex" ), // client/page/preset-management/preset-edit.js:64
@@ -139,8 +131,6 @@ __( "A tag creates a custom input field. Insert the tag anywhere in the search o
 __( "For example, create tag {{code}}URL{{/code}} and title {{code}}Image URL{{/code}}. Your search could be {{code}}<img src=\"URL\">{{/code}}. When the preset is used it will ask the user for the {{code}}Image URL{{/code}} instead of the full search phrase.", "search-regex" ), // client/page/preset-management/preset-edit.js:215
 __( "Save", "search-regex" ), // client/page/preset-management/preset-edit.js:232
 __( "Cancel", "search-regex" ), // client/page/preset-management/preset-edit.js:237
-__( "Search", "search-regex" ), // client/page/preset-management/preset-entry.js:35
-__( "Replace", "search-regex" ), // client/page/preset-management/preset-entry.js:38
 __( "Locked fields", "search-regex" ), // client/page/preset-management/preset-flags.js:53
 __( "Are you sure you want to delete this preset?", "search-regex" ), // client/page/preset-management/preset.js:65
 __( "Edit", "search-regex" ), // client/page/preset-management/preset.js:98
@@ -148,6 +138,10 @@ __( "Delete", "search-regex" ), // client/page/preset-management/preset.js:102
 __( "Copy to clipboard", "search-regex" ), // client/page/preset-management/preset.js:107
 __( "Please backup your data before making modifications.", "search-regex" ), // client/page/search-replace/index.js:38
 __( "Search and replace information in your database.", "search-regex" ), // client/page/search-replace/index.js:41
+__( "no phrase", "search-regex" ), // client/page/preset-management/phrase.js:70
+__( "remove phrase", "search-regex" ), // client/page/preset-management/phrase.js:74
+__( "Search", "search-regex" ), // client/page/preset-management/preset-entry.js:35
+__( "Replace", "search-regex" ), // client/page/preset-management/preset-entry.js:38
 __( "Search", "search-regex" ), // client/page/search-replace/search-actions.js:42
 __( "Replace All", "search-regex" ), // client/page/search-replace/search-actions.js:50
 __( "Cancel", "search-regex" ), // client/page/search-replace/search-actions.js:57
@@ -164,36 +158,30 @@ __( "{{link}}Search Flags{{/link}} - additional qualifiers for your search, to e
 __( "{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches.", "search-regex" ), // client/page/support/search-help.js:27
 __( "{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments.", "search-regex" ), // client/page/support/search-help.js:32
 __( "{{link}}Source Flags{{/link}} - additional options for the selected source. For example, include post {{guid}}GUID{{/guid}} in the search.", "search-regex" ), // client/page/support/search-help.js:37
-__( "Settings saved", "search-regex" ), // client/state/message/reducer.js:33
-__( "Row deleted", "search-regex" ), // client/state/message/reducer.js:34
-__( "Row replaced", "search-regex" ), // client/state/message/reducer.js:35
-__( "Row updated", "search-regex" ), // client/state/message/reducer.js:36
-__( "Preset saved", "search-regex" ), // client/state/message/reducer.js:37
-__( "Regular Expression", "search-regex" ), // client/state/search/selector.js:26
-__( "Ignore Case", "search-regex" ), // client/state/search/selector.js:30
-__( "25 per page", "search-regex" ), // client/state/search/selector.js:40
-__( "50 per page", "search-regex" ), // client/state/search/selector.js:44
-__( "100 per page", "search-regex" ), // client/state/search/selector.js:48
-__( "250 per page", "search-regex" ), // client/state/search/selector.js:52
-__( "500 per page", "search-regex" ), // client/state/search/selector.js:56
-__( "1000 per page", "search-regex" ), // client/state/search/selector.js:60
-__( "2000 per page", "search-regex" ), // client/state/search/selector.js:64
+__( "Create An Issue", "search-regex" ), // client/page/preset-management/index.js:30
+__( "Email", "search-regex" ), // client/page/preset-management/index.js:39
+__( "Name", "search-regex" ), // client/page/preset-management/index.js:77
+__( "Search", "search-regex" ), // client/page/preset-management/index.js:78
+__( "Flags", "search-regex" ), // client/page/preset-management/index.js:79
+__( "There are no presets", "search-regex" ), // client/page/preset-management/index.js:90
+__( "Download presets!", "search-regex" ), // client/page/preset-management/index.js:97
+__( "Export JSON", "search-regex" ), // client/page/preset-management/index.js:103
+__( "Import JSON", "search-regex" ), // client/page/preset-management/index.js:108
+__( "Import a JSON file", "search-regex" ), // client/page/preset-management/index.js:117
+__( "Click 'Add File' or drag and drop here.", "search-regex" ), // client/page/preset-management/index.js:118
+__( "File selected", "search-regex" ), // client/page/preset-management/index.js:123
+__( "Importing", "search-regex" ), // client/page/preset-management/index.js:131
+_n( "Uploaded %(total)d preset", "Uploaded %(total)d presets", 1, "search-regex" ), // client/page/preset-management/index.js:143
+__( "Done", "search-regex" ), // client/page/preset-management/index.js:152
+__( "Import preset from clipboard", "search-regex" ), // client/page/preset-management/index.js:159
+__( "Unable to import preset", "search-regex" ), // client/page/preset-management/index.js:165
+__( "Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset.", "search-regex" ), // client/page/preset-management/index.js:172
+__( "Paste a single preset JSON.", "search-regex" ), // client/page/preset-management/index.js:179
+__( "Import", "search-regex" ), // client/page/preset-management/index.js:191
 __( "View notice", "search-regex" ), // client/wp-plugin-components/snackbar/index.js:75
 __( "Add File", "search-regex" ), // client/wp-plugin-components/uploader/content.js:45
 __( "Upload", "search-regex" ), // client/wp-plugin-components/uploader/content.js:54
 __( "Cancel", "search-regex" ), // client/wp-plugin-components/uploader/content.js:57
-_n( "%s database row in total", "%s database rows in total", 1, "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:29
-__( "matched rows = %(searched)s, phrases = %(found)s", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:34
-__( "First page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:43
-__( "Prev page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:44
-__( "Progress %(current)s\$", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:47
-__( "Next page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:54
-_n( "Matches: %(phrases)s across %(rows)s database row.", "Matches: %(phrases)s across %(rows)s database rows.", 1, "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:27
-__( "First page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:37
-__( "Prev page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:38
-__( "Page %(current)s of %(total)s", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:41
-__( "Next page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:49
-__( "Last page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:50
 __( "Search", "search-regex" ), // client/page/search-replace/search-form/form.js:87
 __( "Search Flags", "search-regex" ), // client/page/search-replace/search-form/form.js:103
 __( "Replace", "search-regex" ), // client/page/search-replace/search-form/form.js:126
@@ -210,6 +198,18 @@ __( "Row ID", "search-regex" ), // client/page/search-replace/search-results/ind
 __( "Matches", "search-regex" ), // client/page/search-replace/search-results/index.js:67
 __( "Matched Phrases", "search-regex" ), // client/page/search-replace/search-results/index.js:68
 __( "Actions", "search-regex" ), // client/page/search-replace/search-results/index.js:69
+_n( "%s database row in total", "%s database rows in total", 1, "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:29
+__( "matched rows = %(searched)s, phrases = %(found)s", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:34
+__( "First page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:43
+__( "Prev page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:44
+__( "Progress %(current)s\$", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:47
+__( "Next page", "search-regex" ), // client/page/search-replace/pagination/advanced-pagination.js:54
+_n( "Matches: %(phrases)s across %(rows)s database row.", "Matches: %(phrases)s across %(rows)s database rows.", 1, "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:27
+__( "First page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:37
+__( "Prev page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:38
+__( "Page %(current)s of %(total)s", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:41
+__( "Next page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:49
+__( "Last page", "search-regex" ), // client/page/search-replace/pagination/simple-pagination.js:50
 __( "Show debug", "search-regex" ), // client/wp-plugin-components/error/debug/index.js:66
 __( "Debug Information", "search-regex" ), // client/wp-plugin-components/error/debug/index.js:76
 __( "WordPress did not return a response. This could mean an error occurred or that the request was blocked. Please check your server error_log.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:74
@@ -231,16 +231,16 @@ __( "WordPress returned an unexpected message. This could be a PHP error from an
 __( "Possible cause", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:199
 __( "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:211
 __( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:217
+__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:22
+__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-fixed.js:19
 __( "Bad data", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:17
 __( "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:19
 __( "Please review your data and try again.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:20
-__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:22
-__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-fixed.js:19
-__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-known.js:26
 __( "You are using an old or cached session", "search-regex" ), // client/wp-plugin-components/error/display/error-nonce.js:17
 __( "This is usually fixed by doing one of the following:", "search-regex" ), // client/wp-plugin-components/error/display/error-nonce.js:19
 __( "Reload the page - your current session is old.", "search-regex" ), // client/wp-plugin-components/error/display/error-nonce.js:21
 __( "Log out, clear your browser cache, and log in again - your browser has cached an old session.", "search-regex" ), // client/wp-plugin-components/error/display/error-nonce.js:23
 __( "Your admin pages are being cached. Clear this cache and try again. There may be multiple caches involved.", "search-regex" ), // client/wp-plugin-components/error/display/error-nonce.js:28
+__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-known.js:26
 );
 /* THIS IS THE END OF THE GENERATED FILE */

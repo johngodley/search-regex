@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Plugins - Search Regex - Development (trunk)\n"
 
 #: search-regex-strings.php:236
-msgid "Plrease review your data and try again."
+msgid "Please review your data and try again."
 msgstr ""
 
 #: search-regex-strings.php:235
@@ -389,7 +389,7 @@ msgstr "Schermnaam (getoond op site)"
 msgid "Nicename"
 msgstr "Schermnaam (backend)"
 
-#: source/core/options.php:20 source/core/meta.php:20
+#: source/core/meta.php:20 source/core/options.php:20
 msgid "Value"
 msgstr "Waarde"
 
@@ -401,8 +401,8 @@ msgstr "Inclusief spam reacties"
 msgid "Comment"
 msgstr "Reactie"
 
-#: search-regex-strings.php:98 source/core/options.php:19
-#: source/core/meta.php:19 source/core/comment.php:22
+#: search-regex-strings.php:98 source/core/meta.php:19
+#: source/core/comment.php:22 source/core/options.php:19
 msgid "Name"
 msgstr "Naam"
 
@@ -624,12 +624,12 @@ msgid "100 per page"
 msgstr "100 per pagina"
 
 #: search-regex-strings.php:175
-msgid "50 per page "
-msgstr "50 per pagina "
+msgid "50 per page"
+msgstr ""
 
 #: search-regex-strings.php:174
-msgid "25 per page "
-msgstr "25 per pagina "
+msgid "25 per page"
+msgstr ""
 
 #: search-regex-strings.php:173
 msgid "Ignore Case"
