@@ -22,7 +22,7 @@ class Redirection_Search_Regex extends Search_Source {
 		return $columns;
 	}
 
-	public function get_column_label( $column ) {
+	public function get_column_label( $column, $data ) {
 		$labels = [
 			'url' => __( 'URL', 'search-regex' ),
 			'title' => __( 'Title', 'search-regex' ),

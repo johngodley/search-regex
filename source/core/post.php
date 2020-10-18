@@ -123,7 +123,7 @@ class Source_Post extends Search_Source {
 		return [ 'post_type' ];
 	}
 
-	public function get_column_label( $column ) {
+	public function get_column_label( $column, $data ) {
 		$labels = [
 			'post_content' => __( 'Content', 'search-regex' ),
 			'post_excerpt' => __( 'Excerpt', 'search-regex' ),

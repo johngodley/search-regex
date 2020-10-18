@@ -14,7 +14,7 @@ class Source_Options extends Search_Source {
 		return $columns;
 	}
 
-	public function get_column_label( $column ) {
+	public function get_column_label( $column, $data ) {
 		$labels = [
 			'option_name' => __( 'Name', 'search-regex' ),
 			'option_value' => __( 'Value', 'search-regex' ),

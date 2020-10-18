@@ -322,7 +322,7 @@ class Search {
 					$contexts = Match::get_all( $this->search, $source->get_flags(), $replacement, $row[ $column ] );
 
 					if ( count( $contexts ) > 0 ) {
-						$match_columns[] = new Match_Column( $column, $source->get_column_label( $column ), $replacer->get_global_replace( $this->search, $row[ $column ] ), $contexts );
+						$match_columns[] = new Match_Column( $column, $source->get_column_label( $column, $row[ $column ] ), $replacer->get_global_replace( $this->search, $row[ $column ] ), $contexts );
 					}
 				}
 

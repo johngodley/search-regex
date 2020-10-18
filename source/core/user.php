@@ -30,7 +30,7 @@ class Source_User extends Search_Source {
 	 * @param String $column Column name.
 	 * @return String Column label
 	 */
-	public function get_column_label( $column ) {
+	public function get_column_label( $column, $data ) {
 		$labels = [
 			'user_nicename' => __( 'Nicename', 'search-regex' ),
 			'user_url' => __( 'URL', 'search-regex' ),

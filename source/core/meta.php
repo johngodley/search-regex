@@ -14,14 +14,17 @@ abstract class Source_Meta extends Search_Source {
 		return $columns;
 	}
 
-	public function get_column_label( $column ) {
-		$labels = [
-			'meta_key' => __( 'Name', 'search-regex' ),
-			'meta_value' => __( 'Value', 'search-regex' ),
-		];
+	public function get_column_label( $column, $data ) {
+		if ( $column === 'meta_key' ) {
+			return __( 'Name', 'search-regex' );
+		}
 
-		if ( isset( $labels[ $column ] ) ) {
-			return $labels[ $column ];
+		if ( $column === 'meta_value' ) {
+			if ( is_serialized( $data ) ) {
+				return __( 'Serialized Value', 'search-regex' );
+			}
+
+			return __( 'Value', 'search-regex' );
 		}
 
 		return $column;
