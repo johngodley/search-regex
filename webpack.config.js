@@ -2,6 +2,7 @@
 
 const path = require( 'path' );
 const webpack = require( 'webpack' );
+const TerserPlugin = require( 'terser-webpack-plugin' );
 
 // PostCSS plugins
 const postcssPresetEnv = require( 'postcss-preset-env' );
@@ -75,6 +76,20 @@ const config = {
 	// },
 	performance: {
 		hints: false,
+	},
+	optimization: {
+		minimize: isProduction(),
+		minimizer: [
+			new TerserPlugin( {
+				parallel: true,
+				extractComments: {
+					condition: true,
+					banner: () => {
+						return 'Search Regex v' + pkg.version + ' - please refer to license.txt for license information';
+					},
+				},
+			} ),
+		],
 	},
 };
 

@@ -141,9 +141,10 @@ abstract class Search_Source {
 	 * Return a visible label for the column. This is shown to the user and should be more descriptive than the column name itself
 	 *
 	 * @param String $column Column name.
+	 * @param String $data Column data.
 	 * @return String Column label
 	 */
-	public function get_column_label( $column ) {
+	public function get_column_label( $column, $data ) {
 		return $column;
 	}
 

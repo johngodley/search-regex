@@ -41,6 +41,8 @@ Once a match has been made you can replace it with a popup replacer. You can als
 
 Additionally, if you need to make your change with context of the surrounding content you can use the inline editor to edit the full context.
 
+Note that it is your responsibility to ensure that replacements in serialized data is valid.
+
 == Support ==
 
 Please submit bugs, patches, and feature requests to:
@@ -79,6 +81,11 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Entirely new rewrite of the plugin. Requires minimum PHP 5.6.
 
 == Changelog ==
+
+= 2.4 - ??? =
+- Improve progress bar animation
+- Add option to ignore draft posts
+- Improve support for serialized data - show it in the UI, and don't show an error
 
 = 2.3.3 - 13th September 2020 =
 - Fix replace in 'all post types'

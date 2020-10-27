@@ -17,7 +17,7 @@ class Source_Comment extends Search_Source {
 		return $columns;
 	}
 
-	public function get_column_label( $column ) {
+	public function get_column_label( $column, $data ) {
 		$labels = [
 			'comment_author' => __( 'Name', 'search-regex' ),
 			'comment_author_email' => __( 'Email', 'search-regex' ),
