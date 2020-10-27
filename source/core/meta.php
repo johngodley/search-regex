@@ -65,8 +65,19 @@ abstract class Source_Meta extends Search_Source {
 		// phpcs:ignore
 		$existing = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->get_table_name()} WHERE meta_id=%d", $row_id ), ARRAY_A );
 
-		if ( $existing && update_metadata( $this->get_meta_table(), $existing[ $this->get_meta_object_id() ], $existing['meta_key'], $content, $existing['meta_value'] ) ) {
-			return true;
+		if ( $existing ) {
+			// Serialized data. Until we properly support this then just raw-update the value and leave it to the user to ensure it's correct
+			$meta_table = $wpdb->prefix . $this->get_meta_table() . 'meta';
+
+			if ( is_serialized( $existing['meta_value'] ) && $wpdb->update( $meta_table, [ 'meta_value' => $content ], [ 'meta_id' => $row_id ] ) ) {
+				wp_cache_delete( $existing[ $this->get_meta_object_id() ], $this->get_meta_table() . '_meta' );
+				return true;
+			}
+
+			// Unserialized data. Update as usual
+			if ( update_metadata( $this->get_meta_table(), $existing[ $this->get_meta_object_id() ], $existing['meta_key'], $content, $existing['meta_value'] ) ) {
+				return true;
+			}
 		}
 
 		return new \WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
