@@ -33,13 +33,19 @@
 		align-items: flex-start;
 	}
 
-	input[type="text"] {
+	input[type="text"], textarea {
 		width: 100%;
 	}
 
 	.wpl-popover__toggle,
 	select {
 		margin-left: 5px;
+	}
+
+	textarea {
+		min-height: 30px;
+		padding: 4px 8px;
+		margin-left: 1px;
 	}
 }
 

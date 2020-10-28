@@ -4,6 +4,7 @@
 
 import React from 'react';
 import { translate as __ } from 'i18n-calypso';
+import TextareaAutosize from 'react-textarea-autosize';
 
 /**
  * Internal dependencies
@@ -46,13 +47,13 @@ function Search( props ) {
 	}
 
 	return (
-		<input
-			type="text"
+		<TextareaAutosize
 			value={ value }
 			name="searchPhrase"
-			placeholder={ __( 'Enter search phrase' ) }
+			cols={ 120 }
+			maxRows={ 5 }
 			onChange={ ( ev ) => onChange( ev.target.value ) }
-			disabled={ disabled }
+			placeholder={ __( 'Enter search phrase' ) }
 		/>
 	);
 }

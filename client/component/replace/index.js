@@ -85,7 +85,7 @@ function Replace( props ) {
 		setReplaceFlag( replaceFlag );
 
 		if ( replaceFlag !== '' ) {
-			setReplace( replaceFlag === 'remove' ? null : '' );
+			setReplace( replaceFlag === 'remove' ? null : replace );
 		}
 	}
 
@@ -94,10 +94,6 @@ function Replace( props ) {
 
 		if ( replace === '' && replaceFlag === 'multi' && flag === '' ) {
 			return;
-		}
-
-		if ( flag !== replaceFlag ) {
-			setReplaceFlag( flag );
 		}
 	}, [ replace ]);
 

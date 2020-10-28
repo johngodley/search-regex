@@ -16,7 +16,13 @@ import { Select, MultiOptionDropdown } from 'wp-plugin-components';
 import { getAvailableSearchFlags, getAvailablePerPage } from 'state/search/selector';
 import { isLocked, hasTags, getHeaderClass, getDefaultPresetValues } from 'state/preset/selector';
 import Search from 'component/search';
-import { convertToSource, getSourcesForDropdown, customBadge, getSourceFlagOptions } from './utils';
+import {
+	convertToSource,
+	getSourcesForDropdown,
+	customBadge,
+	getSourceFlagOptions,
+	validateFlagsForSources,
+} from './utils';
 
 /** @typedef {import('state/search/type.js').SearchValues} SearchValues */
 /** @typedef {import('state/search/type.js').SearchSourceGroup} SearchSourceGroup */
@@ -155,7 +161,16 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 								options={ getSourcesForDropdown( sources ) }
 								selected={ source }
 								onApply={ ( selected, optionValue ) =>
-									onSetSearch( { source: convertToSource( selected, optionValue, sources ) } )
+									onSetSearch( {
+										source: convertToSource( selected, optionValue, sources ),
+										sourceFlags: validateFlagsForSources(
+											sourceFlags,
+											getSourceFlagOptions(
+												sourceFlagOptions,
+												convertToSource( selected, optionValue, sources )
+											)
+										),
+									} )
 								}
 								multiple
 								disabled={ isBusy }
@@ -172,6 +187,7 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 								title={ __( 'Source Options' ) }
 								disabled={ isBusy }
 								badges
+								multiple
 								hideTitle
 							/>
 						) }
