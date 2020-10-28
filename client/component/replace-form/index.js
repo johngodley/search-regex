@@ -20,7 +20,7 @@ import { getPreset } from 'state/preset/selector';
  */
 function ReplaceForm( props ) {
 	const { preset, placeholder, setReplace, replace, canReplace, onCancel, description, onSave, className } = props;
-		const ref = useRef( null );
+	const ref = useRef( null );
 
 	const replaceComponent = (
 		<Replace
