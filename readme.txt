@@ -87,6 +87,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 - Improve progress bar animation
 - Add option to ignore draft posts
 - Improve support for serialized data - show it in the UI, and don't show an error
+- Fix source flags being sent when source is changed
 
 = 2.3.3 - 13th September 2020 =
 - Fix replace in 'all post types'

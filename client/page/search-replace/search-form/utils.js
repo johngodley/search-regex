@@ -134,3 +134,13 @@ export function getSourceFlagOptions( options, source ) {
 
 	return sourceFlags;
 }
+
+export function validateFlagsForSources( flags, sourceFlags ) {
+	return flags.filter( ( flag ) => {
+		if ( sourceFlags.find( ( source ) => source.value === flag ) ) {
+			return true;
+		}
+
+		return false;
+	} );
+}
