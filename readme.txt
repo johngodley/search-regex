@@ -82,7 +82,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 2.4 - ??? =
+= 2.4 - 29th October 2020 =
 - Support multi-line search phrases
 - Improve progress bar animation
 - Add option to ignore draft posts
