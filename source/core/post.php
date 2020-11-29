@@ -169,6 +169,9 @@ class Source_Post extends Search_Source {
 	}
 
 	public function save( $row_id, $column_id, $content ) {
+		// wp_update_post expects slashes to be present, which are then removed
+		$content = wp_slash( $content );
+
 		// This does all the sanitization
 		$result = wp_update_post( [
 			'ID' => $row_id,
