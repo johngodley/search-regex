@@ -78,7 +78,7 @@ function Presets( props ) {
 
 	const presetActions = [];
 
-	if ( ! currentPreset ) {
+	if ( ! currentPreset || currentPreset ===  '0' ) {
 		presetActions.push(
 			<a href="#" onClick={ askPresetName }>
 				{ __( 'Save search as new preset' ) }
@@ -86,7 +86,7 @@ function Presets( props ) {
 		);
 	}
 
-	if ( currentPreset ) {
+	if ( currentPreset && currentPreset !== '0' ) {
 		presetActions.push(
 			<a href="#" onClick={ updatePreset }>
 				{ __( 'Update current preset' ) }

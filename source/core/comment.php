@@ -86,6 +86,9 @@ class Source_Comment extends Search_Source {
 	}
 
 	public function save( $row_id, $column_id, $content ) {
+		// wp_update_comment expects slashes to be present, which are then removed
+		$content = wp_slash( $content );
+
 		// This does all the sanitization
 		$result = wp_update_comment( [
 			$this->get_table_id() => $row_id,
