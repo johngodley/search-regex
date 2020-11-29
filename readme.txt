@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.3
-Tested up to: 5.5.1
+Tested up to: 5.6
 Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
@@ -81,6 +81,9 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Entirely new rewrite of the plugin. Requires minimum PHP 5.6.
 
 == Changelog ==
+
+= 2.4.1 - 29th November 2020 =
+- Fix replacements with a backslashed character
 
 = 2.4 - 29th October 2020 =
 - Support multi-line search phrases

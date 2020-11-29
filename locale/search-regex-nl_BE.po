@@ -11,6 +11,14 @@ msgstr ""
 "Language: nl_BE\n"
 "Project-Id-Version: Plugins - Search Regex - Development (trunk)\n"
 
+#: source/core/meta.php:24
+msgid "Serialized Value"
+msgstr ""
+
+#: source/core/post.php:85
+msgid "Exclude drafts"
+msgstr ""
+
 #: search-regex-strings.php:236
 msgid "Please review your data and try again."
 msgstr ""
@@ -27,23 +35,23 @@ msgstr ""
 msgid "Your REST API is returning a 404 page. This is almost certainly an external plugin or server configuration issue."
 msgstr ""
 
-#: search-regex-strings.php:180
+#: search-regex-strings.php:67
 msgid "2000 per page"
 msgstr ""
 
-#: search-regex-strings.php:179
+#: search-regex-strings.php:66
 msgid "1000 per page"
 msgstr ""
 
-#: search-regex-strings.php:92
+#: search-regex-strings.php:106
 msgid "Set a preset to use by default when Search Regex is loaded."
 msgstr ""
 
-#: search-regex-strings.php:91
+#: search-regex-strings.php:105
 msgid "No default preset"
 msgstr ""
 
-#: search-regex-strings.php:90
+#: search-regex-strings.php:104
 msgid "Default Preset"
 msgstr ""
 
@@ -107,173 +115,173 @@ msgstr ""
 msgid "Add File"
 msgstr ""
 
-#: search-regex-strings.php:171
+#: search-regex-strings.php:58
 msgid "Preset saved"
 msgstr ""
 
-#: search-regex-strings.php:148
+#: search-regex-strings.php:162
 msgid "Copy to clipboard"
 msgstr ""
 
-#: search-regex-strings.php:145
+#: search-regex-strings.php:159
 msgid "Are you sure you want to delete this preset?"
 msgstr ""
 
-#: search-regex-strings.php:144
+#: search-regex-strings.php:158
 msgid "Locked fields"
 msgstr ""
 
-#: search-regex-strings.php:139
+#: search-regex-strings.php:153
 msgid "For example, create tag {{code}}URL{{/code}} and title {{code}}Image URL{{/code}}. Your search could be {{code}}<img src=\"URL\">{{/code}}. When the preset is used it will ask the user for the {{code}}Image URL{{/code}} instead of the full search phrase."
 msgstr ""
 
-#: search-regex-strings.php:138
+#: search-regex-strings.php:152
 msgid "A tag creates a custom input field. Insert the tag anywhere in the search or replace field and when the preset is used it will be replaced with a custom text field with the tag label."
 msgstr ""
 
-#: search-regex-strings.php:137
+#: search-regex-strings.php:151
 msgid "Enter tag which is used in the field"
 msgstr ""
 
-#: search-regex-strings.php:136
+#: search-regex-strings.php:150
 msgid "Tag"
 msgstr ""
 
-#: search-regex-strings.php:135
+#: search-regex-strings.php:149
 msgid "Enter tag title shown to user"
 msgstr ""
 
-#: search-regex-strings.php:133
+#: search-regex-strings.php:147
 msgid "Tags"
 msgstr ""
 
-#: search-regex-strings.php:132
+#: search-regex-strings.php:146
 msgid "Locking a field removes it from the search form and prevents changes."
 msgstr ""
 
-#: search-regex-strings.php:131
+#: search-regex-strings.php:145
 msgid "Fields"
 msgstr ""
 
-#: search-regex-strings.php:130
+#: search-regex-strings.php:144
 msgid "Locked Fields"
 msgstr ""
 
-#: search-regex-strings.php:129
+#: search-regex-strings.php:143
 msgid "Advanced preset"
 msgstr ""
 
-#: search-regex-strings.php:128
+#: search-regex-strings.php:142
 msgid "Describe the preset"
 msgstr ""
 
-#: search-regex-strings.php:127
+#: search-regex-strings.php:141
 msgid "Preset Description"
 msgstr ""
 
-#: search-regex-strings.php:126
+#: search-regex-strings.php:140
 msgid "Give the preset a name"
 msgstr ""
 
-#: search-regex-strings.php:125
+#: search-regex-strings.php:139
 msgid "Preset Name"
 msgstr ""
 
-#: search-regex-strings.php:124
+#: search-regex-strings.php:138
 msgid "Edit preset"
 msgstr ""
 
-#: search-regex-strings.php:123
+#: search-regex-strings.php:137
 msgid "Results per page"
 msgstr ""
 
-#: search-regex-strings.php:122
+#: search-regex-strings.php:136
 msgid "Source Flags"
 msgstr ""
 
-#: search-regex-strings.php:117
+#: search-regex-strings.php:131
 msgid "remove phrase"
 msgstr ""
 
-#: search-regex-strings.php:116
+#: search-regex-strings.php:130
 msgid "no phrase"
 msgstr ""
 
-#: search-regex-strings.php:115
+#: search-regex-strings.php:129
 msgid "Import"
 msgstr ""
 
-#: search-regex-strings.php:114
+#: search-regex-strings.php:128
 msgid "Paste a single preset JSON."
 msgstr ""
 
-#: search-regex-strings.php:113
+#: search-regex-strings.php:127
 msgid "Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset."
 msgstr ""
 
-#: search-regex-strings.php:112
+#: search-regex-strings.php:126
 msgid "Unable to import preset"
 msgstr ""
 
-#: search-regex-strings.php:111
+#: search-regex-strings.php:125
 msgid "Import preset from clipboard"
 msgstr ""
 
-#: search-regex-strings.php:110
+#: search-regex-strings.php:124
 msgid "Done"
 msgstr ""
 
-#: search-regex-strings.php:109
+#: search-regex-strings.php:123
 msgid "Uploaded %(total)d preset"
 msgid_plural "Uploaded %(total)d presets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: search-regex-strings.php:108
+#: search-regex-strings.php:122
 msgid "Importing"
 msgstr ""
 
-#: search-regex-strings.php:107
+#: search-regex-strings.php:121
 msgid "File selected"
 msgstr ""
 
-#: search-regex-strings.php:106
+#: search-regex-strings.php:120
 msgid "Click 'Add File' or drag and drop here."
 msgstr ""
 
-#: search-regex-strings.php:105
+#: search-regex-strings.php:119
 msgid "Import a JSON file"
 msgstr ""
 
-#: search-regex-strings.php:104
+#: search-regex-strings.php:118
 msgid "Import JSON"
 msgstr ""
 
-#: search-regex-strings.php:103
+#: search-regex-strings.php:117
 msgid "Export JSON"
 msgstr ""
 
-#: search-regex-strings.php:102
+#: search-regex-strings.php:116
 msgid "Download presets!"
 msgstr ""
 
-#: search-regex-strings.php:101
+#: search-regex-strings.php:115
 msgid "There are no presets"
 msgstr ""
 
-#: search-regex-strings.php:100
+#: search-regex-strings.php:114
 msgid "Flags"
 msgstr ""
 
-#: search-regex-strings.php:73 search-regex-strings.php:75
+#: search-regex-strings.php:87 search-regex-strings.php:89
 msgid "Presets"
 msgstr ""
 
-#: search-regex-strings.php:62
+#: search-regex-strings.php:76
 msgid "If that did not help then {{strong}}create an issue{{/strong}} or send it in an {{strong}}email{{/strong}}."
 msgstr ""
 
-#: search-regex-strings.php:61
+#: search-regex-strings.php:75
 msgid "Please check the {{link}}support site{{/link}} before proceeding further."
 msgstr ""
 
@@ -317,11 +325,11 @@ msgstr ""
 msgid "matched rows = %(searched)s, phrases = %(found)s"
 msgstr ""
 
-#: search-regex-strings.php:149
+#: search-regex-strings.php:163
 msgid "Please backup your data before making modifications."
 msgstr ""
 
-#: search-regex-strings.php:89
+#: search-regex-strings.php:103
 msgid "Show row actions as dropdown menu."
 msgstr ""
 
@@ -361,19 +369,19 @@ msgstr ""
 msgid "An unknown error occurred."
 msgstr ""
 
-#: source/core/post.php:125
+#: source/core/post.php:132
 msgid "GUID"
 msgstr "GUID"
 
-#: source/core/post.php:124
+#: source/core/post.php:131
 msgid "Slug"
 msgstr "Slug"
 
-#: source/core/post.php:122
+#: source/core/post.php:129
 msgid "Excerpt"
 msgstr "Samenvatting"
 
-#: source/core/post.php:121
+#: source/core/post.php:128
 msgid "Content"
 msgstr "Inhoud"
 
@@ -389,7 +397,7 @@ msgstr "Schermnaam (getoond op site)"
 msgid "Nicename"
 msgstr "Schermnaam (backend)"
 
-#: source/core/meta.php:20 source/core/options.php:20
+#: source/core/meta.php:27 source/core/options.php:20
 msgid "Value"
 msgstr "Waarde"
 
@@ -401,8 +409,8 @@ msgstr "Inclusief spam reacties"
 msgid "Comment"
 msgstr "Reactie"
 
-#: search-regex-strings.php:98 source/core/meta.php:19
-#: source/core/comment.php:22 source/core/options.php:19
+#: source/core/meta.php:19 source/core/comment.php:22
+#: source/core/options.php:19 search-regex-strings.php:112
 msgid "Name"
 msgstr "Naam"
 
@@ -410,13 +418,13 @@ msgstr "Naam"
 msgid "Search your redirects"
 msgstr "Zoek je redirects"
 
-#: search-regex-strings.php:134 source/plugin/redirection.php:28
-#: source/core/post.php:123
+#: source/plugin/redirection.php:28 source/core/post.php:130
+#: search-regex-strings.php:148
 msgid "Title"
 msgstr "Titel"
 
-#: source/plugin/redirection.php:27 source/core/user.php:36
-#: source/core/comment.php:24
+#: source/plugin/redirection.php:27 source/core/comment.php:24
+#: source/core/user.php:36
 msgid "URL"
 msgstr "URL"
 
@@ -551,7 +559,7 @@ msgstr "Je kunt de volledige documentatie over het gebruik van Search Regex vind
 msgid "Settings"
 msgstr "Instellingen"
 
-#: search-regex-strings.php:88 search-regex-strings.php:212
+#: search-regex-strings.php:102 search-regex-strings.php:212
 msgid "Actions"
 msgstr "Acties"
 
@@ -611,101 +619,101 @@ msgid_plural "%s database rows in total"
 msgstr[0] "%s database regel totaal"
 msgstr[1] "%s database regels totaal"
 
-#: search-regex-strings.php:178
+#: search-regex-strings.php:65
 msgid "500 per page"
 msgstr "500 per pagina"
 
-#: search-regex-strings.php:177
+#: search-regex-strings.php:64
 msgid "250 per page"
 msgstr "250 per pagina"
 
-#: search-regex-strings.php:176
+#: search-regex-strings.php:63
 msgid "100 per page"
 msgstr "100 per pagina"
 
-#: search-regex-strings.php:175
+#: search-regex-strings.php:62
 msgid "50 per page"
 msgstr ""
 
-#: search-regex-strings.php:174
+#: search-regex-strings.php:61
 msgid "25 per page"
 msgstr ""
 
-#: search-regex-strings.php:173
+#: search-regex-strings.php:60
 msgid "Ignore Case"
 msgstr "Negeer hoofdletter gebruik"
 
-#: search-regex-strings.php:172
+#: search-regex-strings.php:59
 msgid "Regular Expression"
 msgstr "Reguliere expressie"
 
-#: search-regex-strings.php:170
+#: search-regex-strings.php:57
 msgid "Row updated"
 msgstr "Regel bijgewerkt"
 
-#: search-regex-strings.php:169
+#: search-regex-strings.php:56
 msgid "Row replaced"
 msgstr "Regel vervangen"
 
-#: search-regex-strings.php:168
+#: search-regex-strings.php:55
 msgid "Row deleted"
 msgstr "Regel verwijderd"
 
-#: search-regex-strings.php:167
+#: search-regex-strings.php:54
 msgid "Settings saved"
 msgstr "Instellingen opgeslagen"
 
-#: search-regex-strings.php:166 search-regex-admin.php:238
+#: search-regex-admin.php:238 search-regex-strings.php:180
 msgid "{{link}}Source Flags{{/link}} - additional options for the selected source. For example, include post {{guid}}GUID{{/guid}} in the search."
 msgstr ""
 "{{link}}Zoekopties{{/link}} - aanvullende opties voor de selecteerde bron. Bijvoorbeeld\n"
 "om bericht {{guid}}GUID{{/guid}} toe te voegen aan de zoekterm."
 
-#: search-regex-strings.php:165 search-regex-admin.php:251
+#: search-regex-admin.php:251 search-regex-strings.php:179
 msgid "{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments."
 msgstr "{{link}}Bron{{/link}} - de bron van de gegevens waarin je zoekt. Bijvoorbeeld: berichten, pagina's, reacties."
 
-#: search-regex-strings.php:164 search-regex-admin.php:250
+#: search-regex-admin.php:250 search-regex-strings.php:178
 msgid "{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches."
 msgstr "{{link}}Reguliere expressie{{/link}} - een manier om patronen aan maken om tekst mee te zoeken. Geeft meer geavanceerde zoekresultaten."
 
-#: search-regex-strings.php:163 search-regex-admin.php:249
+#: search-regex-admin.php:249 search-regex-strings.php:177
 msgid "{{link}}Search Flags{{/link}} - additional qualifiers for your search, to enable case insensitivity, and to enable regular expression support."
 msgstr "{{link}}Zoekopties{{/link}} - aanvullende opties voor je zoekterm, om hoofdlettergebruik te negeren en voor gebruik van reguliere expressies."
 
-#: search-regex-strings.php:162 search-regex-admin.php:247
+#: search-regex-admin.php:247 search-regex-strings.php:176
 msgid "The following concepts are used by Search Regex:"
 msgstr "De volgende concepten worden gebruikt door Search Regex:"
 
-#: search-regex-strings.php:161
+#: search-regex-strings.php:175
 msgid "Quick Help"
 msgstr "Snelle hulp"
 
-#: search-regex-strings.php:160
+#: search-regex-strings.php:174
 msgid "Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, from the same author."
 msgstr ""
 
-#: search-regex-strings.php:159 source/plugin/redirection.php:81
+#: source/plugin/redirection.php:81 search-regex-strings.php:173
 msgid "Redirection"
 msgstr "Omleiding"
 
-#: search-regex-strings.php:158
+#: search-regex-strings.php:172
 msgid "If you want to submit information that you don't want in a public repository then send it directly via {{email}}email{{/email}} - include as much information as you can!"
 msgstr "Als je informatie wilt sturen, maar die je niet in de openbare repository wilt delen, stuur dan een {{email}}email{{/email}} direct aan mij - met zoveel informatie als mogelijk!"
 
-#: search-regex-strings.php:157
+#: search-regex-strings.php:171
 msgid "Please note that any support is provide on as-time-is-available basis and is not guaranteed. I do not provide paid support."
 msgstr "Support wordt gegeven op basis van beschikbare tijd en is niet gegarandeerd. Ik geef geen betaalde ondersteuning."
 
-#: search-regex-strings.php:156
+#: search-regex-strings.php:170
 msgid "If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide."
 msgstr "Wil je een bug doorgeven, lees dan de {{report}}Reporting Bugs{{/report}} gids."
 
-#: search-regex-strings.php:155
+#: search-regex-strings.php:169
 msgid "Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}."
 msgstr "Volledige documentatie voor Search Regex kan je vinden op {{site}}https://searchregex.com{{/site}}."
 
-#: search-regex-strings.php:154
+#: search-regex-strings.php:168
 msgid "Need more help?"
 msgstr "Meer hulp nodig?"
 
@@ -717,7 +725,7 @@ msgstr "Resultaten"
 msgid "Source Options"
 msgstr "Bron opties"
 
-#: search-regex-strings.php:121 search-regex-strings.php:202
+#: search-regex-strings.php:135 search-regex-strings.php:202
 #: search-regex-strings.php:208
 msgid "Source"
 msgstr "Bron"
@@ -726,7 +734,7 @@ msgstr "Bron"
 msgid "Enter global replacement text"
 msgstr "Term voor vervangen invoeren"
 
-#: search-regex-strings.php:120 search-regex-strings.php:198
+#: search-regex-strings.php:134 search-regex-strings.php:198
 msgid "Search Flags"
 msgstr "Zoek opties"
 
@@ -734,97 +742,97 @@ msgstr "Zoek opties"
 msgid "Enter search phrase"
 msgstr "Zoekterm invoeren"
 
-#: search-regex-strings.php:152
+#: search-regex-strings.php:166
 msgid "Replace All"
 msgstr "Alles vervangen"
 
-#: search-regex-strings.php:99 search-regex-strings.php:118
-#: search-regex-strings.php:142 search-regex-strings.php:151
+#: search-regex-strings.php:113 search-regex-strings.php:132
+#: search-regex-strings.php:156 search-regex-strings.php:165
 #: search-regex-strings.php:197
 msgid "Search"
 msgstr "Zoeken"
 
-#: search-regex-strings.php:150
+#: search-regex-strings.php:164
 msgid "Search and replace information in your database."
 msgstr "Zoek en vervang informatie in je database."
 
-#: search-regex-strings.php:95
+#: search-regex-strings.php:109
 msgid "Update"
 msgstr "Bijwerken"
 
-#: search-regex-strings.php:94
+#: search-regex-strings.php:108
 msgid "How Search Regex uses the REST API - don't change unless necessary"
 msgstr "Hoe Search Regex de REST API gebruikt - niet veranderen als het niet noodzakelijk is"
 
-#: search-regex-strings.php:93
+#: search-regex-strings.php:107
 msgid "REST API"
 msgstr "REST API"
 
-#: search-regex-strings.php:87
+#: search-regex-strings.php:101
 msgid "I'm a nice person and I have helped support the author of this plugin"
 msgstr "Ik ben een aardig persoon en ik heb de auteur van deze plugin geholpen met ondersteuning"
 
-#: search-regex-strings.php:86
+#: search-regex-strings.php:100
 msgid "Relative REST API"
 msgstr "Relatieve REST API"
 
-#: search-regex-strings.php:85
+#: search-regex-strings.php:99
 msgid "Raw REST API"
 msgstr "Raw REST API"
 
-#: search-regex-strings.php:84
+#: search-regex-strings.php:98
 msgid "Default REST API"
 msgstr "Standaard REST API"
 
-#: search-regex-strings.php:83
+#: search-regex-strings.php:97
 msgid "Plugin Support"
 msgstr "Plugin ondersteuning"
 
-#: search-regex-strings.php:82
+#: search-regex-strings.php:96
 msgid "Support 💰"
 msgstr "Ondersteuning 💰"
 
-#: search-regex-strings.php:81
+#: search-regex-strings.php:95
 msgid "You get useful software and I get to carry on making it better."
 msgstr "Je krijgt goed bruikbare software en ik kan doorgaan met het verbeteren ervan."
 
-#: search-regex-strings.php:80
+#: search-regex-strings.php:94
 msgid "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}."
 msgstr "Search Regex is gratis te gebruiken - het leven is life is wonderbaarlijk en verrukkelijk! Het kostte me veel tijd en moeite om dit te ontwikkelen. Je kunt verdere ontwikkeling ondersteunen met het doen van {{strong}}een kleine donatie{{/strong}}."
 
-#: search-regex-strings.php:79
+#: search-regex-strings.php:93
 msgid "I'd like to support some more."
 msgstr "Ik wil graag meer bijdragen."
 
-#: search-regex-strings.php:78
+#: search-regex-strings.php:92
 msgid "You've supported this plugin - thank you!"
 msgstr "Je hebt deze plugin gesteund - dankjewel!"
 
-#: search-regex-strings.php:60
+#: search-regex-strings.php:74
 msgid "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details."
 msgstr "Werkt dit niet, open dan je browser's foutconsole en maak een {{link}}nieuw probleemrapport{{/link}} aan met alle gegevens."
 
-#: search-regex-strings.php:59 search-regex-admin.php:371
+#: search-regex-admin.php:371 search-regex-strings.php:73
 msgid "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache."
 msgstr "Als je gebruik maakt van een pagina caching plugin of dienst (CloudFlare, OVH, etc.), dan kan je ook proberen om die cache leeg te maken."
 
-#: search-regex-strings.php:58
+#: search-regex-strings.php:72
 msgid "Search Regex is not working. Try clearing your browser cache and reloading this page."
 msgstr "Search Regex werkt niet. Probeer je browser cache leeg te maken en deze pagina opnieuw te laden."
 
-#: search-regex-strings.php:57
+#: search-regex-strings.php:71
 msgid "clearing your cache."
 msgstr "je cache opschonen."
 
-#: search-regex-strings.php:56
+#: search-regex-strings.php:70
 msgid "If you are using a caching system such as Cloudflare then please read this: "
 msgstr "Gebruik je een caching systeem zoals Cloudflare, lees dan dit:"
 
-#: search-regex-strings.php:55
+#: search-regex-strings.php:69
 msgid "Please clear your browser cache and reload this page."
 msgstr "Maak je browser cache leeg en laad deze pagina nogmaals."
 
-#: search-regex-strings.php:54
+#: search-regex-strings.php:68
 msgid "Cached Search Regex detected"
 msgstr "Gecachede Search Regex gevonden"
 
@@ -846,11 +854,11 @@ msgid_plural "Replace %(count)s matches."
 msgstr[0] "Vervang %(count)s gevonden."
 msgstr[1] "Vervang %(count)s gevonden."
 
-#: search-regex-strings.php:147
+#: search-regex-strings.php:161
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: search-regex-strings.php:146
+#: search-regex-strings.php:160
 msgid "Edit"
 msgstr "Bewerken"
 
@@ -931,13 +939,13 @@ msgid "Replace progress"
 msgstr "Voortgang vervangen"
 
 #: search-regex-strings.php:17 search-regex-strings.php:23
-#: search-regex-strings.php:141 search-regex-strings.php:153
+#: search-regex-strings.php:155 search-regex-strings.php:167
 #: search-regex-strings.php:184
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: search-regex-strings.php:22 search-regex-strings.php:119
-#: search-regex-strings.php:143 search-regex-strings.php:199
+#: search-regex-strings.php:22 search-regex-strings.php:133
+#: search-regex-strings.php:157 search-regex-strings.php:199
 msgid "Replace"
 msgstr "Vervangen"
 
@@ -969,31 +977,31 @@ msgstr "Vervang enkele zoekterm"
 msgid "Replacement for this match"
 msgstr "Vervanging voor deze gevonden zoekterm"
 
-#: search-regex-strings.php:72 search-regex-strings.php:77
+#: search-regex-strings.php:86 search-regex-strings.php:91
 msgid "Support"
 msgstr "Support"
 
-#: search-regex-strings.php:71 search-regex-strings.php:76
+#: search-regex-strings.php:85 search-regex-strings.php:90
 msgid "Options"
 msgstr "Opties"
 
-#: search-regex-strings.php:74
+#: search-regex-strings.php:88
 msgid "Search & Replace"
 msgstr "Zoek en vervang"
 
-#: search-regex-strings.php:69
+#: search-regex-strings.php:83
 msgid "If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues."
 msgstr "Als je WordPress 5.2 of nieuwer gebruikt, kijk dan bij {{link}}Sitediagnose{{/link}} en los de problemen op."
 
-#: search-regex-strings.php:68
+#: search-regex-strings.php:82
 msgid "{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems."
 msgstr "{{link}}Zet andere plugins tijdelijk uit!{{/link}} Dit lost heel vaak problemen op."
 
-#: search-regex-strings.php:67
+#: search-regex-strings.php:81
 msgid "{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches."
 msgstr "{{link}}Caching software{{/link}}, en zeker Cloudflare, kunnen het verkeerde cachen. Probeer alle cache te verwijderen."
 
-#: search-regex-strings.php:66
+#: search-regex-strings.php:80
 msgid "What do I do next?"
 msgstr "Wat moet ik nu doen?"
 
@@ -1010,16 +1018,16 @@ msgstr "Log uit, wis de browsercache en log opnieuw in - je browser heeft een ou
 msgid "Reload the page - your current session is old."
 msgstr "Herlaad de pagina - je huidige sessie is oud."
 
-#: search-regex-strings.php:65
+#: search-regex-strings.php:79
 msgid "Include these details in your report along with a description of what you were doing and a screenshot."
 msgstr "Voeg deze gegevens toe aan je melding, samen met een beschrijving van wat je deed en een schermafbeelding."
 
-#: search-regex-strings.php:64 search-regex-strings.php:97
-#: source/core/comment.php:23
+#: source/core/comment.php:23 search-regex-strings.php:78
+#: search-regex-strings.php:111
 msgid "Email"
 msgstr "E-mail"
 
-#: search-regex-strings.php:63 search-regex-strings.php:96
+#: search-regex-strings.php:77 search-regex-strings.php:110
 msgid "Create An Issue"
 msgstr "Meld een probleem"
 
@@ -1028,7 +1036,7 @@ msgid "Close"
 msgstr "Sluiten"
 
 #: search-regex-strings.php:5 search-regex-strings.php:16
-#: search-regex-strings.php:140
+#: search-regex-strings.php:154
 msgid "Save"
 msgstr "Opslaan"
 
@@ -1078,6 +1086,6 @@ msgid "https://searchregex.com/"
 msgstr "https://searchregex.com/"
 
 #. Plugin Name of the plugin
-#: search-regex-strings.php:70
+#: search-regex-strings.php:84
 msgid "Search Regex"
 msgstr "Search Regex"
