@@ -405,6 +405,7 @@
 
 
 
+	<file>./source</file>
 	<file>./models</file>
 	<file>./search-regex-admin.php</file>
 	<file>./search-regex-capabilities.php</file>
@@ -420,5 +421,19 @@
 	</rule>
 	<!-- Ignore filename error since it requires WP core build process change -->
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+	</rule>
+
+    <rule ref="NoGetCurrentUser"/>
+	<rule ref="VariableAnalysis"/>
+	<rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable">
+		<type>error</type>
+	</rule>
+
+    <rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="search-regex"/>
+			</property>
+		</properties>
 	</rule>
 </ruleset>
