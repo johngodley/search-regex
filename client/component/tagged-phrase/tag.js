@@ -21,16 +21,45 @@ function replaceTags( phrase, tag, value ) {
 	return phrase.replace( new RegExp( name, 'g' ), value );
 }
 
+function replaceSearchTags( search, tag, value ) {
+	return {
+		...search,
+		searchPhrase: replaceTags( search.searchPhrase, tag, value ),
+		replacement: replaceTags( search.replacement, tag, value ),
+		filters: search.filters.map( ( filter ) => ( {
+			...filter,
+			items: filter.items.map( ( item ) => ( {
+				...item,
+				...( item.value === undefined
+					? {}
+					: {
+							value: replaceTags( item.value, tag, value ),
+					  } ),
+			} ) ),
+		} ) ),
+		actionOption: Array.isArray( search.actionOption )
+			? search.actionOption.map( ( item ) =>
+					item.searchValue === undefined
+						? item
+						: {
+								...item,
+								searchValue: replaceTags( item.searchValue, tag, value ),
+								replaceValue: replaceTags( item.replaceValue, tag, value ),
+						  }
+			  )
+			: search.actionOption,
+	};
+}
+
 /**
  * Tag
  * @param {object} props - Component props
  * @param {boolean} props.disabled - Disabled
- * @param {string} props.phrase
  * @param {ChangeCallback} props.onChange
  * @param {PresetTag} props.tag
  */
 function Tag( props ) {
-	const { tag, onChange, phrase, disabled } = props;
+	const { tag, onChange, search, disabled } = props;
 	const [ value, setValue ] = useState( '' );
 
 	/**
@@ -38,7 +67,8 @@ function Tag( props ) {
 	 */
 	function updateTag( ev ) {
 		setValue( ev.target.value );
-		onChange( replaceTags( phrase, tag.name, ev.target.value ) );
+
+		onChange( replaceSearchTags( search, tag.name, ev.target.value ) );
 	}
 
 	return <input type="text" value={ value } placeholder={ tag.title } onChange={ updateTag } disabled={ disabled } />;

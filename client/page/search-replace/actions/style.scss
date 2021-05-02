@@ -1,0 +1,27 @@
+.searchregex-search__action {
+	td {
+		display: flex;
+		align-items: center;
+	}
+
+	span {
+		margin-left: 8px;
+		margin-right: 8px;
+	}
+
+	select.searchregex-search__action__type {
+		margin-right: 10px;
+	}
+
+	.searchregex-search__action__modify {
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+}
+
+.searchregex-search__export {
+	input[type="text"] {
+		width: 300px;
+		margin-right: 10px;
+	}
+}

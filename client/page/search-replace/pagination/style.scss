@@ -1,3 +1,5 @@
+@import '../../../global.scss';
+
 .tablenav-pages {
 	display: flex;
 	justify-content: space-between;
@@ -20,4 +22,12 @@
 	.tablenav-paging-text {
 		margin: 0 5px;
 	}
+}
+
+.searchregex-resultsdirty {
+	background-color: $orange;
+	padding: 5px 8px;
+	display: inline-block;
+	font-weight: bold;
+	border-radius: 3px;
 }

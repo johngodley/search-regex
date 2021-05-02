@@ -1,4 +1,3 @@
-
 .searchregex-loading {
 	opacity: 0.8;
 	animation: loading-fade 1.6s ease-in-out infinite;
@@ -26,14 +25,26 @@
 	}
 }
 
-.searchregex-search__search {
+.searchregex-search__results td {
+	display: flex;
+	align-items: center;
+
+	select {
+		margin-right: 5px;
+	}
+}
+
+.searchregex-search__replace,
+.searchregex-search__search,
+.searchregex-search__source {
 	td {
 		display: flex;
 		justify-content: flex-start;
 		align-items: flex-start;
 	}
 
-	input[type="text"], textarea {
+	input[type="text"],
+	textarea {
 		width: 100%;
 	}
 
@@ -47,11 +58,7 @@
 		padding: 4px 8px;
 		margin-left: 1px;
 	}
-}
 
-.searchregex-search__replace,
-.searchregex-search__search,
-.searchregex-search__source {
 	width: 100%;
 	margin-bottom: 10px;
 
@@ -73,6 +80,15 @@
 	select {
 		min-width: 150px;
 		margin-right: 0;
+	}
+
+	span {
+		margin-right: 5px;
+		margin-left: 10px;
+	}
+
+	.wpl-badge.wpl-badge__small .wpl-badge__content {
+		max-width: 150px;
 	}
 }
 
@@ -101,7 +117,7 @@
 .searchregex-search__action {
 	margin-top: 10px;
 
-	button[type="submit"] {
+	button[type='submit'] {
 		margin-right: 10px;
 	}
 

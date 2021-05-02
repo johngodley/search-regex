@@ -12,8 +12,7 @@ const SearchRegexApi = {
 		update: ( settings ) => postApiRequest( 'search-regex/v1/setting', settings ),
 	},
 	search: {
-		get: ( data ) => postApiRequest( 'search-regex/v1/search', data ),
-		replace: ( data ) => postApiRequest( 'search-regex/v1/replace', data ),
+		perform: ( data ) => postApiRequest( 'search-regex/v1/search', data ),
 	},
 	preset: {
 		save: ( search, name ) => postApiRequest( 'search-regex/v1/preset', { ...search, name } ),
@@ -24,11 +23,12 @@ const SearchRegexApi = {
 		upload: ( file ) => uploadApiRequest( 'search-regex/v1/preset/import', {}, file ),
 	},
 	source: {
-		deleteRow: ( source, rowId ) => postApiRequest( `search-regex/v1/source/${ source }/${ rowId }/delete` ),
-		loadRow: ( source, rowId ) => getApiRequest( `search-regex/v1/source/${ source }/${ rowId }` ),
-		saveRow: ( source, rowId, data ) => postApiRequest( `search-regex/v1/source/${ source }/${ rowId }`, data ),
-		replaceRow: ( source, rowId, data ) =>
-			postApiRequest( `search-regex/v1/source/${ source }/${ rowId }/replace`, data ),
+		deleteRow: ( source, rowId ) => postApiRequest( `search-regex/v1/source/${ source }/row/${ rowId }/delete` ),
+		loadRow: ( source, rowId ) => getApiRequest( `search-regex/v1/source/${ source }/row/${ rowId }` ),
+		saveRow: ( source, rowId, replacement, search ) =>
+			postApiRequest( `search-regex/v1/source/${ source }/row/${ rowId }`, { ...search, replacement } ),
+		complete: ( source, column, value ) =>
+			getApiRequest( `search-regex/v1/source/${ source }/complete/${ column }`, { value } ),
 	},
 	plugin: {
 		checkApi: ( url, post = false ) => {

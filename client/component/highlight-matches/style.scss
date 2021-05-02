@@ -1,6 +1,9 @@
+@import '../../global.scss';
+
+.searchregex-result__deleted,
 .searchregex-result__replaced,
 .searchregex-result__highlight {
-	background-color: #f7d85d;
+	background-color: $yellow;
 	font-weight: bold;
 	padding: 1px;
 	cursor: pointer;
@@ -9,17 +12,19 @@
 }
 
 .searchregex-result__replaced {
-	background-color: #f38830;
+	background-color: $deep-orange;
 }
 
 .searchregex-result__deleted {
-	background-color: #e53e3e;
-	color: white;
+	background-color: $bright-red;
+	font-weight: normal;
+	color: $white;
+	text-decoration: line-through;
 }
 
 .searchregex-match {
 	display: flex;
-	align-items: flex-start;
+	align-items: baseline;
 	justify-content: flex-start;
 	line-height: 2;
 
@@ -29,5 +34,21 @@
 		padding: 0 5px;
 		border-radius: 3px;
 		margin-bottom: 5px;
+		font-weight: bold;
+		display: flex;
+		align-items: center;
+	}
+
+	.searchregex-match__column__type {
+		display: inline-block;
+		border-left: 2px solid #999;
+		padding-left: 5px;
+		margin-left: 5px;
+		font-size: 10px;
+	}
+
+	span:not( .searchregex-result__highlight ),
+	.wpl-badge {
+		margin-right: 5px;
 	}
 }

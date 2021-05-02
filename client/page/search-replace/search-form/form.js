@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { translate as __ } from 'i18n-calypso';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
@@ -11,18 +11,24 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 
-import Replace from 'component/replace';
-import { Select, MultiOptionDropdown } from 'wp-plugin-components';
-import { getAvailableSearchFlags, getAvailablePerPage } from 'state/search/selector';
-import { isLocked, hasTags, getHeaderClass, getDefaultPresetValues } from 'state/preset/selector';
-import Search from 'component/search';
+import { Select, Button, MultiOptionDropdown } from 'wp-plugin-components';
 import {
-	convertToSource,
-	getSourcesForDropdown,
-	customBadge,
-	getSourceFlagOptions,
-	validateFlagsForSources,
-} from './utils';
+	getAvailablePerPage,
+	getDefaultFilters,
+	getSearchOptionsForSources,
+	getSchema,
+	getFilterForType,
+} from 'state/search/selector';
+import { isLocked, hasTags, getHeaderClass, getDefaultPresetValues } from 'state/preset/selector';
+import { hasFilterTag, hasActionTag } from 'state/preset/selector';
+import Search from 'component/search';
+import Filters from './filters';
+import { convertToSource, getSourcesForDropdown } from './utils';
+import Actions from '../actions';
+import SearchFlags from 'component/search-flags';
+import TaggedPhrases from 'component/tagged-phrase';
+
+const MAX_AND_FILTERS = 20;
 
 /** @typedef {import('state/search/type.js').SearchValues} SearchValues */
 /** @typedef {import('state/search/type.js').SearchSourceGroup} SearchSourceGroup */
@@ -30,12 +36,63 @@ import {
 /** @typedef {import('component/tagged-phrase').ChangeCallback} ChangeCallback */
 /** @typedef {import('state/preset/type.js').PresetTag} PresetTag */
 /** @typedef {import('react').SyntheticEvent} SyntheticEvent */
+/** @typedef {import('state/search/type.js').Schema} Schema */
+/** @typedef {import('wp-plugin-components/select').SelectOption} SelectOption */
 
 /**
  * @callback SetSearch
  * @param {SearchValues} searchValue
  */
 
+function hasFilter( filters, source, column ) {
+	return (
+		filters.find(
+			( item ) => item.type === source && item.items.find( ( itemFind ) => itemFind.column === column )
+		) !== undefined
+	);
+}
+
+function hasAction( actions, source, column ) {
+	if ( ! Array.isArray( actions ) ) {
+		return false;
+	}
+
+	return actions.find( ( action ) => action.source === source && action.column === column ) !== undefined;
+}
+
+function getColumnsForDropdown( sources, schema, filters, actions ) {
+	return sources
+		.map( ( source ) => {
+			const sourceSchema = getSchema( schema, source );
+			const columns = sourceSchema.columns.filter(
+				( column ) =>
+					! hasFilter( filters, source, column.column ) && ! hasAction( actions, source, column.column )
+			);
+
+			if ( columns.length > 0 ) {
+				return {
+					value: source,
+					label: sourceSchema.name,
+					options: columns.map( ( column ) => {
+						return {
+							value: source + '__' + column.column,
+							label: column.title,
+						};
+					} ),
+				};
+			}
+
+			return false;
+		} )
+		.filter( Boolean );
+}
+
+/**
+ * Show a preset value
+ * @param {string} search
+ * @param {string} replace
+ * @param {object} defaults
+ */
 function showPresetValue( search, replace, defaults ) {
 	if ( defaults ) {
 		if ( search !== defaults.searchPhrase && search !== '' ) {
@@ -50,30 +107,85 @@ function showPresetValue( search, replace, defaults ) {
 	return false;
 }
 
+// Check the string filters for tags
+function hasVisibleFilters( filters, tags ) {
+	if ( tags.length === 0 ) {
+		return true;
+	}
+
+	let tagCount = 0,
+		total = 0;
+
+	for ( let index = 0; index < filters.length; index++ ) {
+		for ( let itemIndex = 0; itemIndex < filters[ index ].items.length; itemIndex++ ) {
+			total++;
+			tagCount += hasFilterTag( tags, filters[ index ].items[ itemIndex ] ) ? 1 : 0;
+		}
+	}
+
+	return tagCount !== total;
+}
+
+function hasVisibleAction( actionOption, tags, preset ) {
+	if ( ! preset || ! Array.isArray( actionOption ) || tags.length === 0 ) {
+		return true;
+	}
+
+	let tagCount = 0,
+		total = 0;
+
+	for ( let index = 0; index < actionOption.length; index++ ) {
+		total++;
+		tagCount += hasActionTag( tags, actionOption[ index ] ) ? 1 : 0;
+	}
+
+	return tagCount !== total;
+}
+
 /**
  * Search form
  *
  * @param {object} props - Component props
  * @param {boolean} props.isBusy - Is this form busy?
  * @param {SetSearch} props.onSetSearch -
- * @param {SearchSourceGroup[]} [props.sources] - All sources
- * @param {Object.<string,string>} props.sourceFlagOptions - Array of all the source options
+ * @param {SearchSourceGroup[]} props.sources - All sources
  * @param {SearchValues} props.search - Search values
- * @param {PresetValue|null} [props.preset] - Preset
+ * @param {PresetValue|null} props.preset - Preset
+ * @param {Schema[]} props.schema - Schema
  */
-function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset } ) {
-	const { searchPhrase, searchFlags, sourceFlags, source, perPage, replacement } = search;
-	const sourceFlagsForSource = getSourceFlagOptions( sourceFlagOptions, source );
+function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
+	const { searchPhrase, searchFlags, source, perPage, replacement, filters = [], actionOption, view = [] } = search;
 	const locked = preset ? preset.locked : [];
 	const tags = preset ? preset.tags : [];
 	const headerClass = getHeaderClass( tags );
 	const defaultValues = getDefaultPresetValues( preset );
+	const filterOptions = getSearchOptionsForSources( source, schema );
+	const [ currentFilter, setCurrentFilter ] = useState( filterOptions.length > 0 ? filterOptions[ 0 ].value : '' );
+	const viewFilters = hasVisibleFilters( filters, tags ) && ! isLocked( locked, 'filters' );
 
-	function setTaggedReplace( replacement ) {
-		const defaults = getDefaultPresetValues( preset );
+	useEffect(() => {
+		if ( filterOptions.indexOf( currentFilter ) === -1 ) {
+			setCurrentFilter( filterOptions.length > 0 ? filterOptions[ 0 ].value : '' );
+		}
+	}, [ source ]);
 
-		// If the replace is the default non-tagged replace then reset it to an empty string
-		onSetSearch( { replacement: replacement === defaults.replacement ? '' : replacement } );
+	function applySources( selected, changed ) {
+		const newSource = convertToSource( selected );
+		const allowedFilters = getSearchOptionsForSources( newSource, schema ).map( ( item ) => item.value );
+		const newFilters = newSource.indexOf( changed ) !== -1 ? getDefaultFilters( changed ) : [];
+
+		return {
+			source: newSource,
+			filters: filters.filter( ( f ) => allowedFilters.indexOf( f.type ) !== -1 ).concat( newFilters ),
+			actionOption: [],
+			view: view.filter( ( f ) => newSource.indexOf( f.split( '__' )[ 0 ] ) !== -1 ),
+		};
+	}
+
+	function addFilter() {
+		onSetSearch( {
+			filters: filters.concat( getFilterForType( currentFilter, getSchema( schema, currentFilter ) ) ),
+		} );
 	}
 
 	return (
@@ -87,6 +199,58 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 				</tr>
 			) : null }
 
+			{ ( ! isLocked( locked, 'source' ) || viewFilters ) && (
+				<tr className={ classnames( 'searchregex-search__source', headerClass ) }>
+					<th>{ __( 'Source' ) }</th>
+					<td>
+						{ ! isLocked( locked, 'source' ) && (
+							<MultiOptionDropdown
+								options={ getSourcesForDropdown( sources ) }
+								selected={ source }
+								onApply={ ( selected, optionValue ) =>
+									onSetSearch( applySources( selected, optionValue ) )
+								}
+								multiple
+								disabled={ isBusy }
+								badges
+								aria-label={ __( 'Sources' ) }
+							/>
+						) }
+
+						{ viewFilters && (
+							<>
+								<span>
+									<strong>{ __( 'Filters' ) }</strong>
+								</span>
+								<Select
+									disabled={ isBusy }
+									name="filter"
+									value={ currentFilter }
+									onChange={ ( ev ) => setCurrentFilter( ev.target.value ) }
+									items={ filterOptions }
+								/>
+								<Button
+									onClick={ addFilter }
+									disabled={ isBusy || filters.length >= MAX_AND_FILTERS }
+								>
+									{ __( 'Add' ) }
+								</Button>
+							</>
+						) }
+					</td>
+				</tr>
+			) }
+
+			{ viewFilters && (
+				<Filters
+					filters={ filters }
+					disabled={ isBusy }
+					onSetSearch={ onSetSearch }
+					tags={ tags }
+					presetFilters={ preset?.search?.filters ?? [] }
+				/>
+			) }
+
 			{ ( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
 				! hasTags( tags, preset?.search?.searchPhrase ?? '' ) && (
 					<tr className={ classnames( 'searchregex-search__search', headerClass ) }>
@@ -98,118 +262,73 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 									disabled={ isBusy }
 									value={ searchPhrase }
 									onChange={ ( value ) => onSetSearch( { searchPhrase: value } ) }
+									multiline={ searchFlags.indexOf( 'multi' ) !== -1 }
 								/>
 							) }
 
 							{ ! isLocked( locked, 'searchFlags' ) && (
-								<MultiOptionDropdown
-									options={ getAvailableSearchFlags() }
-									selected={ searchFlags }
-									onApply={ ( searchFlags ) => onSetSearch( { searchFlags } ) }
-									title={ __( 'Search Flags' ) }
+								<SearchFlags
+									flags={ searchFlags }
 									disabled={ isBusy }
-									multiple
-									badges
+									onChange={ ( flags ) => onSetSearch( { searchFlags: flags } ) }
+									allowMultiline
 								/>
 							) }
 						</td>
 					</tr>
 				) }
 
-			{ ( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
-				hasTags( tags, preset?.search?.searchPhrase ?? '' ) && (
-					<Search
-						disabled={ isBusy }
-						value={ searchPhrase }
-						preset={ preset }
-						onChange={ ( value ) => onSetSearch( { searchPhrase: value } ) }
-						className={ headerClass }
-					/>
-				) }
-
-			{ ! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
-				<tr className={ classnames( 'searchregex-search__replace', headerClass ) }>
-					<th>{ __( 'Replace' ) }</th>
-					<td>
-						<Replace
-							disabled={ isBusy }
-							setReplace={ ( replacement ) => onSetSearch( { replacement } ) }
-							replace={ replacement }
-							placeholder={ __( 'Enter global replacement text' ) }
-						/>
-					</td>
-				</tr>
-			) }
-
-			{ ! isLocked( locked, 'replacement' ) && hasTags( tags, preset?.search?.replacement ?? '' ) && (
-				<Replace
-					preset={ preset }
+			{ preset && (
+				<TaggedPhrases
 					disabled={ isBusy }
-					setReplace={ setTaggedReplace }
-					replace={ replacement }
-					placeholder={ __( 'Enter global replacement text' ) }
+					search={ preset.search }
+					onChange={ ( value ) => onSetSearch( value ) }
+					tags={ tags }
 					className={ headerClass }
+					key={ preset.id }
 				/>
 			) }
 
-			{ ( ! isLocked( locked, 'source' ) || ! isLocked( locked, 'sourceFlags' ) ) && (
-				<tr className={ classnames( 'searchregex-search__source', headerClass ) }>
-					<th>{ __( 'Source' ) }</th>
-					<td>
-						{ ! isLocked( locked, 'source' ) && (
-							<MultiOptionDropdown
-								options={ getSourcesForDropdown( sources ) }
-								selected={ source }
-								onApply={ ( selected, optionValue ) =>
-									onSetSearch( {
-										source: convertToSource( selected, optionValue, sources ),
-										sourceFlags: validateFlagsForSources(
-											sourceFlags,
-											getSourceFlagOptions(
-												sourceFlagOptions,
-												convertToSource( selected, optionValue, sources )
-											)
-										),
-									} )
-								}
-								multiple
-								disabled={ isBusy }
-								badges
-								customBadge={ ( badges ) => customBadge( badges, sources ) }
-							/>
-						) }
-
-						{ ! isLocked( locked, 'sourceFlags' ) && Object.keys( sourceFlagsForSource ).length > 0 && (
-							<MultiOptionDropdown
-								options={ sourceFlagsForSource }
-								selected={ sourceFlags }
-								onApply={ ( sourceFlags ) => onSetSearch( { sourceFlags } ) }
-								title={ __( 'Source Options' ) }
-								disabled={ isBusy }
-								badges
-								multiple
-								hideTitle
-							/>
-						) }
-					</td>
-				</tr>
+			{ ! isLocked( locked, 'action' ) && hasVisibleAction( tags, actionOption, preset ) && (
+				<Actions
+					locked={ locked }
+					tags={ tags }
+					preset={ preset }
+					headerClass={ headerClass }
+					searchPhrase={ searchPhrase }
+					disabled={ isBusy }
+					sources={ source }
+					onSetSearch={ onSetSearch }
+					search={ search }
+				/>
 			) }
-
-			{ ! isLocked( locked, 'perPage' ) && (
-				<tr className={ classnames( headerClass ) }>
+			{ ( ! isLocked( locked, 'perPage' ) || ! isLocked( locked, 'view' ) ) && (
+				<tr className={ classnames( 'searchregex-search__results', headerClass ) }>
 					<th>{ __( 'Results' ) }</th>
 					<td>
-						<Select
-							name="perPage"
-							items={ getAvailablePerPage() }
-							value={ perPage }
-							onChange={ ( ev ) => onSetSearch( { perPage: parseInt( ev.target.value, 10 ) } ) }
-							disabled={ isBusy }
-						/>
+						{ ! isLocked( locked, 'perPage' ) && (
+							<Select
+								name="perPage"
+								items={ getAvailablePerPage() }
+								value={ perPage }
+								onChange={ ( ev ) => onSetSearch( { perPage: parseInt( ev.target.value, 10 ) } ) }
+								disabled={ isBusy }
+							/>
+						) }
+
+						{ ! isLocked( locked, 'view' ) && (
+							<MultiOptionDropdown
+								options={ getColumnsForDropdown( source, schema, filters, actionOption ) }
+								selected={ view }
+								onApply={ ( selected ) => onSetSearch( { view: selected } ) }
+								multiple
+								disabled={ isBusy }
+								title={ __( 'View Columns' ) }
+							/>
+						) }
 					</td>
 				</tr>
 			) }
-
 			{ showPresetValue( searchPhrase, replacement, defaultValues ) ? (
 				<tr className={ classnames( headerClass ) }>
 					<th />
@@ -228,11 +347,11 @@ function Form( { search, onSetSearch, isBusy, sources, sourceFlagOptions, preset
 }
 
 function mapStateToProps( state ) {
-	const { sources, sourceFlags } = state.search;
+	const { sources, schema } = state.search;
 
 	return {
 		sources,
-		sourceFlagOptions: sourceFlags,
+		schema,
 	};
 }
 

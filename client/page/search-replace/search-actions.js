@@ -1,11 +1,10 @@
-
 /**
  * External dependencies
  */
 
 import React from 'react';
 import { translate as __ } from 'i18n-calypso';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 /**
  * Internal dependencies
@@ -13,50 +12,76 @@ import { connect } from 'react-redux';
 
 import { Spinner, Button } from 'wp-plugin-components';
 import { STATUS_IN_PROGRESS } from 'state/settings/type';
-import { SEARCH_FORWARD } from 'state/search/type';
-import { cancel, search, replaceAll } from 'state/search/action';
+import { cancel, perform } from 'state/search/action';
 
-const canSearch = ( status, searchPhrase ) => status === STATUS_IN_PROGRESS || searchPhrase.length === 0;
-const canReplace = ( status, searchPhrase, replacement ) => status === STATUS_IN_PROGRESS || searchPhrase.length === 0 || searchPhrase === replacement || ( replacement !== null && replacement.length === 0 );
+function isPerformReady( action, actionOption ) {
+	if ( action === 'delete' ) {
+		return true;
+	}
 
-const REPLACE_SIZE = 50;
+	if ( action === 'modify' ) {
+		return actionOption.length > 0;
+	}
+
+	if ( action === 'action' ) {
+		return actionOption.hook && actionOption.hook.length > 0;
+	}
+
+	if ( action === 'export' || action === 'global' ) {
+		return true;
+	}
+
+	return false;
+}
+
+function getPerformButton( action ) {
+	if ( action === 'delete' ) {
+		return __( 'Delete Matches' );
+	}
+
+	if ( action === 'export' ) {
+		return __( 'Export Matches' );
+	}
+
+	if ( action === 'action' ) {
+		return __( 'Run Action' );
+	}
+
+	return __( 'Replace All' );
+}
 
 /**
  * Search actions
  *
  * @param {object} props - Component props
- * @param {object} props.search - Search params
- * @param {string} props.status - Search status
  */
-function SearchActions( { search, status, onSearch, onReplace, onCancel, replaceAll, canCancel } ) {
-	const { searchPhrase, replacement } = search;
+function SearchActions( props ) {
+	const { search, status, canCancel, resultsDirty, isSaving } = useSelector( ( state ) => state.search );
+	const { action, actionOption } = search;
+	const dispatch = useDispatch();
 
 	return (
 		<div className="searchregex-search__action">
-			<Button
-				isPrimary
-				isSubmit
-				onClick={ () => onSearch( 0, SEARCH_FORWARD ) }
-				disabled={ canSearch( status, searchPhrase ) || replaceAll }
-			>
-				{ __( 'Search' ) }
+			<Button isPrimary isSubmit disabled={ status === STATUS_IN_PROGRESS || isSaving } name="search">
+				{ resultsDirty ? __( 'Refresh' ) : __( 'Search' ) }
 			</Button>
 
-			<Button
-				isDestructive
-				onClick={ () => onReplace( REPLACE_SIZE ) }
-				disabled={ canReplace( status, searchPhrase, replacement ) || replaceAll }
-			>
-				{ __( 'Replace All' ) }
-			</Button>
+			{ action !== '' && (
+				<Button
+					isDestructive
+					disabled={ ! isPerformReady( action, actionOption ) || status === STATUS_IN_PROGRESS || isSaving }
+					onClick={ () => dispatch( perform( 0 ) ) }
+				>
+					{ getPerformButton( action ) }
+				</Button>
+			) }
 
-			{ status === STATUS_IN_PROGRESS && canCancel && (
+			{ ( status === STATUS_IN_PROGRESS || isSaving ) && canCancel && (
 				<>
 					&nbsp;
-					<Button isDestructive onClick={ onCancel }>
+					<Button isDestructive onClick={ () => dispatch( cancel() ) }>
 						{ __( 'Cancel' ) }
 					</Button>
-
 					<Spinner />
 				</>
 			) }
@@ -64,32 +89,5 @@ function SearchActions( { search, status, onSearch, onReplace, onCancel, replace
 	);
 }
 
-function mapDispatchToProps( dispatch ) {
-	return {
-		onCancel: () => {
-			dispatch( cancel() );
-		},
-		onSearch: ( page, direction ) => {
-			dispatch( search( page, direction ) );
-		},
-		onReplace: ( perPage ) => {
-			dispatch( replaceAll( perPage ) );
-		},
-	};
-}
 
-function mapStateToProps( state ) {
-	const { search, status, replaceAll, canCancel } = state.search;
-
-	return {
-		search,
-		status,
-		replaceAll,
-		canCancel,
-	};
-}
-
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)( SearchActions );
+export default SearchActions;

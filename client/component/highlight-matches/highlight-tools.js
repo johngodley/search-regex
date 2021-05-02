@@ -1,4 +1,3 @@
-const hasChanged = ( value, originalPhrase ) => value === null || ( value !== originalPhrase && value !== '' );
 const replaceNonBreakingSpace = ( match, spaces ) => '\u00a0'.replace( spaces.length );
 
 /**
@@ -43,10 +42,12 @@ export function regexReplace( phrase, captures ) {
  * @param {string} original Original word to use as fallback
  * @returns {string}
  */
-export function getMatchReplacement( words, original ) {
-	const matched = words.find( ( item ) => hasChanged( item, original ) );
+export function getMatchReplacement( words ) {
+	// Get non-undefined words
+	const matched = words.filter( item => item !== undefined && item !== null );
 
-	return matched === undefined ? original : matched;
+	// Return first non-undefined word, or the original
+	return matched[ 0 ];
 }
 
 /**
@@ -56,7 +57,7 @@ export function getMatchReplacement( words, original ) {
  * @returns {string}
  */
 export function getTypeOfReplacement( replacement, original ) {
-	if ( replacement === null ) {
+	if ( replacement === '' ) {
 		return 'delete';
 	}
 

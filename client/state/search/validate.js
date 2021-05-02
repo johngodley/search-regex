@@ -4,6 +4,11 @@
 
 import { getAvailableSearchFlags, getAvailablePerPage } from './selector';
 import getPreload from 'lib/preload';
+import { getSchema } from './selector';
+
+/** @typedef {import('./type.js').SearchValues} SearchValues */
+/** @typedef {import('./type.js').SearchSourceGroup} SearchSourceGroup */
+/** @typedef {import('./type.js').Filter} Filter */
 
 function sanitizeValue( value, array, defaultValue ) {
 	if ( array.find( ( item ) => item.value === value || item.name === value ) ) {
@@ -24,63 +29,84 @@ function sanitizeArray( valueArray, array ) {
 
 /**
  * Sanitize sources
- * @param {Array} sourceArray Valid sources
- * @param {Array} array Sources to sanitize
+ * @param {SearchSourceGroup[]} sourceArray Valid sources
+ * @param {string[]} array Sources to sanitize
+ * @returns {string[]}
  */
 function sanitizeSources( sourceArray, array ) {
+	/**
+	 * @type {string[]}
+	 */
 	let sources = [];
 
-	sourceArray.forEach( source => {
-		sources = sources.concat( source.sources.map( item => item.name ) );
+	sourceArray.forEach( ( source ) => {
+		sources = sources.concat( source.sources.map( ( item ) => item.name ) );
 	} );
 
 	return array.filter( ( source ) => sources.indexOf( source ) !== -1 );
 }
 
 /**
- * Sanitize source flags
- * @param {Array} source Array of sources
- * @param {Array} sourceFlags Array of valid source flags
- * @param {Array} flags Array of flags to sanitize
+ * Sanitize filters
+ * @param {Filter[]} filters Filters
+ * @returns {Filter[]}
  */
-function sanitizeSourceFlags( source, sourceFlags, flags ) {
-	let remainingFlags = [ ...flags ];
+function sanitizeFilters( filters, schema, source ) {
+	return filters.filter( ( filter ) => {
+		const found = getSchema( schema, filter.type );
 
-	for ( let index = 0; index < source.length; index++ ) {
-		const current = source[ index ];
-
-		if ( sourceFlags[ current ] ) {
-			const flagsForCurrent = Object.keys( sourceFlags[ current ] );
-
-			// Remove flags that existing in this source
-			remainingFlags = remainingFlags.filter( flag => flagsForCurrent.indexOf( flag ) === -1 );
+		if ( found && source.indexOf( found.type ) !== -1 ) {
+			return ( filter.items.filter( ( itemFilter ) => {
+				return found.columns.find( ( finding ) => finding.column === itemFilter.column ) !== undefined;
+			} ).length = filter.items.length );
 		}
+
+		return false;
+	} );
+}
+
+function sanitizeView( view, schema ) {
+	if ( ! Array.isArray( view ) ) {
+		return [];
 	}
 
-	// Remove any flags not in one of the sources
-	return flags.filter( item => remainingFlags.indexOf( item ) === -1 );
+	return view.filter( ( item ) => {
+		const parts = item.split( '__' );
+
+		if ( parts.length === 2 ) {
+			const found = getSchema( schema, parts[ 0 ] );
+
+			if ( found ) {
+				return found.columns.find( ( finding ) => finding.column === parts[ 1 ] ) !== undefined;
+			}
+		}
+
+		return false;
+	} );
 }
 
 /**
  * Validate the search object
- * @param {object} search Search object
+ *
+ * @param {SearchValues} search Search object
  * @param {object|null} initialSources Source information
+ * @returns {SearchValues}
  */
-export default function getValidatedSearch( search, initialSources = null, initialFlags = null ) {
+export default function getValidatedSearch( search, initialSources = null, initialSchema = null ) {
 	const sources = initialSources ? initialSources : getPreload( 'sources', [] );
-	const flags = initialFlags ? initialFlags : getPreload( 'source_flags', [] );
-	const { searchPhrase, searchFlags, sourceFlags, replacement, perPage } = search;
+	const schema = initialSchema ? initialSchema : getPreload( 'schema', [] );
+	const { searchPhrase, searchFlags, replacement, perPage, view, action, actionOption } = search;
 	const source = sanitizeSources( sources, search.source.length > 0 ? search.source : [] );
 
 	return {
 		searchPhrase,
-		searchFlags:  sanitizeArray( searchFlags, getAvailableSearchFlags() ),
-
+		searchFlags: sanitizeArray( searchFlags, getAvailableSearchFlags() ),
 		source,
-		sourceFlags:  sanitizeSourceFlags( source, flags, sourceFlags ),
-
 		replacement,
-
 		perPage: sanitizeValue( parseInt( perPage, 10 ), getAvailablePerPage(), 25 ),
+		filters: sanitizeFilters( search.filters, schema, source ),
+		view: sanitizeView( view, schema ),
+		action,
+		actionOption,
 	};
 }

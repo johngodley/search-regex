@@ -14,6 +14,7 @@ import { Dropdown } from 'wp-plugin-components';
 import ReplaceForm from 'component/replace-form';
 import ReplacementPhrase from './replacement-phrase';
 import { regexReplace, getMatchReplacement, getTypeOfReplacement } from './highlight-tools';
+import { getNewActionFromResult } from 'state/search/selector';
 
 /**
  * @callback SaveCallback
@@ -38,45 +39,61 @@ import { regexReplace, getMatchReplacement, getTypeOfReplacement } from './highl
  * @param {string[]} props.captures - Captured data
  */
 function Replacement( props ) {
-	const { isReplacing, onSave, match, replacement, captures } = props;
-	const [ specific, setSpecific ] = useState( '' );
-	const matchedPhrase = getMatchReplacement( [ specific, ...replacement ], match );
+	const { match, captures, replacement, rowId, canReplace, column, schema, onSave } = props;
+	const [ specific, setSpecific ] = useState( null );
+	const matchedPhrase = getMatchReplacement( [ specific ? specific.replaceValue : null, replacement, match ] );
 	const typeOfReplacement = getTypeOfReplacement( matchedPhrase, match );
 
-	const save = ( replacedPhrase, toggle ) => {
-		onSave( replacedPhrase );
-		toggle();
-	};
 	const reset = ( toggle ) => {
-		setSpecific( '' );
+		setSpecific( null );
 		toggle && toggle();
 	};
 
+	function toggleIt( toggle ) {
+		setSpecific( {
+			...getNewActionFromResult( column, schema, schema.source ),
+			replaceValue: match,
+			operation: 'replace',
+		} );
+		toggle();
+	}
+
+	function save( toggle ) {
+		onSave( specific );
+		reset( toggle );
+	}
+
 	return (
 		<Dropdown
-			className={ classnames( {
-				'searchregex-result__replaced': typeOfReplacement === 'replace',
-				'searchregex-result__highlight': typeOfReplacement === 'match',
-				'searchregex-result__deleted': typeOfReplacement === 'delete',
-			} ) }
 			renderToggle={ ( isOpen, toggle ) => (
-				<span onClick={ () => ! isReplacing && toggle() } title={ match }>
-					<ReplacementPhrase match={ regexReplace( matchedPhrase, captures ) } originalMatch={ match } />
+				<span
+					onClick={ () => toggleIt( toggle ) }
+					title={ __( 'Click to replace match' ) }
+					className={ classnames( {
+						'searchregex-result__replaced': typeOfReplacement === 'replace',
+						'searchregex-result__highlight': typeOfReplacement === 'match',
+						'searchregex-result__deleted': typeOfReplacement === 'delete',
+					} ) }
+				>
+					<ReplacementPhrase match={ regexReplace( matchedPhrase === '' ? match : matchedPhrase, captures ) } originalMatch={ match } />
 				</span>
 			) }
-			onHide={ reset }
 			hasArrow
+			onClose={ reset }
 			align="centre"
+			valign="bottom"
 			renderContent={ ( toggle ) => (
 				<ReplaceForm
-					className="searchregex-replace__modal"
-					canReplace
-					setReplace={ setSpecific }
-					replace={ specific }
-					onSave={ ( value ) => save( value, toggle ) }
+					setReplacement={ ( details ) => setSpecific( { ...specific, ...details } ) }
+					replacement={ specific }
+					canReplace={ canReplace }
 					onCancel={ () => reset( toggle ) }
-					placeholder={ __( 'Replacement for this match' ) }
-					description={ __( 'Replace single phrase.' ) }
+					onSave={ () => save( toggle ) }
+					column={ column }
+					schema={ schema }
+					rowId={ rowId }
+					context={ { value: match, type: 'string', forceSingle: true } }
+					className="searchregex-replace__modal"
 				/>
 			) }
 		/>

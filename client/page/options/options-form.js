@@ -24,7 +24,6 @@ export const getRestApi = () => [
 function OptionsForm( props ) {
 	const { saveStatus, values, onSaveSettings, presets } = props;
 	const [ support, setSupport ] = useState( values.support );
-	const [ actionDropdown, setActionDropdown ] = useState( values.actionDropdown );
 	const [ defaultPreset, setDefaultPreset ] = useState( values.defaultPreset );
 	const [ restApi, setApi ] = useState( values.rest_api );
 
@@ -34,7 +33,6 @@ function OptionsForm( props ) {
 		onSaveSettings(
 			{
 				support,
-				actionDropdown,
 				defaultPreset,
 				rest_api: restApi,
 			},
@@ -56,18 +54,6 @@ function OptionsForm( props ) {
 						<span className="sub">
 							{ __( "I'm a nice person and I have helped support the author of this plugin" ) }
 						</span>
-					</label>
-				</TableRow>
-
-				<TableRow title={ __( 'Actions' ) }>
-					<label>
-						<input
-							type="checkbox"
-							checked={ actionDropdown }
-							name="actionDropdown"
-							onChange={ ( ev ) => setActionDropdown( ev.target.checked ) }
-						/>
-						{ __( 'Show row actions as dropdown menu.' ) }
 					</label>
 				</TableRow>
 

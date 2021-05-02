@@ -12,9 +12,9 @@ import { SETTING_LOAD_FAILED, SETTING_SAVE_FAILED, SETTING_SAVED, SETTING_SAVING
 import {
 	SEARCH_FAIL,
 	SEARCH_REPLACE_ROW,
-	SEARCH_REPLACE_COMPLETE,
 	SEARCH_DELETE_COMPLETE,
-	SEARCH_SAVE_ROW_COMPLETE,
+	SEARCH_PERFORM_FRESH,
+	SEARCH_START_FRESH,
 } from 'state/search/type';
 import {
 	PRESET_SAVED,
@@ -59,9 +59,7 @@ export default function messages( state = {}, action ) {
 
 		case PRESET_UPLOAD_COMPLETE:
 		case PRESET_SAVED:
-		case SEARCH_REPLACE_COMPLETE:
 		case SEARCH_DELETE_COMPLETE:
-		case SEARCH_SAVE_ROW_COMPLETE:
 		case SETTING_SAVED:
 			return {
 				...state,
@@ -72,6 +70,8 @@ export default function messages( state = {}, action ) {
 		case MESSAGE_CLEAR_NOTICES:
 			return { ...state, notices: [] };
 
+		case SEARCH_START_FRESH:
+		case SEARCH_PERFORM_FRESH:
 		case MESSAGE_CLEAR_ERRORS:
 			return { ...state, errors: [] };
 	}
