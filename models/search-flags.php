@@ -25,6 +25,10 @@ class Search_Flags {
 		} );
 	}
 
+	public static function copy( Search_Flags $flags ) {
+		return new Search_Flags( $flags->flags );
+	}
+
 	/**
 	 * Is the flag set?
 	 *
@@ -51,6 +55,12 @@ class Search_Flags {
 	 */
 	public function is_case_insensitive() {
 		return $this->has_flag( 'case' );
+	}
+
+	public function set_regex() {
+		if ( ! $this->is_regex() ) {
+			$this->flags[] = 'regex';
+		}
 	}
 
 	/**
