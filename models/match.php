@@ -2,12 +2,12 @@
 
 namespace SearchRegex;
 
-use SearchRegex\Match_Context;
+use SearchRegex\Match_Context_String;
 
 /**
  * Represents a single match
  */
-class Match {
+class Matched_Item {
 	/**
 	 * Position ID
 	 *
@@ -50,9 +50,9 @@ class Match {
 	 * @param int    $match_offset The offset within the column.
 	 * @param String $replacement The replaced value, if one is supplied.
 	 */
-	public function __construct( $match, $match_offset, $replacement ) {
+	public function __construct( $match, $match_offset = 0, $replacement = '' ) {
 		$this->pos_id = intval( $match_offset, 10 );
-		$this->match = $match;
+		$this->match = "$match";
 		$this->replacement = $replacement;
 		$this->captures = [];
 	}
@@ -148,7 +148,8 @@ class Match {
 		$contexts = [];
 
 		if ( \preg_match_all( $pattern, $column_value, $searches, PREG_OFFSET_CAPTURE ) > 0 ) {
-			$current_context = new Match_Context( 0 );
+			$current_context = new Match_Context_String( $search, $flags );
+			$current_context->set_type( Value_Type::get( $column_value ) );
 			$contexts[] = $current_context;
 
 			// Go through each search match and create a Match
@@ -157,7 +158,7 @@ class Match {
 				$pos = mb_strlen( substr( $column_value, 0, $match[1] ), 'utf-8' );
 
 				// Create a match
-				$match = new Match( $match[0], $pos, isset( $replacements[ $match_pos ] ) ? $replacements[ $match_pos ] : '' );
+				$match = new self( $match[0], $pos, isset( $replacements[ $match_pos ] ) ? $replacements[ $match_pos ] : null );
 
 				// Add any captures
 				foreach ( array_slice( $searches, 1 ) as $capture ) {
@@ -167,7 +168,8 @@ class Match {
 				// Is the match within range of the current context
 				if ( ! $current_context->is_within_context( $match ) ) {
 					// No - create a new context
-					$current_context = new Match_Context( count( $contexts ) );
+					$current_context = new Match_Context_String( $search, $flags );
+					$current_context->set_type( Value_Type::get( $column_value ) );
 					$contexts[] = $current_context;
 				}
 

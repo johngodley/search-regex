@@ -5,46 +5,27 @@ namespace SearchRegex;
 /**
  * A group of matches within the same area of a column
  */
-class Match_Context {
-	const MATCH_LIMIT = 100;
-	const CONTEXT_RANGE = 100;
-	const CHARS_BEFORE = 50;
-	const CHARS_AFTER = 60;
-
+abstract class Match_Context {
 	/**
 	 * Context ID
 	 *
 	 * @var Int
 	 **/
-	private $context_id;
-
-	/**
-	 * Context
-	 *
-	 * @var String|null
-	 **/
-	private $context = null;
-
-	/**
-	 * Array of matches
-	 *
-	 * @var Match[]
-	 **/
-	private $matches = [];
+	protected $context_id = 0;
 
 	/**
 	 * Total number of matches
 	 *
 	 * @var Int
 	 **/
-	private $match_count = 0;
+	protected $match_count = 0;
 
 	/**
-	 * Create a Match_Context with a given context ID
+	 * Create a Match_Context_String with a given context ID
 	 *
 	 * @param int $context_id Context ID.
 	 */
-	public function __construct( $context_id ) {
+	public function __construct( $context_id = 0 ) {
 		$this->context_id = $context_id;
 	}
 
@@ -57,83 +38,53 @@ class Match_Context {
 		return $this->match_count;
 	}
 
+	public function set_context_id( $context_id ) {
+		$this->context_id = $context_id;
+	}
+
+	public function is_equal( Match_Context $context ) {
+		return $this->get_type() === $context->get_type();
+	}
+
 	/**
-	 * Convert the Match_Context to to_json
+	 * Has this been matched?
+	 *
+	 * @return boolean
+	 */
+	public function is_matched() {
+		return true;
+	}
+
+	/**
+	 * Does this need saving?
+	 *
+	 * @return boolean
+	 */
+	public function needs_saving() {
+		return false;
+	}
+
+	/**
+	 * Convert the Match_Context_String to to_json
 	 *
 	 * @return Array{context_id: int, context: string|null, matches: array, match_count: int} JSON
 	 */
 	public function to_json() {
-		$matches = [];
-
-		foreach ( $this->matches as $match ) {
-			$matches[] = $match->to_json();
-		}
-
 		return [
 			'context_id' => $this->context_id,
-			'context' => $this->context,
-			'matches' => $matches,
-			'match_count' => $this->match_count,
+			'type' => $this->get_type(),
 		];
 	}
 
-	/**
-	 * Determine if the Match object is within this context.
-	 *
-	 * @param Match $match The match to check.
-	 * @return Bool true if within the context, false otherwise
-	 */
-	public function is_within_context( Match $match ) {
-		if ( $this->context === null ) {
-			return true;
-		}
-
-		$last_match = $this->matches[ count( $this->matches ) - 1 ];
-
-		return $match->get_position() - $last_match->get_position() < self::CONTEXT_RANGE;
-	}
-
-	/**
-	 * Add a Match to this context
-	 *
-	 * @param Match  $match The match to do.
-	 * @param String $value The column value.
-	 * @return void
-	 */
-	public function add_match( Match $match, $value ) {
-		$this->match_count++;
-
-		if ( count( $this->matches ) === self::MATCH_LIMIT ) {
-			return;
-		}
-
-		// Add match to list
-		$this->matches[] = $match;
-
-		// Expand the context to include everything from the first to last match
-		$start_pos = max( 0, $this->matches[0]->get_position() - self::CHARS_BEFORE );
-
-		$end_pos = $match->get_position() + strlen( $match->get_matched_text() ) + self::CHARS_AFTER;
-
-		$this->context = mb_substr( $value, $start_pos, $end_pos - $start_pos, 'UTF-8' );
-
-		// Finally update the match
-		$match->set_context( $match->get_position() - $start_pos );
-	}
-
-	/**
-	 * Find the Match that exists at the given position
-	 *
-	 * @param int $pos_id Position.
-	 * @return Match|Bool Match at position
-	 */
-	public function get_match_at_position( $pos_id ) {
-		foreach ( $this->matches as $match ) {
-			if ( $match->get_position() === $pos_id ) {
-				return $match;
-			}
-		}
-
-		return false;
-	}
+	abstract public function get_type();
 }
+
+require_once __DIR__ . '/value-type.php';
+require_once __DIR__ . '/context/context-value.php';
+require_once __DIR__ . '/context/context-matched.php';
+require_once __DIR__ . '/context/context-add.php';
+require_once __DIR__ . '/context/context-delete.php';
+require_once __DIR__ . '/context/context-pair.php';
+require_once __DIR__ . '/context/context-empty.php';
+require_once __DIR__ . '/context/context-replace.php';
+require_once __DIR__ . '/context/context-string.php';
