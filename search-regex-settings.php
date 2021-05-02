@@ -18,7 +18,6 @@ function searchregex_get_default_options() {
 	$defaults = [
 		'support' => false,
 		'rest_api' => SEARCHREGEX_API_JSON,
-		'actionDropdown' => true,
 		'defaultPreset' => 0,
 	];
 
@@ -40,10 +39,6 @@ function searchregex_set_options( array $settings = array() ) {
 
 	if ( isset( $settings['support'] ) ) {
 		$options['support'] = $settings['support'] ? true : false;
-	}
-
-	if ( isset( $settings['actionDropdown'] ) ) {
-		$options['actionDropdown'] = $settings['actionDropdown'] ? true : false;
 	}
 
 	if ( isset( $settings['defaultPreset'] ) ) {
@@ -104,4 +99,12 @@ function searchregex_get_rest_api( $type = false ) {
 	}
 
 	return $url;
+}
+
+function searchregex_can_save() {
+	if ( defined( 'SEARCHREGEX_DEBUG' ) && SEARCHREGEX_DEBUG ) {
+		return false;
+	}
+
+	return true;
 }
