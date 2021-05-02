@@ -176,7 +176,6 @@ class Search_Regex_Api_Preset extends Search_Regex_Api_Route {
 	 */
 	public function __construct( $namespace ) {
 		register_rest_route( $namespace, '/preset', [
-			'args' => [],
 			$this->get_route( WP_REST_Server::READABLE, 'route_list', [ $this, 'permission_callback' ] ),
 		] );
 

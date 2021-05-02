@@ -5,7 +5,19 @@ use SearchRegex\Replace;
 use SearchRegex\Search_Flags;
 use SearchRegex\Search_Source;
 use SearchRegex\Source_Manager;
-use SearchRegex\Source_Flags;
+
+/**
+ * @apiDefine ColumnData Data for a column
+ * Data for a column. Each item of data contains either `value` or `items`, but not both.
+ *
+ * @apiSuccess {Object[]} column - Column data
+ * @apiSuccess {String} column.column - Name of the column
+ * @apiSuccess {String} [column.value] - Column value
+ * @apiSuccess {Object[]} [column.items] - Array of key/value pairs
+ * @apiSuccess {String} column.items.key - Key value
+ * @apiSuccess {String} column.items.value - Value
+ * @apiSuccess {String} column.items.value_type - Type of the value
+ */
 
 /**
  * @api {get} /search-regex/v1/source List of sources
@@ -30,41 +42,30 @@ use SearchRegex\Source_Flags;
  * @apiParam (URL) {String} :source The source
  * @apiParam (URL) {Integer} :rowId The source row ID
  *
- * @apiSuccess {String[]} result Associative array of `column_name` => `value`
+ * @apiUse ColumnData
  * @apiUse 401Error
  * @apiUse 404Error
  */
 
 /**
- * @api {post} /search-regex/v1/source/:source/:rowId Update row
- * @apiVersion 1.0.0
- * @apiName UpdateRow
- * @apiDescription Save data to a column of a row of a source, returning the same row back with modified data
+ * @api {post} /search-regex/v1/source/:source/:rowId Save row
+ * @apiName SaveRow
+ * @apiDescription Save a row of data to a source.
  *
  * @apiGroup Source
  *
  * @apiParam (URL) {String} :source The source
  * @apiParam (URL) {Integer} :rowId The source row ID
- * @apiParam {String} columnId Column ID of the item to save content to
- * @apiParam {String} content The new content
- *
- * @apiUse SearchResult
- * @apiUse 401Error
- * @apiUse 404Error
- */
-
-/**
- * @api {post} /search-regex/v1/source/:source/:rowId/replace Replace a row
- * @apiVersion 1.0.0
- * @apiName ReplaceRow
- * @apiDescription Performs a replace on a row
- *
- * @apiGroup Source
- *
- * @apiParam (URL) {String} :source The source
- * @apiParam {Integer} :rowId Row ID of the item to replace
- * @apiParam {String} [columnId] Column ID of the item to replace
- * @apiParam {Integer} [posId] Positional ID of the item to replace
+ * @apiParam (Post Data) {Object} replacement The replacement data
+ * @apiParam (Post Data) {String} replacement.column The column name to perform a replace in
+ * @apiParam (Post Data) {String} [replacement.operation] Operation appropriate to the type of column (i.e. 'set').
+ * @apiParam (Post Data) {String[]} [replacement.values] Values for the operation
+ * @apiParam (Post Data) {String[]} [replacement.searchValue] Search value
+ * @apiParam (Post Data) {String[]} [replacement.replaceValue] Replace value
+ * @apiParam (Post Data) {Object[]} [replacement.items] Array of replacement items
+ * @apiParam (Post Data) {String} [replacement.items.type] Type of replacement
+ * @apiParam (Post Data) {String} [replacement.items.key] Key
+ * @apiParam (Post Data) {String} [replacement.items.value] Value
  *
  * @apiUse SearchResult
  * @apiUse 401Error
@@ -81,6 +82,9 @@ use SearchRegex\Source_Flags;
  *
  * @apiParam (URL) {String} :source The source
  * @apiParam (URL) {Integer} :rowId The source row ID
+ * @apiParam (Search Query) {Integer} page Page to search
+ * @apiParam (Search Query) {Integer} perPage Number of results per page
+ * @apiParam (Search Query) {String="forward","backward"} [searchDirection=forward] Direction to search. Only needed for regular expression searches
  *
  * @apiSuccess {Bool} result `true` if deleted, `false` otherwise
  * @apiUse 401Error
@@ -91,6 +95,18 @@ use SearchRegex\Source_Flags;
  * Search API endpoint
  */
 class Search_Regex_Api_Source extends Search_Regex_Api_Route {
+	const AUTOCOMPLETE_MAX = 50;
+	const AUTOCOMPLETE_TRIM_BEFORE = 10;
+
+	private function get_source_params() {
+		return [
+			'source' => [
+				'validate_callback' => [ $this, 'validate_source' ],
+				'sanitize_callback' => [ $this, 'sanitize_row_source' ],
+			],
+		];
+	}
+
 	/**
 	 * Search API endpoint constructor
 	 *
@@ -101,59 +117,92 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 			$this->get_route( WP_REST_Server::READABLE, 'getSources', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/(?P<rowId>[\d]+)', [
-			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
-		] );
-
-		$search_no_source = $this->get_search_params();
-		unset( $search_no_source['source'] );
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-]+)/(?P<rowId>[\d]+)', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/complete/(?P<column>[a-z\-\_]+)', [
 			'args' => array_merge(
-				$search_no_source,
+				$this->get_source_params(),
 				[
-					'columnId' => [
-						'description' => 'Column within the row to update',
-						'type' => 'string',
-						'required' => true,
-						'validate_callback' => [ $this, 'validate_replace_column' ],
-					],
-					'content' => [
-						'description' => 'The new content',
+					'value' => [
+						'description' => 'Auto complete value',
 						'type' => 'string',
 						'required' => true,
 					],
 				]
+			),
+			$this->get_route( WP_REST_Server::READABLE, 'autoComplete', [ $this, 'permission_callback' ] ),
+		] );
+
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)', [
+			'args' => $this->get_source_params(),
+			$this->get_route( WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
+		] );
+
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)', [
+			'args' => array_merge(
+				[
+					'replacement' => [
+						'description' => 'Row replacement. A single action.',
+						'type' => 'object',
+						'validate_callback' => [ $this, 'validate_replacement' ],
+						'required' => true,
+					],
+				],
+				$this->get_source_params(),
+				$this->get_search_params()
 			),
 			$this->get_route( WP_REST_Server::EDITABLE, 'saveRow', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/(?P<rowId>[\d]+)/delete', [
+		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)/delete', [
+			'args' => $this->get_source_params(),
 			$this->get_route( WP_REST_Server::EDITABLE, 'deleteRow', [ $this, 'permission_callback' ] ),
 		] );
+	}
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/(?P<rowId>[\d]+)/replace', [
-			'args' => array_merge(
-				$this->get_search_params(),
-				[
-					'rowId' => [
-						'description' => 'Optional row ID',
-						'type' => 'integer',
-						'default' => 0,
-					],
-					'columnId' => [
-						'description' => 'Optional column ID',
-						'type' => 'string',
-						'default' => null,
-						'validate_callback' => [ $this, 'validate_replace_column' ],
-					],
-					'posId' => [
-						'description' => 'Optional position ID',
-						'type' => 'integer',
-					],
-				]
-			),
-			$this->get_route( WP_REST_Server::EDITABLE, 'replaceRow', [ $this, 'permission_callback' ] ),
-		] );
+	/**
+	 * Sanitize the source so it's a single source in an array, suitable for use with the search functions
+	 *
+	 * @param string $value Source name
+	 * @param WP_REST_Request $request Request object
+	 * @param string $param Param name
+	 * @return string[]
+	 */
+	public function sanitize_row_source( $value, WP_REST_Request $request, $param ) {
+		if ( is_array( $value ) ) {
+			return array_slice( $value, 0, 1 );
+		}
+
+		return [ $value ];
+	}
+
+	/**
+	 * Validate the replacement.
+	 *
+	 * @param string $value Source name
+	 * @param WP_REST_Request $request Request object
+	 * @param string $param Param name
+	 * @return true|WP_Error
+	 */
+	public function validate_replacement( $value, WP_REST_Request $request, $param ) {
+		$result = $this->contains_keys( [ 'column' ], $value );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		if ( isset( $value['items'] ) ) {
+			foreach ( $value['items'] as $item ) {
+				$result = $this->contains_keys( [ 'value', 'key' ], $item );
+
+				if ( is_wp_error( $result ) ) {
+					return $result;
+				}
+			}
+		}
+
+		if ( isset( $value['values'] ) && ! is_array( $value['values'] ) ) {
+			return new WP_Error( 'rest_invalid_param', 'Item is not an array', [ 'status' => 400 ] );
+		}
+
+		return true;
 	}
 
 	/**
@@ -181,72 +230,35 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	 * @param WP_REST_Request $request The request.
 	 * @return WP_Error|array Return an array of results, or a WP_Error
 	 */
-	public function replaceRow( WP_REST_Request $request ) {
-		$params = $request->get_params();
-
-		$flags = new Search_Flags( $params['searchFlags'] );
-		$sources = Source_Manager::get( $params['source'], $flags, new Source_Flags( $params['sourceFlags'] ) );
-
-		// Get the Search/Replace pair, with our replacePhrase as the replacement value
-		$search = new Search( $params['searchPhrase'], $sources, $flags );
-		$replacer = new Replace( $params['replacePhrase'], $sources, $flags );
-
-		// Get the row
-		$results = $search->get_row( $sources[0], $params['rowId'], $replacer );
-
-		if ( $results instanceof \WP_Error ) {
-			return $results;
-		}
-
-		// Do the replacement
-		$replaced = $replacer->save_and_replace( $results, isset( $params['columnId'] ) ? $params['columnId'] : null, isset( $params['posId'] ) ? intval( $params['posId'], 10 ) : null );
-		if ( is_wp_error( $replaced ) ) {
-			return $replaced;
-		}
-
-		// Get the row again
-		$replacer = new Replace( $params['replacement'], $sources, $flags );
-		$results = $search->get_row( $sources[0], $params['rowId'], $replacer );
-
-		if ( $results instanceof \WP_Error ) {
-			return $results;
-		}
-
-		return [
-			'result' => $search->results_to_json( $results ),
-		];
-	}
-
-	/**
-	 * Save data to a row and column within a source
-	 *
-	 * @param WP_REST_Request $request The request.
-	 * @return WP_Error|array Return an array of results, or a WP_Error
-	 */
 	public function saveRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
+		[ $search, $action ] = $this->get_search_replace( array_merge( $params, [ 'action' => 'modify', 'actionOption' => [ $params['replacement'] ] ] ) );
 
-		$flags = new Search_Flags( $params['searchFlags'] );
-		$sources = Source_Manager::get( [ $params['source'] ], $flags, new Source_Flags( $params['sourceFlags'] ) );
-
-		$result = $sources[0]->save( $params['rowId'], $params['columnId'], $params['content'] );
-
-		if ( is_wp_error( $result ) ) {
-			return $result;
+		// Get the results for the search/replace
+		$results = $search->get_row( $params['rowId'], $action );
+		if ( $results instanceof \WP_Error ) {
+			return $results;
 		}
 
-		$search = new Search( $params['searchPhrase'], $sources, $flags );
-		$replacer = new Replace( $params['replacement'], $sources, $flags );
-
-		$row = $search->get_row( $sources[0], $params['rowId'], $replacer );
-		if ( is_wp_error( $row ) ) {
-			return $row;
+		if ( count( $results ) === 0 ) {
+			return new WP_Error( 'rest_invalid_param', 'No matching row', [ 'status' => 400 ] );
 		}
 
-		$results = $search->results_to_json( (array) $row );
+		// Save the changes
+		$results = $search->save_changes( $results[0] );
+		if ( $results instanceof \WP_Error ) {
+			return $results;
+		}
+
+		// Get the row again, with the original search conditions
+		[ $search, $action ] = $this->get_search_replace( $params );
+		$results = $search->get_row( $params['rowId'], $action );
+		if ( $results instanceof \WP_Error ) {
+			return $results;
+		}
 
 		return [
-			'result' => count( $results ) > 0 ? $results[0] : [],
+			'result' => $action->get_results( [ 'results' => $results ] )['results'][0],
 		];
 	}
 
@@ -258,9 +270,8 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	 */
 	public function loadRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
-
-		$sources = Source_Manager::get( [ $params['source'] ], new Search_Flags(), new Source_Flags() );
-		$row = $sources[0]->get_row( $params['rowId'] );
+		$sources = Source_Manager::get( $params['source'], [] );
+		$row = $sources[0]->get_row_columns( $params['rowId'] );
 
 		if ( is_wp_error( $row ) ) {
 			return $row;
@@ -279,32 +290,48 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	 */
 	public function deleteRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
-		$sources = Source_Manager::get( [ $params['source'] ], new Search_Flags(), new Source_Flags() );
+		$sources = Source_Manager::get( $params['source'], [] );
 
 		return $sources[0]->delete_row( $params['rowId'] );
 	}
 
 	/**
-	 * Validate the replacement column
+	 * Autocomplete some value and return suggestions appropriate to the source and column
 	 *
-	 * @param Array|String    $value The value to validate.
 	 * @param WP_REST_Request $request The request.
-	 * @param Array           $param The array of parameters.
-	 * @return Bool|WP_Error true or false
+	 * @return WP_Error|array Return an array of results, or a WP_Error
 	 */
-	public function validate_replace_column( $value, WP_REST_Request $request, $param ) {
+	public function autoComplete( WP_REST_Request $request ) {
 		$params = $request->get_params();
-		$sources = Source_Manager::get( [ $params['source'] ], new Search_Flags(), new Source_Flags() );
-		$columns = [];
+		$sources = Source_Manager::get( $params['source'], [] );
 
-		foreach ( $sources as $source ) {
-			$columns = array_merge( $columns, $source->get_columns() );
+		// Validate the column
+		foreach ( $sources[0]->get_schema_for_source()['columns'] as $column ) {
+			if ( $column['column'] === $params['column'] && $column['options'] === 'api' ) {
+				// Get autocomplete results
+				$rows = $sources[0]->autocomplete( $column, $params['value'] );
+				$results = [];
+
+				foreach ( $rows as $row ) {
+					$result = [ 'value' => $row->id, 'title' => str_replace( [ '\n', '\r', '\t' ], '', $row->value ) ];
+
+					// Trim content to context
+					if ( strlen( $result['title'] ) > self::AUTOCOMPLETE_MAX && strlen( $params['value'] ) > 0 ) {
+						$pos = strpos( $result['title'], $params['value'] );
+						$result['title'] = '...' . substr( $result['title'], max( 0, $pos - self::AUTOCOMPLETE_TRIM_BEFORE ), self::AUTOCOMPLETE_MAX ) . '...';
+					} elseif ( strlen( $result['title'] ) > self::AUTOCOMPLETE_MAX ) {
+						$result['title'] = substr( $result['title'], 0, self::AUTOCOMPLETE_MAX ) . '...';
+					}
+
+					$results[] = $result;
+				}
+
+				// Return to user
+				return apply_filters( 'searchregex_autocomplete_results', $results );
+			}
 		}
 
-		if ( in_array( $value, $columns, true ) ) {
-			return true;
-		}
-
-		return new WP_Error( 'rest_invalid_param', 'Invalid column detected', array( 'status' => 400 ) );
+		// Invalid column
+		return new WP_Error( 'rest_invalid_param', 'Unknown column ' . $params['column'], [ 'status' => 400 ] );
 	}
 }
