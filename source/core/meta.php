@@ -3,33 +3,10 @@
 namespace SearchRegex;
 
 use SearchRegex\Search_Source;
+use SearchRegex\Sql\Sql_Select;
+use SearchRegex\Sql\Sql_Value;
 
 abstract class Source_Meta extends Search_Source {
-	public function get_columns() {
-		$columns = [
-			'meta_key',
-			'meta_value',
-		];
-
-		return $columns;
-	}
-
-	public function get_column_label( $column, $data ) {
-		if ( $column === 'meta_key' ) {
-			return __( 'Name', 'search-regex' );
-		}
-
-		if ( $column === 'meta_value' ) {
-			if ( is_serialized( $data ) ) {
-				return __( 'Serialized Value', 'search-regex' );
-			}
-
-			return __( 'Value', 'search-regex' );
-		}
-
-		return $column;
-	}
-
 	public function get_table_id() {
 		return 'meta_id';
 	}
@@ -37,6 +14,8 @@ abstract class Source_Meta extends Search_Source {
 	public function get_title_column() {
 		return 'meta_key';
 	}
+
+	abstract public function get_meta_name();
 
 	/**
 	 * Return the meta object ID name
@@ -52,34 +31,87 @@ abstract class Source_Meta extends Search_Source {
 	 */
 	abstract public function get_meta_table();
 
-	public function save( $row_id, $column_id, $content ) {
+	public function save( $row_id, array $updates ) {
 		global $wpdb;
 
-		if ( $column_id === 'meta_key' ) {
-			$content = sanitize_key( $content );
+		$meta = $this->get_columns_to_change( $updates );
 
-			return parent::save( $row_id, $column_id, strlen( $content ) === 0 ? $column_id : $content );
-		}
+		if ( count( $meta ) > 0 ) {
+			$this->log_save( 'meta', $meta );
 
-		// Known values
-		// phpcs:ignore
-		$existing = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->get_table_name()} WHERE meta_id=%d", $row_id ), ARRAY_A );
+			// This does all the sanitization
+			$result = true;
 
-		if ( $existing ) {
-			// Serialized data. Until we properly support this then just raw-update the value and leave it to the user to ensure it's correct
-			$meta_table = $wpdb->prefix . $this->get_meta_table() . 'meta';
+			if ( searchregex_can_save() ) {
+				$result = $wpdb->update( $this->get_meta_table(), $meta, [ $this->get_table_id() => $row_id ] );
+				if ( $result === null ) {
+					return new \WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
+				}
 
-			if ( is_serialized( $existing['meta_value'] ) && $wpdb->update( $meta_table, [ 'meta_value' => $content ], [ 'meta_id' => $row_id ] ) ) {
-				wp_cache_delete( $existing[ $this->get_meta_object_id() ], $this->get_meta_table() . '_meta' );
-				return true;
-			}
-
-			// Unserialized data. Update as usual
-			if ( update_metadata( $this->get_meta_table(), $existing[ $this->get_meta_object_id() ], $existing['meta_key'], $content, $existing['meta_value'] ) ) {
-				return true;
+				// Clear any cache
+				wp_cache_delete( $this->get_meta_object_id(), $this->get_meta_table() . '_meta' );
 			}
 		}
 
-		return new \WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
+		return true;
+	}
+
+	public function delete_row( $row_id ) {
+		$this->log_save( 'delete meta', $row_id );
+
+		if ( searchregex_can_save() ) {
+			global $wpdb;
+
+			$result = $wpdb->delete( $this->get_table_name(), [ $this->get_table_id() => $row_id ] );
+			if ( $result ) {
+				wp_cache_delete( $this->get_meta_object_id(), $this->get_meta_table() . '_meta' );
+				return true;
+			}
+
+			return new \WP_Error( 'searchregex_delete', 'Failed to delete meta', 401 );
+		}
+
+		return true;
+	}
+
+	public function autocomplete( $column, $value ) {
+		global $wpdb;
+
+		if ( in_array( $column['column'], [ 'meta_key', 'meta_value' ], true ) ) {
+			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT " . $column['column'] . " as id," . $column['column'] . " as value FROM {$this->get_table_name()} WHERE " . $column['column'] . " LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
+		}
+
+		return [];
+	}
+
+	public function get_schema() {
+		return [
+			'name' => $this->get_meta_name(),
+			'table' => $this->get_table_name(),
+			'columns' => [
+				[
+					'column' => $this->get_meta_object_id(),
+					'type' => 'integer',
+					'title' => __( 'Owner ID', 'search-regex' ),
+					'options' => 'api',
+					'joined_by' => $this->get_meta_table(),
+				],
+				[
+					'column' => 'meta_key',
+					'type' => 'string',
+					'title' => __( 'Meta Key', 'search-regex' ),
+					'options' => 'api',
+					'global' => true,
+				],
+				[
+					'column' => 'meta_value',
+					'type' => 'string',
+					'title' => __( 'Meta Value', 'search-regex' ),
+					'options' => 'api',
+					'multiline' => true,
+					'global' => true,
+				],
+			],
+		];
 	}
 }

@@ -22,4 +22,18 @@ class Source_User_Meta extends Source_Meta {
 	public function get_meta_table() {
 		return 'user';
 	}
+
+	public function get_meta_name() {
+		return __( 'User Meta', 'search-regex' );
+	}
+
+	public function autocomplete( $column, $value ) {
+		global $wpdb;
+
+		if ( $column['column'] === $this->get_meta_object_id() ) {
+			return Autocomplete::get_user( $value );
+		}
+
+		return parent::autocomplete( $column, $value );
+	}
 }
