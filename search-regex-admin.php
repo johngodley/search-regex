@@ -1,12 +1,12 @@
 <?php
 
 require_once __DIR__ . '/models/search.php';
-require_once __DIR__ . '/models/replace.php';
 require_once __DIR__ . '/models/result.php';
+require_once __DIR__ . '/sql/builder.php';
+require_once __DIR__ . '/actions/actions.php';
 
 use SearchRegex\Source_Manager;
 use SearchRegex\Search_Flags;
-use SearchRegex\Source_Flags;
 use SearchRegex\Preset;
 
 class Search_Regex_Admin {
@@ -199,18 +199,56 @@ class Search_Regex_Admin {
 	 */
 	private function get_preload_data() {
 		$all = Source_Manager::get_all_source_names();
-		$handlers = Source_Manager::get( $all, new Search_Flags(), new Source_Flags() );
-		$flags = [];
-
-		foreach ( $handlers as $source ) {
-			$flags[ $source->get_type() ] = $source->get_supported_flags();
-		}
+		$handlers = Source_Manager::get( $all, [], null );
+		$schema = Source_Manager::get_schema();
+		$presets = Preset::get_all();
 
 		return [
 			'sources' => Source_Manager::get_all_grouped(),
-			'source_flags' => $flags,
-			'presets' => Preset::get_all(),
+			'presets' => $presets,
+			'schema' => $schema,
+			'labels' => $this->get_preload_labels( $presets ),
 		];
+	}
+
+	private function get_preload_labels( array $presets ) {
+		$preload = [];
+		$filters_to_preload = [];
+
+		if ( isset( $_GET['filters'] ) ) {
+			$filters = json_decode( stripslashes( $_GET['filters'] ), true );
+			$filters_to_preload = array_merge( $filters_to_preload, $filters );
+		}
+
+		foreach ( $presets as $preset ) {
+			if ( isset( $preset['search']['filters'] ) ) {
+				$filters_to_preload = array_merge( $filters_to_preload, $preset['search']['filters'] );
+			}
+
+			if ( isset( $preset['search']['action'] ) && $preset['search']['action'] === 'modify' && is_array( $preset['search']['actionOption'] ) ) {
+				$filters_to_preload = array_merge( $filters_to_preload, array_map( function( $action ) {
+					return [
+						'type' => $action['source'],
+						'items' => [
+							array_merge(
+								[ 'column' => $action['column'] ],
+								$action
+							),
+						],
+					];
+				}, $preset['search']['actionOption'] ) );
+			}
+		}
+
+		foreach ( $filters_to_preload as $filter ) {
+			if ( is_array( $filter ) && isset( $filter['type'] ) && isset( $filter['items'] ) ) {
+				foreach ( $filter['items'] as $filt ) {
+					$preload = array_merge( $preload, Source_Manager::get_schema_preload( $filter['type'], $filt ) );
+				}
+			}
+		}
+
+		return array_values( array_filter( $preload ) );
 	}
 
 	/**
