@@ -64,8 +64,6 @@ class Result {
 	 * @param Array         $raw Raw row data.
 	 */
 	public function __construct( $row_id, Search_Source $source, array $columns, $raw ) {
-		global $wpdb;
-
 		$this->row_id = $row_id;
 		$this->columns = $columns;
 		$this->raw = $raw;
@@ -157,7 +155,7 @@ class Result {
 	/**
 	 * Get array of changes for this result
 	 *
-	 * @return array<array{change: array<Context>, same: array<Context>}>
+	 * @return array
 	 */
 	public function get_updates() {
 		$updates = [];

@@ -9,13 +9,42 @@ use SearchRegex\Sql\Sql_Where_Date;
 use SearchRegex\Sql\Sql_Where_And;
 use SearchRegex\Sql\Sql_Where_Or;
 
+/**
+ * Filter a date column.
+ */
 class Search_Filter_Date extends Search_Filter_Item {
 	const LOGIC = [ 'equals', 'notequals', 'greater', 'less', 'range' ];
 
+	/**
+	 * Date value to filter on, or start date in a range
+	 *
+	 * @readonly
+	 * @var integer|false
+	 */
 	protected $start_value = false;
+
+	/**
+	 * End date value in a range
+	 *
+	 * @readonly
+	 * @var integer|false
+	 */
 	protected $end_value = false;
+
+	/**
+	 * Logic to perform against the date
+	 *
+	 * @readonly
+	 * @var string
+	 */
 	protected $logic = 'equals';
 
+	/**
+	 * Constructor
+	 *
+	 * @param array         $item JSON settings.
+	 * @param Schema_Column $schema Schema.
+	 */
 	public function __construct( array $item, Schema_Column $schema ) {
 		parent::__construct( $item, $schema );
 
@@ -54,12 +83,12 @@ class Search_Filter_Date extends Search_Filter_Item {
 		$select = new Sql_Select_Column( $this->schema );
 
 		if ( $this->start_value !== false ) {
-			if ( $this->logic === 'range' ) {
+			if ( $this->logic === 'range' && $this->end_value !== false ) {
 				$lower = new Sql_Where_Date( $select, '>', $this->start_value );
 				$upper = new Sql_Where_Date( $select, '<', $this->end_value );
 
-				$where =  new Sql_Where_And( [ $lower, $upper ] );
-			} elseif ( $this->logic === 'notrange' ) {
+				$where = new Sql_Where_And( [ $lower, $upper ] );
+			} elseif ( $this->logic === 'notrange' && $this->end_value !== false ) {
 				$lower = new Sql_Where_Date( $select, '<', $this->start_value );
 				$upper = new Sql_Where_Date( $select, '>', $this->end_value );
 
@@ -80,6 +109,8 @@ class Search_Filter_Date extends Search_Filter_Item {
 		$date = mysql2date( 'U', $value );
 
 		if ( $this->start_value !== false ) {
+			$matched = false;
+
 			if ( $this->logic === 'equals' ) {
 				$matched = $date === $this->start_value;
 			} elseif ( $this->logic === 'notequals' ) {

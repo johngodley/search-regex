@@ -101,6 +101,11 @@ function searchregex_get_rest_api( $type = false ) {
 	return $url;
 }
 
+/**
+ * Can we save data to the database? Useful for disabling saves during debugging
+ *
+ * @return boolean
+ */
 function searchregex_can_save() {
 	if ( defined( 'SEARCHREGEX_DEBUG' ) && SEARCHREGEX_DEBUG ) {
 		return false;

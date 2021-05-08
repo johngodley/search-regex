@@ -3,6 +3,7 @@
 namespace SearchRegex;
 
 use SearchRegex\Search_Source;
+use SearchRegex\Sql\Sql_Value;
 
 class Source_Post_Meta extends Source_Meta {
 	public function get_table_name() {
@@ -24,10 +25,8 @@ class Source_Post_Meta extends Source_Meta {
 	}
 
 	public function autocomplete( $column, $value ) {
-		global $wpdb;
-
 		if ( $column['column'] === $this->get_meta_object_id() ) {
-			return Autocomplete::get_post( $value, 'ID', 'post_title' );
+			return Autocomplete::get_post( $value, Sql_Value::column( 'ID' ), Sql_Value::column( 'post_title' ) );
 		}
 
 		return parent::autocomplete( $column, $value );
@@ -36,7 +35,8 @@ class Source_Post_Meta extends Source_Meta {
 	public function convert_result_value( Schema_Column $schema, $value ) {
 		if ( $schema->get_column() === 'post_id' ) {
 			$post = get_post( intval( $value, 10 ) );
-			if ( $post ) {
+
+			if ( is_object( $post ) ) {
 				return $post->post_title;
 			}
 		}

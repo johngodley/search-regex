@@ -4,18 +4,49 @@ namespace SearchRegex;
 
 use SearchRegex\Sql\Sql_Query;
 use SearchRegex\Sql\Sql_Join;
+use SearchRegex\Sql\Sql_Join_Meta;
+use SearchRegex\Sql\Sql_Join_Term;
 use SearchRegex\Sql\Sql_Where;
 use SearchRegex\Sql\Sql_Select_Column;
 use SearchRegex\Sql\Sql_Value;
 use SearchRegex\Sql\Sql_Where_In;
 use SearchRegex\Sql\Sql_Where_And;
 
+/**
+ * Filter on a member column
+ */
 class Search_Filter_Member extends Search_Filter_Item {
 	const LOGIC = [ 'include', 'exclude' ];
 
+	/**
+	 * List of values
+	 *
+	 * @readonly
+	 * @var list<string>
+	 */
 	private $values = [];
+
+	/**
+	 * Logic to filter with
+	 *
+	 * @readonly
+	 * @var string
+	 */
 	private $logic = 'include';
-	private $flags = null;
+
+	/**
+	 * Flags
+	 *
+	 * @readonly
+	 * @var Search_Flags
+	 */
+	private $flags;
+
+	/**
+	 * Join
+	 *
+	 * @var Sql_Join|null
+	 */
 	private $join = null;
 
 	public function __construct( array $item, Schema_Column $schema ) {
@@ -38,7 +69,7 @@ class Search_Filter_Member extends Search_Filter_Item {
 		$this->flags = new Search_Flags( isset( $item['flags'] ) ? $item['flags'] : [ 'case' ] );
 
 		if ( $this->schema->get_join_column() ) {
-			$this->join = Sql_Join::create( $this->schema->get_column() );
+			$this->join = Sql_Join::create( $this->schema->get_column(), $schema->get_source() );
 		}
 	}
 
@@ -59,6 +90,11 @@ class Search_Filter_Member extends Search_Filter_Item {
 		];
 	}
 
+	/**
+	 * Get all the member values
+	 *
+	 * @return array
+	 */
 	public function get_values() {
 		return $this->values;
 	}
@@ -87,7 +123,11 @@ class Search_Filter_Member extends Search_Filter_Item {
 	public function get_values_for_row( $row ) {
 		$values = parent::get_values_for_row( $row );
 
-		if ( isset( $values[ $this->schema->get_column() ] ) && $this->join && count( $values ) === 1 && $values[ $this->schema->get_column() ] === '0' ) {
+		if ( ! $this->join instanceof Sql_Join_Meta && ! $this->join instanceof Sql_Join_Term ) {
+			return $values;
+		}
+
+		if ( isset( $values[ $this->schema->get_column() ] ) && count( $values ) === 1 && $values[ $this->schema->get_column() ] === '0' ) {
 			return [ $this->schema->get_column() => implode( ',', $this->join->get_all_values( intval( array_values( $row )[0], 10 ) ) ) ];
 		}
 
@@ -114,6 +154,13 @@ class Search_Filter_Member extends Search_Filter_Item {
 		return $contexts;
 	}
 
+	/**
+	 * Get context for value
+	 *
+	 * @param string|integer $value Value.
+	 * @param Search_Source  $source Source.
+	 * @return Match_Context[]
+	 */
 	private function get_value_context( $value, Search_Source $source ) {
 		if ( is_numeric( $value ) ) {
 			$value = intval( $value, 10 );
@@ -123,27 +170,22 @@ class Search_Filter_Member extends Search_Filter_Item {
 			$matched = in_array( $value, $this->values, true );
 
 			if ( $this->logic === 'exclude' && ! $matched ) {
-				return $this->get_matched_context( $source, $value );
+				return $this->get_matched_context( $source, (string) $value );
 			}
 
 			if ( $this->logic === 'include' && $matched ) {
-				return $this->get_matched_context( $source, $value );
+				return $this->get_matched_context( $source, (string) $value );
 			}
 
 			if ( $this->join ) {
-				$label = $this->join->get_join_value( $value );
-
-				if ( $label !== null ) {
-					return $this->get_unmatched_context( $source, $value, $label );
-				}
-
-				return [];
+				$label = $this->join->get_join_value( (string) $value );
+				return $this->get_unmatched_context( $source, (string) $value, $label );
 			}
 
 			if ( $this->schema->get_options() ) {
 				foreach ( $this->schema->get_options() as $option ) {
 					if ( intval( $option['value'], 10 ) === $value ) {
-						return $this->get_matched_context( $source, $value, $option['label'] );
+						return $this->get_matched_context( $source, (string) $value, $option['label'] );
 					}
 				}
 			}
@@ -153,15 +195,15 @@ class Search_Filter_Member extends Search_Filter_Item {
 			return [ new Match_Context_Empty() ];
 		}
 
-		return $this->get_unmatched_context( $source, $value );
+		return $this->get_unmatched_context( $source, (string) $value );
 	}
 
 	public function modify_query( Sql_Query $query ) {
-		if ( $this->join ) {
+		if ( $this->join !== null ) {
 			$join_wheres = $this->join->get_where();
 
 			if ( $join_wheres ) {
-				$where = new Sql_Where_And( array_merge( $query->get_where(), $join_wheres ? [ $join_wheres ] : [] ) );
+				$where = new Sql_Where_And( array_merge( $query->get_where(), [ $join_wheres ] ) );
 				$query->reset_where();
 				$query->add_where( $where );
 			}

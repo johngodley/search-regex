@@ -48,7 +48,7 @@ class Schema {
 	/**
 	 * Get list of all sources
 	 *
-	 * @return array<string>
+	 * @return list<Schema_Source>
 	 */
 	public function get_sources() {
 		return array_values( $this->schema );

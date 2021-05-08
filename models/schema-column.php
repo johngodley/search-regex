@@ -1,5 +1,7 @@
 <?php
 
+namespace SearchRegex;
+
 /**
  * Helper to represent the schema for a column
  */
@@ -9,14 +11,14 @@ class Schema_Column {
 	 *
 	 * @var string
 	 */
-	private $column = null;
+	private $column = '';
 
 	/**
 	 * Column type
 	 *
 	 * @var 'integer'|'string'|'date'|'member'|'keyvalue'
 	 */
-	private $type = null;
+	private $type = 'string';
 
 	/**
 	 * Is this a global column?
@@ -28,16 +30,16 @@ class Schema_Column {
 	/**
 	 * Join column, if any
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $join = null;
+	private $join = '';
 
 	/**
 	 * Joined by column
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $joined_by = null;
+	private $joined_by = '';
 
 	/**
 	 * Any options, if this is a member type
@@ -49,9 +51,9 @@ class Schema_Column {
 	/**
 	 * Source name for this column
 	 *
-	 * @var Search_Source|null
+	 * @var Schema_Source
 	 */
-	private $source = null;
+	private $source;
 
 	/**
 	 * Constructor
@@ -86,6 +88,8 @@ class Schema_Column {
 			$this->options = $schema['options'];
 		}
 	}
+
+	// XXX have an isvalid thing so its not added
 
 	/**
 	 * Get source name
@@ -126,7 +130,7 @@ class Schema_Column {
 	/**
 	 * Get column join
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function get_join_column() {
 		return $this->join;
@@ -135,7 +139,7 @@ class Schema_Column {
 	/**
 	 * Get column joined by
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function get_joined_by() {
 		return $this->joined_by;
@@ -144,7 +148,7 @@ class Schema_Column {
 	/**
 	 * Get column options
 	 *
-	 * @return array<array{value: string, label: string}>
+	 * @return array
 	 */
 	public function get_options() {
 		return $this->options;

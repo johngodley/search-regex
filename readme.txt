@@ -19,6 +19,11 @@ You can use this to do things like:
 - Update URLs in links and images
 - Perform site-wide changes
 
+Search filters can be created to match any column of any WordPress table. For example:
+- Find all posts in a category
+- Find all post meta data without a post
+- Find all posts in a date range
+
 Search Regex handles small and large sites.
 
 == What can I search? ==
@@ -35,13 +40,36 @@ You can search:
 
 Full regular expression support is provided, and you can capture data and use it in the replacement.
 
-== Replace Matched Data ==
+== Actions ==
 
-Once a match has been made you can replace it with a popup replacer. You can also replace all matches in a database row, and you can replace all matches across your database.
+A variety of actions can be performed on matching results:
+- Modify and replace the result
+- Delete the result
+- Export to CSV and SQL
+- Perform custom PHP action
 
-Additionally, if you need to make your change with context of the surrounding content you can use the inline editor to edit the full context.
+== Modify and Replace Data ==
 
-Note that it is your responsibility to ensure that replacements in serialized data is valid.
+Results can be individually modified by clicking on the item to change, and using the popup modifier.
+
+Bulk modifications can be performed against all matching results.
+
+The types of modification depend on the data being changed:
+- Numbers can be added or subtracted to existing numbers
+- Hours, days, weeks, and months, can be added to dates
+- Tags and categories can be added, removed, and substitued
+
+Custom shortcodes are supported that allow dynamic data to be included:
+- Add the current date and time, in any format, to content
+- Insert data from other columns. For example, insert the category into the title
+- Transform existing data. For example, convert case, change underscores to dashes.
+
+== Example uses ==
+
+Some ideas for potential uses:
+- Delete all comments that match a phrase
+- Add a category to all matching posts
+- Remove orphaned meta data
 
 == Support ==
 
@@ -78,9 +106,26 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 == Upgrade Notice ==
 
 = 2.0 =
-* Entirely new rewrite of the plugin. Requires minimum PHP 5.6.
+* Entirely new rewrite of the plugin. Requires minimum PHP 5.6 and is compatible with all versions (tested up to 8.0).
+
+= 3.0 =
+* Major update adding advanced search filters, modifications to any column, and a variety of actions (including exporting to SQL).
 
 == Changelog ==
+
+= 3.0 - 2021 =
+- Major update with many, many, new features
+- Advanced searches with fully customisable filters that can be combined together with AND and OR logic
+- Search any WordPress table, including posts, comments, users, meta-data, and options
+- Can be used as a general-purpose data viewer and data updater
+- Export rows to CSV and SQL
+- Mass delete matching rows
+- Modify any column, with ability to increment and decrement numbers and dates (i.e. add 2 hours to post modification date)
+- Insert data from other columns. For example, add a list of categories into a post, add post date to the title etc
+- Transform existing data. For example, change case, convert underscores to dashes.
+- Full support for saving advanced filter and actions to presets
+- Autocomplete filters and modifications
+- Support for serialized data (with conditions)
 
 = 2.4.1 - 29th November 2020 =
 - Fix replacements with a backslashed character

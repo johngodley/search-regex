@@ -2,19 +2,41 @@
 
 namespace SearchRegex;
 
+/**
+ * Perform modification of columns
+ */
 class Action_Modify extends Action {
+	/**
+	 * Columns that are to be modified
+	 *
+	 * @var Modifier[]
+	 */
 	private $columns = [];
-	private $dynamic_column;
 
-	public function __construct( array $options, Schema $schema ) {
-		foreach ( $options as $option ) {
-			$source_schema = $schema->get_for_source( isset( $option['source'] ) ? $option['source'] : false );
+	/**
+	 * Dynamic shortcode handler
+	 *
+	 * @var Dynamic_Column|null
+	 */
+	private $dynamic_column = null;
 
-			if ( $source_schema ) {
-				$column = Action_Modify_Column::create( $option, $source_schema );
+	/**
+	 * Constructor
+	 *
+	 * @param array|string $options Options.
+	 * @param Schema       $schema Schema.
+	 */
+	public function __construct( $options, Schema $schema ) {
+		if ( is_array( $options ) ) {
+			foreach ( $options as $option ) {
+				$source_schema = $schema->get_for_source( isset( $option['source'] ) ? $option['source'] : '' );
 
-				if ( $column && $column->is_valid() ) {
-					$this->columns[] = $column;
+				if ( $source_schema ) {
+					$column = Modifier::create( $option, $source_schema );
+
+					if ( $column && $column->is_valid() ) {
+						$this->columns[] = $column;
+					}
 				}
 			}
 		}
@@ -22,12 +44,13 @@ class Action_Modify extends Action {
 		if ( count( $this->columns ) > 0 ) {
 			$this->dynamic_column = new Dynamic_Column();
 		}
+
+		parent::__construct( $options, $schema );
 	}
 
-	public function get_replace_columns() {
-		$views = [];
-
-		$remember = function( $return, $tag, $attr, $m ) {
+	public function get_view_columns() {
+		/** @psalm-suppress UnusedClosureParam */
+		$remember = function( $return, $tag, $attr ) {
 			if ( $tag === 'column' ) {
 				if ( isset( $attr['name'] ) ) {
 					return 'column::' . $attr['name'] . ' ';
@@ -42,8 +65,17 @@ class Action_Modify extends Action {
 		add_filter( 'pre_do_shortcode_tag', $remember, 10, 4 );
 
 		$views = array_map( function( $column ) {
-			if ( $column instanceof Action_Modify_String && has_shortcode( $column->get_replace_value(), 'column' ) ) {
-				$result = do_shortcode( $column->get_replace_value() );
+			if ( ! $column instanceof Modify_String ) {
+				return false;
+			}
+
+			$replace = $column->get_replace_value();
+			if ( $replace === null ) {
+				return false;
+			}
+
+			if ( has_shortcode( $replace, 'column' ) ) {
+				$result = do_shortcode( $replace );
 
 				if ( preg_match_all( '/column::(.*?)\s/', $result, $matches ) > 0 ) {
 					foreach ( $matches[1] as $match ) {
@@ -55,11 +87,14 @@ class Action_Modify extends Action {
 			return false;
 		}, $this->columns );
 
-		$views = array_values( array_filter( $views ) );
-
+		/** @psalm-suppress TooManyArguments */
 		remove_filter( 'pre_do_shortcode_tag', $remember, 10, 4 );
 
-		return $views;
+		$modify = array_map( function( $column ) {
+			return $column->get_source_name() . '__' . $column->get_column_name();
+		}, $this->columns );
+
+		return array_values( array_filter( array_merge( $views, $modify ) ) );
 	}
 
 	public function to_json() {
@@ -75,7 +110,12 @@ class Action_Modify extends Action {
 		foreach ( $columns as $pos => $column ) {
 			foreach ( $this->columns as $action_column ) {
 				if ( $source->is_type( $action_column->get_source_name() ) && $action_column->is_for_column( $column->get_column_id() ) ) {
-					$columns[ $pos ] = $action_column->perform( $row_id, $action_column->get_row_data( $row ), $source, $column, $row );
+					$value = $action_column->get_row_data( $row );
+
+					if ( $value ) {
+						$columns[ $pos ] = $action_column->perform( $row_id, $value, $source, $column, $row );
+					}
+
 					break;
 				}
 			}
@@ -83,12 +123,4 @@ class Action_Modify extends Action {
 
 		return $columns;
 	}
-
-	public function get_modified_columns() {
-		return array_map( function( $column ) {
-			return $column->get_source_name() . '__' . $column->get_column_name();
-		}, $this->columns );
-	}
 }
-
-require_once __DIR__ . '/column.php';

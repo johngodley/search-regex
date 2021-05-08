@@ -2,12 +2,47 @@
 
 namespace SearchRegex\Sql;
 
+/**
+ * SQL SELECT
+ */
 class Sql_Select {
-	protected $column = null;
+	/**
+	 * Column name
+	 *
+	 * @var string
+	 */
+	protected $column;
+
+	/**
+	 * Column alias
+	 *
+	 * @readonly
+	 * @var string|null
+	 */
 	protected $alias = null;
-	protected $table = null;
+
+	/**
+	 * Table name
+	 *
+	 * @var string
+	 */
+	protected $table;
+
+	/**
+	 * SQL prefix
+	 *
+	 * @var boolean
+	 */
 	protected $prefix_sql = false;
 
+	/**
+	 * Constructor
+	 *
+	 * @param Sql_Value      $table Table name.
+	 * @param Sql_Value      $column Column name.
+	 * @param Sql_Value|null $alias Table alias.
+	 * @param boolean        $prefix_required Whether we need to prefix the SQL with the table name.
+	 */
 	public function __construct( Sql_Value $table, Sql_Value $column, Sql_Value $alias = null, $prefix_required = false ) {
 		$this->table = $table->get_value();
 		$this->column = $column->get_value();
@@ -15,6 +50,11 @@ class Sql_Select {
 		$this->prefix_sql = $prefix_required;
 	}
 
+	/**
+	 * Get as SQL
+	 *
+	 * @return string
+	 */
 	public function get_as_sql() {
 		$sql = $this->column;
 
@@ -29,9 +69,14 @@ class Sql_Select {
 		return $sql;
 	}
 
+	/**
+	 * Get the column or aliased column
+	 *
+	 * @return string
+	 */
 	public function get_column_or_alias() {
 		if ( $this->alias ) {
-			return $this->alias . '.' . $this->column;;
+			return $this->alias . '.' . $this->column;
 		}
 
 		if ( $this->table ) {
@@ -41,25 +86,36 @@ class Sql_Select {
 		return $this->column;
 	}
 
+	/**
+	 * Update the column
+	 *
+	 * @param string $column Column.
+	 * @param string $updated_column Updated column.
+	 * @return void
+	 */
 	public function update_column( $column, $updated_column ) {
 		if ( $this->is_column_match( $column ) ) {
 			$this->column = $updated_column;
-			$this->table = null;
+			$this->table = '';
 		}
 	}
 
+	/**
+	 * Does this match the column?
+	 *
+	 * @param string $column Column to match.
+	 * @return boolean
+	 */
 	public function is_column_match( $column ) {
 		return $this->column === $column;
 	}
 
-	public function to_upper() {
-		$this->column = 'UPPER(' . $this->column . ')';
-	}
-
+	/**
+	 * Mark that we need the column to be prefixed with table name
+	 *
+	 * @return void
+	 */
 	public function set_prefix_required() {
 		$this->prefix_sql = true;
 	}
 }
-
-require_once __DIR__ . '/select-column.php';
-require_once __DIR__ . '/sum.php';

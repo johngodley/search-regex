@@ -2,7 +2,15 @@
 
 namespace SearchRegex\Sql;
 
+/**
+ * Joins taxonomy table
+ */
 class Sql_Join_Taxonomy extends Sql_Join {
+	/**
+	 * Constructor
+	 *
+	 * @param string $term_type Type of taxonomy.
+	 */
 	public function __construct( $term_type ) {
 		$this->column = $term_type;
 	}
@@ -10,7 +18,7 @@ class Sql_Join_Taxonomy extends Sql_Join {
 	public function get_select() {
 		global $wpdb;
 
-		return new Sql_Select( Sql_Value::table( $wpdb->prefix . 'term_taxonomy' ), Sql_Value::raw( "taxonomy" ) );
+		return new Sql_Select( Sql_Value::table( $wpdb->prefix . 'term_taxonomy' ), Sql_Value::raw( 'taxonomy' ) );
 	}
 
 	public function get_from() {

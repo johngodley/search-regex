@@ -2,7 +2,15 @@
 
 namespace SearchRegex;
 
+/**
+ * Action to delete rows
+ */
 class Action_Delete extends Action {
+	/**
+	 * Track how many rows have been deleted
+	 *
+	 * @var integer
+	 */
 	private $deleted = 0;
 
 	public function to_json() {
@@ -15,26 +23,14 @@ class Action_Delete extends Action {
 		if ( $this->should_save() ) {
 			$this->deleted++;
 
-			$this->log_action( 'Delete: ' . $source->get_table_name() . ' row ' . $row_id );
+			$this->log_action( 'Delete: ' . $source->get_table_name() . ' row ' . (string) $row_id );
 
+			/** @psalm-suppress UndefinedFunction */
 			if ( searchregex_can_save() ) {
 				$source->delete_row( $row_id );
 			}
 		}
 
 		return $columns;
-	}
-
-	public function get_totals() {
-		if ( $this->deleted > 0 ) {
-			return [
-				[
-					'name' => 'delete',
-					'value' => $this->deleted,
-				],
-			];
-		}
-
-		return [];
 	}
 }

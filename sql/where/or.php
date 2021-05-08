@@ -3,12 +3,29 @@
 namespace SearchRegex\Sql;
 
 class Sql_Where_Or extends Sql_Where {
+	/**
+	 * Array of WHERE objects that will be ORd together
+	 *
+	 * @readonly
+	 * @var array<Sql_Where>
+	 */
 	protected $wheres = [];
 
+	/**
+	 * Constructor
+	 *
+	 * @param array<Sql_Where> $wheres Wheres.
+	 */
 	public function __construct( array $wheres ) {
 		$this->wheres = $wheres;
 	}
 
+	/**
+	 * Get the WHEREs as a group
+	 *
+	 * @param string $logic Logic.
+	 * @return string
+	 */
 	protected function get_group( $logic ) {
 		$start = '';
 		$end = '';

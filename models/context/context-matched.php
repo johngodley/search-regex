@@ -2,6 +2,9 @@
 
 namespace SearchRegex;
 
+/**
+ * Context for a matched value
+ */
 class Match_Context_Matched extends Match_Context_Value {
 	const TYPE_MATCH = 'match';
 

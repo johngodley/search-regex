@@ -1,5 +1,7 @@
 <?php
 
+namespace SearchRegex;
+
 /**
  * Helper to represent the schema for a source
  */
@@ -9,26 +11,26 @@ class Schema_Source {
 	 *
 	 * @var string
 	 */
-	private $type = null;
+	private $type = '';
 
 	/**
 	 * Source label
 	 *
 	 * @var string
 	 */
-	private $name = null;
+	private $name = '';
 
 	/**
 	 * Source table
 	 *
 	 * @var string
 	 */
-	private $table = null;
+	private $table = '';
 
 	/**
 	 * Array of Schema_Column objects
 	 *
-	 * @var array<Schema_Column>
+	 * @var Schema_Column[]
 	 */
 	private $columns = [];
 
@@ -99,9 +101,13 @@ class Schema_Source {
 	 * @return array<Schema_Column>
 	 */
 	public function get_join_columns() {
-		return array_filter( $this->columns, function( $column ) {
-			return $column->get_join_column();
-		} );
+		return array_filter(
+			$this->columns,
+			/** @psalm-suppress all */
+			function( Schema_Column $column ) {
+				return $column->get_join_column();
+			}
+		);
 	}
 
 	/**

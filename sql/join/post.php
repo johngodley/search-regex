@@ -2,18 +2,46 @@
 
 namespace SearchRegex\Sql;
 
+/**
+ * Join on the post table
+ */
 class Sql_Join_Post extends Sql_Join {
+	/**
+	 * Join logic
+	 *
+	 * @var string
+	 */
 	private $logic;
+
+	/**
+	 * Source
+	 *
+	 * @var string
+	 */
 	private $source;
 
+	/**
+	 * Column to join
+	 *
+	 * @var string
+	 */
+	private $join_column;
+
+	/**
+	 * Constructor
+	 *
+	 * @param string $column Column.
+	 * @param string $source Source.
+	 */
 	public function __construct( $column, $source ) {
 		global $wpdb;
 
 		$this->column = $column;
+		$this->source = $wpdb->postmeta;
+		$this->join_column = '';
+		$this->logic = '';
 
 		if ( $source === 'post-meta' ) {
-			$this->join_column = 'post_id';
-			$this->source = $wpdb->postmeta;
 			$this->join_column = 'post_id';
 		} elseif ( $source === 'comment-meta' ) {
 			$this->join_column = 'comment_ID';
@@ -24,13 +52,17 @@ class Sql_Join_Post extends Sql_Join {
 		}
 	}
 
+	/**
+	 * Set the logic for this join
+	 *
+	 * @param string $logic Logic.
+	 * @return void
+	 */
 	public function set_logic( $logic ) {
 		$this->logic = $logic;
 	}
 
 	public function get_select() {
-		global $wpdb;
-
 		return new Sql_Select( Sql_Value::table( $this->source ), Sql_Value::raw( $this->join_column ), null, true );
 	}
 

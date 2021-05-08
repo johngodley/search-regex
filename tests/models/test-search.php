@@ -52,7 +52,7 @@ class SearchTest extends SearchRegex_Api_Test {
 		}
 	}
 
-	public function testNoMatch() {
+	public function testNoMatched_Item() {
 		list( $search, $replacer ) = $this->get_search_replace( [ 'post' ], 'zxyw', 'cat', false );
 
 		$results = $search->get_search_results( $replacer, 0, 25 );

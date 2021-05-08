@@ -7,12 +7,34 @@ use SearchRegex\Sql\Sql_Value;
 class Action_Export extends Action {
 	const ALLOWED_FORMATS = [ 'json', 'csv', 'sql' ];
 
+	/**
+	 * Export format
+	 *
+	 * @var string
+	 */
 	private $format = 'json';
+
+	/**
+	 * Table being exported
+	 *
+	 * @var string
+	 */
 	private $table = 'table';
-	private $schema = null;
+
+	/**
+	 * Export only the selected columns
+	 *
+	 * @var boolean
+	 */
 	private $selected_only = false;
 
-	public function __construct( array $options, Schema $schema ) {
+	/**
+	 * Constructor
+	 *
+	 * @param array|string $options Options.
+	 * @param Schema       $schema Schema.
+	 */
+	public function __construct( $options, Schema $schema ) {
 		if ( isset( $options['format'] ) && in_array( $options['format'], self::ALLOWED_FORMATS, true ) ) {
 			$this->format = $options['format'];
 		}
@@ -21,7 +43,7 @@ class Action_Export extends Action {
 			$this->selected_only = true;
 		}
 
-		$this->schema = $schema->get_sources()[0];
+		parent::__construct( $options, $schema );
 	}
 
 	public function to_json() {
@@ -44,19 +66,18 @@ class Action_Export extends Action {
 		return [];
 	}
 
-	// We want this action to return data
 	public function should_save() {
 		return false;
 	}
 
-	// Convert to whatever the chosen format is
 	public function get_results( array $results ) {
+		// Convert to whatever the chosen format is
 		$results['results'] = array_map( function( $item ) {
 			if ( $this->format === 'json' ) {
 				return $this->convert_to_json( $item );
-			} else if ( $this->format === 'csv' ) {
+			} elseif ( $this->format === 'csv' ) {
 				return $this->convert_to_csv( $item );
-			} else if ( $this->format === 'sql' ) {
+			} elseif ( $this->format === 'sql' ) {
 				return $this->convert_to_sql( $item );
 			}
 
@@ -66,15 +87,32 @@ class Action_Export extends Action {
 		return $results;
 	}
 
+	/**
+	 * Convert Result to JSON
+	 *
+	 * @param Result $result Result.
+	 * @return string
+	 */
 	private function convert_to_json( Result $result ) {
 		$json = $result->to_json();
 
 		// Remove the 'actions' for JSON
 		unset( $json['actions'] );
 
-		return $json;
+		$json = wp_json_encode( $json );
+		if ( $json !== false ) {
+			return $json;
+		}
+
+		return '';
 	}
 
+	/**
+	 * Convert Result to SQL
+	 *
+	 * @param Result $result Result.
+	 * @return string
+	 */
 	private function convert_to_sql( Result $result ) {
 		$values = array_map( function( $column ) {
 			global $wpdb;
@@ -92,14 +130,21 @@ class Action_Export extends Action {
 			return Sql_Value::column( $column->get_column_id() )->get_value();
 		}, $result->get_columns() );
 
-		return "INSERT INTO {$this->schema->get_table()} (" . implode( ', ', $names ) . ') VALUES(' . implode( ', ', $values ). ');';
+		return "INSERT INTO {$this->schema->get_table()} (" . implode( ', ', $names ) . ') VALUES(' . implode( ', ', $values ) . ');';
 	}
 
+	/**
+	 * Convert a Result to CSV
+	 *
+	 * @param Result $result Result.
+	 * @return string
+	 */
 	private function convert_to_csv( Result $result ) {
 		$csv = array_map( function( $column ) {
 			return $column->get_value();
 		}, $result->get_columns() );
 
+		// phpcs:ignore
 		$handle = fopen( 'php://memory', 'r+' );
 
 		fputcsv( $handle, $csv );
@@ -107,6 +152,7 @@ class Action_Export extends Action {
 
 		$result = stream_get_contents( $handle );
 
+		// phpcs:ignore
 		fclose( $handle );
 
 		return trim( $result );

@@ -14,13 +14,6 @@ abstract class Match_Context {
 	protected $context_id = 0;
 
 	/**
-	 * Total number of matches
-	 *
-	 * @var Int
-	 **/
-	protected $match_count = 0;
-
-	/**
 	 * Create a Match_Context_String with a given context ID
 	 *
 	 * @param int $context_id Context ID.
@@ -30,18 +23,21 @@ abstract class Match_Context {
 	}
 
 	/**
-	 * Return the number of matches within this context
+	 * Set the context ID
 	 *
-	 * @return Int Match count
+	 * @param integer $context_id New context ID.
+	 * @return void
 	 */
-	public function get_match_count() {
-		return $this->match_count;
-	}
-
 	public function set_context_id( $context_id ) {
 		$this->context_id = $context_id;
 	}
 
+	/**
+	 * Is the context the same type as this context?
+	 *
+	 * @param Match_Context $context Context to compare.
+	 * @return boolean
+	 */
 	public function is_equal( Match_Context $context ) {
 		return $this->get_type() === $context->get_type();
 	}
@@ -67,7 +63,7 @@ abstract class Match_Context {
 	/**
 	 * Convert the Match_Context_String to to_json
 	 *
-	 * @return Array{context_id: int, context: string|null, matches: array, match_count: int} JSON
+	 * @return array JSON
 	 */
 	public function to_json() {
 		return [
@@ -76,15 +72,10 @@ abstract class Match_Context {
 		];
 	}
 
+	/**
+	 * Get context type
+	 *
+	 * @return string
+	 */
 	abstract public function get_type();
 }
-
-require_once __DIR__ . '/value-type.php';
-require_once __DIR__ . '/context/context-value.php';
-require_once __DIR__ . '/context/context-matched.php';
-require_once __DIR__ . '/context/context-add.php';
-require_once __DIR__ . '/context/context-delete.php';
-require_once __DIR__ . '/context/context-pair.php';
-require_once __DIR__ . '/context/context-empty.php';
-require_once __DIR__ . '/context/context-replace.php';
-require_once __DIR__ . '/context/context-string.php';

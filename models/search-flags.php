@@ -25,6 +25,12 @@ class Search_Flags {
 		} );
 	}
 
+	/**
+	 * Duplicate a search flag object
+	 *
+	 * @param Search_Flags $flags Flags.
+	 * @return Search_Flags
+	 */
 	public static function copy( Search_Flags $flags ) {
 		return new Search_Flags( $flags->flags );
 	}
@@ -57,6 +63,11 @@ class Search_Flags {
 		return $this->has_flag( 'case' );
 	}
 
+	/**
+	 * Set the regex flag
+	 *
+	 * @return void
+	 */
 	public function set_regex() {
 		if ( ! $this->is_regex() ) {
 			$this->flags[] = 'regex';
@@ -72,6 +83,11 @@ class Search_Flags {
 		return $this->flags;
 	}
 
+	/**
+	 * Convert the flags to JSON
+	 *
+	 * @return array
+	 */
 	public function to_json() {
 		return $this->flags;
 	}

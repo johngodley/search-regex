@@ -7,6 +7,9 @@ use SearchRegex\Result;
 use SearchRegex\Sql\Sql_Select;
 use SearchRegex\Sql\Sql_Value;
 
+/**
+ * Source for comments
+ */
 class Source_Comment extends Search_Source {
 	use Source_HasMeta;
 
@@ -14,7 +17,6 @@ class Source_Comment extends Search_Source {
 		$id = $result->get_row_id();
 		$link = get_edit_comment_link( $id );
 		$comment = get_comment( $id );
-		$raw = $result->get_raw();
 
 		if ( $link && is_object( $comment ) ) {
 			$view = get_comment_link( $comment );
@@ -44,18 +46,22 @@ class Source_Comment extends Search_Source {
 
 	public function get_row_columns( $row_id ) {
 		$meta = $this->get_meta( get_comment_meta( $row_id ) );
+		$row_columns = parent::get_row_columns( $row_id );
+		if ( $row_columns instanceof \WP_Error ) {
+			return $row_columns;
+		}
 
 		return array_merge(
-			parent::get_row_columns( $row_id ),
+			$row_columns,
 			count( $meta ) > 0 ? [ $meta ] : [],
 		);
 	}
 
-	public function save( $row_id, array $updates ) {
-		$comment = $this->get_columns_to_change( $updates );
+	public function save( $row_id, array $changes ) {
+		$comment = $this->get_columns_to_change( $changes );
 		$comment['ID'] = $row_id;
 
-		$this->process_meta( $row_id, 'comment', $updates );
+		$this->process_meta( $row_id, 'comment', $changes );
 
 		if ( count( $comment ) > 1 ) {
 			// wp_update_comment expects slashes to be present, which are then removed
@@ -67,6 +73,7 @@ class Source_Comment extends Search_Source {
 
 			$result = true;
 
+			/** @psalm-suppress UndefinedFunction */
 			if ( searchregex_can_save() ) {
 				$result = wp_update_comment( $comment );
 			}
@@ -84,6 +91,7 @@ class Source_Comment extends Search_Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete comment', $row_id );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
 			if ( wp_delete_comment( $row_id, true ) ) {
 				return true;
@@ -98,8 +106,12 @@ class Source_Comment extends Search_Source {
 	public function autocomplete( $column, $value ) {
 		global $wpdb;
 
+		if ( ! isset( $column['column'] ) ) {
+			return [];
+		}
+
 		if ( $column['column'] === 'comment_post_ID' ) {
-			return Autocomplete::get_post( $value, 'ID', 'post_title' );
+			return Autocomplete::get_post( $value, Sql_Value::column( 'ID' ), Sql_Value::column( 'post_title' ) );
 		}
 
 		if ( $column['column'] === 'user_id' ) {
@@ -107,7 +119,7 @@ class Source_Comment extends Search_Source {
 		}
 
 		if ( $column['column'] === 'meta' ) {
-			return Autocomplete::get_meta( 'commentmeta', $value );
+			return Autocomplete::get_meta( Sql_Value::table( 'commentmeta' ), $value );
 		}
 
 		if ( $column['column'] === 'comment_parent' ) {
@@ -116,6 +128,7 @@ class Source_Comment extends Search_Source {
 
 		// General text searches
 		if ( $column['column'] === 'comment_author' || $column['column'] === 'comment_author_email' ) {
+			// phpcs:ignore
 			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT " . $column['column'] . " as id," . $column['column'] . " as value FROM {$wpdb->comments} WHERE " . $column['column'] . " LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
 		}
 
@@ -190,9 +203,18 @@ class Source_Comment extends Search_Source {
 					'column' => 'comment_approved',
 					'type' => 'member',
 					'options' => [
-						[ 'value' => '0', 'label' => __( 'Unapproved', 'search-regex' ) ],
-						[ 'value' => '1', 'label' => __( 'Approved', 'search-regex' ) ],
-						[ 'value' => 'spam', 'label' => __( 'Spam', 'search-regex' ) ],
+						[
+							'value' => '0',
+							'label' => __( 'Unapproved', 'search-regex' ),
+						],
+						[
+							'value' => '1',
+							'label' => __( 'Approved', 'search-regex' ),
+						],
+						[
+							'value' => 'spam',
+							'label' => __( 'Spam', 'search-regex' ),
+						],
 					],
 					'title' => __( 'Approval Status', 'search-regex' ),
 				],
@@ -206,9 +228,18 @@ class Source_Comment extends Search_Source {
 					'type' => 'member',
 					'title' => __( 'Type', 'search-regex' ),
 					'options' => [
-						[ 'value' => 'pingback', 'label' => __( 'Pingback', 'search-regex' ) ],
-						[ 'value' => 'trackback', 'label' => __( 'Trackback', 'search-regex' ) ],
-						[ 'value' => 'comment', 'label' => __( 'Comment', 'search-regex' ) ],
+						[
+							'value' => 'pingback',
+							'label' => __( 'Pingback', 'search-regex' ),
+						],
+						[
+							'value' => 'trackback',
+							'label' => __( 'Trackback', 'search-regex' ),
+						],
+						[
+							'value' => 'comment',
+							'label' => __( 'Comment', 'search-regex' ),
+						],
 					],
 				],
 				[

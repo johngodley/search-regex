@@ -15,6 +15,11 @@ abstract class Source_Meta extends Search_Source {
 		return 'meta_key';
 	}
 
+	/**
+	 * Label for the meta-data
+	 *
+	 * @return string
+	 */
 	abstract public function get_meta_name();
 
 	/**
@@ -31,10 +36,10 @@ abstract class Source_Meta extends Search_Source {
 	 */
 	abstract public function get_meta_table();
 
-	public function save( $row_id, array $updates ) {
+	public function save( $row_id, array $changes ) {
 		global $wpdb;
 
-		$meta = $this->get_columns_to_change( $updates );
+		$meta = $this->get_columns_to_change( $changes );
 
 		if ( count( $meta ) > 0 ) {
 			$this->log_save( 'meta', $meta );
@@ -42,6 +47,7 @@ abstract class Source_Meta extends Search_Source {
 			// This does all the sanitization
 			$result = true;
 
+			/** @psalm-suppress UndefinedFunction */
 			if ( searchregex_can_save() ) {
 				$result = $wpdb->update( $this->get_meta_table(), $meta, [ $this->get_table_id() => $row_id ] );
 				if ( $result === null ) {
@@ -51,18 +57,22 @@ abstract class Source_Meta extends Search_Source {
 				// Clear any cache
 				wp_cache_delete( $this->get_meta_object_id(), $this->get_meta_table() . '_meta' );
 			}
+
+			return $result;
 		}
 
 		return true;
 	}
 
 	public function delete_row( $row_id ) {
+		global $wpdb;
+
 		$this->log_save( 'delete meta', $row_id );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
-			global $wpdb;
-
 			$result = $wpdb->delete( $this->get_table_name(), [ $this->get_table_id() => $row_id ] );
+
 			if ( $result ) {
 				wp_cache_delete( $this->get_meta_object_id(), $this->get_meta_table() . '_meta' );
 				return true;
@@ -74,10 +84,18 @@ abstract class Source_Meta extends Search_Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	/**
+	 * Perform autocompletion on a column and a value
+	 *
+	 * @param array  $column Column.
+	 * @param string $value  Value.
+	 * @return array
+	 */
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		if ( in_array( $column['column'], [ 'meta_key', 'meta_value' ], true ) ) {
+			// phpcs:ignore
 			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT " . $column['column'] . " as id," . $column['column'] . " as value FROM {$this->get_table_name()} WHERE " . $column['column'] . " LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
 		}
 

@@ -8,6 +8,7 @@ class Match_Column {
 	/**
 	 * Column ID
 	 *
+	 * @readonly
 	 * @var string
 	 **/
 	private $column_id;
@@ -15,6 +16,7 @@ class Match_Column {
 	/**
 	 * Column label
 	 *
+	 * @readonly
 	 * @var string
 	 **/
 	private $column_label;
@@ -22,7 +24,7 @@ class Match_Column {
 	/**
 	 * Array of match contexts
 	 *
-	 * @var array<Match_Context>
+	 * @var Match_Context[]
 	 **/
 	private $contexts = [];
 
@@ -43,23 +45,25 @@ class Match_Column {
 	/**
 	 * Raw data for this column
 	 *
-	 * @var string|null
+	 * @readonly
+	 * @var array
 	 */
-	private $raw = null;
+	private $raw;
 
 	/**
 	 * Create a Match Column, which contains an array of Match_Context_String items for a particular database column.
 	 *
-	 * @param string         $column_id Column ID.
-	 * @param string         $column_label Descriptive column label, shown to the user.
-	 * @param array<Context> $contexts Contexts.
-	 * @param array          $raw Raw data.
+	 * @param string               $column_id Column ID.
+	 * @param string               $column_label Descriptive column label, shown to the user.
+	 * @param array<Match_Context> $contexts Contexts.
+	 * @param array                $raw Raw data.
 	 */
 	public function __construct( $column_id, $column_label, array $contexts, array $raw ) {
 		$this->match_count = 0;
 		$this->column_id = $column_id;
 		$this->column_label = $column_label;
 		$this->raw = $raw;
+		$this->context_count = 0;
 
 		$this->set_contexts( $contexts );
 	}
@@ -67,7 +71,7 @@ class Match_Column {
 	/**
 	 * Get contexts
 	 *
-	 * @return array<Context>
+	 * @return array<Match_Context>
 	 */
 	public function get_contexts() {
 		return $this->contexts;
@@ -80,7 +84,7 @@ class Match_Column {
 	 *
 	 * The aim is to ensure that we either have all matches, or one unmatched
 	 *
-	 * @param array<Context> $contexts Contexts.
+	 * @param array<Match_Context> $contexts Contexts.
 	 * @return void
 	 */
 	public function add_contexts_if_matching( array $contexts ) {
@@ -100,7 +104,7 @@ class Match_Column {
 	/**
 	 * Add contexts to the column, ensuring we don't have duplicates
 	 *
-	 * @param array<Context> $contexts Contexts.
+	 * @param array<Match_Context> $contexts Contexts.
 	 * @return void
 	 */
 	public function add_contexts( array $contexts ) {
@@ -129,7 +133,7 @@ class Match_Column {
 	/**
 	 * Set the context array
 	 *
-	 * @param array<Context> $contexts Array of contexts.
+	 * @param Match_Context[] $contexts Array of contexts.
 	 * @return void
 	 */
 	public function set_contexts( array $contexts ) {
@@ -180,7 +184,7 @@ class Match_Column {
 	 * Get contexts that have changed
 	 *
 	 * @param array $raw Raw data.
-	 * @return array<Context>
+	 * @return array<Match_Context>
 	 */
 	public function get_changes( array $raw ) {
 		return array_values( array_filter( $this->contexts, function( $context ) {
@@ -192,7 +196,7 @@ class Match_Column {
 	 * Get contexts that have not changed
 	 *
 	 * @param array $raw Raw data.
-	 * @return array<Context>
+	 * @return array<Match_Context>
 	 */
 	public function get_same( array $raw ) {
 		return array_values( array_filter( $this->contexts, function( $context ) {

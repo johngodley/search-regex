@@ -162,6 +162,7 @@ class Search_Regex_Api_Route {
 	 * @return Bool
 	 */
 	public function permission_callback( WP_REST_Request $request ) {
+		/** @psalm-suppress UndefinedClass */
 		return Search_Regex_Capabilities::has_access( Search_Regex_Capabilities::CAP_SEARCHREGEX_SEARCH );
 	}
 
@@ -243,8 +244,8 @@ class Search_Regex_Api_Route {
 	/**
 	 * Helper to return a search and replace object
 	 *
-	 * @param Array  $params Array of params.
-	 * @return Array{Search,Replace} Search and Replace objects
+	 * @param Array $params Array of params.
+	 * @return Array{Search,Action} Search and Replace objects
 	 */
 	protected function get_search_replace( $params ) {
 		$schema = new Schema( Source_Manager::get_schema( $params['source'] ) );
@@ -258,17 +259,15 @@ class Search_Regex_Api_Route {
 			$filters[] = new Global_Search_Filter( $params['searchPhrase'], $params['searchFlags'] );
 		}
 
-		// Modify filters for the action
-		$columns = $action->get_modified_columns();
-
 		// Are we doing the action for real or just a dry run?
 		if ( isset( $params['save'] ) && $params['save'] ) {
 			$action->set_save_mode( true );
 		}
 
 		// Add any view columns
+		$columns = $action->get_view_columns();
 		if ( isset( $params['view'] ) ) {
-			$columns = array_unique( array_merge( $columns, $params['view'], $action->get_view_columns(), $action->get_replace_columns() ) );
+			$columns = array_unique( array_merge( $columns, $params['view'] ) );
 		}
 
 		$filters = Search_Filter::get_missing_column_filters( $schema, $filters, $columns );
@@ -370,8 +369,15 @@ class Search_Regex_Api_Route {
 		return new WP_Error( 'rest_invalid_param', 'Invalid source detected', array( 'status' => 400 ) );
 	}
 
+	/**
+	 * Validate supplied filters
+	 *
+	 * @param string|array    $value Value.
+	 * @param WP_REST_Request $request Request.
+	 * @param array           $param Params.
+	 * @return boolean
+	 */
 	public function validate_filters( $value, WP_REST_Request $request, $param ) {
-		$schema = Source_Manager::get_schema();
 		if ( ! is_array( $value ) ) {
 			return false;
 		}
@@ -416,6 +422,13 @@ class Search_Regex_Api_Route {
 		return $data;
 	}
 
+	/**
+	 * Does the array contain the supplied keys?
+	 *
+	 * @param array        $keys Keys.
+	 * @param array|string $item Item.
+	 * @return true|\WP_Error
+	 */
 	protected function contains_keys( array $keys, $item ) {
 		if ( ! is_array( $item ) ) {
 			return new WP_Error( 'rest_invalid_param', 'Item is not an array', [ 'status' => 400 ] );

@@ -2,6 +2,9 @@
 
 namespace SearchRegex;
 
+/**
+ * Context for a deleted value
+ */
 class Match_Context_Delete extends Match_Context_Value {
 	const TYPE_DELETE = 'delete';
 

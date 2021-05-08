@@ -2,6 +2,9 @@
 
 namespace SearchRegex;
 
+/**
+ * A context has been added.
+ */
 class Match_Context_Add extends Match_Context_Value {
 	const TYPE_ADD = 'add';
 

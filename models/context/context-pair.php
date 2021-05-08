@@ -2,10 +2,26 @@
 
 namespace SearchRegex;
 
+/**
+ * Context for a keyvalue pair
+ */
 class Match_Context_Pair extends Match_Context {
 	const TYPE_PAIR = 'keyvalue';
 
+	/**
+	 * Key
+	 *
+	 * @var Match_Context
+	 * @readonly
+	 */
 	private $key;
+
+	/**
+	 * Value
+	 *
+	 * @var Match_Context
+	 * @readonly
+	 */
 	private $value;
 
 	public function __construct( Match_Context $key, Match_Context $value ) {
@@ -13,10 +29,20 @@ class Match_Context_Pair extends Match_Context {
 		$this->value = $value;
 	}
 
+	/**
+	 * Get the key
+	 *
+	 * @return Match_Context
+	 */
 	public function get_key() {
 		return $this->key;
 	}
 
+	/**
+	 * Get the value
+	 *
+	 * @return Match_Context
+	 */
 	public function get_value() {
 		return $this->value;
 	}
@@ -39,7 +65,7 @@ class Match_Context_Pair extends Match_Context {
 	}
 
 	public function is_equal( Match_Context $context ) {
-		if ( parent::is_equal( $context ) ) {
+		if ( parent::is_equal( $context ) && $context instanceof Match_Context_Pair ) {
 			return $this->key->is_equal( $context->key ) && $this->value->is_equal( $context->value );
 		}
 

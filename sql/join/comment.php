@@ -2,19 +2,44 @@
 
 namespace SearchRegex\Sql;
 
+use SearchRegex\Search_Source;
+
+/**
+ * Join on comments table
+ */
 class Sql_Join_Comment extends Sql_Join {
-	private $logic;
+	/**
+	 * Join logic
+	 *
+	 * @var string|false
+	 */
+	private $logic = false;
+
+	/**
+	 * Join table
+	 *
+	 * @var string
+	 */
 	private $join_table;
 
-	public function __construct( $column, $source ) {
+	/**
+	 * Constructor
+	 *
+	 * @param string $column Column.
+	 */
+	public function __construct( $column ) {
 		global $wpdb;
 
-		if ( $source === 'comment-meta' ) {
-			$this->column = 'comment_id';
-			$this->join_table = $wpdb->commentmeta;
-		}
+		$this->column = 'comment_id';
+		$this->join_table = $wpdb->commentmeta;
 	}
 
+	/**
+	 * Set the logic for this join
+	 *
+	 * @param string $logic Logic.
+	 * @return void
+	 */
 	public function set_logic( $logic ) {
 		$this->logic = $logic;
 	}
@@ -22,7 +47,7 @@ class Sql_Join_Comment extends Sql_Join {
 	public function get_select() {
 		global $wpdb;
 
-		return new Sql_Select( Sql_Value::table( $wpdb->comments ), Sql_Value::column( "comment_id" ), null, true );
+		return new Sql_Select( Sql_Value::table( $wpdb->comments ), Sql_Value::column( 'comment_id' ), null, true );
 	}
 
 	public function get_from() {
@@ -38,7 +63,11 @@ class Sql_Join_Comment extends Sql_Join {
 	public function get_where() {
 		global $wpdb;
 
-		return new Sql_Where_Null( new Sql_Select( Sql_Value::raw( 'comment_id' ), null, Sql_Value::raw( $wpdb->comments ) ), $this->logic );
+		if ( $this->logic ) {
+			return new Sql_Where_Null( new Sql_Select( Sql_Value::table( $wpdb->comments ), Sql_Value::column( 'comment_id' ) ), $this->logic );
+		}
+
+		return false;
 	}
 
 	public function get_table() {

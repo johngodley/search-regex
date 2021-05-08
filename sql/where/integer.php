@@ -2,7 +2,17 @@
 
 namespace SearchRegex\Sql;
 
+/**
+ * WHERE for an integer
+ */
 class Sql_Where_Integer extends Sql_Where {
+	/**
+	 * Constructor
+	 *
+	 * @param Sql_Select $column Column.
+	 * @param string     $logic Logic.
+	 * @param integer    $value Value.
+	 */
 	public function __construct( Sql_Select $column, $logic, $value ) {
 		$map = [
 			'notequals' => '!=',

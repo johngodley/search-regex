@@ -35,24 +35,30 @@ class Source_User extends Search_Source {
 
 	public function get_row_columns( $row_id ) {
 		$meta = $this->get_meta( get_user_meta( $row_id ) );
+		$parent = parent::get_row_columns( $row_id );
+
+		if ( $parent instanceof \WP_Error ) {
+			return $parent;
+		}
 
 		return array_merge(
-			parent::get_row_columns( $row_id ),
+			$parent,
 			count( $meta ) > 0 ? [ $meta ] : [],
 		);
 	}
 
-	public function save( $row_id, array $updates ) {
-		$user = $this->get_columns_to_change( $updates );
+	public function save( $row_id, array $changes ) {
+		$user = $this->get_columns_to_change( $changes );
 		$user['ID'] = $row_id;
 
-		$this->process_meta( $row_id, 'user', $updates );
+		$this->process_meta( $row_id, 'user', $changes );
 
 		if ( count( $user ) > 1 ) {
 			$this->log_save( 'user', $user );
 
 			$result = true;
 
+			/** @psalm-suppress UndefinedFunction */
 			if ( searchregex_can_save() ) {
 				$result = wp_update_user( $user );
 			}
@@ -63,11 +69,14 @@ class Source_User extends Search_Source {
 
 			return new \WP_Error( 'searchregex', 'Failed to update user.' );
 		}
+
+		return true;
 	}
 
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete comment', $row_id );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
 			if ( wp_delete_user( $row_id ) ) {
 				return true;
@@ -86,12 +95,20 @@ class Source_User extends Search_Source {
 			return $wpdb->get_results( $wpdb->prepare( "SELECT ID as id,user_login as value FROM {$wpdb->users} WHERE user_login LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
 		}
 
-		if ( in_array( $column['column'], [ 'user_login', 'user_nicename', 'display_name', 'user_email' ], true ) ) {
+		$user_fields = [
+			'user_login',
+			'user_nicename',
+			'display_name',
+			'user_email',
+		];
+
+		if ( in_array( $column['column'], $user_fields, true ) ) {
+			// phpcs:ignore
 			return $wpdb->get_results( $wpdb->prepare( "SELECT " . $column['column'] . " as id," . $column['column'] . " as value FROM {$wpdb->users} WHERE " . $column['column'] . " LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
 		}
 
 		if ( $column['column'] === 'meta' ) {
-			return Autocomplete::get_meta( 'usermeta', $value );
+			return Autocomplete::get_meta( Sql_Value::table( 'usermeta' ), $value );
 		}
 
 		return [];

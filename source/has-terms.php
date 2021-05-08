@@ -4,7 +4,18 @@ namespace SearchRegex;
 
 use SearchRegex\Match_Context_Add;
 
+/**
+ * Trait to add term support to a source
+ */
 trait Source_HasTerms {
+	/**
+	 * Look for term changes and process them
+	 *
+	 * @param integer $row_id Row ID.
+	 * @param string  $type Type.
+	 * @param array   $updates Array of updates.
+	 * @return void
+	 */
 	protected function process_terms( $row_id, $type, array $updates ) {
 		foreach ( $updates as $column => $update ) {
 			if ( $column === 'category' || $column === 'post_tag' ) {
@@ -13,6 +24,12 @@ trait Source_HasTerms {
 		}
 	}
 
+	/**
+	 * Get the terms as an array of value/label
+	 *
+	 * @param array $terms Terms.
+	 * @return array
+	 */
 	private function get_terms( array $terms ) {
 		$cats = [];
 		$tags = [];
@@ -49,6 +66,14 @@ trait Source_HasTerms {
 		return $extra;
 	}
 
+	/**
+	 * Perform term changes on an object
+	 *
+	 * @param integer $row_id Row ID.
+	 * @param string  $column Column to change.
+	 * @param array   $update Changes.
+	 * @return void
+	 */
 	private function set_terms( $row_id, $column, array $update ) {
 		// Get all term IDs that haven't changed
 		$term_ids = array_map( function( $item ) {
@@ -64,6 +89,7 @@ trait Source_HasTerms {
 
 		$this->log_save( 'term ' . $column, $term_ids );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
 			wp_set_object_terms( $row_id, $term_ids, $column, false );
 		}

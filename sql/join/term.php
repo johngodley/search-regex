@@ -2,7 +2,15 @@
 
 namespace SearchRegex\Sql;
 
+/**
+ * Join on terms
+ */
 class Sql_Join_Term extends Sql_Join {
+	/**
+	 * Constructor
+	 *
+	 * @param string $term_type Type of taxonomy.
+	 */
 	public function __construct( $term_type ) {
 		$this->column = $term_type;
 	}
@@ -12,11 +20,11 @@ class Sql_Join_Term extends Sql_Join {
 			return new Sql_Where_String( new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::raw( 'taxonomy' ) ), '=', $this->column );
 		}
 
-		return null;
+		return false;
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::raw( "0" ), Sql_Value::column( $this->column ) );
+		return new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::raw( '0' ), Sql_Value::column( $this->column ) );
 	}
 
 	public function get_group() {
@@ -32,7 +40,7 @@ class Sql_Join_Term extends Sql_Join {
 			return new Sql_From( Sql_Value::raw( sprintf( 'INNER JOIN %sterm_relationships AS tr ON (%s.ID = tr.object_id) INNER JOIN %sterm_taxonomy AS tt ON tt.term_taxonomy_id=tr.term_taxonomy_id', $wpdb->prefix, $wpdb->posts, $wpdb->prefix ) ) );
 		}
 
-		return null;
+		return false;
 	}
 
 	public function get_join_column() {
@@ -40,19 +48,24 @@ class Sql_Join_Term extends Sql_Join {
 	}
 
 	public function get_join_value( $value ) {
-		$term = get_term( $value );
+		$term = get_term( intval( $value, 10 ) );
+		if ( $term instanceof \WP_Error ) {
+			return "$value";
+		}
 
-		if ( $term && ! is_wp_error( $term ) ) {
-			if ( $term->taxonomy === $this->column ) {
-				return $term->name;
-			}
-
-			return null;
+		if ( is_object( $term ) && $term->taxonomy === $this->column ) {
+			return $term->name;
 		}
 
 		return "$value";
 	}
 
+	/**
+	 * Get all term values
+	 *
+	 * @param integer $row_id Row ID.
+	 * @return integer[]
+	 */
 	public function get_all_values( $row_id ) {
 		return wp_get_post_terms( $row_id, $this->column, [ 'fields' => 'ids' ] );
 	}
@@ -61,8 +74,19 @@ class Sql_Join_Term extends Sql_Join {
 		return '';
 	}
 
+	/**
+	 * Get the value
+	 *
+	 * @param integer $row_id Row ID.
+	 * @param string  $type Term type.
+	 * @param string  $seperator How to seperate the terms.
+	 * @return string
+	 */
 	public function get_value( $row_id, $type, $seperator ) {
 		$terms = wp_get_post_terms( $row_id, $this->column, [ 'fields' => 'all' ] );
+		if ( $terms instanceof \WP_Error ) {
+			return '';
+		}
 
 		$group = array_map( function( $term ) use ( $type ) {
 			if ( $type === 'slug' ) {
@@ -74,7 +98,12 @@ class Sql_Join_Term extends Sql_Join {
 			}
 
 			if ( $type === 'link' ) {
-				return '<a href="' . esc_url( get_term_link( $term ) ) . '">' . $term->name . '</a>';
+				$link = get_term_link( $term );
+				if ( $link instanceof \WP_Error ) {
+					return '';
+				}
+
+				return '<a href="' . esc_url( $link ) . '">' . $term->name . '</a>';
 			}
 
 			if ( $type === 'description' ) {

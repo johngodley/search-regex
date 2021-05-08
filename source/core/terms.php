@@ -12,9 +12,7 @@ use SearchRegex\Sql\Sql_Value;
  */
 class Source_Terms extends Search_Source {
 	public function get_table_id() {
-		global $wpdb;
-
-		return 'term_id';
+		return '';
 	}
 
 	public function get_table_name() {
@@ -27,12 +25,12 @@ class Source_Terms extends Search_Source {
 		return 'name';
 	}
 
-	public function save( $row_id, array $updates ) {
-		$term = $this->get_columns_to_change( $updates );
+	public function save( $row_id, array $changes ) {
+		$term = $this->get_columns_to_change( $changes );
 
 		if ( count( $term ) > 0 ) {
 			$existing = get_term( $row_id );
-			if ( $existing === null || $existing instanceof WP_Error ) {
+			if ( $existing === null || $existing instanceof \WP_Error ) {
 				return new \WP_Error( 'searchregex', 'Failed to update term.' );
 			}
 
@@ -46,7 +44,8 @@ class Source_Terms extends Search_Source {
 			// This does all the sanitization
 			$result = true;
 
-			if ( searchregex_can_save() ) {
+			/** @psalm-suppress UndefinedFunction */
+			if ( searchregex_can_save() && is_object( $existing ) ) {
 				$result = wp_update_term( $row_id, $existing->taxonomy, $term );
 			}
 
@@ -63,12 +62,11 @@ class Source_Terms extends Search_Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete term', $row_id );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
 			$term = get_term( $row_id );
-			if ( $term ) {
-				if ( wp_delete_term( $row_id, $term->taxonomy ) ) {
-					return true;
-				}
+			if ( $term instanceof \WP_Term && wp_delete_term( $row_id, $term->taxonomy ) ) {
+				return true;
 			}
 
 			return new \WP_Error( 'searchregex_delete', 'Failed to delete term', 401 );
@@ -81,10 +79,12 @@ class Source_Terms extends Search_Source {
 		global $wpdb;
 
 		if ( $column['column'] === 'name' ) {
+			// phpcs:ignore
 			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT name as id,name as value FROM {$this->get_table_name()} WHERE name LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
 		}
 
 		if ( $column['column'] === 'slug' ) {
+			// phpcs:ignore
 			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT slug as id,slug as value FROM {$this->get_table_name()} WHERE slug LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
 		}
 
@@ -95,10 +95,15 @@ class Source_Terms extends Search_Source {
 		global $wpdb;
 
 		$taxonomies = [];
-		$taxes = get_taxonomies( '', 'object' );
+		$taxes = get_taxonomies( [], 'object' );
 
 		foreach ( $taxes as $tax ) {
-			$taxonomies[] = [ 'value' => $tax->name, 'label' => $tax->label ];
+			if ( is_object( $tax ) ) {
+				$taxonomies[] = [
+					'value' => $tax->name,
+					'label' => $tax->label,
+				];
+			}
 		}
 
 		return [

@@ -4,9 +4,13 @@ namespace SearchRegex;
 
 use SearchRegex\Search_Source;
 use SearchRegex\Result;
+use SearchRegex\Search_Filter_Member;
 use SearchRegex\Sql\Sql_Select;
 use SearchRegex\Sql\Sql_Value;
 
+/**
+ * Source for posts, pages, and other custom post types
+ */
 class Source_Post extends Search_Source {
 	use Source_HasMeta;
 	use Source_HasTerms;
@@ -31,7 +35,7 @@ class Source_Post extends Search_Source {
 		$post_types = get_post_types( [], 'objects' );
 
 		foreach ( $post_types as $type ) {
-			if ( $type->name === $post_type ) {
+			if ( is_object( $type ) && $type->name === $post_type ) {
 				return [
 					'value' => $type->name,
 					'label' => $type->label,
@@ -84,22 +88,27 @@ class Source_Post extends Search_Source {
 			$extra = [ $meta ];
 		}
 
-		$extra = array_merge( $extra, $this->get_terms( wp_get_object_terms( $row_id, [ 'post_tag', 'category' ] ) ) );
+		$object_terms = wp_get_object_terms( $row_id, [ 'post_tag', 'category' ] );
+		if ( $object_terms instanceof \WP_Error ) {
+			return [];
+		}
+
+		$extra = array_merge( $extra, $this->get_terms( $object_terms ) );
 		$columns = parent::get_row_columns( $row_id );
 
-		if ( is_wp_error( $columns ) ) {
+		if ( $columns instanceof \WP_Error ) {
 			return $columns;
 		}
 
 		return array_merge( $columns, $extra );
 	}
 
-	public function save( $row_id, array $updates ) {
-		$post = $this->get_columns_to_change( $updates );
+	public function save( $row_id, array $changes ) {
+		$post = $this->get_columns_to_change( $changes );
 		$post['ID'] = $row_id;
 
-		$this->process_meta( $row_id, 'post', $updates );
-		$this->process_terms( $row_id, 'post', $updates );
+		$this->process_meta( $row_id, 'post', $changes );
+		$this->process_terms( $row_id, 'post', $changes );
 
 		if ( count( $post ) > 1 ) {
 			// wp_update_post expects slashes to be present, which are then removed
@@ -116,6 +125,7 @@ class Source_Post extends Search_Source {
 			// This does all the sanitization
 			$result = true;
 
+			/** @psalm-suppress UndefinedFunction */
 			if ( searchregex_can_save() ) {
 				$result = wp_update_post( $post );
 			}
@@ -133,6 +143,7 @@ class Source_Post extends Search_Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete post', $row_id );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
 			if ( wp_delete_post( $row_id, true ) ) {
 				return true;
@@ -145,14 +156,12 @@ class Source_Post extends Search_Source {
 	}
 
 	public function autocomplete( $column, $value ) {
-		global $wpdb;
-
 		if ( $column['column'] === 'post_author' ) {
 			return Autocomplete::get_user( $value );
 		}
 
 		if ( $column['column'] === 'post_parent' ) {
-			return Autocomplete::get_post( $value, 'ID', 'post_title' );
+			return Autocomplete::get_post( $value, Sql_Value::column( 'ID' ), Sql_Value::column( 'post_title' ) );
 		}
 
 		if ( $column['column'] === 'category' ) {
@@ -164,40 +173,41 @@ class Source_Post extends Search_Source {
 		}
 
 		if ( $column['column'] === 'meta' ) {
-			return Autocomplete::get_meta( 'postmeta', $value );
+			return Autocomplete::get_meta( Sql_Value::table( 'postmeta' ), $value );
 		}
 
 		// General text
 		if ( in_array( $column['column'], [ 'post_title', 'post_name', 'guid', 'post_mime_type' ], true ) ) {
-			return Autocomplete::get_post( $value, $column['column'], $column['column'] );
+			return Autocomplete::get_post( $value, Sql_Value::column( $column['column'] ), Sql_Value::column( $column['column'] ) );
 		}
 
 		return [];
 	}
 
 	public function get_filter_preload( $schema, $filter ) {
-		if ( $schema['column'] === 'category' || $schema['column'] === 'post_tag' ) {
+		/** @psalm-suppress DocblockTypeContradiction */
+		if ( $filter instanceof Search_Filter_Member && ( $schema['column'] === 'category' || $schema['column'] === 'post_tag' ) ) {
 			$preload = [];
 
 			foreach ( $filter->get_values() as $value ) {
 				$term = get_term( intval( $value, 10 ), $schema['column'] );
 
-				if ( $term && ! is_wp_error( $term ) ) {
+				if ( is_object( $term ) && ! $term instanceof \WP_Error ) {
 					$preload[] = [
 						'label' => $term->name,
-						'value' => $schema['column'] . '_' . intval( $value, 10 ),
+						'value' => $schema['column'] . '_' . (string) intval( $value, 10 ),
 					];
 				}
 			}
 
 			return $preload;
-		} elseif ( $schema['column'] === 'post_author' ) {
+		} elseif ( $schema['column'] === 'post_author' && ( $filter instanceof Search_Filter_Integer || $filter instanceof Search_Filter_String ) ) {
 			$convert = new Convert_Values();
 
 			return [
 				[
-					'label' => $convert->get_user( '', $filter->get_value() ),
-					'value' => $schema['column'] . '_' . $filter->get_value(),
+					'label' => $convert->get_user( '', (string) $filter->get_value() ),
+					'value' => $schema['column'] . '_' . (string) $filter->get_value(),
 				],
 			];
 		}
@@ -212,7 +222,10 @@ class Source_Post extends Search_Source {
 		$statuses = [];
 
 		foreach ( array_keys( $stati ) as $status ) {
-			$statuses[] = [ 'value' => $status, 'label' => $status ];
+			$statuses[] = [
+				'value' => $status,
+				'label' => $status,
+			];
 		}
 
 		return [
@@ -291,8 +304,14 @@ class Source_Post extends Search_Source {
 					'column' => 'comment_status',
 					'type' => 'member',
 					'options' => [
-						[ 'value' => 'open', 'label' => __( 'Open', 'search-regex' ) ],
-						[ 'value' => 'closed', 'label' => __( 'Closed', 'search-regex' ) ],
+						[
+							'value' => 'open',
+							'label' => __( 'Open', 'search-regex' ),
+						],
+						[
+							'value' => 'closed',
+							'label' => __( 'Closed', 'search-regex' ),
+						],
 					],
 					'title' => __( 'Comment Status', 'search-regex' ),
 					'multiple' => false,
@@ -301,8 +320,14 @@ class Source_Post extends Search_Source {
 					'column' => 'ping_status',
 					'type' => 'member',
 					'options' => [
-						[ 'value' => 'open', 'label' => __( 'Open', 'search-regex' ) ],
-						[ 'value' => 'closed', 'label' => __( 'Closed', 'search-regex' ) ],
+						[
+							'value' => 'open',
+							'label' => __( 'Open', 'search-regex' ),
+						],
+						[
+							'value' => 'closed',
+							'label' => __( 'Closed', 'search-regex' ),
+						],
 					],
 					'title' => __( 'Ping Status', 'search-regex' ),
 					'multiple' => false,
@@ -311,8 +336,14 @@ class Source_Post extends Search_Source {
 					'column' => 'post_password',
 					'type' => 'member',
 					'options' => [
-						[ 'value' => 'password', 'label' => __( 'Has password', 'search-regex' ) ],
-						[ 'value' => 'nopassword', 'label' => __( 'Has no password', 'search-regex' ) ],
+						[
+							'value' => 'password',
+							'label' => __( 'Has password', 'search-regex' ),
+						],
+						[
+							'value' => 'nopassword',
+							'label' => __( 'Has no password', 'search-regex' ),
+						],
 					],
 					'title' => __( 'Password', 'search-regex' ),
 					'multiple' => false,
@@ -387,12 +418,17 @@ class Source_Post extends Search_Source {
 		];
 	}
 
+	/**
+	 * Get list of all custom post types that have a label
+	 *
+	 * @return array
+	 */
 	private function get_all_custom_post_types() {
 		$post_types = get_post_types( [], 'objects' );
 		$post_sources = [];
 
 		foreach ( $post_types as $type ) {
-			if ( strlen( $type->label ) > 0 ) {
+			if ( is_object( $type ) && strlen( $type->label ) > 0 ) {
 				$post_sources[] = [
 					'value' => $type->name,
 					'label' => $type->label,

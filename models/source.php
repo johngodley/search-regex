@@ -84,7 +84,7 @@ abstract class Search_Source {
 	/**
 	 * Return the associated Search_Filter items
 	 *
-	 * @return list<Search_Filter Search_Filter objects
+	 * @return list<Search_Filter> Search_Filter objects
 	 */
 	public function get_search_filters() {
 		return $this->filters;
@@ -160,8 +160,8 @@ abstract class Search_Source {
 
 		$sql = new Sql_Builder();
 
-		$result = $sql->get_result( $query, new Sql_Select_Count_Id( $this->get_table_name(), $this->get_table_id() ) );
-		if ( is_wp_error( $result ) ) {
+		$result = $sql->get_result( $query, new Sql_Select_Count_Id( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_table_id() ) ) );
+		if ( $result instanceof \WP_Error ) {
 			return $result;
 		}
 
@@ -190,7 +190,7 @@ abstract class Search_Source {
 	 * Get a single row from the source
 	 *
 	 * @param int $row_id The row ID.
-	 * @return Object|\WP_Error The database row, or WP_Error on error
+	 * @return array|\WP_Error The database row, or WP_Error on error
 	 */
 	public function get_row( $row_id ) {
 		$builder = new Sql_Builder();
@@ -213,7 +213,7 @@ abstract class Search_Source {
 	 * Get columns for a single row
 	 *
 	 * @param int $row_id The row ID.
-	 * @return Array{column: string, value: string}|\WP_Error
+	 * @return array|\WP_Error
 	 */
 	public function get_row_columns( $row_id ) {
 		global $wpdb;
@@ -238,7 +238,7 @@ abstract class Search_Source {
 		// phpcs:ignore
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT " . implode( ',', $columns ) . " FROM {$this->get_table_name()} WHERE {$this->get_table_id()}=%d", $row_id ), ARRAY_A );
 		if ( $row === null ) {
-			return new \WP_Error( 'searchregex_database', 'No row for ' . $row_id, 401 );
+			return new \WP_Error( 'searchregex_database', 'No row for ' . (string) $row_id, 401 );
 		}
 
 		// Convert it, then get other stuff
@@ -333,7 +333,7 @@ abstract class Search_Source {
 	 * Returns database columns in SQL format
 	 *
 	 * @internal
-	 * @return String SQL string
+	 * @return Sql_Select[] SQL string
 	 */
 	protected function get_query_selects() {
 		return array_merge(
@@ -344,6 +344,11 @@ abstract class Search_Source {
 		);
 	}
 
+	/**
+	 * Get source filters
+	 *
+	 * @return Search_Filter[]
+	 */
 	public function get_filters() {
 		return $this->filters;
 	}
@@ -360,7 +365,7 @@ abstract class Search_Source {
 	/**
 	 * Get the columns in the order they are defined in the schema, suitable for ordering results
 	 *
-	 * @return string[]
+	 * @return array
 	 */
 	public function get_schema_order() {
 		$schema = $this->get_schema_for_source();
@@ -402,11 +407,11 @@ abstract class Search_Source {
 	/**
 	 * Perform autocompletion on a column and a value
 	 *
-	 * @param string $column Column.
+	 * @param array  $column Column.
 	 * @param string $value  Value.
 	 * @return array
 	 */
-	abstract public function autocomplete( $column, $value );
+	abstract public function autocomplete( array $column, $value );
 
 	/**
 	 * Does this source have any advanced filters?
@@ -433,6 +438,7 @@ abstract class Search_Source {
 	public function convert_result_value( Schema_Column $schema, $value ) {
 		if ( $schema->get_options() ) {
 			foreach ( $schema->get_options() as $option ) {
+				/** @psalm-suppress DocblockTypeContradiction */
 				if ( $option['value'] === $value || intval( $option['value'], 10 ) === $value ) {
 					return $option['label'];
 				}
@@ -451,8 +457,8 @@ abstract class Search_Source {
 	/**
 	 * Helper function to log actions if WP_DEBUG is enabled
 	 *
-	 * @param string $title Log title.
-	 * @param array  $update Log data.
+	 * @param string               $title Log title.
+	 * @param array|string|integer $update Log data.
 	 * @return void
 	 */
 	protected function log_save( $title, $update ) {

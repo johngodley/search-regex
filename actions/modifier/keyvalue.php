@@ -2,10 +2,15 @@
 
 namespace SearchRegex;
 
-class Action_Modify_Keyvalue extends Action_Modify_Column {
+class Modify_Keyvalue extends Modifier {
+	/**
+	 * Array of key/value pairs
+	 *
+	 * @var array
+	 */
 	private $items = [];
 
-	public function __construct( $option, Schema_Column $schema ) {
+	public function __construct( array $option, Schema_Column $schema ) {
 		parent::__construct( $option, $schema );
 
 		$this->operation = 'add';
@@ -27,7 +32,7 @@ class Action_Modify_Keyvalue extends Action_Modify_Column {
 			parent::to_json(),
 			[
 				'operation' => $this->operation,
-				'items' => $this->value,
+				'items' => $this->items,
 			]
 		);
 	}
@@ -40,13 +45,19 @@ class Action_Modify_Keyvalue extends Action_Modify_Column {
 		return false;
 	}
 
+	/**
+	 * Add an item to the list of items if it is valid, otherwise return null
+	 *
+	 * @param array|string $item Item.
+	 * @return array|null
+	 */
 	public function add_item( $item ) {
 		if ( ! is_array( $item ) ) {
 			return null;
 		}
 
 		$new_item = [];
-		if ( isset( $item['key'] ) && isset( $item['value' ] ) ) {
+		if ( isset( $item['key'] ) && isset( $item['value'] ) ) {
 			$new_item['key'] = $item['key'];
 			$new_item['value'] = $item['value'];
 
@@ -78,15 +89,16 @@ class Action_Modify_Keyvalue extends Action_Modify_Column {
 
 			if ( $match['type'] === 'delete' ) {
 				$replace[] = new Match_Context_Pair( new Match_Context_Delete( $match['key'] ), new Match_Context_Delete( $match['value'] ) );
-			} elseif ( $match['type'] === 'replace' || $match['value_type'] === 'replace' ) {
+			} elseif ( $context instanceof Match_Context_Pair && ( $match['type'] === 'replace' || $match['value_type'] === 'replace' ) ) {
 				$key = $context->get_key();
-				if ( $match['type'] === 'replace' ) {
+
+				if ( $match['type'] === 'replace' && $key instanceof Match_Context_Value ) {
 					$key = new Match_Context_Replace( $key->get_value() );
 					$key->set_replacement( $match['key'] );
 				}
 
 				$value = $context->get_value();
-				if ( $match['value_type'] === 'replace' ) {
+				if ( $match['value_type'] === 'replace' && $value instanceof Match_Context_Value ) {
 					$value = new Match_Context_Replace( $value->get_value() );
 					$value->set_replacement( $match['value'] );
 				}

@@ -7,15 +7,45 @@ use SearchRegex\Sql\Sql_Select_Column;
 use SearchRegex\Sql\Sql_Select_Phrases;
 use SearchRegex\Sql\Sql_Value;
 use SearchRegex\Sql\Sql_Where_String;
+use SearchRegex\Action;
 
+/**
+ * Filter a string column
+ */
 class Search_Filter_String extends Search_Filter_Item {
 	const BEFORE = '<SEARCHREGEX>';
 	const AFTER = '</SEARCHREGEX>';
 	const LOGIC = [ 'equals', 'notequals', 'contains', 'notcontains', 'begins', 'ends' ];
 
+	/**
+	 * The value
+	 *
+	 * @readonly
+	 * @var string
+	 */
 	private $value = '';
+
+	/**
+	 * Filter logic
+	 *
+	 * @readonly
+	 * @var string
+	 */
 	private $logic = 'equals';
-	private $flags = null;
+
+	/**
+	 * Search flags
+	 *
+	 * @readonly
+	 * @var Search_Flags
+	 */
+	private $flags;
+
+	/**
+	 * Does this filter have everything it needs?
+	 *
+	 * @var boolean
+	 */
 	private $has_value = false;
 
 	public function __construct( array $item, Schema_Column $schema ) {
@@ -55,27 +85,32 @@ class Search_Filter_String extends Search_Filter_Item {
 		if ( $this->is_valid() ) {
 			$where = new Sql_Where_String( $select, $this->logic, $this->value, $this->flags );
 
+			// TODO: remove when we don't need phrase counting
 			// if ( ! $this->is_advanced() ) {
-			// 	$query->add_select( new Sql_Select_Phrases( $this->schema, Sql_Value::column( $this->value ) ) );
+			// $query->add_select( new Sql_Select_Phrases( $this->schema, Sql_Value::column( $this->value ) ) );
 			// }
-
 			$query->add_where( $where );
 		}
 
 		return $query;
 	}
 
-	/**
-	 * Get the filter match context
-	 *
-	 * @param string $row Row value
-	 * @return Match_Context_String[]
-	 */
-	public function get_column_data( $column, $row_value, Search_Source $source, Action $action ) {
-		return $this->get_match( $source, $action, $this->logic, $this->value, $row_value ? $row_value : '', $this->flags );
+	public function get_column_data( $column, $value, Search_Source $source, Action $action ) {
+		return $this->get_match( $source, $action, $this->logic, $this->value, $value ? $value : '', $this->flags );
 	}
 
-	public function get_match( Search_Source $source, Action $action, $logic, $original_value, $row_value, $flags ) {
+	/**
+	 * Match this filter against a string
+	 *
+	 * @param Search_Source $source Source.
+	 * @param Action        $action Action.
+	 * @param string        $logic Logic.
+	 * @param string        $original_value Original value.
+	 * @param string        $row_value Current value.
+	 * @param Search_Flags  $flags Flags.
+	 * @return list<Match_Context>
+	 */
+	public function get_match( Search_Source $source, Action $action, $logic, $original_value, $row_value, Search_Flags $flags ) {
 		if ( $original_value ) {
 			$flag_copy = Search_Flags::copy( $flags );
 			$value = $original_value;
@@ -94,7 +129,7 @@ class Search_Filter_String extends Search_Filter_Item {
 				}
 
 				$flag_copy->set_regex();
-				$value = $start . preg_quote( $original_value ) . $end;
+				$value = $start . preg_quote( $original_value, null ) . $end;
 			}
 
 			// Do we have a match?
@@ -107,7 +142,7 @@ class Search_Filter_String extends Search_Filter_Item {
 				if ( $row_value !== '' ) {
 					// Set the original flags and search terms
 					return array_map( function( $context ) use ( $flags, $original_value ) {
-						$context->set_search( $original_value, $flags  );
+						$context->set_search( $original_value, $flags );
 						return $context;
 					}, $contexts );
 				}
@@ -127,6 +162,11 @@ class Search_Filter_String extends Search_Filter_Item {
 		return $this->flags->is_regex();
 	}
 
+	/**
+	 * Get string value
+	 *
+	 * @return string
+	 */
 	public function get_value() {
 		return $this->value;
 	}

@@ -81,8 +81,25 @@ class Preset {
 	 */
 	private $locked = [];
 
+	/**
+	 * Preset action
+	 *
+	 * @var Action|null
+	 */
 	private $action = null;
+
+	/**
+	 * Filters
+	 *
+	 * @var Search_Filter[]
+	 */
 	private $filters = [];
+
+	/**
+	 * View
+	 *
+	 * @var string[]
+	 */
 	private $view = [];
 
 	/**
@@ -215,8 +232,6 @@ class Preset {
 	 * @return void
 	 */
 	private function set_search( array $search ) {
-		$allowed_flags = [];
-
 		if ( isset( $search['searchPhrase'] ) ) {
 			$this->search = $search['searchPhrase'];
 		}
@@ -359,7 +374,7 @@ class Preset {
 				}, $this->filters ),
 				'view' => $this->view,
 			],
-			$this->action->to_json()
+			$this->action === null ? [] : $this->action->to_json()
 		);
 
 		// Remove replace value if not a global replace
@@ -440,6 +455,7 @@ class Preset {
 	 * @return integer Number of presets imported
 	 */
 	public static function import( $filename ) {
+		// phpcs:ignore
 		$file = file_get_contents( $filename );
 
 		if ( $file ) {
@@ -452,7 +468,7 @@ class Preset {
 					$preset = new Preset( $params );
 
 					if ( $preset->is_valid() ) {
-						$name = $preset->create();
+						$preset->create();
 						$imported++;
 					}
 				}

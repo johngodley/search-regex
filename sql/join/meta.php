@@ -2,49 +2,102 @@
 
 namespace SearchRegex\Sql;
 
-class Sql_Join_Meta extends Sql_Join {
-	private $source;
-	private $meta_table;
-	private $source_table;
-	private $join_id;
-	private $table_id;
-	private $meta_id;
-	private $get;
+use SearchRegex\Search_Source;
 
+/**
+ * Join on meta table
+ */
+class Sql_Join_Meta extends Sql_Join {
+	/**
+	 * Source
+	 *
+	 * @var string
+	 */
+	private $source;
+
+	/**
+	 * Meta table name
+	 *
+	 * @var string
+	 */
+	private $meta_table;
+
+	/**
+	 * Source table name
+	 *
+	 * @var string
+	 */
+	private $source_table;
+
+	/**
+	 * ID column to join on
+	 *
+	 * @var string
+	 */
+	private $join_id;
+
+	/**
+	 * Table to join on
+	 *
+	 * @var string
+	 */
+	private $table_id;
+
+	/**
+	 * Column to group by
+	 *
+	 * @var string
+	 */
+	private $group_id;
+
+	/**
+	 * ID in meta table to join on
+	 *
+	 * @var string
+	 */
+	private $meta_id;
+
+	/**
+	 * Constructor
+	 *
+	 * @param string $meta_type Meta type.
+	 * @param string $source Source.
+	 */
 	public function __construct( $meta_type, $source ) {
 		global $wpdb;
 
 		$this->column = $meta_type;
 		$this->source = $source;
+		$this->source_table = '';
 		$this->meta_id = 'meta_id';
+		$this->group_id = '';
+		$this->table_id = '';
+		$this->meta_table = '';
+		$this->table_id = 'ID';
+		$this->join_id = '';
 
 		if ( $source === 'postmeta' ) {
 			$this->meta_table = $wpdb->postmeta;
 			$this->source_table = $wpdb->posts;
 			$this->join_id = 'post_id';
 			$this->group_id = $wpdb->posts . '.ID';
-			$this->table_id = 'ID';
-			$this->get = 'post';
 		} elseif ( $source === 'commentmeta' ) {
 			$this->meta_table = $wpdb->commentmeta;
 			$this->source_table = $wpdb->comments;
 			$this->join_id = 'comment_id';
 			$this->group_id = $wpdb->comments . '.comment_ID';
 			$this->table_id = 'comment_id';
-			$this->get = 'comment';
 		} elseif ( $source === 'usermeta' ) {
 			$this->meta_table = $wpdb->usermeta;
 			$this->source_table = $wpdb->users;
 			$this->join_id = 'user_id';
 			$this->group_id = $wpdb->users . '.ID';
 			$this->meta_id = 'umeta_id';
-			$this->table_id = 'ID';
-			$this->get = 'user';
 		}
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::table( $this->meta_table ), Sql_Value::raw( "0" ), Sql_Value::column( 'meta_id' ) );
+		return new Sql_Select( Sql_Value::table( $this->meta_table ), Sql_Value::raw( '0' ), Sql_Value::column( 'meta_id' ) );
 	}
 
 	public function get_group() {
@@ -52,35 +105,41 @@ class Sql_Join_Meta extends Sql_Join {
 	}
 
 	public function get_from() {
-		global $wpdb;
-
 		if ( $this->is_matching ) {
 			return new Sql_From( Sql_Value::raw( sprintf( 'LEFT JOIN %s AS meta ON %s.%s = meta.%s', $this->meta_table, $this->source_table, $this->table_id, $this->join_id ) ) );
 		}
 
-		return null;
+		return false;
 	}
 
 	public function get_join_column() {
 		return 'meta.' . $this->column;
 	}
 
-	// This is very inefficient at large scale
 	public function get_join_value( $meta_id ) {
 		global $wpdb;
 
 		if ( $this->column === 'meta_key' ) {
+			// phpcs:ignore
 			return $wpdb->get_var( $wpdb->prepare( "SELECT meta_key FROM {$this->meta_table} WHERE {$this->meta_id}=%d", $meta_id ) );
 		}
 
+		// phpcs:ignore
 		return $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$this->meta_table} WHERE {$this->meta_id}=%d", $meta_id ) );
 	}
 
+	/**
+	 * Get meta values
+	 *
+	 * @param array $values Meta ID values.
+	 * @return array
+	 */
 	public function get_values( array $values ) {
 		global $wpdb;
 
 		$in = new Sql_Where_In( new Sql_Select( Sql_Value::table( $this->meta_table ), Sql_Value::column( $this->column ) ), 'IN', $values );
 
+		// phpcs:ignore
 		return $wpdb->get_results( "SELECT meta_key,meta_value FROM {$this->meta_table} WHERE {$this->meta_id} IN ". $in->get_value() );
 	}
 
@@ -88,9 +147,16 @@ class Sql_Join_Meta extends Sql_Join {
 		return 'meta';
 	}
 
+	/**
+	 * Get all the values for this join
+	 *
+	 * @param integer $row_id Row ID.
+	 * @return array
+	 */
 	public function get_all_values( $row_id ) {
 		global $wpdb;
 
+		// phpcs:ignore
 		return $wpdb->get_col( $wpdb->prepare( "SELECT {$this->meta_id} FROM {$this->get_table()} WHERE {$this->join_id} = %d", $row_id ) );
 	}
 

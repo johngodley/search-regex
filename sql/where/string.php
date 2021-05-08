@@ -4,13 +4,35 @@ namespace SearchRegex\Sql;
 
 use SearchRegex\Search_Flags;
 
+/**
+ * WHERE for a string
+ */
 class Sql_Where_String extends Sql_Where {
+	/**
+	 * Prefix for the value
+	 *
+	 * @readonly
+	 * @var string
+	 */
 	private $before = '';
+
+	/**
+	 * Postfix for the value
+	 *
+	 * @readonly
+	 * @var string
+	 */
 	private $after = '';
 
-	public function __construct( Sql_Select $column, $logic, $value, \SearchRegex\Search_Flags $flags = null ) {
-		global $wpdb;
-
+	/**
+	 * Constructor
+	 *
+	 * @param Sql_Select   $column Column.
+	 * @param string       $logic Logic.
+	 * @param string       $value Value.
+	 * @param Search_Flags $flags Search flags.
+	 */
+	public function __construct( Sql_Select $column, $logic, $value, Search_Flags $flags = null ) {
 		if ( $flags === null ) {
 			$flags = new Search_Flags( [ 'case' ] );
 		}

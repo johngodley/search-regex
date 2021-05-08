@@ -14,13 +14,6 @@ class Totals {
 	private $totals = [];
 
 	/**
-	 * Array of custom totals specific to the action.
-	 *
-	 * @var array<array{name: string, value: int}>
-	 */
-	private $custom = [];
-
-	/**
 	 * `true` if we have a regex search anywhere, `false` othewise
 	 *
 	 * @var boolean
@@ -112,7 +105,7 @@ class Totals {
 	 * Get total rows for a source
 	 *
 	 * @param String $source_name Source name.
-	 * @return Int Number of matches for the row
+	 * @return integer Number of matches for the row
 	 */
 	public function get_total_rows_for_source( $source_name ) {
 		if ( isset( $this->totals[ $source_name ] ) ) {
@@ -160,20 +153,6 @@ class Totals {
 	 * @return array{rows: int, matched_rows: int, matched_phrases: int}
 	 */
 	public function to_json() {
-		if ( count( $this->custom ) > 0 ) {
-			return array_merge( $this->grand_totals, [ 'custom' => $this->custom ] );
-		}
-
 		return $this->grand_totals;
-	}
-
-	/**
-	 * Set the custom totals
-	 *
-	 * @param array<array{name: string, value: int}> $custom Array of custom totals.
-	 * @return void
-	 */
-	public function set_custom( array $custom ) {
-		$this->custom = $custom;
 	}
 }

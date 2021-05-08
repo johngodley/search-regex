@@ -208,7 +208,7 @@ class Search_Regex_Api_Preset extends Search_Regex_Api_Route {
 		$params = $request->get_params();
 
 		$preset = new Preset( $params );
-		$name = $preset->create();
+		$preset->create();
 
 		return [
 			'current' => $preset->to_json(),
@@ -251,7 +251,7 @@ class Search_Regex_Api_Preset extends Search_Regex_Api_Route {
 
 		$preset = Preset::get( $params['id'] );
 		if ( $preset ) {
-			$name = $preset->update( $params );
+			$preset->update( $params );
 
 			return [
 				'current' => $preset->to_json(),
@@ -351,10 +351,8 @@ class Search_Regex_Api_Preset extends Search_Regex_Api_Route {
 	 * @return WP_Error|Bool true or false
 	 */
 	public function validate_tags( $value, WP_REST_Request $request, $param ) {
-		$preset = new Preset();
-
 		if ( is_array( $value ) ) {
-			$filtered = array_filter( $value, function( $item ) use ( $preset ) {
+			$filtered = array_filter( $value, function( $item ) {
 				return isset( $item['name'] ) && isset( $item['title'] );
 			} );
 

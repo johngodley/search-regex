@@ -98,6 +98,11 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	const AUTOCOMPLETE_MAX = 50;
 	const AUTOCOMPLETE_TRIM_BEFORE = 10;
 
+	/**
+	 * API schema for source validation.
+	 *
+	 * @return array
+	 */
 	private function get_source_params() {
 		return [
 			'source' => [
@@ -161,9 +166,9 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	/**
 	 * Sanitize the source so it's a single source in an array, suitable for use with the search functions
 	 *
-	 * @param string $value Source name
-	 * @param WP_REST_Request $request Request object
-	 * @param string $param Param name
+	 * @param string|array    $value Source name.
+	 * @param WP_REST_Request $request Request object.
+	 * @param string          $param Param name.
 	 * @return string[]
 	 */
 	public function sanitize_row_source( $value, WP_REST_Request $request, $param ) {
@@ -177,9 +182,9 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	/**
 	 * Validate the replacement.
 	 *
-	 * @param string $value Source name
-	 * @param WP_REST_Request $request Request object
-	 * @param string $param Param name
+	 * @param string|array    $value Source name.
+	 * @param WP_REST_Request $request Request object.
+	 * @param string          $param Param name.
 	 * @return true|WP_Error
 	 */
 	public function validate_replacement( $value, WP_REST_Request $request, $param ) {
@@ -232,7 +237,14 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 	 */
 	public function saveRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
-		[ $search, $action ] = $this->get_search_replace( array_merge( $params, [ 'action' => 'modify', 'actionOption' => [ $params['replacement'] ] ] ) );
+		$replace = [
+			'action' => 'modify',
+			'actionOption' => [
+				$params['replacement'],
+			],
+		];
+
+		[ $search, $action ] = $this->get_search_replace( array_merge( $params, $replace ) );
 
 		// Get the results for the search/replace
 		$results = $search->get_row( $params['rowId'], $action );
@@ -313,12 +325,18 @@ class Search_Regex_Api_Source extends Search_Regex_Api_Route {
 				$results = [];
 
 				foreach ( $rows as $row ) {
-					$result = [ 'value' => $row->id, 'title' => str_replace( [ '\n', '\r', '\t' ], '', $row->value ) ];
+					$result = [
+						'value' => $row->id,
+						'title' => str_replace( [ '\n', '\r', '\t' ], '', $row->value ),
+					];
 
 					// Trim content to context
 					if ( strlen( $result['title'] ) > self::AUTOCOMPLETE_MAX && strlen( $params['value'] ) > 0 ) {
 						$pos = strpos( $result['title'], $params['value'] );
-						$result['title'] = '...' . substr( $result['title'], max( 0, $pos - self::AUTOCOMPLETE_TRIM_BEFORE ), self::AUTOCOMPLETE_MAX ) . '...';
+
+						if ( $pos !== false ) {
+							$result['title'] = '...' . substr( $result['title'], max( 0, $pos - self::AUTOCOMPLETE_TRIM_BEFORE ), self::AUTOCOMPLETE_MAX ) . '...';
+						}
 					} elseif ( strlen( $result['title'] ) > self::AUTOCOMPLETE_MAX ) {
 						$result['title'] = substr( $result['title'], 0, self::AUTOCOMPLETE_MAX ) . '...';
 					}

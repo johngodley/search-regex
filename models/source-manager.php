@@ -113,6 +113,12 @@ class Source_Manager {
 		);
 	}
 
+	/**
+	 * Get schema for a list of sources
+	 *
+	 * @param array $sources Sources.
+	 * @return Schema_Source[]
+	 */
 	public static function get_schema( array $sources = [] ) {
 		$all = self::get_all_source_names();
 		$handlers = self::get( $all, [] );
@@ -180,7 +186,7 @@ class Source_Manager {
 		foreach ( $sources as $handler ) {
 			if ( $handler['name'] === $source ) {
 				// Only use the filters for this source
-				$filters = array_filter( $search_filters, function( $filter ) use ( $source, $handler ) {
+				$filters = array_filter( $search_filters, function( $filter ) use ( $source ) {
 					return $filter->is_for_source( $source );
 				} );
 
@@ -227,18 +233,21 @@ class Source_Manager {
 		return $handlers;
 	}
 
-	public static function get_schema_preload( $source_name, $filter ) {
-		if ( ! isset( $filter['column'] ) ) {
-			return [];
-		}
-
+	/**
+	 * Get preload data for a source.
+	 *
+	 * @param string $source_name Source.
+	 * @param array  $filter Filter JSON.
+	 * @return array
+	 */
+	public static function get_schema_preload( $source_name, array $filter ) {
 		$source = self::get_handler_for_source( $source_name, [] );
 
 		if ( $source ) {
 			$schema = $source->get_schema();
 
 			foreach ( $schema['columns'] as $column ) {
-				if ( $column['column'] === $filter['column'] ) {
+				if ( isset( $filter['column'] ) && $column['column'] === $filter['column'] ) {
 					$preload = false;
 					if ( $column['type'] === 'member' ) {
 						$preload = true;

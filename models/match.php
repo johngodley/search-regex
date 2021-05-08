@@ -11,6 +11,7 @@ class Matched_Item {
 	/**
 	 * Position ID
 	 *
+	 * @readonly
 	 * @var Int
 	 **/
 	private $pos_id;
@@ -18,6 +19,7 @@ class Matched_Item {
 	/**
 	 * Matched string
 	 *
+	 * @readonly
 	 * @var String
 	 **/
 	private $match;
@@ -158,7 +160,7 @@ class Matched_Item {
 				$pos = mb_strlen( substr( $column_value, 0, $match[1] ), 'utf-8' );
 
 				// Create a match
-				$match = new self( $match[0], $pos, isset( $replacements[ $match_pos ] ) ? $replacements[ $match_pos ] : null );
+				$match = new self( $match[0], $pos, isset( $replacements[ $match_pos ] ) ? $replacements[ $match_pos ] : '' );
 
 				// Add any captures
 				foreach ( array_slice( $searches, 1 ) as $capture ) {

@@ -2,8 +2,23 @@
 
 namespace SearchRegex\Sql;
 
+/**
+ * Sql FROM
+ */
 class Sql_From {
-	private $table = null;
+	/**
+	 * Table name
+	 *
+	 * @readonly
+	 * @var string
+	 */
+	private $table;
+
+	/**
+	 * Table alias
+	 *
+	 * @var string|null
+	 */
 	private $alias = null;
 
 	public function __construct( Sql_Value $table, Sql_Value $alias = null ) {
@@ -11,6 +26,11 @@ class Sql_From {
 		$this->alias = $alias ? $alias->get_value() : null;
 	}
 
+	/**
+	 * Get the FROM as SQL
+	 *
+	 * @return string
+	 */
 	public function get_as_sql() {
 		if ( $this->alias && $this->alias !== $this->table ) {
 			return $this->table . ' AS ' . $this->alias;

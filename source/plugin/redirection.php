@@ -5,7 +5,11 @@ use SearchRegex\Result;
 use SearchRegex\Sql\Sql_Select;
 use SearchRegex\Sql\Sql_Value;
 use SearchRegex\Schema_Column;
+use SearchRegex\Search_Filter_Member;
 
+/**
+ * Source: Redirection items
+ */
 class Redirection_Search_Regex extends Search_Source {
 	public function get_actions( Result $result ) {
 		$edit = admin_url( 'tools.php?page=redirection.php' );
@@ -29,24 +33,23 @@ class Redirection_Search_Regex extends Search_Source {
 		return 'url';
 	}
 
-	public function save( $row_id, array $updates ) {
-		$redirect = $this->get_columns_to_change( $updates );
+	public function save( $row_id, array $changes ) {
+		$redirect = $this->get_columns_to_change( $changes );
 
 		if ( count( $redirect ) > 0 ) {
 			$item = \Red_Item::get_by_id( $row_id );
 
-			if ( ! is_wp_error( $item ) ) {
-				/** @psalm-suppress PossiblyUndefinedMethod */
+			if ( ! $item instanceof \WP_Error ) {
 				$this->log_save( 'redirect', array_merge( [ 'id' => $row_id ], $redirect ) );
 
 				$json = $item->to_json();
-				$redirect = array_merge( $json, $redirect );
+				$json = array_merge( $json, $redirect );
 
 				$result = true;
 
+				/** @psalm-suppress UndefinedFunction */
 				if ( searchregex_can_save() ) {
-					/** @psalm-suppress PossiblyUndefinedMethod */
-					$saved = $item->update( $json );
+					$result = $item->update( $json );
 				}
 
 				if ( $result ) {
@@ -63,7 +66,11 @@ class Redirection_Search_Regex extends Search_Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete redirection', $row_id );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
+			/**
+			 * @psalm-suppress UndefinedMethod
+			 */
 			if ( Red_Item::delete( $row_id ) ) {
 				return true;
 			}
@@ -75,18 +82,19 @@ class Redirection_Search_Regex extends Search_Source {
 	}
 
 	public function get_filter_preload( $schema, $filter ) {
-		if ( $schema['column'] === 'group_id' ) {
+		global $wpdb;
+
+		/** @psalm-suppress DocblockTypeContradiction */
+		if ( $schema['column'] === 'group_id' && $filter instanceof Search_Filter_Member ) {
 			$preload = [];
 
 			foreach ( $filter->get_values() as $value ) {
-				global $wpdb;
-
 				$group = $wpdb->get_var( $wpdb->prepare( "SELECT name FROM {$wpdb->prefix}redirection_groups WHERE id=%d", $value ) );
 
 				if ( $group ) {
 					$preload[] = [
 						'label' => $group,
-						'value' => $schema['column'] . '_' . intval( $value, 10 ),
+						'value' => $schema['column'] . '_' . (string) intval( $value, 10 ),
 					];
 				}
 			}
@@ -153,8 +161,14 @@ class Redirection_Search_Regex extends Search_Source {
 					'type' => 'member',
 					'title' => __( 'Status', 'search-regex' ),
 					'options' => [
-						[ 'value' => 'enabled', 'label' => __( 'Enabled', 'search-regex' ) ],
-						[ 'value' => 'disabled', 'label' => __( 'Disabled', 'search-regex' ) ],
+						[
+							'value' => 'enabled',
+							'label' => __( 'Enabled', 'search-regex' ),
+						],
+						[
+							'value' => 'disabled',
+							'label' => __( 'Disabled', 'search-regex' ),
+						],
 					],
 				],
 				[
@@ -196,57 +210,100 @@ class Redirection_Search_Regex extends Search_Source {
 		];
 	}
 
+	/**
+	 * Get action types
+	 *
+	 * @return array
+	 */
 	private function get_action_types() {
+		/**
+		 * @psalm-suppress UndefinedClass
+		 */
 		$types = Red_Action::available();
 		$actions = [];
 
 		foreach ( array_keys( $types ) as $type ) {
+			/**
+			 * @psalm-suppress UndefinedClass
+			 */
 			$obj = Red_Action::create( $type, 301 );
-			$actions[] = [ 'value' => $type, 'label' => $obj->name() ];
+			$actions[] = [
+				'value' => $type,
+				'label' => $obj->name(),
+			];
 		}
 
 		return $actions;
 	}
 
+	/**
+	 * Get match types
+	 *
+	 * @return array
+	 */
 	private function get_match_types() {
+		/**
+		 * @psalm-suppress UndefinedClass
+		 */
 		$types = Red_Match::available();
 		$actions = [];
 
 		foreach ( array_keys( $types ) as $type ) {
+			/**
+			 * @psalm-suppress UndefinedClass
+			 */
 			$obj = Red_Match::create( $type );
-			$actions[] = [ 'value' => $type, 'label' => $obj->name() ];
+			$actions[] = [
+				'value' => $type,
+				'label' => $obj->name(),
+			];
 		}
 
 		return $actions;
 	}
 
+	/**
+	 * Get all supported HTTP codes
+	 *
+	 * @return array
+	 */
 	private function get_http_codes() {
 		$codes = [ 301, 302, 303, 304, 307, 308, 400, 401, 403, 404, 410, 418, 451, 500, 501, 502, 503, 504 ];
 		$http = [];
 
 		foreach ( $codes as $code ) {
-			$http[] = [ 'value' => "$code", 'label' => "$code" ];
+			$http[] = [
+				'value' => "$code",
+				'label' => "$code",
+			];
 		}
 
 		return $http;
 	}
 
-	public function convert_result_value( Schema_Column $column, $value ) {
-		if ( $column->get_column() === 'group_id' ) {
+	public function convert_result_value( Schema_Column $schema, $value ) {
+		if ( $schema->get_column() === 'group_id' ) {
+			/**
+			 * @psalm-suppress UndefinedClass
+			 */
 			$group = Red_Group::get( $value );
 			if ( $group ) {
 				return $group->get_name();
 			}
 		}
 
-		if ( $column->get_column() === 'last_access' && $value === '1970-01-01 00:00:00' ) {
+		if ( $schema->get_column() === 'last_access' && $value === '1970-01-01 00:00:00' ) {
 			return __( 'Not accessed', 'search-regex' );
 		}
 
-		return parent::convert_result_value( $column, $value );
+		return parent::convert_result_value( $schema, $value );
 	}
 }
 
+/**
+ * Source: Redirection groups
+ */
+// phpcs:ignore
 class Redirection_Groups_Search_Regex extends Search_Source {
 	public function get_table_id() {
 		return 'id';
@@ -262,24 +319,24 @@ class Redirection_Groups_Search_Regex extends Search_Source {
 		return 'name';
 	}
 
-	public function save( $row_id, array $updates ) {
-		$redirect = $this->get_columns_to_change( $updates );
+	public function save( $row_id, array $changes ) {
+		$redirect = $this->get_columns_to_change( $changes );
 
 		if ( count( $redirect ) > 0 ) {
+			/** @psalm-suppress UndefinedClass */
 			$item = \Red_Group::get( $row_id );
 
 			if ( ! is_wp_error( $item ) ) {
-				/** @psalm-suppress PossiblyUndefinedMethod */
 				$this->log_save( 'redirect', array_merge( [ 'id' => $row_id ], $redirect ) );
 
 				$json = $item->to_json();
-				$redirect = array_merge( $json, $redirect );
+				$json = array_merge( $json, $redirect );
 
 				$result = true;
 
+				/** @psalm-suppress UndefinedFunction */
 				if ( searchregex_can_save() ) {
-					/** @psalm-suppress PossiblyUndefinedMethod */
-					$saved = $item->update( $json );
+					$result = $item->update( $json );
 				}
 
 				if ( $result ) {
@@ -296,7 +353,9 @@ class Redirection_Groups_Search_Regex extends Search_Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete redirection group', $row_id );
 
+		/** @psalm-suppress UndefinedFunction */
 		if ( searchregex_can_save() ) {
+			/** @psalm-suppress UndefinedClass */
 			if ( Red_Group::delete( $row_id ) ) {
 				return true;
 			}
@@ -310,7 +369,7 @@ class Redirection_Groups_Search_Regex extends Search_Source {
 	public function autocomplete( $column, $value ) {
 		global $wpdb;
 
-		if ( $column['column'] === 'name' ) {
+		if ( isset( $column['column'] ) && $column['column'] === 'name' ) {
 			return $wpdb->get_results( $wpdb->prepare( "SELECT name as id,name as value FROM {$wpdb->prefix}redirection_groups WHERE name LIKE %s LIMIT 50", '%' . $wpdb->esc_like( $value ) . '%' ) );
 		}
 
@@ -319,6 +378,15 @@ class Redirection_Groups_Search_Regex extends Search_Source {
 
 	public function get_schema() {
 		global $wpdb;
+
+		/** @psalm-suppress UndefinedClass */
+		$wp_id = WordPress_Module::MODULE_ID;
+
+		/** @psalm-suppress UndefinedClass */
+		$apache_id = Apache_Module::MODULE_ID;
+
+		/** @psalm-suppress UndefinedClass */
+		$nginx_id = Nginx_Module::MODULE_ID;
 
 		return [
 			'name' => __( 'Redirection Groups', 'search-regex' ),
@@ -342,9 +410,18 @@ class Redirection_Groups_Search_Regex extends Search_Source {
 					'type' => 'member',
 					'title' => __( 'Module', 'search-regex' ),
 					'options' => [
-						[ 'value' => WordPress_Module::MODULE_ID, 'label' => __( 'WordPress', 'search-regex' ) ],
-						[ 'value' => Apache_Module::MODULE_ID, 'label' => __( 'Apache', 'search-regex' ) ],
-						[ 'value' => Nginx_Module::MODULE_ID, 'label' => __( 'Nginx', 'search-regex' ) ],
+						[
+							'value' => $wp_id,
+							'label' => __( 'WordPress', 'search-regex' ),
+						],
+						[
+							'value' => $apache_id,
+							'label' => __( 'Apache', 'search-regex' ),
+						],
+						[
+							'value' => $nginx_id,
+							'label' => __( 'Nginx', 'search-regex' ),
+						],
 					],
 				],
 				[
@@ -352,8 +429,14 @@ class Redirection_Groups_Search_Regex extends Search_Source {
 					'type' => 'member',
 					'title' => __( 'Status', 'search-regex' ),
 					'options' => [
-						[ 'value' => 'enabled', 'label' => __( 'Enabled', 'search-regex' ) ],
-						[ 'value' => 'disabled', 'label' => __( 'Disabled', 'search-regex' ) ],
+						[
+							'value' => 'enabled',
+							'label' => __( 'Enabled', 'search-regex' ),
+						],
+						[
+							'value' => 'disabled',
+							'label' => __( 'Disabled', 'search-regex' ),
+						],
 					],
 				],
 			],

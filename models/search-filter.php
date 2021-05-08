@@ -9,6 +9,11 @@ use SearchRegex\Sql\Sql_Where_Or;
 use SearchRegex\Action;
 
 require_once dirname( __DIR__ ) . '/filters/filter-base.php';
+require_once dirname( __DIR__ ) . '/filters/integer.php';
+require_once dirname( __DIR__ ) . '/filters/member.php';
+require_once dirname( __DIR__ ) . '/filters/string.php';
+require_once dirname( __DIR__ ) . '/filters/date.php';
+require_once dirname( __DIR__ ) . '/filters/keyvalue.php';
 require_once __DIR__ . '/global-filter.php';
 
 /**
@@ -28,6 +33,7 @@ class Search_Filter {
 	/**
 	 * Column schema
 	 *
+	 * @readonly
 	 * @var Schema_Source|null
 	 */
 	protected $schema = null;
@@ -74,7 +80,7 @@ class Search_Filter {
 	 *
 	 * @param array  $json JSON data.
 	 * @param Schema $schema Schema for filter.
-	 * @return Search_Filter
+	 * @return list<Search_Filter>
 	 */
 	public static function create( array $json, Schema $schema ) {
 		// Get basics
@@ -115,7 +121,11 @@ class Search_Filter {
 	 * @return boolean
 	 */
 	public function is_for_source( $source ) {
-		return $this->schema->get_type() === $source;
+		if ( $this->schema ) {
+			return $this->schema->get_type() === $source;
+		}
+
+		return false;
 	}
 
 	/**
@@ -131,7 +141,7 @@ class Search_Filter {
 	/**
 	 * Does this filter have the given column?
 	 *
-	 * @param string        $column Column.
+	 * @param string|object $column Column.
 	 * @param Schema_Column $schema Schema.
 	 * @return boolean
 	 */
@@ -150,7 +160,7 @@ class Search_Filter {
 	/**
 	 * Get all columns for this filter.
 	 *
-	 * @return list<string>
+	 * @return string[]
 	 */
 	public function get_columns() {
 		$columns = [];
@@ -186,7 +196,7 @@ class Search_Filter {
 				if ( isset( $existing[ $column ] ) ) {
 					$existing[ $column ]->add_contexts_if_matching( $contexts );
 				} else {
-					$existing[ $column ] = new Match_Column( $column, $source->get_column_label( $column, $row ), $contexts, $column_values );
+					$existing[ $column ] = new Match_Column( $column, $source->get_column_label( $column ), $contexts, $column_values );
 				}
 
 				$matched_count += count( array_filter( $contexts, function( $item ) {
@@ -215,14 +225,12 @@ class Search_Filter {
 		foreach ( $this->get_items( $source ) as $filter ) {
 			$new_query = $filter->get_query();
 
-			if ( $new_query ) {
-				if ( $filter->is_advanced() ) {
-					$query->add_select_only( $new_query );
-				} else {
-					$new_query = $filter->modify_query( $new_query );
+			if ( $filter->is_advanced() ) {
+				$query->add_select_only( $new_query );
+			} else {
+				$new_query = $filter->modify_query( $new_query );
 
-					$wheres = array_merge( $wheres, $query->add_query_except_where( $new_query ) );
-				}
+				$wheres = array_merge( $wheres, $query->add_query_except_where( $new_query ) );
 			}
 		}
 
@@ -235,7 +243,7 @@ class Search_Filter {
 	 *
 	 * @param array<Search_Filter> $filters Filters.
 	 * @param Search_Source        $source Source.
-	 * @return string
+	 * @return Sql_Query
 	 */
 	public static function get_as_query( array $filters, Search_Source $source ) {
 		$query = new Sql_Query();
@@ -253,7 +261,7 @@ class Search_Filter {
 	 * @param Search_Source $source Source.
 	 * @param array         $row Row data.
 	 * @param Action        $action Action.
-	 * @return Matched_Item[]
+	 * @return Match_Column[]
 	 */
 	public static function get_result_matches( Search_Source $source, $row, Action $action ) {
 		$filters = $source->get_filters();
@@ -262,12 +270,13 @@ class Search_Filter {
 		// Get each filter group. There must be one 'match' in each group
 		foreach ( $filters as $filter ) {
 			$matched = $filter->get_matching_filter( $matched, $source, $row, $action );
+
 			if ( count( $matched ) === 0 ) {
 				return [];
 			}
 		}
 
-		return array_values( $matched );
+		return $matched;
 	}
 
 	/**
@@ -299,7 +308,9 @@ class Search_Filter {
 
 		foreach ( $filters as $filter ) {
 			foreach ( $filter->items as $item ) {
-				$filter_columns[] = $filter->schema->get_type() . '__' . $item->get_schema()->get_column();
+				if ( $filter->schema ) {
+					$filter_columns[] = $filter->schema->get_type() . '__' . $item->get_schema()->get_column();
+				}
 			}
 		}
 
@@ -328,8 +339,11 @@ class Search_Filter {
 						if ( ! $filter->has_column( $parts[1], $column ) ) {
 							// Add to existing filter for this source and column
 							$new_item = Search_Filter_Item::create( [], $column );
-							$new_item->set_non_matching();
-							$filter->add_item( $new_item );
+
+							if ( $new_item ) {
+								$new_item->set_non_matching();
+								$filter->add_item( $new_item );
+							}
 						}
 
 						$found = true;
@@ -343,8 +357,11 @@ class Search_Filter {
 					}
 
 					$new_item = Search_Filter_Item::create( [], $column );
-					$new_item->set_non_matching();
-					$new_filter[ $parts[0] ]->add_item( $new_item );
+
+					if ( $new_item ) {
+						$new_item->set_non_matching();
+						$new_filter[ $parts[0] ]->add_item( $new_item );
+					}
 				}
 			}
 		}
@@ -362,6 +379,10 @@ class Search_Filter {
 	 * @return array
 	 */
 	public function to_json() {
+		if ( ! $this->schema ) {
+			return [];
+		}
+
 		return [
 			'type' => $this->schema->get_type(),
 			'items' => array_map( function( $item ) {

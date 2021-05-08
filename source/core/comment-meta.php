@@ -24,8 +24,6 @@ class Source_Comment_Meta extends Source_Meta {
 	}
 
 	public function autocomplete( $column, $value ) {
-		global $wpdb;
-
 		if ( $column['column'] === $this->get_meta_object_id() ) {
 			return Autocomplete::get_comment( $value );
 		}

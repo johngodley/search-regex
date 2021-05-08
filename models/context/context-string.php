@@ -2,6 +2,9 @@
 
 namespace SearchRegex;
 
+/**
+ * Context for a substring(s) in a string
+ */
 class Match_Context_String extends Match_Context {
 	const TYPE_STRING = 'string';
 	const MATCH_LIMIT = 100;
@@ -16,28 +19,71 @@ class Match_Context_String extends Match_Context {
 	 **/
 	private $context = null;
 
+	/**
+	 * Crop values
+	 *
+	 * @var array
+	 */
 	private $context_crop = [];
 
 	/**
 	 * Array of matches
 	 *
-	 * @var Match[]
+	 * @var Matched_Item[]
 	 **/
 	private $matches = [];
 
+	/**
+	 * String being searched
+	 *
+	 * @var string
+	 */
 	private $search;
+
+	/**
+	 * Search flags
+	 *
+	 * @var Search_Flags
+	 */
 	private $flags;
+
+	/**
+	 * Value type
+	 *
+	 * @var string
+	 */
 	private $value_type = '';
 
+	/**
+	 * Constructor
+	 *
+	 * @param string       $search Search.
+	 * @param Search_Flags $flags Flags.
+	 */
 	public function __construct( $search, Search_Flags $flags ) {
+		$this->search = '';
+		$this->flags = new Search_Flags();
 		$this->set_search( $search, $flags );
 	}
 
+	/**
+	 * Set the search
+	 *
+	 * @param string       $search Search.
+	 * @param Search_Flags $flags Flags.
+	 * @return void
+	 */
 	public function set_search( $search, Search_Flags $flags ) {
 		$this->search = $search;
 		$this->flags = $flags;
 	}
 
+	/**
+	 * Set the value type
+	 *
+	 * @param string $type Type.
+	 * @return void
+	 */
 	public function set_type( $type ) {
 		$this->value_type = $type;
 	}
@@ -54,7 +100,7 @@ class Match_Context_String extends Match_Context {
 	/**
 	 * Convert the Match_Context_String to to_json
 	 *
-	 * @return Array{context_id: int, context: string|null, matches: array, match_count: int} JSON
+	 * @return array JSON
 	 */
 	public function to_json() {
 		$matches = [];
@@ -134,7 +180,7 @@ class Match_Context_String extends Match_Context {
 	 * Find the Match that exists at the given position
 	 *
 	 * @param int $pos_id Position.
-	 * @return Match|Bool Match at position
+	 * @return Matched_Item|Bool Match at position
 	 */
 	public function get_match_at_position( $pos_id ) {
 		foreach ( $this->matches as $match ) {
@@ -150,12 +196,17 @@ class Match_Context_String extends Match_Context {
 		return self::TYPE_STRING;
 	}
 
+	/**
+	 * Get value
+	 *
+	 * @return string|null
+	 */
 	public function get_value() {
 		return $this->context;
 	}
 
 	public function is_equal( Match_Context $context ) {
-		if ( parent::is_equal( $context ) ) {
+		if ( parent::is_equal( $context ) && $context instanceof Match_Context_String ) {
 			return $this->context === $context->context;
 		}
 

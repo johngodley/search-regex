@@ -2,12 +2,27 @@
 
 namespace SearchRegex\Sql;
 
+/**
+ * Perform a COUNT of a query
+ */
 class Sql_Select_Count_Id extends Sql_Modifier {
+	/**
+	 * Column to modify
+	 *
+	 * @readonly
+	 * @var string
+	 */
 	private $column;
 
-	public function __construct( $table, $table_id, $alias = 'match_rows' ) {
-		$table_id = preg_replace( '/\w*\./', '', $table_id );
-		$this->column = "COUNT(DISTINCT ${table}.${table_id}) AS $alias";
+	/**
+	 * Constructor
+	 *
+	 * @param Sql_Value $table Table name.
+	 * @param Sql_Value $table_id Table ID.
+	 * @param string    $alias Count alias.
+	 */
+	public function __construct( Sql_Value $table, Sql_Value $table_id, $alias = 'match_rows' ) {
+		$this->column = 'COUNT(DISTINCT ' . $table->get_value() . '.' . $table_id->get_value() . ") AS $alias";
 	}
 
 	public function get_select( array $select, array $joins ) {

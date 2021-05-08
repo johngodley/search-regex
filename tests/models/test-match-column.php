@@ -2,15 +2,15 @@
 
 use SearchRegex\Match;
 use SearchRegex\Match_Column;
-use SearchRegex\Match_Context;
+use SearchRegex\Match_Context_String;
 
 class ColumnTest extends WP_UnitTestCase {
-	private function get_context() {
+	private function get_matched_context() {
 		$context_value = 'one there is one match here and at the end is one';
-		$match1 = new Match( 'one', 0, 'two' );
-		$match2 = new Match( 'one', 13, 'two' );
+		$match1 = new Matched_Item( 'one', 0, 'two' );
+		$match2 = new Matched_Item( 'one', 13, 'two' );
 
-		$context = new Match_Context( 1 );
+		$context = new Match_Context_String( 1 );
 		$context->add_match( $match1, $context_value );
 		$context->add_match( $match2, $context_value );
 
@@ -36,7 +36,7 @@ class ColumnTest extends WP_UnitTestCase {
 	}
 
 	public function testColumnWithMatches() {
-		$column = new Match_Column( 'column', 'Label', 'replacement', [ $this->get_context() ] );
+		$column = new Match_Column( 'column', 'Label', 'replacement', [ $this->get_matched_context() ] );
 		$expected = [
 			'column_id' => 'column',
 			'column_label' => 'Label',
@@ -78,7 +78,7 @@ class ColumnTest extends WP_UnitTestCase {
 	public function testContextLimit() {
 		$contexts = [];
 		for ( $i = 0; $i < Match_Column::CONTEXT_LIMIT + 1; $i++ ) {
-			$contexts[] = $this->get_context();
+			$contexts[] = $this->get_matched_context();
 		}
 
 		$column = new Match_Column( 'column', 'Label', 'replacement', $contexts );
