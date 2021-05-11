@@ -2,8 +2,8 @@
 
 use SearchRegex\Totals;
 use SearchRegex\Search_Flags;
-use SearchRegex\Source_Flags;
 use SearchRegex\Source_Manager;
+use SearchRegex\Global_Search_Filter;
 
 class TotalsTest extends SearchRegex_Api_Test {
 	public static function setUpBeforeClass() {
@@ -19,46 +19,42 @@ class TotalsTest extends SearchRegex_Api_Test {
 		$expected_grand = [
 			'rows' => 0,
 			'matched_rows' => 0,
-			'matched_phrases' => 0,
 		];
 
 		$this->assertEquals( $expected_grand, $totals->to_json() );
-		$this->assertEquals( 0, $totals->get_total_for_source( 'source', false ) );
+		$this->assertEquals( 0, $totals->get_matched_rows_for_source( 'source' ) );
 	}
 
 	public function testSingleSource() {
 		$expected = [
-			'rows' => 59,
-			'matched_rows' => 15,
-			'matched_phrases' => 38,
+			'rows' => 105,
+			'matched_rows' => 18,
 		];
 
-		$sources = Source_Manager::get( [ 'post' ], new Search_Flags( [] ), new Source_Flags( [] ) );
+		$sources = Source_Manager::get( [ 'posts' ], [ new Global_Search_Filter( 'the', [] ) ] );
 
 		$totals = new Totals();
-		$this->assertTrue( $totals->get_totals( $sources, 'the' ) );
-
-		$this->assertEquals( 59, $totals->get_total_for_source( 'post', true ) );
-		$this->assertEquals( 15, $totals->get_total_for_source( 'post', false ) );
+		$this->assertTrue( $totals->get_totals( $sources ) );
+		$this->assertEquals( $expected['rows'], $totals->get_total_rows_for_source( 'posts' ) );
+		$this->assertEquals( $expected['matched_rows'], $totals->get_matched_rows_for_source( 'posts' ) );
 		$this->assertEquals( $expected, $totals->to_json() );
 	}
 
 	public function testMultipleSource() {
 		$expected = [
-			'rows' => 159,
-			'matched_rows' => 22,
-			'matched_phrases' => 48,
+			'rows' => 205,
+			'matched_rows' => 25,
 		];
 
-		$sources = Source_Manager::get( [ 'post', 'comment' ], new Search_Flags( [] ), new Source_Flags( [] ) );
+		$sources = Source_Manager::get( [ 'posts', 'comment' ], [ new Global_Search_Filter( 'the', [] ) ] );
 
 		$totals = new Totals();
-		$this->assertTrue( $totals->get_totals( $sources, 'the' ) );
+		$this->assertTrue( $totals->get_totals( $sources ) );
 
-		$this->assertEquals( 59, $totals->get_total_for_source( 'post', true ) );
-		$this->assertEquals( 15, $totals->get_total_for_source( 'post', false ) );
-		$this->assertEquals( 100, $totals->get_total_for_source( 'comment', true ) );
-		$this->assertEquals( 7, $totals->get_total_for_source( 'comment', false ) );
+		$this->assertEquals( 105, $totals->get_total_rows_for_source( 'posts' ) );
+		$this->assertEquals( 18, $totals->get_matched_rows_for_source( 'posts' ) );
+		$this->assertEquals( 100, $totals->get_total_rows_for_source( 'comment' ) );
+		$this->assertEquals( 7, $totals->get_matched_rows_for_source( 'comment' ) );
 
 		$this->assertEquals( $expected, $totals->to_json() );
 	}

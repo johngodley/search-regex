@@ -109,11 +109,15 @@ class SearchRegex_Api_Test extends WP_Ajax_UnitTestCase {
 	}
 
 	protected static function create_posts_from_csv( array $csv ) {
+		$count = 0;
 		foreach ( $csv as $entry ) {
 			$post_id = wp_insert_post( $entry );
+
 			if ( $post_id instanceof WP_Error ) {
 				die( 'Failed to create post' );
 			}
+
+			$count++;
 		}
 	}
 

@@ -3,6 +3,7 @@
 use SearchRegex\Match;
 use SearchRegex\Match_Context_String;
 use SearchRegex\Search_Flags;
+use SearchRegex\Matched_Text;
 
 class MatchTest extends WP_UnitTestCase {
 	private function get_matches_as_json( $matches ) {
@@ -14,8 +15,8 @@ class MatchTest extends WP_UnitTestCase {
 		return $json;
 	}
 
-	public function testMatched_Item() {
-		$match = new Matched_Item( 'match', 20, 'replace' );
+	public function testMatchedText() {
+		$match = new Matched_Text( 'match', 20, 'replace' );
 		$match->set_context( 30 );
 		$match->add_capture( 'test' );
 
@@ -33,27 +34,27 @@ class MatchTest extends WP_UnitTestCase {
 	}
 
 	public function testPlainPattern() {
-		$pattern = Matched_Item::get_pattern( 'hello', new Search_Flags() );
+		$pattern = Matched_Text::get_pattern( 'hello', new Search_Flags() );
 		$this->assertEquals( '@hello@u', $pattern );
 	}
 
 	public function testPlainPatternWithRegex() {
-		$pattern = Matched_Item::get_pattern( '@hello[', new Search_Flags() );
+		$pattern = Matched_Text::get_pattern( '@hello[', new Search_Flags() );
 		$this->assertEquals( '@\@hello\[@u', $pattern );
 	}
 
 	public function testRegexPattern() {
-		$pattern = Matched_Item::get_pattern( 'regex', new Search_Flags( [ 'regex' ] ) );
+		$pattern = Matched_Text::get_pattern( 'regex', new Search_Flags( [ 'regex' ] ) );
 		$this->assertEquals( '@regex@u', $pattern );
 	}
 
 	public function testRegexPatternWithRegex() {
-		$pattern = Matched_Item::get_pattern( 'regex[]@', new Search_Flags( [ 'regex' ] ) );
+		$pattern = Matched_Text::get_pattern( 'regex[]@', new Search_Flags( [ 'regex' ] ) );
 		$this->assertEquals( '@regex[]\\@@u', $pattern );
 	}
 
 	public function testRegexPatternWithRegexCase() {
-		$pattern = Matched_Item::get_pattern( 'regex[]@', new Search_Flags( [ 'regex', 'case' ] ) );
+		$pattern = Matched_Text::get_pattern( 'regex[]@', new Search_Flags( [ 'regex', 'case' ] ) );
 		$this->assertEquals( '@regex[]\\@@iu', $pattern );
 	}
 
@@ -64,7 +65,7 @@ class MatchTest extends WP_UnitTestCase {
 		$replacements = [];
 		$expected = [];
 
-		$matches = Matched_Item::get_all( $search, $flags, $replacements, $column_value );
+		$matches = Matched_Text::get_all( $search, $flags, $replacements, $column_value );
 
 		$this->assertEquals( $expected, $matches );
 	}
@@ -77,6 +78,11 @@ class MatchTest extends WP_UnitTestCase {
 
 		$expected = [
 			[
+				'type' => 'string',
+				'crop' => [],
+				'search' => 'one',
+				'flags' => [],
+				'value_type' => 'text',
 				'context_id' => 0,
 				'context' => $column_value,
 				'match_count' => 3,
@@ -106,7 +112,7 @@ class MatchTest extends WP_UnitTestCase {
 			],
 		];
 
-		$matches = Matched_Item::get_all( $search, $flags, $replacements, $column_value );
+		$matches = Matched_Text::get_all( $search, $flags, $replacements, $column_value );
 		$json = $this->get_matches_as_json( $matches );
 
 		$this->assertEquals( $expected, $json );
@@ -120,6 +126,13 @@ class MatchTest extends WP_UnitTestCase {
 
 		$expected = [
 			[
+				'type' => 'string',
+				'crop' => [
+					'end' => 76,
+				],
+				'search' => 'one',
+				'flags' => [],
+				'value_type' => 'text',
 				'context_id' => 0,
 				'context' => 'one there is one match here                                                 ',
 				'match_count' => 2,
@@ -141,6 +154,13 @@ class MatchTest extends WP_UnitTestCase {
 				],
 			],
 			[
+				'type' => 'string',
+				'crop' => [
+					'start' => 69,
+				],
+				'search' => 'one',
+				'flags' => [],
+				'value_type' => 'text',
 				'context_id' => 1,
 				'context' => '                                and at the end is one',
 				'match_count' => 1,
@@ -156,7 +176,7 @@ class MatchTest extends WP_UnitTestCase {
 			],
 		];
 
-		$matches = Matched_Item::get_all( $search, $flags, $replacements, $column_value );
+		$matches = Matched_Text::get_all( $search, $flags, $replacements, $column_value );
 		$json = $this->get_matches_as_json( $matches );
 
 		$this->assertEquals( $expected, $json );
@@ -170,6 +190,11 @@ class MatchTest extends WP_UnitTestCase {
 
 		$expected = [
 			[
+				'type' => 'string',
+				'crop' => [],
+				'search' => 'one',
+				'flags' => [ 'case' ],
+				'value_type' => 'text',
 				'context_id' => 0,
 				'context' => $column_value,
 				'match_count' => 3,
@@ -199,7 +224,7 @@ class MatchTest extends WP_UnitTestCase {
 			],
 		];
 
-		$matches = Matched_Item::get_all( $search, $flags, $replacements, $column_value );
+		$matches = Matched_Text::get_all( $search, $flags, $replacements, $column_value );
 		$json = $this->get_matches_as_json( $matches );
 
 		$this->assertEquals( $expected, $json );
@@ -213,6 +238,11 @@ class MatchTest extends WP_UnitTestCase {
 
 		$expected = [
 			[
+				'type' => 'string',
+				'crop' => [],
+				'search' => 'one(\w+)',
+				'flags' => [ 'regex' ],
+				'value_type' => 'text',
 				'context_id' => 0,
 				'context' => $column_value,
 				'match_count' => 2,
@@ -235,7 +265,7 @@ class MatchTest extends WP_UnitTestCase {
 			],
 		];
 
-		$matches = Matched_Item::get_all( $search, $flags, $replacements, $column_value );
+		$matches = Matched_Text::get_all( $search, $flags, $replacements, $column_value );
 		$json = $this->get_matches_as_json( $matches );
 
 		$this->assertEquals( $expected, $json );
@@ -249,6 +279,11 @@ class MatchTest extends WP_UnitTestCase {
 
 		$expected = [
 			[
+				'type' => 'string',
+				'crop' => [],
+				'search' => 'one(\w+)',
+				'flags' => [ 'regex', 'case' ],
+				'value_type' => 'text',
 				'context_id' => 0,
 				'context' => $column_value,
 				'match_count' => 2,
@@ -271,13 +306,13 @@ class MatchTest extends WP_UnitTestCase {
 			],
 		];
 
-		$matches = Matched_Item::get_all( $search, $flags, $replacements, $column_value );
+		$matches = Matched_Text::get_all( $search, $flags, $replacements, $column_value );
 		$json = $this->get_matches_as_json( $matches );
 
 		$this->assertEquals( $expected, $json );
 	}
 
-	public function testUtfMatched_Item() {
+	public function testUtfMatched_Text() {
 		$search = 'one(\w+)';
 		$column_value = 'ONE中国 there is one match here and at the end is onemore';
 		$flags = new Search_Flags( [ 'regex', 'case' ] );
@@ -285,6 +320,11 @@ class MatchTest extends WP_UnitTestCase {
 
 		$expected = [
 			[
+				'type' => 'string',
+				'crop' => [],
+				'search' => 'one(\w+)',
+				'flags' => [ 'regex', 'case' ],
+				'value_type' => 'text',
 				'context_id' => 0,
 				'context' => $column_value,
 				'match_count' => 2,
@@ -307,7 +347,7 @@ class MatchTest extends WP_UnitTestCase {
 			],
 		];
 
-		$matches = Matched_Item::get_all( $search, $flags, $replacements, $column_value );
+		$matches = Matched_Text::get_all( $search, $flags, $replacements, $column_value );
 		$json = $this->get_matches_as_json( $matches );
 
 		$this->assertEquals( $expected, $json );
