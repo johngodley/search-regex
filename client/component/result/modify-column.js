@@ -181,7 +181,7 @@ function replaceListContext( contexts, replacement, schema ) {
 
 		return value;
 	}
-	// XXX if multiline it's not detecting when it goes back to normal
+
 	if (
 		schema.type === 'string' &&
 		! replacement.matchesOnly &&

@@ -78,30 +78,6 @@ class Modify_Member extends Modifier {
 	}
 
 	/**
-	 * Get the deleted, added, and same contexts when performing a replace
-	 *
-	 * @param array<string|integer> $action_values Values to modify.
-	 * @param array<string|integer> $column_values Values in the column.
-	 * @return array
-	 */
-	private function get_replace_join( $action_values, $column_values ) {
-		$add = array_filter( $action_values, function( $item ) use ( $column_values ) {
-			// phpcs:ignore
-			return ! in_array( $item, $column_values );
-		} );
-		$delete = array_filter( $column_values, function( $item ) use ( $action_values ) {
-			// phpcs:ignore
-			return ! in_array( $item, $action_values );
-		} );
-		$same = array_filter( $column_values, function( $item ) use ( $action_values ) {
-			// phpcs:ignore
-			return in_array( $item, $action_values );
-		} );
-
-		return [ $delete, $add, $same ];
-	}
-
-	/**
 	 * Get all values that we are not matching
 	 *
 	 * @param array<string|integer> $action_values Values to check for.
@@ -110,14 +86,8 @@ class Modify_Member extends Modifier {
 	 */
 	private function get_exclude( $action_values, $column_values ) {
 		// Remove any that we're excluding
-		$same = array_filter( $action_values, function( $item ) use ( $column_values ) {
-			// phpcs:ignore
-			return ! in_array( $item, $column_values );
-		} );
-		$delete = array_filter( $action_values, function( $item ) use ( $column_values ) {
-			// phpcs:ignore
-			return in_array( $item, $column_values );
-		} );
+		$same = array_intersect( $action_values, $column_values );
+		$delete = array_diff( $column_values, $action_values );
 
 		return [ $same, $delete ];
 	}
@@ -130,11 +100,7 @@ class Modify_Member extends Modifier {
 	 * @return array<string|integer>
 	 */
 	private function get_include( $action_values, $column_values ) {
-		// Add any that we don't already have
-		return array_filter( $action_values, function( $item ) use ( $column_values ) {
-			// phpcs:ignore
-			return ! in_array( $item, $column_values );
-		} );
+		return array_diff( $action_values, $column_values );
 	}
 
 	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw ) {
@@ -154,21 +120,24 @@ class Modify_Member extends Modifier {
 		$updated = [];
 
 		if ( $this->operation === 'replace' ) {
-			if ( $this->schema->get_join_column() ) {
-				list( $delete, $add, $same ) = $this->get_replace_join( $action_values, $column_values );
-			} else {
-				$same = [];
+			$same = array_intersect( $action_values, $column_values );
+			$delete = array_diff( $column_values, $action_values );
+			$add = array_diff( $action_values, $column_values );
 
-				// Create a context for each one
-				foreach ( $action_values as $pos => $item ) {
-					// phpcs:ignore
-					if ( ! in_array( $item, $column_values ) ) {
-						$context = new Match_Context_Replace( $column_values[ $pos ], $source->convert_result_value( $this->schema, (string) $column_values[ $pos ] ) );
-						$context->set_replacement( (string) $item, $source->convert_result_value( $this->schema, (string) $item ) );
-						$updated[] = $context;
-					}
+			// Which one of the 'deletes' can 'replace' an 'add'
+			foreach ( $add as $pos => $value ) {
+				if ( count( $delete ) > 0 ) {
+					$context = new Match_Context_Replace( $delete[0], $source->convert_result_value( $this->schema, (string) $delete[0] ) );
+					$context->set_replacement( (string) $value, $source->convert_result_value( $this->schema, (string) $value ) );
+					$updated[] = $context;
+
+					unset( $add[ $pos ] );
+					unset( $delete[0] );
+					$delete = array_values( $delete );
 				}
 			}
+
+			$add = array_values( $add );
 		} elseif ( $this->operation === 'exclude' ) {
 			list( $same, $delete ) = $this->get_exclude( $action_values, $column_values );
 		} elseif ( $this->operation === 'include' ) {

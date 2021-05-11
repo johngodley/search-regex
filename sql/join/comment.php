@@ -53,7 +53,10 @@ class Sql_Join_Comment extends Sql_Join {
 	public function get_from() {
 		global $wpdb;
 
-		return new Sql_From( Sql_Value::raw( sprintf( "LEFT JOIN {$wpdb->comments} ON {$wpdb->comments}.comment_id=%s.%s", $this->join_table, $this->get_join_column() ) ) );
+		$table = Sql_Value::table( $this->join_table );
+		$column = Sql_Value::column( $this->get_join_column() );
+
+		return new Sql_From( Sql_Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->comments} ON {$wpdb->comments}.comment_id=%s.%s", $table->get_value(), $column->get_value() ) ) );
 	}
 
 	public function get_join_column() {

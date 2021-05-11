@@ -48,7 +48,16 @@ abstract class Match_Context {
 	 * @return boolean
 	 */
 	public function is_matched() {
-		return true;
+		return false;
+	}
+
+	/**
+	 * Get number of matches
+	 *
+	 * @return integer
+	 */
+	public function get_match_count() {
+		return 1;
 	}
 
 	/**

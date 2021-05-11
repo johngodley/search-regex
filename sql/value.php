@@ -3,7 +3,8 @@
 namespace SearchRegex\Sql;
 
 /**
- * A simple sanitizer for table names, column names, and raw (pre-sanitized) names
+ * A simple sanitizer for table names, column names, and raw (pre-sanitized) names. This shouldn't be treated as a replacement for $wpdb->prepare, and is just
+ * a way of being extra-paranoid when forming queries with known column and table names.
  */
 class Sql_Value {
 	/**
@@ -33,17 +34,17 @@ class Sql_Value {
 	}
 
 	/**
-	 * Create a Sql_Value with a known sanitized value.
+	 * Create a Sql_Value with a known sanitized value. You should only use this when you are sure the value is safe.
 	 *
 	 * @param string $value Value.
 	 * @return Sql_Value
 	 */
-	public static function raw( $value ) {
+	public static function safe_raw( $value ) {
 		return new Sql_Value( $value );
 	}
 
 	/**
-	 * Create a Sql_Value for a SQL column. Performs column sanitization.
+	 * Create a Sql_Value for a SQL column. Performs column sanitization and allows for column aliases
 	 *
 	 * @param string $column Column name.
 	 * @return Sql_Value

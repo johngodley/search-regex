@@ -29,7 +29,7 @@ class Match_Context_String extends Match_Context {
 	/**
 	 * Array of matches
 	 *
-	 * @var Matched_Item[]
+	 * @var Matched_Text[]
 	 **/
 	private $matches = [];
 
@@ -53,6 +53,13 @@ class Match_Context_String extends Match_Context {
 	 * @var string
 	 */
 	private $value_type = '';
+
+	/**
+	 * Number of matches
+	 *
+	 * @var integer
+	 */
+	private $match_count = 0;
 
 	/**
 	 * Constructor
@@ -97,6 +104,14 @@ class Match_Context_String extends Match_Context {
 		return $this->match_count;
 	}
 
+	public function is_matched() {
+		return true;
+	}
+
+	public function needs_saving() {
+		return true;
+	}
+
 	/**
 	 * Convert the Match_Context_String to to_json
 	 *
@@ -126,10 +141,10 @@ class Match_Context_String extends Match_Context {
 	/**
 	 * Determine if the Match object is within this context.
 	 *
-	 * @param Matched_Item $match The match to check.
+	 * @param Matched_Text $match The match to check.
 	 * @return Bool true if within the context, false otherwise
 	 */
-	public function is_within_context( Matched_Item $match ) {
+	public function is_within_context( Matched_Text $match ) {
 		if ( count( $this->matches ) === 0 ) {
 			return true;
 		}
@@ -142,11 +157,11 @@ class Match_Context_String extends Match_Context {
 	/**
 	 * Add a Match to this context
 	 *
-	 * @param Matched_Item $match The match to do.
+	 * @param Matched_Text $match The match to do.
 	 * @param String       $value The column value.
 	 * @return void
 	 */
-	public function add_match( Matched_Item $match, $value ) {
+	public function add_match( Matched_Text $match, $value ) {
 		$this->match_count++;
 
 		if ( count( $this->matches ) === self::MATCH_LIMIT ) {
@@ -180,7 +195,7 @@ class Match_Context_String extends Match_Context {
 	 * Find the Match that exists at the given position
 	 *
 	 * @param int $pos_id Position.
-	 * @return Matched_Item|Bool Match at position
+	 * @return Matched_Text|Bool Match at position
 	 */
 	public function get_match_at_position( $pos_id ) {
 		foreach ( $this->matches as $match ) {

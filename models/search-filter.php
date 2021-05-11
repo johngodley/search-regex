@@ -256,7 +256,7 @@ class Search_Filter {
 	}
 
 	/**
-	 * Get the results as Matched_Items
+	 * Get the results as Matched_Texts
 	 *
 	 * @param Search_Source $source Source.
 	 * @param array         $row Row data.

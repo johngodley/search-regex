@@ -84,11 +84,6 @@ class Search_Filter_String extends Search_Filter_Item {
 
 		if ( $this->is_valid() ) {
 			$where = new Sql_Where_String( $select, $this->logic, $this->value, $this->flags );
-
-			// TODO: remove when we don't need phrase counting
-			// if ( ! $this->is_advanced() ) {
-			// $query->add_select( new Sql_Select_Phrases( $this->schema, Sql_Value::column( $this->value ) ) );
-			// }
 			$query->add_where( $where );
 		}
 
@@ -133,7 +128,7 @@ class Search_Filter_String extends Search_Filter_Item {
 			}
 
 			// Do we have a match?
-			$contexts = Matched_Item::get_all( $value, $flag_copy, [], $row_value );
+			$contexts = Matched_Text::get_all( $value, $flag_copy, [], $row_value );
 			if ( count( $contexts ) > 0 ) {
 				if ( $logic === 'notcontains' || $logic === 'notequals' ) {
 					return $this->get_unmatched_context( $source, $row_value );
@@ -169,17 +164,5 @@ class Search_Filter_String extends Search_Filter_Item {
 	 */
 	public function get_value() {
 		return $this->value;
-	}
-
-	public function can_sum_column() {
-		if ( $this->is_advanced() ) {
-			return false;
-		}
-
-		if ( $this->logic === 'notequals' || $this->logic === 'notcontains' ) {
-			return false;
-		}
-
-		return true;
 	}
 }

@@ -263,12 +263,16 @@ class Preset {
 
 		$schema = new Schema( Source_Manager::get_schema( $this->source ) );
 
-		// Default to global replace, for backwards compatability
-		$this->action = new Action_Global_Replace( [
-			'search' => $this->search,
-			'replacement' => $this->replacement,
-			'flags' => $this->search_flags->to_json(),
-		], $schema );
+		// If there is a replacement then default to global replace, for backwards compatability
+		$this->action = new Action_Nothing( [], $schema );
+
+		if ( $this->search !== '' ) {
+			$this->action = new Action_Global_Replace( [
+				'search' => $this->search,
+				'replacement' => $this->replacement,
+				'flags' => $this->search_flags->to_json(),
+			], $schema );
+		}
 
 		if ( isset( $search['action'] ) ) {
 			$this->action = Action::create( $search['action'], Action::get_options( $search ), $schema );

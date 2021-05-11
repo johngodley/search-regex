@@ -35,14 +35,6 @@ class Search_Filter_Member extends Search_Filter_Item {
 	private $logic = 'include';
 
 	/**
-	 * Flags
-	 *
-	 * @readonly
-	 * @var Search_Flags
-	 */
-	private $flags;
-
-	/**
 	 * Join
 	 *
 	 * @var Sql_Join|null
@@ -66,8 +58,6 @@ class Search_Filter_Member extends Search_Filter_Item {
 			$this->logic = strtolower( $item['logic'] );
 		}
 
-		$this->flags = new Search_Flags( isset( $item['flags'] ) ? $item['flags'] : [ 'case' ] );
-
 		if ( $this->schema->get_join_column() ) {
 			$this->join = Sql_Join::create( $this->schema->get_column(), $schema->get_source() );
 		}
@@ -86,7 +76,6 @@ class Search_Filter_Member extends Search_Filter_Item {
 			'column' => $this->schema->get_column(),
 			'values' => $this->values,
 			'logic' => $this->logic,
-			'flags' => $this->flags->to_json(),
 		];
 	}
 
@@ -179,15 +168,8 @@ class Search_Filter_Member extends Search_Filter_Item {
 
 			if ( $this->join ) {
 				$label = $this->join->get_join_value( (string) $value );
-				return $this->get_unmatched_context( $source, (string) $value, $label );
-			}
 
-			if ( $this->schema->get_options() ) {
-				foreach ( $this->schema->get_options() as $option ) {
-					if ( intval( $option['value'], 10 ) === $value ) {
-						return $this->get_matched_context( $source, (string) $value, $option['label'] );
-					}
-				}
+				return $this->get_unmatched_context( $source, (string) $value, $label );
 			}
 		}
 

@@ -81,13 +81,15 @@ class Sql_Join_User extends Sql_Join {
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::raw( $this->join_table ), Sql_Value::column( $this->join_column ), null, true );
+		return new Sql_Select( Sql_Value::table( $this->join_table ), Sql_Value::column( $this->join_column ), null, true );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
-		return new Sql_From( Sql_Value::raw( sprintf( "LEFT JOIN {$wpdb->users} ON {$wpdb->users}.ID=%s.%s", $this->join_table, $this->join_column ) ) );
+		$table = Sql_Value::table( $this->join_table );
+		$column = Sql_Value::column( $this->join_column );
+		return new Sql_From( Sql_Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->users} ON {$wpdb->users}.ID=%s.%s", $table->get_value(), $column->get_value() ) ) );
 	}
 
 	public function get_join_column() {

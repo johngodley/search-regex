@@ -89,8 +89,6 @@ class Schema_Column {
 		}
 	}
 
-	// XXX have an isvalid thing so its not added
-
 	/**
 	 * Get source name
 	 *

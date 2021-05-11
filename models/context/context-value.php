@@ -85,10 +85,6 @@ class Match_Context_Value extends Match_Context {
 		return $this->value_type;
 	}
 
-	public function is_matched() {
-		return false;
-	}
-
 	public function is_equal( Match_Context $context ) {
 		if ( parent::is_equal( $context ) && $context instanceof Match_Context_Value ) {
 			return $this->value === $context->value;

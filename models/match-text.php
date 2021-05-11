@@ -7,7 +7,7 @@ use SearchRegex\Match_Context_String;
 /**
  * Represents a single match
  */
-class Matched_Item {
+class Matched_Text {
 	/**
 	 * Position ID
 	 *
@@ -34,9 +34,9 @@ class Matched_Item {
 	/**
 	 * Replacement
 	 *
-	 * @var String
+	 * @var String|null
 	 **/
-	private $replacement;
+	private $replacement = null;
 
 	/**
 	 * Array of captured data
@@ -52,7 +52,7 @@ class Matched_Item {
 	 * @param int    $match_offset The offset within the column.
 	 * @param String $replacement The replaced value, if one is supplied.
 	 */
-	public function __construct( $match, $match_offset = 0, $replacement = '' ) {
+	public function __construct( $match, $match_offset = 0, $replacement = null ) {
 		$this->pos_id = intval( $match_offset, 10 );
 		$this->match = "$match";
 		$this->replacement = $replacement;
@@ -160,7 +160,7 @@ class Matched_Item {
 				$pos = mb_strlen( substr( $column_value, 0, $match[1] ), 'utf-8' );
 
 				// Create a match
-				$match = new self( $match[0], $pos, isset( $replacements[ $match_pos ] ) ? $replacements[ $match_pos ] : '' );
+				$match = new self( $match[0], $pos, isset( $replacements[ $match_pos ] ) ? $replacements[ $match_pos ] : null );
 
 				// Add any captures
 				foreach ( array_slice( $searches, 1 ) as $capture ) {
@@ -172,6 +172,7 @@ class Matched_Item {
 					// No - create a new context
 					$current_context = new Match_Context_String( $search, $flags );
 					$current_context->set_type( Value_Type::get( $column_value ) );
+					$current_context->set_context_id( count( $contexts ) );
 					$contexts[] = $current_context;
 				}
 
@@ -190,6 +191,10 @@ class Matched_Item {
 	 * @return String The $text value, with the replacement inserted at the Match position
 	 */
 	public function replace_at_position( $text ) {
-		return mb_substr( $text, 0, $this->pos_id, 'UTF-8' ) . $this->replacement . mb_substr( $text, $this->pos_id + mb_strlen( $this->match, 'UTF-8' ), null, 'UTF-8' );
+		if ( $this->replacement !== null ) {
+			return mb_substr( $text, 0, $this->pos_id, 'UTF-8' ) . $this->replacement . mb_substr( $text, $this->pos_id + mb_strlen( $this->match, 'UTF-8' ), null, 'UTF-8' );
+		}
+
+		return $text;
 	}
 }

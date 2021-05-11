@@ -47,6 +47,10 @@ class Match_Context_Replace extends Match_Context_Value {
 		return $this->replacement;
 	}
 
+	public function is_matched() {
+		return true;
+	}
+
 	public function needs_saving() {
 		return true;
 	}

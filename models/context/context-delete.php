@@ -12,6 +12,10 @@ class Match_Context_Delete extends Match_Context_Value {
 		return self::TYPE_DELETE;
 	}
 
+	public function is_matched() {
+		return true;
+	}
+
 	public function needs_saving() {
 		return true;
 	}

@@ -8,7 +8,7 @@ use SearchRegex\Totals;
 
 require_once __DIR__ . '/source.php';
 require_once __DIR__ . '/source-manager.php';
-require_once __DIR__ . '/match.php';
+require_once __DIR__ . '/match-text.php';
 require_once __DIR__ . '/match-context.php';
 require_once __DIR__ . '/match-column.php';
 require_once __DIR__ . '/search-flags.php';
@@ -162,7 +162,7 @@ class Search {
 			$num_rows = $totals->get_matched_rows_for_source( $source->get_type() );
 
 			// Are we within the correct result set?
-			if ( $current_offset + $num_rows >= $absolute_offset && $num_rows > 0 ) {
+			if ( $num_rows > 0 && $current_offset + $num_rows >= $absolute_offset ) {
 				// Adjust for the current source offset
 				$source_offset = max( 0, $absolute_offset - $current_offset );
 
@@ -177,19 +177,20 @@ class Search {
 
 				// Subtract the rows we've read from this source. There could be rows in another source to read
 				$remaining_limit -= $source_limit;
+				$current_offset = $source_offset + count( $source_results );
 
 				// Append to merged set
 				$results[] = [
 					'source_pos' => $source_pos,
 					'results' => $source_results,
 				];
-			}
 
-			// Move on to the next absolute offset
-			$current_offset += min( $limit, $num_rows );
-
-			if ( $remaining_limit <= 0 ) {
-				break;
+				if ( $remaining_limit <= 0 ) {
+					break;
+				}
+			} else {
+				// Move on to the next absolute offset
+				$current_offset += $num_rows;
 			}
 		}
 

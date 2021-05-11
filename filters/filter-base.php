@@ -183,15 +183,6 @@ abstract class Search_Filter_Item {
 	}
 
 	/**
-	 * Can this filter affect a SUM?
-	 *
-	 * @return boolean
-	 */
-	public function can_sum_column() {
-		return false;
-	}
-
-	/**
 	 * Get the columns this filter uses from a row of data
 	 *
 	 * @param array $row Row of data from database.

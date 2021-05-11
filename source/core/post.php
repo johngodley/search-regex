@@ -62,8 +62,8 @@ class Source_Post extends Search_Source {
 
 	public function get_info_columns() {
 		return [
-			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::raw( $this->get_title_column() ) ),
-			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::raw( 'post_type' ) ),   // We need this to show the 'source'
+			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_title_column() ) ),
+			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( 'post_type' ) ),   // We need this to show the 'source'
 		];
 	}
 

@@ -9,7 +9,7 @@ class Totals {
 	/**
 	 * Total rows and matches
 	 *
-	 * @var array<string,array{rows: int, matched_rows: int, matched_phrases: int}>
+	 * @var array<string,array{rows: int, matched_rows: int}>
 	 */
 	private $totals = [];
 
@@ -23,12 +23,11 @@ class Totals {
 	/**
 	 * The grand totals across all sources
 	 *
-	 * @var array{rows: int, matched_rows: int, matched_phrases: int}
+	 * @var array{rows: int, matched_rows: int}
 	 */
 	private $grand_totals = [
 		'rows' => 0,
 		'matched_rows' => 0,
-		'matched_phrases' => 0,
 	];
 
 	/**
@@ -68,7 +67,6 @@ class Totals {
 			$this->totals[ $name ] = [
 				'rows' => intval( $rows, 10 ),
 				'matched_rows' => 0,
-				'matched_phrases' => 0,
 			];
 
 			// If we have no advanced searches then we get the matched phrase totals
@@ -79,7 +77,6 @@ class Totals {
 				}
 
 				$this->totals[ $name ]['matched_rows'] += intval( $matches['rows'], 10 );
-				$this->totals[ $name ]['matched_phrases'] += intval( $matches['matches'], 10 );
 			}
 
 			// Add to grand totals
@@ -92,13 +89,12 @@ class Totals {
 	/**
 	 * Add a source total to the grand total
 	 *
-	 * @param array{rows: int, matched_rows: int, matched_phrases: int} $total The source totals.
+	 * @param array{rows: int, matched_rows: int} $total The source totals.
 	 * @return void
 	 */
 	private function add_to_grand_total( $total ) {
 		$this->grand_totals['rows'] += $total['rows'];
 		$this->grand_totals['matched_rows'] += $total['matched_rows'];
-		$this->grand_totals['matched_phrases'] += $total['matched_phrases'];
 	}
 
 	/**
@@ -150,7 +146,7 @@ class Totals {
 	/**
 	 * Return the grand totals as JSON
 	 *
-	 * @return array{rows: int, matched_rows: int, matched_phrases: int}
+	 * @return array{rows: int, matched_rows: int}
 	 */
 	public function to_json() {
 		return $this->grand_totals;

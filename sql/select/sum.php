@@ -14,7 +14,7 @@ class Sql_Select_Phrases extends Sql_Select_Column {
 	private $values = [];
 
 	public function __construct( \SearchRegex\Schema_Column $column, Sql_Value $alias = null ) {
-		parent::__construct( $column, Sql_Value::raw( 'match_total' ) );
+		parent::__construct( $column, Sql_Value::column( 'match_total' ) );
 
 		if ( $alias !== null ) {
 			// Not sanitized until later

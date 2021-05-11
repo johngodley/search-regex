@@ -80,4 +80,8 @@ class Global_Search_Filter extends Search_Filter {
 	public function has_column( $column, Schema_Column $schema ) {
 		return $schema->is_global();
 	}
+
+	public function is_advanced() {
+		return in_array( 'regex', $this->search_flags, true );
+	}
 }

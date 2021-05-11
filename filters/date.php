@@ -88,11 +88,6 @@ class Search_Filter_Date extends Search_Filter_Item {
 				$upper = new Sql_Where_Date( $select, '<', $this->end_value );
 
 				$where = new Sql_Where_And( [ $lower, $upper ] );
-			} elseif ( $this->logic === 'notrange' && $this->end_value !== false ) {
-				$lower = new Sql_Where_Date( $select, '<', $this->start_value );
-				$upper = new Sql_Where_Date( $select, '>', $this->end_value );
-
-				$where = new Sql_Where_Or( [ $lower, $upper ] );
 			} else {
 				$where = new Sql_Where_Date( $select, $this->logic, $this->start_value );
 			}

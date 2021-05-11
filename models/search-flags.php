@@ -10,7 +10,7 @@ class Search_Flags {
 	private $flags = [];
 
 	/**
-	 * Create a Source_Flags object with an array of flag strings
+	 * Create a Search_Flags object with an array of flag strings
 	 *
 	 * @param Array $flags Array of flag values.
 	 */

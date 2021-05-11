@@ -17,7 +17,7 @@ use SearchRegex\Sql\Sql_Join_User;
  * Filter a number column.
  */
 class Search_Filter_Integer extends Search_Filter_Item {
-	const LOGIC = [ 'equals', 'notequals', 'greater', 'less', 'range', 'has', 'hasnot' ];
+	const LOGIC = [ 'equals', 'notequals', 'greater', 'less', 'range', 'notrange', 'has', 'hasnot' ];
 
 	/**
 	 * Number value to filter on, or start number in a range

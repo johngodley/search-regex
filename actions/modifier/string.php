@@ -40,11 +40,11 @@ class Modify_String extends Modifier {
 	public function __construct( array $option, Schema_Column $schema ) {
 		parent::__construct( $option, $schema );
 
-		if ( isset( $option['searchValue'] ) ) {
+		if ( isset( $option['searchValue'] ) && is_string( $option['searchValue'] ) ) {
 			$this->search_value = $option['searchValue'];
 		}
 
-		if ( isset( $option['replaceValue'] ) ) {
+		if ( isset( $option['replaceValue'] ) && is_string( $option['replaceValue'] ) ) {
 			$this->replace_value = $option['replaceValue'];
 		}
 
@@ -122,7 +122,7 @@ class Modify_String extends Modifier {
 	 * @return String
 	 */
 	private function replace_all( $search, $replace, $value ) {
-		$pattern = Matched_Item::get_pattern( $search, $this->search_flags );
+		$pattern = Matched_Text::get_pattern( $search, $this->search_flags );
 
 		if ( ! $this->search_flags->is_regex() && is_serialized( $value ) ) {
 			$serial = '/s:(\d*):"(.*?)";/s';
@@ -144,6 +144,11 @@ class Modify_String extends Modifier {
 
 	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw ) {
 		if ( $this->operation === 'set' ) {
+			// Identical - just return value
+			if ( $this->replace_value === $row_value ) {
+				return $column;
+			}
+
 			/**
 			 * @psalm-suppress TooManyArguments
 			 */
@@ -181,8 +186,8 @@ class Modify_String extends Modifier {
 		}
 
 		// Replace a specific position
-		$replacements = $this->get_replace_positions( $this->search_value );
-		$contexts = Matched_Item::get_all( $this->search_value, $this->search_flags, $replacements, $row_value );
+		$replacements = $this->get_replace_positions( $row_value );
+		$contexts = Matched_Text::get_all( $this->search_value, $this->search_flags, $replacements, $row_value );
 
 		foreach ( $contexts as $context ) {
 			$match = $context->get_match_at_position( $this->pos_id );

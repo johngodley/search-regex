@@ -23,9 +23,9 @@ class Modify_Date extends Modifier {
 	/**
 	 * Units of the value
 	 *
-	 * @var 'second'|'minute'|'hour'|'day'|'week'|'month'|'year'|null
+	 * @var 'second'|'minute'|'hour'|'day'|'week'|'month'|'year'
 	 */
-	private $unit = null;
+	private $unit = 'hour';
 
 	public function __construct( array $option, Schema_Column $schema ) {
 		parent::__construct( $option, $schema );
@@ -120,13 +120,14 @@ class Modify_Date extends Modifier {
 			$value = $context->get_value();
 			$mysql_date = mysql2date( 'U', (string) $value );
 
-			if ( ( $this->operation === 'increment' || $this->operation === 'decrement' ) && $this->unit ) {
+			if ( $this->operation === 'increment' || $this->operation === 'decrement' ) {
 				$date = $this->get_changed_date( $this->unit, intval( $mysql_date, 10 ) );
 			}
 
 			if ( $date !== $value && $date !== null ) {
 				$context = new Match_Context_Replace( $value );
-				$context->set_replacement( date( 'Y-m-d H:i:s', $date ), $source->convert_result_value( $this->schema, (string) $date ) );
+				$date = date( 'Y-m-d H:i:s', $date );
+				$context->set_replacement( $date, $source->convert_result_value( $this->schema, $date ) );
 				$column->set_contexts( [ $context ] );
 			}
 		}

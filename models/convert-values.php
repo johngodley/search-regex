@@ -134,10 +134,10 @@ class Convert_Values {
 	 * Get a date in user's date format
 	 *
 	 * @param Schema_Column $column Column.
-	 * @param integer       $value Value.
+	 * @param string        $value Value.
 	 * @return string
 	 */
 	public function get_date( $column, $value ) {
-		return date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), intval( mysql2date( 'U', (string) $value ), 10 ) );
+		return date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), intval( mysql2date( 'U', $value ), 10 ) );
 	}
 }

@@ -121,6 +121,7 @@ class Match_Column {
 
 			if ( ! $found ) {
 				$context->set_context_id( count( $this->contexts ) );
+
 				$this->contexts[] = $context;
 				$this->match_count += $context->get_match_count();
 			}
@@ -147,16 +148,12 @@ class Match_Column {
 	 * @return Array{column_id: string, column_label: string, contexts: array, context_count: int, match_count: int} JSON data
 	 */
 	public function to_json() {
-		$contexts = [];
-
-		foreach ( $this->contexts as $context ) {
-			$contexts[] = $context->to_json();
-		}
-
 		return [
 			'column_id' => $this->column_id,
 			'column_label' => $this->column_label,
-			'contexts' => $contexts,
+			'contexts' => array_map( function( $item ) {
+				return $item->to_json();
+			}, $this->contexts ),
 			'context_count' => $this->context_count,
 			'match_count' => $this->match_count,
 		];

@@ -97,16 +97,16 @@ class Sql_Join_Meta extends Sql_Join {
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::table( $this->meta_table ), Sql_Value::raw( '0' ), Sql_Value::column( 'meta_id' ) );
+		return new Sql_Select( Sql_Value::table( $this->meta_table ), Sql_Value::column( '0' ), Sql_Value::column( 'meta_id' ) );
 	}
 
 	public function get_group() {
-		return new Sql_Group( Sql_Value::raw( $this->group_id ) );
+		return new Sql_Group( Sql_Value::column( $this->group_id ) );
 	}
 
 	public function get_from() {
 		if ( $this->is_matching ) {
-			return new Sql_From( Sql_Value::raw( sprintf( 'LEFT JOIN %s AS meta ON %s.%s = meta.%s', $this->meta_table, $this->source_table, $this->table_id, $this->join_id ) ) );
+			return new Sql_From( Sql_Value::safe_raw( sprintf( 'LEFT JOIN %s AS meta ON %s.%s = meta.%s', $this->meta_table, $this->source_table, $this->table_id, $this->join_id ) ) );
 		}
 
 		return false;

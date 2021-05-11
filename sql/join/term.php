@@ -17,27 +17,27 @@ class Sql_Join_Term extends Sql_Join {
 
 	public function get_where() {
 		if ( $this->is_matching ) {
-			return new Sql_Where_String( new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::raw( 'taxonomy' ) ), '=', $this->column );
+			return new Sql_Where_String( new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::column( 'taxonomy' ) ), '=', $this->column );
 		}
 
 		return false;
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::raw( '0' ), Sql_Value::column( $this->column ) );
+		return new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::column( '0' ), Sql_Value::column( $this->column ) );
 	}
 
 	public function get_group() {
 		global $wpdb;
 
-		return new Sql_Group( Sql_Value::raw( "{$wpdb->posts}.ID" ) );
+		return new Sql_Group( Sql_Value::column( "{$wpdb->posts}.ID" ) );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
 		if ( $this->is_matching ) {
-			return new Sql_From( Sql_Value::raw( sprintf( 'INNER JOIN %sterm_relationships AS tr ON (%s.ID = tr.object_id) INNER JOIN %sterm_taxonomy AS tt ON tt.term_taxonomy_id=tr.term_taxonomy_id', $wpdb->prefix, $wpdb->posts, $wpdb->prefix ) ) );
+			return new Sql_From( Sql_Value::safe_raw( sprintf( 'INNER JOIN %sterm_relationships AS tr ON (%s.ID = tr.object_id) INNER JOIN %sterm_taxonomy AS tt ON tt.term_taxonomy_id=tr.term_taxonomy_id', $wpdb->prefix, $wpdb->posts, $wpdb->prefix ) ) );
 		}
 
 		return false;

@@ -97,7 +97,7 @@ abstract class Search_Source {
 	 */
 	public function get_info_columns() {
 		return [
-			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::raw( $this->get_title_column() ) ),
+			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_title_column() ) ),
 		];
 	}
 
@@ -180,7 +180,7 @@ abstract class Search_Source {
 		$sql = new Sql_Builder();
 
 		$query = new Sql_Query();
-		$query->add_select( new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::raw( 'COUNT(*)' ) ) );
+		$query->add_select( new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::safe_raw( 'COUNT(*)' ) ) );
 		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
 
 		return $sql->get_count( $query );

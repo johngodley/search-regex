@@ -178,7 +178,7 @@ class Source_Manager {
 	 *
 	 * @param String               $source Source name.
 	 * @param array<Search_Filter> $search_filters Search filters.
-	 * @return object|null New Source_Flags object
+	 * @return object|null
 	 */
 	private static function get_handler_for_source( $source, array $search_filters ) {
 		$sources = self::get_all_sources();

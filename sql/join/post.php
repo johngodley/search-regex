@@ -63,13 +63,16 @@ class Sql_Join_Post extends Sql_Join {
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::table( $this->source ), Sql_Value::raw( $this->join_column ), null, true );
+		return new Sql_Select( Sql_Value::table( $this->source ), Sql_Value::column( $this->join_column ), null, true );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
-		return new Sql_From( Sql_Value::raw( sprintf( "LEFT JOIN {$wpdb->posts} ON {$wpdb->posts}.ID=%s.%s", $this->source, $this->join_column ) ) );
+		$source = Sql_Value::table( $this->source );
+		$column = Sql_Value::column( $this->join_column );
+
+		return new Sql_From( Sql_Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->posts} ON {$wpdb->posts}.ID=%s.%s", $source->get_value(), $column->get_value() ) ) );
 	}
 
 	public function get_join_column() {
@@ -79,7 +82,7 @@ class Sql_Join_Post extends Sql_Join {
 	public function get_where() {
 		global $wpdb;
 
-		return new Sql_Where_Null( new Sql_Select( Sql_Value::table( $wpdb->posts ), Sql_Value::raw( 'ID' ) ), $this->logic );
+		return new Sql_Where_Null( new Sql_Select( Sql_Value::table( $wpdb->posts ), Sql_Value::column( 'ID' ) ), $this->logic );
 	}
 
 	public function get_join_value( $value ) {
