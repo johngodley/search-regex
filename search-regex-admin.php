@@ -141,6 +141,14 @@ class Search_Regex_Admin {
 		/** @psalm-suppress UndefinedClass */
 		$caps = Search_Regex_Capabilities::get_all_capabilities();
 
+		$is_new = true;
+		$major_version = implode( '.', array_slice( explode( '.', SEARCHREGEX_VERSION ), 0, 2 ) );
+
+		// phpcs:ignore
+		if ( isset( $_GET['page'] ) && $_GET['page'] === 'search-regex.php' && strpos( SEARCHREGEX_VERSION, '-beta' ) === false ) {
+			$is_new = version_compare( $options['update_notice'], $major_version ) < 0;
+		}
+
 		wp_localize_script( 'search-regex', 'SearchRegexi10n', array(
 			'api' => [
 				'WP_API_root' => esc_url_raw( searchregex_get_rest_api() ),
@@ -168,6 +176,7 @@ class Search_Regex_Admin {
 				'pages' => $pages,
 				'capabilities' => $caps,
 			],
+			'update_notice' => $is_new ? $major_version : false,
 		) );
 
 		$this->add_help_tab();

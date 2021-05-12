@@ -19,6 +19,7 @@ function searchregex_get_default_options() {
 		'support' => false,
 		'rest_api' => SEARCHREGEX_API_JSON,
 		'defaultPreset' => 0,
+		'update_notice' => 0,
 	];
 
 	return \apply_filters( 'searchregex_default_options', $defaults );
@@ -43,6 +44,12 @@ function searchregex_set_options( array $settings = array() ) {
 
 	if ( isset( $settings['defaultPreset'] ) ) {
 		$options['defaultPreset'] = preg_replace( '/[^A-Fa-f0-9]*/', '', $settings['defaultPreset'] );
+	}
+
+	if ( isset( $settings['update_notice'] ) ) {
+		$major_version = explode( '-', SEARCHREGEX_VERSION )[0];   // Remove any beta suffix
+		$major_version = implode( '.', array_slice( explode( '.', SEARCHREGEX_VERSION ), 0, 2 ) );
+		$options['update_notice'] = $major_version;
 	}
 
 	\update_option( SEARCHREGEX_OPTION, \apply_filters( 'searchregex_save_options', $options ) );

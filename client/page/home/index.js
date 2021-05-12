@@ -22,6 +22,7 @@ import PageContent from './page-content';
 import { getErrorLinks, getErrorDetails } from 'lib/error-links';
 import CacheDetect from './cache-detect';
 import DatabaseError from './database-error';
+import UpdateNotice from './update-notice';
 import './style.scss';
 
 const getTitles = () => ( {
@@ -64,6 +65,8 @@ function Home( props ) {
 			<div className="wrap searchregex">
 				<PageRouter page={ page } setPage={ setPage } onPageChange={ onClearErrors }>
 					<h1 className="wp-heading-inline">{ getTitles()[ page ] }</h1>
+
+					<UpdateNotice />
 
 					<Menu
 						onChangePage={ ( newPage ) => setPage( newPage === '' ? 'search' : newPage ) }
