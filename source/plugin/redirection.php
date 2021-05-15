@@ -188,18 +188,18 @@ class Redirection_Search_Regex extends Search_Source {
 					'title' => __( 'Title', 'search-regex' ),
 					'global' => true,
 				],
-				[
-					'column' => 'action_type',
-					'type' => 'member',
-					'title' => __( 'Action Type', 'search-regex' ),
-					'options' => $this->get_action_types(),
-				],
-				[
-					'column' => 'match_type',
-					'type' => 'member',
-					'title' => __( 'Match Type', 'search-regex' ),
-					'options' => $this->get_match_types(),
-				],
+				// [
+				// 	'column' => 'action_type',
+				// 	'type' => 'member',
+				// 	'title' => __( 'Action Type', 'search-regex' ),
+				// 	'options' => $this->get_action_types(),
+				// ],
+				// [
+				// 	'column' => 'match_type',
+				// 	'type' => 'member',
+				// 	'title' => __( 'Match Type', 'search-regex' ),
+				// 	'options' => $this->get_match_types(),
+				// ],
 				[
 					'column' => 'action_data',
 					'type' => 'string',
