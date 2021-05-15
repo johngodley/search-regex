@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { translate as __ } from 'i18n-calypso';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 /**
  * Internal dependencies
@@ -16,20 +16,17 @@ import SearchActions from './search-actions';
 import ReplaceProgress from 'component/replace-progress';
 import { Notice } from 'wp-plugin-components';
 import { search } from 'state/search/action';
-import { STATUS_IN_PROGRESS } from 'state/settings/type';
+import { STATUS_FAILED } from 'state/settings/type';
 import './style.scss';
 
-const canSearch = ( status, searchPhrase ) => status === STATUS_IN_PROGRESS || searchPhrase.length === 0;
-
 function SearchReplace( props ) {
-	const { status, replaceAll, onSearch, searchPhrase } = props;
+	const { status, isSaving } = useSelector( ( state ) => state.search );
+	const dispatch = useDispatch();
 
 	function submit( ev ) {
 		ev.preventDefault();
 
-		if ( canSearch( status, searchPhrase ) ) {
-			onSearch( searchPhrase, status );
-		}
+		dispatch( search( 0 ) );
 	}
 
 	return (
@@ -45,30 +42,10 @@ function SearchReplace( props ) {
 				<SearchActions />
 			</form>
 
-			{ status && ( replaceAll ? <ReplaceProgress /> : <SearchResults /> ) }
+			{ status !== null && status !== STATUS_FAILED && isSaving && <ReplaceProgress /> }
+			{ status !== null && status !== STATUS_FAILED && ! isSaving && <SearchResults /> }
 		</>
 	);
 }
 
-function mapStateToProps( state ) {
-	const { status, replaceAll, search } = state.search;
-
-	return {
-		status,
-		replaceAll,
-		searchPhrase: search.searchPhrase,
-	};
-}
-
-function mapDispatchToProps( dispatch ) {
-	return {
-		onSearch: () => {
-			dispatch( search( 0 ) );
-		},
-	};
-}
-
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)( SearchReplace );
+export default SearchReplace;

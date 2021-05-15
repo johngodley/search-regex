@@ -14,7 +14,7 @@ function TableLoading( { columns } ) {
 	const placeholders = [];
 
 	for ( let index = 0; index < columns; index++ ) {
-		placeholders.push( <td key={ index } colSpan={ index == 0 ? 2 : 1 }><Placeholder /></td> );
+		placeholders.push( <td key={ index }><Placeholder /></td> );
 	}
 
 	return (

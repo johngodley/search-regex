@@ -18,8 +18,8 @@ function searchregex_get_default_options() {
 	$defaults = [
 		'support' => false,
 		'rest_api' => SEARCHREGEX_API_JSON,
-		'actionDropdown' => true,
 		'defaultPreset' => 0,
+		'update_notice' => 0,
 	];
 
 	return \apply_filters( 'searchregex_default_options', $defaults );
@@ -42,12 +42,14 @@ function searchregex_set_options( array $settings = array() ) {
 		$options['support'] = $settings['support'] ? true : false;
 	}
 
-	if ( isset( $settings['actionDropdown'] ) ) {
-		$options['actionDropdown'] = $settings['actionDropdown'] ? true : false;
-	}
-
 	if ( isset( $settings['defaultPreset'] ) ) {
 		$options['defaultPreset'] = preg_replace( '/[^A-Fa-f0-9]*/', '', $settings['defaultPreset'] );
+	}
+
+	if ( isset( $settings['update_notice'] ) ) {
+		$major_version = explode( '-', SEARCHREGEX_VERSION )[0];   // Remove any beta suffix
+		$major_version = implode( '.', array_slice( explode( '.', SEARCHREGEX_VERSION ), 0, 2 ) );
+		$options['update_notice'] = $major_version;
 	}
 
 	\update_option( SEARCHREGEX_OPTION, \apply_filters( 'searchregex_save_options', $options ) );
@@ -104,4 +106,17 @@ function searchregex_get_rest_api( $type = false ) {
 	}
 
 	return $url;
+}
+
+/**
+ * Can we save data to the database? Useful for disabling saves during debugging
+ *
+ * @return boolean
+ */
+function searchregex_can_save() {
+	if ( defined( 'SEARCHREGEX_DEBUG' ) && SEARCHREGEX_DEBUG ) {
+		return false;
+	}
+
+	return true;
 }

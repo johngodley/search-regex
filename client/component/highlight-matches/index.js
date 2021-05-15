@@ -5,14 +5,15 @@
 import React from 'react';
 import { translate as __ } from 'i18n-calypso';
 import { connect } from 'react-redux';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 
-import RestrictedMatches from 'component/result/restricted-matches';
+import RestrictedMatches from 'component/result/column/restricted-matches';
 import Replacement from './replacement';
-import { replaceRow } from 'state/search/action';
+import { saveRow } from 'state/search/action';
 import './style.scss';
 
 /**
@@ -48,36 +49,29 @@ import './style.scss';
  * @param {string} props.matchedPhrase - Matched word
  * @param {number} props.rowId - Row ID
  * @param {string} props.columnId - Column ID
- * @param {boolean} props.isReplacing - Is replacing
  * @param {string} props.sourceType - Type of source
  * @param {Match} props.match - Match
  * @param {ReplaceCallback} props.onReplace - Perform a replacement
  * @param {SpecificCallback} props.setSpecific - Set the current replacement value
- * @param {string} props.contextReplacement - Global replacement
  */
 function Match( props ) {
-	const {
-		beforePhrase,
-		onReplace,
-		sourceType,
-		rowId,
-		columnId,
-		isReplacing,
-		contextReplacement,
-	} = props;
-	const { context_offset, match, pos_id, captures, replacement } = props.match;
+	const { beforePhrase, onReplace, column, schema, setReplacement, rowId } = props;
+	const { match, pos_id, captures, replacement } = props.match;
 
 	return (
 		<>
 			{ beforePhrase }
 
 			<Replacement
-				onSave={ ( phrase ) => onReplace( phrase, sourceType, rowId, columnId, pos_id ) }
-				isReplacing={ isReplacing }
+				onSave={ ( phrase ) => onReplace( phrase, match, rowId, pos_id ) }
 				match={ match }
+				replacement={ replacement }
 				captures={ captures }
-				replacement={ [ contextReplacement, replacement ] }
-				key={ context_offset }
+				canReplace={ true }
+				setReplacement={ setReplacement }
+				column={ column }
+				schema={ schema }
+				rowId={ rowId }
 			/>
 		</>
 	);
@@ -92,17 +86,16 @@ function Match( props ) {
  * @param {number} props.rowId - Row ID
  * @param {string} props.columnId - Column ID
  * @param {boolean} props.isReplacing - Is replacing
- * @param {string} props.sourceType - Type of source
  * @param {string} props.contextReplacement - Phrase for this context
  * @param {number} props.count - Number of matches.
  * @param {ReplaceCallback} props.onReplace - Replace callback
  */
 function HighlightMatches( props ) {
-	const { matches, count, contextReplacement, onReplace, isReplacing, sourceType, source, columnId, rowId } = props;
+	const { matches, count, onReplace, source, column, schema, className, rowId, crop = [] } = props;
 	let offset = 0;
 
 	return (
-		<div className="searchregex-match__context">
+		<div className={ classnames( 'searchregex-match__context', className ) }>
 			{ matches.map( ( match ) => {
 				const oldOffset = offset;
 
@@ -112,18 +105,22 @@ function HighlightMatches( props ) {
 					<Match
 						match={ match }
 						key={ match.pos_id }
-						sourceType={ sourceType }
-						columnId={ columnId }
-						rowId={ rowId }
 						onReplace={ onReplace }
-						isReplacing={ isReplacing }
-						beforePhrase={ source.substring( oldOffset, match.context_offset ) }
-						contextReplacement={ contextReplacement }
+						beforePhrase={
+							<>
+								{ crop.start > 0 && <>&hellip; </> }
+								{ source.substring( oldOffset, match.context_offset ) }
+							</>
+						}
+						column={ column }
+						schema={ schema }
+						rowId={ rowId }
 					/>
 				);
 			} ) }
 
 			{ source.substring( offset ) }
+			{ crop.end > 0 && <> &hellip;</> }
 
 			{ matches.length !== count && <RestrictedMatches /> }
 		</div>
@@ -139,8 +136,17 @@ function mapDispatchToProps( dispatch ) {
 		 * @param {string} columnId
 		 * @param {number} pos_id
 		 */
-		onReplace: ( replacedPhrase, source, rowId, columnId, pos_id ) => {
-			dispatch( replaceRow( replacedPhrase, source, rowId, columnId, pos_id ) );
+		onReplace: ( replaceValue, searchValue, rowId, posId ) => {
+			dispatch(
+				saveRow(
+					{
+						...replaceValue,
+						searchValue,
+						posId,
+					},
+					rowId
+				)
+			);
 		},
 	};
 }

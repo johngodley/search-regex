@@ -7,6 +7,11 @@ import { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from './s
 import getValidatedSearch from './validate';
 import { getPageUrl } from 'wp-plugin-lib/wordpress-url';
 
+/** @typedef {import('./type.js').SearchState} SearchState */
+
+/**
+ * @returns {SearchState}
+ */
 export function getInitialSearch() {
 	const query = getPageUrl();
 	const sources = getPreload( 'sources', [] );
@@ -17,21 +22,19 @@ export function getInitialSearch() {
 				( item ) => item.id === query.preset || item.id === SearchRegexi10n.settings.defaultPreset
 			)
 		),
-		...getQuerySearchParams( sources ),
+		...getQuerySearchParams(),
 	} );
 
 	return {
 		results: [],
-		replacements: [],
+		resultsDirty: false,
 		replacing: [],
-
-		replaceAll: false,
-		replaceCount: 0,
-		phraseCount: 0,
 
 		search,
 
 		searchDirection: null,
+
+		labels: getPreload( 'labels', [] ),
 
 		requestCount: 0,
 		totals: {
@@ -43,12 +46,12 @@ export function getInitialSearch() {
 
 		status: null,
 		showLoading: false,
+		isSaving: false,
 
 		sources,
-		sourceFlags: getPreload( 'source_flags', [] ),
-
-		rawData: null,
 
 		canCancel: false,
+
+		schema: getPreload( 'schema', [] ),
 	};
 }

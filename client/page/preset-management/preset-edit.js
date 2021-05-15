@@ -53,27 +53,35 @@ function PresetEdit( props ) {
 	const availableLockedFields = [
 		{
 			value: 'searchPhrase',
-			label: __( 'Search' ),
+			label: __( 'Global Search' ),
 		},
 		{
 			value: 'replacement',
-			label: __( 'Replace' ),
+			label: __( 'Global Replace' ),
 		},
 		{
 			value: 'searchFlags',
-			label: __( 'Search Flags' ),
+			label: __( 'Global Search Flags' ),
 		},
 		{
 			value: 'source',
 			label: __( 'Source' ),
 		},
 		{
-			value: 'sourceFlags',
-			label: __( 'Source Flags' ),
-		},
-		{
 			value: 'perPage',
 			label: __( 'Results per page' ),
+		},
+		{
+			value: 'filters',
+			label: __( 'Filters' ),
+		},
+		{
+			value: 'action',
+			label: __( 'Action' ),
+		},
+		{
+			value: 'view',
+			label: __( 'View Columns' ),
 		},
 	];
 
@@ -208,7 +216,7 @@ function PresetEdit( props ) {
 
 							<p>
 								{ __(
-									'A tag creates a custom input field. Insert the tag anywhere in the search or replace field and when the preset is used it will be replaced with a custom text field with the tag label.'
+									'A tag creates a custom input field. Insert the tag anywhere in the search, replace, text filter, or text action and when the preset is used it will be replaced with a custom text field with the tag label.'
 								) }
 							</p>
 							<p>

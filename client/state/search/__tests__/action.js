@@ -56,7 +56,6 @@ describe( 'search actions', () => {
 				searchPhrase: 'cat',
 				replacement: replaceRequest,
 				searchFlags: [],
-				sourceFlags: [],
 			} );
 			const results = { rows: 1, phrases: 2 };
 			const expectedActions = [
@@ -68,7 +67,6 @@ describe( 'search actions', () => {
 				searchPhrase: 'cat',
 				replacement: replaceResponse,
 				searchFlags: [],
-				sourceFlags: [],
 				replacePhrase: replaceResponse,
 				perPage: 25,
 				offset,
@@ -102,7 +100,6 @@ describe( 'search actions', () => {
 				searchPhrase: 'cat',
 				replacement: replaceRequest,
 				searchFlags: [],
-				sourceFlags: [],
 			} );
 			const results = { rows: 1, phrases: 2 };
 			const expectedActions = [
@@ -113,7 +110,6 @@ describe( 'search actions', () => {
 				searchPhrase: 'cat',
 				replacement,
 				searchFlags: [],
-				sourceFlags: [],
 				replacePhrase: replacement,
 				...extra,
 			} );
@@ -142,7 +138,6 @@ describe( 'search actions', () => {
 				source: [ 'post' ],
 				searchPhrase: 'cat',
 				searchFlags: [],
-				sourceFlags: [],
 				replacement: '',
 				perPage: 25,
 			} );
@@ -150,7 +145,6 @@ describe( 'search actions', () => {
 				source: [ 'post' ],
 				searchPhrase: 'cat',
 				searchFlags: [],
-				sourceFlags: [],
 				replacement: '',
 				page: 0,
 				searchDirection: 'forward',

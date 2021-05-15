@@ -7,49 +7,73 @@ import {
 	SEARCH_START_FRESH,
 	SEARCH_START_MORE,
 	SEARCH_FORWARD,
+	SEARCH_PERFORM_FRESH,
+	SEARCH_PERFORM_MORE,
 } from '../type';
 import { getSearchValues } from '../selector';
 import SearchRegexApi from 'lib/api-request';
 import apiFetch from 'wp-plugin-lib/api-fetch';
 
+function doSearch( state, dispatch, type, page, extra ) {
+	const { search } = state.search;
+	const searchValues = getSearchValues( { ...search, page, ...extra } );
+
+	dispatch( { type, ...searchValues } );
+
+	return getSearch( searchValues, dispatch );
+}
+
+// Limit is used if we only need a few more results to fill the page
+function doSearchMore( state, dispatch, type, page, perPage, extra ) {
+	const { search, searchDirection = SEARCH_FORWARD } = state.search;
+	const searchValues = getSearchValues( {
+		...search,
+		page,
+		perPage,
+		searchDirection,
+		...extra,
+	} );
+
+	dispatch( { type, ...searchValues } );
+
+	return getSearch( searchValues, dispatch );
+}
+
 /**
- * Start a search for the current phrase and conditions
+ * Start a search for the conditions
  * @param {number} page Page offset
  * @param {String} searchDirection Search direction - SEARCH_FORWARD or SEARCH_BACKWARD
  */
 export const search = ( page, searchDirection = SEARCH_FORWARD ) => ( dispatch, getState ) => {
-	const { sources, search } = getState().search;
-	const searchValues = {
-		...getSearchValues( search, sources ),
-		page,
-		searchDirection,
-	};
-
-	dispatch( { type: SEARCH_START_FRESH, ...searchValues } );
-
-	return getSearch( searchValues, dispatch );
+	return doSearch( getState(), dispatch, SEARCH_START_FRESH, page, { searchDirection } );
 };
 
 /**
- * Continue a search for the current phrase and conditions. Only need for regular expression searches when the page isn't full
+ * Continue a search for the conditions
  * @param {number} page Page offset
  * @param {number} perPage Number of results per page
  * @param {number} limit How many results remaining to return
  */
 export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => {
-	const { search, sources, searchDirection = SEARCH_FORWARD } = getState().search;
-	const searchValues = {
-		...getSearchValues( search, sources ),
-		page,
-		perPage,
-		searchDirection,
-		limit,
-	};
+	doSearchMore( getState(), dispatch, SEARCH_START_MORE, page, perPage, { limit } );
+};
 
-	dispatch( { type: SEARCH_START_MORE, ...searchValues } );
+/**
+ * Perform a search action for the conditions
+ * @param {number} page Page offset
+ */
+export const perform = ( page ) => ( dispatch, getState ) => {
+	return doSearch( getState(), dispatch, SEARCH_PERFORM_FRESH, page, { save: true } );
+};
 
-	return getSearch( searchValues, dispatch );
-}
+/**
+ * Continue a search for action the conditions
+ * @param {number} page Page offset
+ * @param {number} perPage Number of results per page
+ */
+export const performMore = ( page, perPage ) => ( dispatch, getState ) => {
+	doSearchMore( getState(), dispatch, SEARCH_PERFORM_MORE, page, perPage, { save: true } );
+};
 
 /**
  * Performs an API search
@@ -57,10 +81,10 @@ export const searchMore = ( page, perPage, limit ) => ( dispatch, getState ) => 
  * @param {*} dispatch
  */
 const getSearch = ( searchValues, dispatch ) =>
-	apiFetch( SearchRegexApi.search.get( searchValues ) )
-		.then( json => {
+	apiFetch( SearchRegexApi.search.perform( searchValues ) )
+		.then( ( json ) => {
 			dispatch( { type: SEARCH_COMPLETE, ...json, perPage: searchValues.perPage } );
 		} )
-		.catch( error => {
+		.catch( ( error ) => {
 			dispatch( { type: SEARCH_FAIL, error } );
 		} );

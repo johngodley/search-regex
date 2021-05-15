@@ -2,52 +2,65 @@
  * External dependencies
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { translate as __, numberFormat } from 'i18n-calypso';
 import { Line } from 'rc-progress';
 import { connect } from 'react-redux';
-import { useDelta } from 'react-delta';
 
 /**
  * Internal dependencies
  */
 
-import { throttle, adjustPerPage } from 'lib/result-window';
-import { clear, replaceNext } from 'state/search/action';
+import { clear, performMore, setError } from 'state/search/action';
 import { isAdvancedSearch } from 'state/search/selector';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from 'state/settings/type';
+import { useSlidingActionWindow } from 'lib/result-window';
 import './style.scss';
 
-const DEFAULT_WINDOW_SIZE = 200;
+const getTotal = ( isAdvanced, totals ) => ( isAdvanced ? totals.rows : totals.matched_rows );
+const getPercent = ( current, total ) => ( total > 0 ? Math.round( ( current / total ) * 100 ) : 0 );
 
-const getTotal = ( isRegex, totals ) => isRegex ? totals.rows : totals.matched_rows;
-const getPercent = ( current, total ) => total > 0 ? Math.round( ( current / total ) * 100 ) : 0
+function getTotalCount( name, count ) {
+	const args = {
+		count: count,
+		args: numberFormat( count, 0 ),
+	};
+
+	if ( name === 'delete' ) {
+		return __( '%s row deleted.', '%s rows deleted.', args );
+	}
+
+	return __( '%s row.', '%s rows.', args );
+}
+
+function Totals( { totals, current } ) {
+	const { custom = [] } = totals;
+
+	if ( custom.length > 0 ) {
+		return custom.map( ( item ) => <p key={ item.name }>{ getTotalCount( item.name, item.value ) }</p> );
+	}
+
+	if ( current === 0 ) {
+		return <p>&nbsp;</p>;
+	}
+
+	// Just display number of rows
+	return <p>{ getTotalCount( 'rows', current ) }</p>;
+}
 
 function ReplaceProgress( props ) {
-	const { progress, totals, requestCount, replaceCount, onNext, status, onClear, phraseCount, isRegex } = props;
-	const total = getTotal( isRegex, totals );
-	const current = progress.current === undefined ? 0 : progress.current;
-	const percent = Math.min( 100, status === STATUS_IN_PROGRESS ? getPercent( current, total ) : 100 );
-	const deltaCount = useDelta( replaceCount );
-	const [ windowPage, setWindowPage ] = useState( 0 );
+	const { progress, totals, requestCount, onNext, status, onClear, isAdvanced, onError } = props;
+	const total = getTotal( isAdvanced, totals );
+	const { current = 0, next = 0 } = progress;
+	const percent = Math.min( 100, status === STATUS_IN_PROGRESS ? getPercent( next === false ? total : next, total ) : 100 );
+	const canLoad = progress.next !== false && status === STATUS_IN_PROGRESS;
 
-	useEffect( () => {
-		if ( requestCount > 0 && progress.next !== false && status === STATUS_IN_PROGRESS ) {
-			if ( deltaCount && deltaCount.prev && deltaCount.prev < deltaCount.curr ) {
-				// Made a replace - scale down the window
-				setWindowPage( Math.max( 0, windowPage - 5 ) );
-			} else {
-				// No replacements, scale up the window
-				setWindowPage( windowPage + 1 );
-			}
+	useSlidingActionWindow( canLoad, requestCount, ( size ) => onNext( progress.next, size ), onError );
 
-			throttle( () => onNext( progress.next, adjustPerPage( windowPage, DEFAULT_WINDOW_SIZE ) ) );
-		}
-	}, [ requestCount ] );
-
+	console.log( totals, current );
 	return (
 		<div className="searchregex-replaceall">
-			<h3>{ __( 'Replace progress' ) }</h3>
+			<h3>{ __( 'Progress' ) }</h3>
 
 			<div className="searchregex-replaceall__progress">
 				<div className="searchregex-replaceall__container">
@@ -58,37 +71,29 @@ function ReplaceProgress( props ) {
 			</div>
 
 			<div className="searchregex-replaceall__stats">
-				<h4>{ __( 'Replace Information' ) }</h4>
-				<p>
-					{ __( '%s phrase.', '%s phrases.', {
-						count: phraseCount,
-						args: numberFormat( phraseCount, 0 ),
-					} ) }
-					&nbsp;
-					{ __( '%s row.', '%s rows.', {
-						count: replaceCount,
-						args: numberFormat( replaceCount, 0 ),
-					} ) }
-				</p>
+				<Totals totals={ totals } current={ current } />
+
 				{ status === STATUS_COMPLETE && (
-					<button type="button" className="button button-primary" onClick={ onClear }>{ __( 'Finished!' ) }</button>
+					<button type="button" className="button button-primary" onClick={ onClear }>
+						{ __( 'Finished!' ) }
+					</button>
 				) }
 			</div>
 		</div>
-	)
+	);
 }
 
 function mapStateToProps( state ) {
-	const { progress, totals, requestCount, replaceCount, phraseCount, status, search } = state.search;
+	const { progress, totals, requestCount, status, search } = state.search;
 
 	return {
 		status,
 		progress,
 		totals,
+
 		requestCount,
-		replaceCount,
-		phraseCount,
-		isRegex: isAdvancedSearch( search.searchFlags ),
+
+		isAdvanced: isAdvancedSearch( search ),
 	};
 }
 
@@ -98,7 +103,12 @@ function mapDispatchToProps( dispatch ) {
 			dispatch( clear() );
 		},
 		onNext: ( page, perPage ) => {
-			dispatch( replaceNext( page, perPage ) );
+			dispatch( performMore( page, perPage ) );
+		},
+		onError: () => {
+			dispatch(
+				setError( __( 'Your search resulted in too many requests. Please narrow your search terms.' ) )
+			);
 		},
 	};
 }

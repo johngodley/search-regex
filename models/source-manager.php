@@ -9,47 +9,34 @@ use SearchRegex\Search_Source;
  */
 class Source_Manager {
 	/**
-	 * Return the source for the post table
-	 *
-	 * @return Array
-	 */
-	private static function get_post_source() {
-		return [
-			'name' => 'posts',
-			'class' => 'SearchRegex\Source_Post',
-			'label' => __( 'All Post Types', 'search-regex' ),
-			'description' => __( 'Search all posts, pages, and custom post types.', 'search-regex' ),
-			'type' => 'core',
-		];
-	}
-
-	/**
 	 * Return all the core source types
 	 *
 	 * @return Array
 	 */
 	private static function get_core_sources() {
 		$sources = [
-			self::get_post_source(),
+			[
+				'name' => 'posts',
+				'class' => 'SearchRegex\Source_Post',
+				'label' => __( 'Posts (core & custom)', 'search-regex' ),
+				'type' => 'core',
+			],
 			[
 				'name' => 'comment',
 				'class' => 'SearchRegex\Source_Comment',
 				'label' => __( 'Comments', 'search-regex' ),
-				'description' => __( 'Search comment content, URL, and author, with optional support for spam comments.', 'search-regex' ),
 				'type' => 'core',
 			],
 			[
 				'name' => 'user',
 				'class' => 'SearchRegex\Source_User',
 				'label' => __( 'Users', 'search-regex' ),
-				'description' => __( 'Search user email, URL, and name.', 'search-regex' ),
 				'type' => 'core',
 			],
 			[
 				'name' => 'options',
 				'class' => 'SearchRegex\Source_Options',
 				'label' => __( 'WordPress Options', 'search-regex' ),
-				'description' => __( 'Search all WordPress options.', 'search-regex' ),
 				'type' => 'core',
 			],
 		];
@@ -68,21 +55,24 @@ class Source_Manager {
 				'name' => 'post-meta',
 				'class' => 'SearchRegex\Source_Post_Meta',
 				'label' => __( 'Post Meta', 'search-regex' ),
-				'description' => __( 'Search post meta names and values.', 'search-regex' ),
 				'type' => 'advanced',
 			],
 			[
 				'name' => 'comment-meta',
 				'class' => 'SearchRegex\Source_Comment_Meta',
 				'label' => __( 'Comment Meta', 'search-regex' ),
-				'description' => __( 'Search comment meta names and values.', 'search-regex' ),
 				'type' => 'advanced',
 			],
 			[
 				'name' => 'user-meta',
 				'class' => 'SearchRegex\Source_User_Meta',
 				'label' => __( 'User Meta', 'search-regex' ),
-				'description' => __( 'Search user meta name and values.', 'search-regex' ),
+				'type' => 'advanced',
+			],
+			[
+				'name' => 'terms',
+				'class' => 'SearchRegex\Source_Terms',
+				'label' => __( 'Terms', 'search-regex' ),
 				'type' => 'advanced',
 			],
 		];
@@ -98,7 +88,6 @@ class Source_Manager {
 	public static function get_all_sources() {
 		$core_sources = self::get_core_sources();
 		$advanced_sources = self::get_advanced_sources();
-		$post_sources = self::get_all_custom_post_types();
 
 		// Load custom stuff here
 		$plugin_sources = glob( dirname( SEARCHREGEX_FILE ) . '/source/plugin/*.php' );
@@ -119,34 +108,32 @@ class Source_Manager {
 			array_merge(
 				array_values( $core_sources ),
 				array_values( $advanced_sources ),
-				array_values( $post_sources ),
 				array_values( $plugin_sources )
 			)
 		);
 	}
 
 	/**
-	 * Return an array of all the custom sources. Note this is filtered with `searchregex_sources_posttype`
+	 * Get schema for a list of sources
 	 *
-	 * @return Array{name: string, class: string, label: string, type: string} The array of database sources as name => class
+	 * @param array $sources Sources.
+	 * @return Schema_Source[]
 	 */
-	private static function get_all_custom_post_types() {
-		/** @var Array */
-		$post_types = get_post_types( [], 'objects' );
-		$post_sources = [];
+	public static function get_schema( array $sources = [] ) {
+		$all = self::get_all_source_names();
+		$handlers = self::get( $all, [] );
+		$schema = [];
 
-		foreach ( $post_types as $type ) {
-			if ( strlen( $type->label ) > 0 ) {
-				$post_sources[] = [
-					'name' => $type->name,
-					'class' => 'SearchRegex\Source_Post',
-					'label' => $type->label,
-					'type' => 'posttype',
-				];
+		foreach ( $handlers as $source ) {
+			$newschema = $source->get_schema_for_source();
+			$newschema['type'] = $source->get_type() === 'post' ? 'posts' : $source->get_type();
+
+			if ( count( $sources ) === 0 || in_array( $source->get_type(), $sources, true ) ) {
+				$schema[] = $newschema;
 			}
 		}
 
-		return apply_filters( 'searchregex_sources_posttype', $post_sources );
+		return apply_filters( 'searchregex_schema_source', $schema );
 	}
 
 	/**
@@ -163,13 +150,6 @@ class Source_Manager {
 				'label' => __( 'Standard', 'search-regex' ),
 				'sources' => array_values( array_filter( $sources, function( $source ) {
 					return $source['type'] === 'core';
-				} ) ),
-			],
-			[
-				'name' => 'posttype',
-				'label' => __( 'Specific Post Types', 'search-regex' ),
-				'sources' => array_values( array_filter( $sources, function( $source ) {
-					return $source['type'] === 'posttype';
 				} ) ),
 			],
 			[
@@ -196,20 +176,22 @@ class Source_Manager {
 	/**
 	 * Return a particular Source object for the given name
 	 *
-	 * @param String       $source Source name.
-	 * @param Search_Flags $search_flags Search_Flags.
-	 * @param Source_Flags $source_flags Source_Flags.
-	 * @return object|null New Source_Flags object
+	 * @param String               $source Source name.
+	 * @param array<Search_Filter> $search_filters Search filters.
+	 * @return object|null
 	 */
-	private static function get_handler_for_source( $source, Search_Flags $search_flags, Source_Flags $source_flags ) {
+	private static function get_handler_for_source( $source, array $search_filters ) {
 		$sources = self::get_all_sources();
 
 		foreach ( $sources as $handler ) {
 			if ( $handler['name'] === $source ) {
-				$new_source = new $handler['class']( $handler, $search_flags, $source_flags );
-				$source_flags->set_allowed_flags( array_keys( $new_source->get_supported_flags() ) );
+				// Only use the filters for this source
+				$filters = array_filter( $search_filters, function( $filter ) use ( $source ) {
+					return $filter->is_for_source( $source );
+				} );
 
-				return $new_source;
+				// Create the source
+				return new $handler['class']( $handler, $filters );
 			}
 		}
 
@@ -232,56 +214,71 @@ class Source_Manager {
 	/**
 	 * Get all the specified sources as source objects
 	 *
-	 * @param Array        $sources Array of source names.
-	 * @param Search_Flags $search_flags The search flags object.
-	 * @param Source_Flags $source_flags The source flags object.
+	 * @param Array                $sources Array of source names.
+	 * @param array<Search_Filter> $search_filters Search filters.
 	 * @return Array The array of source objects
 	 */
-	public static function get( $sources, Search_Flags $search_flags, Source_Flags $source_flags ) {
+	public static function get( $sources, array $search_filters ) {
 		$handlers = [];
-		$cpts = [];
-
-		/**
-		 * @psalm-suppress InvalidArgument
-		 */
-		$all_cpts = array_map( function( array $source ) {
-			return $source['name'];
-		}, self::get_all_custom_post_types() );
 
 		// Create handlers for everything else
 		foreach ( $sources as $source ) {
-			if ( in_array( $source, $all_cpts, true ) ) {
-				$cpts[] = $source;
-			} elseif ( $source === 'posts' ) {
-				$cpts = $all_cpts;
-			} else {
-				$handler = self::get_handler_for_source( $source, $search_flags, $source_flags );
+			$handler = self::get_handler_for_source( $source, $search_filters );
 
-				if ( $handler ) {
-					$handlers[] = $handler;
-				}
-			}
-		}
-
-		// Merge all CPTs together
-		if ( count( $cpts ) > 0 ) {
-			$handler = self::get_handler_for_source( 'post', $search_flags, $source_flags );
-
-			if ( $handler instanceof Source_Post ) {
-				$handler->set_custom_post_types( $cpts );
-				array_unshift( $handlers, $handler );
+			if ( $handler ) {
+				$handlers[] = $handler;
 			}
 		}
 
 		return $handlers;
 	}
+
+	/**
+	 * Get preload data for a source.
+	 *
+	 * @param string $source_name Source.
+	 * @param array  $filter Filter JSON.
+	 * @return array
+	 */
+	public static function get_schema_preload( $source_name, array $filter ) {
+		$source = self::get_handler_for_source( $source_name, [] );
+
+		if ( $source ) {
+			$schema = $source->get_schema();
+
+			foreach ( $schema['columns'] as $column ) {
+				if ( isset( $filter['column'] ) && $column['column'] === $filter['column'] ) {
+					$preload = false;
+					if ( $column['type'] === 'member' ) {
+						$preload = true;
+					} elseif ( $column['type'] === 'integer' && ( ! isset( $filter['logic'] ) || ( $filter['logic'] === 'equals' || $filter['logic'] === 'notequals' ) ) ) {
+						$preload = true;
+					}
+
+					if ( $preload ) {
+						$schema = new Schema_Source( $source->get_schema() );
+						$filter = Search_Filter_Item::create( $filter, new Schema_Column( $column, $schema ) );
+
+						if ( $filter ) {
+							return $source->get_filter_preload( $column, $filter );
+						}
+					}
+				}
+			}
+		}
+
+		return [];
+	}
 }
 
+require_once dirname( __DIR__ ) . '/source/has-meta.php';
+require_once dirname( __DIR__ ) . '/source/has-terms.php';
 require_once dirname( __DIR__ ) . '/source/core/meta.php';
 require_once dirname( __DIR__ ) . '/source/core/post.php';
 require_once dirname( __DIR__ ) . '/source/core/post-meta.php';
 require_once dirname( __DIR__ ) . '/source/core/user.php';
 require_once dirname( __DIR__ ) . '/source/core/user-meta.php';
+require_once dirname( __DIR__ ) . '/source/core/terms.php';
 require_once dirname( __DIR__ ) . '/source/core/comment.php';
 require_once dirname( __DIR__ ) . '/source/core/comment-meta.php';
 require_once dirname( __DIR__ ) . '/source/core/options.php';

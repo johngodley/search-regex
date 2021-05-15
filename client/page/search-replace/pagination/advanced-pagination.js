@@ -19,7 +19,7 @@ const backPercent = ( total, current ) => current === 0 ? current : ( current / 
 
 function AdvancedPagination( props ) {
 	const { total, progress, onChangePage, isLoading, searchDirection, noTotal = false, totals } = props;
-	const { previous, next } = progress;
+	const { previous = false, next = false } = progress;
 
 	return (
 		<div className="tablenav-pages">
@@ -40,8 +40,8 @@ function AdvancedPagination( props ) {
 				</div>
 			) }
 			<div className="pagination-links">
-				<Nav title={ __( 'First page' ) } button="«" className="first-page" enabled={ previous !== false && ! isLoading } onClick={ () => onChangePage( 0, SEARCH_FORWARD ) } />
-				<Nav title={ __( 'Prev page' ) } button="‹" className="prev-page" enabled={ previous !== false && ! isLoading } onClick={ () => onChangePage( previous, SEARCH_BACKWARD ) } />
+				<Nav title={ __( 'First page' ) } button="«" className="first-page" enabled={ previous && ! isLoading } onClick={ () => onChangePage( 0, SEARCH_FORWARD ) } />
+				<Nav title={ __( 'Prev page' ) } button="‹" className="prev-page" enabled={ previous && ! isLoading } onClick={ () => onChangePage( previous, SEARCH_BACKWARD ) } />
 
 				<span className="tablenav-paging-text">
 					{ __( 'Progress %(current)s%%', {

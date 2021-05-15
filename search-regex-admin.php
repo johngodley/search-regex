@@ -1,12 +1,12 @@
 <?php
 
 require_once __DIR__ . '/models/search.php';
-require_once __DIR__ . '/models/replace.php';
 require_once __DIR__ . '/models/result.php';
+require_once __DIR__ . '/actions/actions.php';
+require_once __DIR__ . '/sql/sql.php';
 
 use SearchRegex\Source_Manager;
 use SearchRegex\Search_Flags;
-use SearchRegex\Source_Flags;
 use SearchRegex\Preset;
 
 class Search_Regex_Admin {
@@ -43,6 +43,7 @@ class Search_Regex_Admin {
 	 * @return void
 	 */
 	public static function plugin_uninstall() {
+		/** @psalm-suppress UndefinedConstant */
 		delete_option( SEARCHREGEX_OPTION );
 		delete_option( Preset::OPTION_NAME );
 	}
@@ -81,6 +82,7 @@ class Search_Regex_Admin {
 	 * @return String
 	 */
 	private function get_first_available_page_url() {
+		/** @psalm-suppress UndefinedClass */
 		$pages = Search_Regex_Capabilities::get_available_pages();
 
 		if ( count( $pages ) > 0 ) {
@@ -133,6 +135,20 @@ class Search_Regex_Admin {
 
 		$translations = $this->get_i18n_data();
 
+		/** @psalm-suppress UndefinedClass */
+		$pages = Search_Regex_Capabilities::get_available_pages();
+
+		/** @psalm-suppress UndefinedClass */
+		$caps = Search_Regex_Capabilities::get_all_capabilities();
+
+		$is_new = false;
+		$major_version = implode( '.', array_slice( explode( '.', SEARCHREGEX_VERSION ), 0, 2 ) );
+
+		// phpcs:ignore
+		if ( isset( $_GET['page'] ) && $_GET['page'] === 'search-regex.php' && strpos( SEARCHREGEX_VERSION, '-beta' ) === false ) {
+			$is_new = version_compare( $options['update_notice'], $major_version ) < 0;
+		}
+
 		wp_localize_script( 'search-regex', 'SearchRegexi10n', array(
 			'api' => [
 				'WP_API_root' => esc_url_raw( searchregex_get_rest_api() ),
@@ -157,9 +173,10 @@ class Search_Regex_Admin {
 			'versions' => implode( "\n", $versions ),
 			'version' => SEARCHREGEX_VERSION,
 			'caps' => [
-				'pages' => Search_Regex_Capabilities::get_available_pages(),
-				'capabilities' => Search_Regex_Capabilities::get_all_capabilities(),
+				'pages' => $pages,
+				'capabilities' => $caps,
 			],
+			'update_notice' => $is_new ? $major_version : false,
 		) );
 
 		$this->add_help_tab();
@@ -198,19 +215,61 @@ class Search_Regex_Admin {
 	 * @return Array
 	 */
 	private function get_preload_data() {
-		$all = Source_Manager::get_all_source_names();
-		$handlers = Source_Manager::get( $all, new Search_Flags(), new Source_Flags() );
-		$flags = [];
-
-		foreach ( $handlers as $source ) {
-			$flags[ $source->get_type() ] = $source->get_supported_flags();
-		}
+		$schema = Source_Manager::get_schema();
+		$presets = Preset::get_all();
 
 		return [
 			'sources' => Source_Manager::get_all_grouped(),
-			'source_flags' => $flags,
-			'presets' => Preset::get_all(),
+			'presets' => $presets,
+			'schema' => $schema,
+			'labels' => $this->get_preload_labels( $presets ),
 		];
+	}
+
+	/**
+	 * Get the preloaded labels.
+	 *
+	 * @param array $presets
+	 * @return array
+	 */
+	private function get_preload_labels( array $presets ) {
+		$preload = [];
+		$filters_to_preload = [];
+
+		if ( isset( $_GET['filters'] ) ) {
+			$filters = json_decode( stripslashes( $_GET['filters'] ), true );
+			$filters_to_preload = array_merge( $filters_to_preload, $filters );
+		}
+
+		foreach ( $presets as $preset ) {
+			if ( isset( $preset['search']['filters'] ) ) {
+				$filters_to_preload = array_merge( $filters_to_preload, $preset['search']['filters'] );
+			}
+
+			if ( isset( $preset['search']['action'] ) && $preset['search']['action'] === 'modify' && is_array( $preset['search']['actionOption'] ) ) {
+				$filters_to_preload = array_merge( $filters_to_preload, array_map( function( $action ) {
+					return [
+						'type' => $action['source'],
+						'items' => [
+							array_merge(
+								[ 'column' => $action['column'] ],
+								$action
+							),
+						],
+					];
+				}, $preset['search']['actionOption'] ) );
+			}
+		}
+
+		foreach ( $filters_to_preload as $filter ) {
+			if ( is_array( $filter ) && isset( $filter['type'] ) && isset( $filter['items'] ) ) {
+				foreach ( $filter['items'] as $filt ) {
+					$preload = array_merge( $preload, Source_Manager::get_schema_preload( $filter['type'], $filt ) );
+				}
+			}
+		}
+
+		return array_values( array_filter( $preload ) );
 	}
 
 	/**
@@ -299,7 +358,9 @@ class Search_Regex_Admin {
 	 * @return void
 	 */
 	public function admin_menu() {
-		$hook = add_management_page( 'Search Regex', 'Search Regex', Search_Regex_Capabilities::get_plugin_access(), basename( SEARCHREGEX_FILE ), [ $this, 'admin_screen' ] );
+		/** @psalm-suppress UndefinedClass */
+		$access = Search_Regex_Capabilities::get_plugin_access();
+		$hook = add_management_page( 'Search Regex', 'Search Regex', $access, basename( SEARCHREGEX_FILE ), [ $this, 'admin_screen' ] );
 		if ( $hook ) {
 			add_action( 'load-' . $hook, [ $this, 'searchregex_head' ] );
 		}
@@ -326,6 +387,7 @@ class Search_Regex_Admin {
 	 * @return void
 	 */
 	public function admin_screen() {
+		/** @psalm-suppress UndefinedClass */
 		if ( count( Search_Regex_Capabilities::get_all_capabilities() ) === 0 ) {
 			die( 'You do not have sufficient permissions to access this page.' );
 		}
@@ -466,6 +528,7 @@ class Search_Regex_Admin {
 		}
 
 		// Are we allowed to access this page?
+		/** @psalm-suppress UndefinedClass */
 		if ( in_array( $page, Search_Regex_Capabilities::get_available_pages(), true ) ) {
 			// phpcs:ignore
 			return $page;
@@ -474,7 +537,15 @@ class Search_Regex_Admin {
 		return false;
 	}
 
-	public function extra_actions( $actions, $type, $result ) {
+	/**
+	 * Get any extra actions that might be needed.
+	 *
+	 * @param array  $actions Actions.
+	 * @param string $type Type.
+	 * @param object $result Result.
+	 * @return array
+	 */
+	public function extra_actions( array $actions, $type, $result ) {
 		if ( $type === 'tablepress_table' ) {
 			$tables = json_decode( get_option( 'tablepress_tables' ), true );
 

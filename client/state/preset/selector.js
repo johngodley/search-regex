@@ -45,6 +45,17 @@ export function hasTags( tags, phrase ) {
 	return false;
 }
 
+export function hasFilterTag( tags, filter ) {
+	return filter.value && hasTags( tags, filter.value );
+}
+
+export function hasActionTag( tags, action ) {
+	if ( action.searchValue !== undefined ) {
+		return hasTags( tags, action.searchValue ) || hasTags( tags, action.replaceValue );
+	}
+	return false;
+}
+
 /**
  * Does this phrase have any tags?
  *
@@ -107,6 +118,7 @@ export function getDefaultPresetValues( preset ) {
 	const emptyTags = preset.tags.map( ( tag ) => ( { name: tag.name, value: '' } ) );
 
 	return {
+		...preset.search,
 		searchPhrase: applyTags( preset.search.searchPhrase, emptyTags ),
 		replacement: applyTags( preset.search.replacement, emptyTags ),
 	};

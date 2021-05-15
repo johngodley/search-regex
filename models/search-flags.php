@@ -10,7 +10,7 @@ class Search_Flags {
 	private $flags = [];
 
 	/**
-	 * Create a Source_Flags object with an array of flag strings
+	 * Create a Search_Flags object with an array of flag strings
 	 *
 	 * @param Array $flags Array of flag values.
 	 */
@@ -23,6 +23,16 @@ class Search_Flags {
 		$this->flags = array_filter( $flags, function( $flag ) use ( $allowed ) {
 			return array_search( $flag, $allowed, true ) !== false;
 		} );
+	}
+
+	/**
+	 * Duplicate a search flag object
+	 *
+	 * @param Search_Flags $flags Flags.
+	 * @return Search_Flags
+	 */
+	public static function copy( Search_Flags $flags ) {
+		return new Search_Flags( $flags->flags );
 	}
 
 	/**
@@ -54,6 +64,17 @@ class Search_Flags {
 	}
 
 	/**
+	 * Set the regex flag
+	 *
+	 * @return void
+	 */
+	public function set_regex() {
+		if ( ! $this->is_regex() ) {
+			$this->flags[] = 'regex';
+		}
+	}
+
+	/**
 	 * Get all the flags
 	 *
 	 * @return Array Array of flags
@@ -62,6 +83,11 @@ class Search_Flags {
 		return $this->flags;
 	}
 
+	/**
+	 * Convert the flags to JSON
+	 *
+	 * @return array
+	 */
 	public function to_json() {
 		return $this->flags;
 	}

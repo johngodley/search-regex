@@ -7,16 +7,24 @@ use SearchRegex\Saved_Search;
  * @api {post} /search-regex/v1/search Search
  * @apiVersion 1.0.0
  * @apiName Search
- * @apiDescription This performs the search matching of a search phrase in a search source. The search is designed to not timeout and exhaust server memory, and sometimes
+ * @apiDescription This performs the search matching of a set of search conditions. The search is designed to not timeout and exhaust server memory, and sometimes
  * requires the client to perform multiple requests to get a full set of results.
  *
- * A search source typically represents a WordPress database table. For example, posts, options, or comments. Some sources also represents part of
- * a database table, such as custom post types.
+ * A search `source` typically represents a WordPress database table. For example, posts, options, or comments.
  *
- * Searching operates in two modes - simple (non-regular expression) or advanced (regular expression). Simple searching provides feedback on how many results
- * match the search phrase, while advanced searching requires you to search through the entire table. It should be noted that while a full result set will be returned
- * for simple searching, unless no more matches are found, advanced searching may return empty results. This indicates you need to keep on searching until the end of the source,
- * or until results are returned. This gives the client the ability to cancel a search if it is taking too long.
+ * Search conditions can be added through:
+ * - A global search phrase (`searchPhrase` and `searchFlags`). This searches the common text columns of sources and is a quick way to get results
+ * - Search filters. These are conditions applied to specific columns within a source. Filters can be arranged so they are `OR`ed and `AND`ed together in any combination.
+ *
+ * A global search can be combined with search filters.
+ *
+ * Searching operates in two modes:
+ * - simple (non-regular expression)
+ * - advanced (regular expression)
+ *
+ * The mode determines what how result sets are returned. In a simple search a query will return fixed size pages of results. In an advanced search, a query may not return a full page of results.
+ * This is because the advanced mode retrieves a set of rows from the database, and then returns the matching rows. This allows regular expressions to be used. A simple search uses SQL to only retrieve
+ * matching rows.
  *
  * Searches are returned as an array of results. Every result contains a matched phrase. Each result contains the source name (`source_name`) and row ID (`row_id`) and a number of
  * matched columns. These represent the searchable columns within a source database table.
@@ -34,7 +42,6 @@ use SearchRegex\Saved_Search;
  * @apiGroup Search
  *
  * @apiUse SearchQueryParams
- *
  * @apiUse SearchResults
  * @apiUse 401Error
  * @apiUse 404Error
@@ -106,14 +113,13 @@ class Search_Regex_Api_Search extends Search_Regex_Api_Route {
 	public function route_search( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
-		list( $search, $replacer ) = $this->get_search_replace( $params, $params['replacement'] );
+		list( $search, $action ) = $this->get_search_replace( $params );
 
-		$results = $search->get_search_results( $replacer, $params['page'], $params['perPage'], $params['limit'] );
+		$results = $search->get_search_results( $action, $params['page'], $params['perPage'], $params['limit'] );
 		if ( $results instanceof WP_Error ) {
 			return $results;
 		}
 
-		$results['results'] = $search->results_to_json( $results['results'] );
-		return $results;
+		return $action->get_results( $results );
 	}
 }

@@ -21,6 +21,8 @@ import PageRouter from './page-router';
 import PageContent from './page-content';
 import { getErrorLinks, getErrorDetails } from 'lib/error-links';
 import CacheDetect from './cache-detect';
+import DatabaseError from './database-error';
+import UpdateNotice from './update-notice';
 import './style.scss';
 
 const getTitles = () => ( {
@@ -64,6 +66,8 @@ function Home( props ) {
 				<PageRouter page={ page } setPage={ setPage } onPageChange={ onClearErrors }>
 					<h1 className="wp-heading-inline">{ getTitles()[ page ] }</h1>
 
+					<UpdateNotice />
+
 					<Menu
 						onChangePage={ ( newPage ) => setPage( newPage === '' ? 'search' : newPage ) }
 						menu={ getMenu() }
@@ -72,15 +76,19 @@ function Home( props ) {
 						urlBase={ SearchRegexi10n.pluginRoot }
 					/>
 
-					<Error
-						errors={ errors }
-						onClear={ onClearErrors }
-						renderDebug={ DebugReport }
-						details={ getErrorDetails() }
-						links={ getErrorLinks() }
-					>
-						<ErrorDetails />
-					</Error>
+					{ errors.length > 0 && errors[ 0 ].code === 'searchregex_database' ? (
+						<DatabaseError error={ errors[ 0 ] } onClear={ onClearErrors } />
+					) : (
+						<Error
+							errors={ errors }
+							onClear={ onClearErrors }
+							renderDebug={ DebugReport }
+							details={ getErrorDetails() }
+							links={ getErrorLinks() }
+						>
+							<ErrorDetails />
+						</Error>
+					) }
 
 					<PageContent page={ page } />
 

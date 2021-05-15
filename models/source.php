@@ -3,24 +3,27 @@
 namespace SearchRegex;
 
 use SearchRegex\Search_Regex;
+use SearchRegex\Sql\Sql_Builder;
+use SearchRegex\Sql\Sql_Value;
+use SearchRegex\Sql\Sql_Query;
+use SearchRegex\Sql\Sql_Select;
+use SearchRegex\Sql\Sql_From;
+use SearchRegex\Sql\Sql_Join;
+use SearchRegex\Sql\Sql_Where_Integer;
+use SearchRegex\Sql\Sql_Select_Count_Id;
 
 /**
  * Represents a source of data that can be searched. Typically maps directly to a database table
  */
 abstract class Search_Source {
-	/**
-	 * The search flags
-	 *
-	 * @var Search_Flags
-	 **/
-	protected $search_flags;
+	const AUTOCOMPLETE_LIMIT = 50;
 
 	/**
-	 * The source flags
+	 * Search filters
 	 *
-	 * @var Source_Flags
-	 **/
-	protected $source_flags;
+	 * @var array<Search_Filter>
+	 */
+	protected $filters;
 
 	/**
 	 * The source type
@@ -39,14 +42,11 @@ abstract class Search_Source {
 	/**
 	 * Create a Search_Source object
 	 *
-	 * @param Array        $handler Source handler information - an array of `name`, `class`, `label`, and `type`.
-	 * @param Search_Flags $search_flags A Search_Flags object.
-	 * @param Source_Flags $source_flags A Source_Flags object.
+	 * @param Array                $handler Source handler information - an array of `name`, `class`, `label`, and `type`.
+	 * @param array<Search_Filter> $filters Array of Search_Filter objects for this source.
 	 */
-	public function __construct( array $handler, Search_Flags $search_flags, Source_Flags $source_flags ) {
-		$this->search_flags = $search_flags;
-		$this->source_flags = $source_flags;
-
+	public function __construct( array $handler, array $filters ) {
+		$this->filters = $filters;
 		$this->source_type = isset( $handler['name'] ) ? $handler['name'] : 'unknown';
 		$this->source_name = isset( $handler['label'] ) ? $handler['label'] : $this->source_type;
 	}
@@ -82,20 +82,13 @@ abstract class Search_Source {
 	}
 
 	/**
-	 * Return the associated Source_Flags
+	 * Return the associated Search_Filter items
 	 *
-	 * @return Source_Flags Source_Flags object
+	 * @return list<Search_Filter> Search_Filter objects
 	 */
-	public function get_source_flags() {
-		return $this->source_flags;
+	public function get_search_filters() {
+		return $this->filters;
 	}
-
-	/**
-	 * Return an array of columns for this source
-	 *
-	 * @return Array The array of column names
-	 */
-	abstract public function get_columns();
 
 	/**
 	 * Return an array of additional columns to return in a search. These aren't searched, and can be used by the source.
@@ -103,7 +96,9 @@ abstract class Search_Source {
 	 * @return Array The array of column names
 	 */
 	public function get_info_columns() {
-		return [];
+		return [
+			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_title_column() ) ),
+		];
 	}
 
 	/**
@@ -128,33 +123,19 @@ abstract class Search_Source {
 	abstract public function get_table_name();
 
 	/**
-	 * Return an array of additional search conditions applied to each query. These will be ANDed together.
-	 * These conditions should be sanitized here, and won't be sanitized elsewhere.
-	 *
-	 * @return String SQL conditions
-	 */
-	public function get_search_conditions() {
-		return '';
-	}
-
-	/**
 	 * Return a visible label for the column. This is shown to the user and should be more descriptive than the column name itself
 	 *
 	 * @param String $column Column name.
-	 * @param String $data Column data.
 	 * @return String Column label
 	 */
-	public function get_column_label( $column, $data ) {
-		return $column;
-	}
+	public function get_column_label( $column ) {
+		foreach ( $this->get_schema()['columns'] as $schema_column ) {
+			if ( $schema_column['column'] === $column ) {
+				return $schema_column['title'];
+			}
+		}
 
-	/**
-	 * Return an array of flags used by this source via Source_Flags. Used primarily to validate the flag.
-	 *
-	 * @return Array The array of flags
-	 */
-	public function get_supported_flags() {
-		return [];
+		return $column;
 	}
 
 	/**
@@ -170,32 +151,22 @@ abstract class Search_Source {
 	/**
 	 * Get the total number of matches for this search
 	 *
-	 * @param String $search Search string.
+	 * @param Search_Filter[] $filters Search string.
 	 * @return Array{matches: int, rows: int}|\WP_Error The number of matches as an array of 'matches' and 'rows', or WP_Error on error
 	 */
-	public function get_total_matches( $search ) {
-		global $wpdb;
+	public function get_global_match_total( array $filters ) {
+		$query = Search_Filter::get_as_query( $filters, $this );
+		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
 
-		$search_query = $this->get_search_query( $search );
+		$sql = new Sql_Builder();
 
-		// Sum all the matches
-		$sum = [];
-		foreach ( $this->get_columns() as $column ) {
-			$cropped = mb_substr( $search, 0, mb_strlen( $search, 'UTF-8' ) - 1, 'UTF-8' );
-
-			// phpcs:ignore
-			$sum[] = $wpdb->prepare( "SUM( CHAR_LENGTH( $column ) - CHAR_LENGTH( REPLACE( UPPER($column), UPPER(%s), UPPER(%s) ) ) )", $search, $cropped );
-		}
-
-		// This is a known and validated query
-		// phpcs:ignore
-		$result = $wpdb->get_row( "SELECT COUNT(*) AS match_rows, " . implode( ' + ', $sum ) . " AS match_total FROM {$this->get_table_name()} WHERE " . $search_query );
-		if ( $result === null ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
+		$result = $sql->get_result( $query, new Sql_Select_Count_Id( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_table_id() ) ) );
+		if ( $result instanceof \WP_Error ) {
+			return $result;
 		}
 
 		return [
-			'matches' => intval( $result->match_total, 10 ),
+			'matches' => isset( $result->match_total ) ? intval( $result->match_total, 10 ) : 0,
 			'rows' => intval( $result->match_rows, 10 ),
 		];
 	}
@@ -206,155 +177,149 @@ abstract class Search_Source {
 	 * @return Int|\WP_Error The number of rows, or WP_Error on error
 	 */
 	public function get_total_rows() {
-		global $wpdb;
+		$sql = new Sql_Builder();
 
-		$extra = $this->get_search_conditions();
-		if ( $extra ) {
-			$extra = ' WHERE (' . $extra . ')';
-		}
+		$query = new Sql_Query();
+		$query->add_select( new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::safe_raw( 'COUNT(*)' ) ) );
+		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
 
-		// This is a known and validated query
-		// phpcs:ignore
-		$result = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->get_table_name()}" . $extra );
-		if ( $result === null ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
-		}
-
-		return intval( $result, 10 );
+		return $sql->get_count( $query );
 	}
 
 	/**
 	 * Get a single row from the source
 	 *
 	 * @param int $row_id The row ID.
-	 * @return Object|\WP_Error The database row, or WP_Error on error
+	 * @return array|\WP_Error The database row, or WP_Error on error
 	 */
 	public function get_row( $row_id ) {
-		global $wpdb;
+		$builder = new Sql_Builder();
 
-		$columns = $this->get_query_columns();
+		// Create query
+		$query = new Sql_Query();
+		$query->add_selects( $this->get_query_selects() );
+		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
 
-		// $columns, get_table_id, and get_table_name are sanitized for any user input
-		// phpcs:ignore
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT {$columns} FROM {$this->get_table_name()} WHERE {$this->get_table_id()}=%d", $row_id ), ARRAY_A );
-		if ( $row === null ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
-		}
+		// Add the filters except the where
+		$query->add_query_except_where( Search_Filter::get_as_query( $this->filters, $this ) );
 
-		return $row;
+		// Add our row ID
+		$query->add_where( new Sql_Where_Integer( new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_table_id() ) ), 'equals', $row_id ) );
+
+		return $builder->get_search( $query );
 	}
 
 	/**
-	 * Get all database rows for the source from the start offset to the limit
+	 * Get columns for a single row
 	 *
-	 * @param String $search The search phrase.
-	 * @param int    $offset The row offset.
-	 * @param int    $limit The number of rows to return.
-	 * @return Array|\WP_Error The database rows, or WP_Error on error
+	 * @param int $row_id The row ID.
+	 * @return array|\WP_Error
 	 */
-	public function get_all_rows( $search, $offset, $limit ) {
+	public function get_row_columns( $row_id ) {
 		global $wpdb;
 
-		$columns = $this->get_query_columns();
+		$columns = array_filter( $this->get_schema()['columns'], function( $column ) {
+			if ( isset( $column['join'] ) ) {
+				return false;
+			}
 
-		// Add any source specific conditions
-		$source_conditions = $this->get_search_conditions();
-		$search_phrase = '';
-		if ( $source_conditions ) {
-			$search_phrase = ' WHERE (' . $source_conditions . ')';
-		}
+			if ( isset( $column['modify'] ) && $column['modify'] === false ) {
+				return false;
+			}
 
-		// This is a known and validated query
+			return true;
+		} );
+
+		$columns = array_map( function( $column ) {
+			return $column['column'];
+		}, $columns );
+
+		// Known query
 		// phpcs:ignore
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT {$columns} FROM {$this->get_table_name()}{$search_phrase} ORDER BY {$this->get_table_id()} ASC LIMIT %d,%d", $offset, $limit ), ARRAY_A );
-		if ( $results === false || $wpdb->last_error ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT " . implode( ',', $columns ) . " FROM {$this->get_table_name()} WHERE {$this->get_table_id()}=%d", $row_id ), ARRAY_A );
+		if ( $row === null ) {
+			return new \WP_Error( 'searchregex_database', 'No row for ' . (string) $row_id, 401 );
 		}
 
-		return $results;
+		// Convert it, then get other stuff
+		$row_columns = [];
+		foreach ( $row as $column => $value ) {
+			$row_columns[] = [
+				'column' => $column,
+				'value' => $value,
+			];
+		}
+
+		return $row_columns;
 	}
 
 	/**
 	 * Get a set of matching rows
 	 *
-	 * @param String $search The search string.
-	 * @param int    $offset The row offset.
-	 * @param int    $limit The number of rows to return.
+	 * @param int $offset The row offset.
+	 * @param int $limit The number of rows to return.
 	 * @return Array|\WP_Error The database rows, or WP_Error on error
 	 */
-	public function get_matched_rows( $search, $offset, $limit ) {
-		global $wpdb;
+	public function get_matched_rows( $offset, $limit ) {
+		$builder = new Sql_Builder();
 
-		$search_query = $this->get_search_query( $search );
-		$columns = $this->get_query_columns();
+		// Create query
+		$query = new Sql_Query();
+		$query->add_selects( $this->get_query_selects() );
+		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
+		$query->set_paging( $offset, $limit );
+		$query->set_order( $this->get_table_name() . '.' . $this->get_table_id() );
 
-		// This is a known and validated query
-		// phpcs:ignore
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT {$columns} FROM {$this->get_table_name()} WHERE {$search_query} ORDER BY {$this->get_table_id()} ASC LIMIT %d,%d", $offset, $limit ), ARRAY_A );
-		if ( $results === false || $wpdb->last_error ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
-		}
+		// Add filters
+		$query->add_query( Search_Filter::get_as_query( $this->filters, $this ) );
 
-		return $results;
+		return $builder->get_search( $query );
 	}
 
 	/**
-	 * Get a set of matching rows from a given offset
+	 * Can we replace this column?
 	 *
-	 * @param String $search The search string.
-	 * @param int    $offset The row offset.
-	 * @param int    $limit The number of rows to return.
-	 * @param Bool   $exclude_search_query Exclude the search query. Used for regular expression searches.
-	 * @return Array|\WP_Error The database rows, or WP_Error on error
+	 * @param string $column Column name.
+	 * @return boolean
 	 */
-	public function get_matched_rows_offset( $search, $offset, $limit, $exclude_search_query ) {
-		global $wpdb;
-
-		$search_query = $exclude_search_query ? $this->get_search_conditions() : $this->get_search_query( $search );
-		$columns = $this->get_query_columns();
-
-		if ( $search_query ) {
-			$search_query .= ' AND ';
+	private function can_replace_column( $column ) {
+		foreach ( $this->get_schema()['columns'] as $column_schema ) {
+			if ( $column_schema['column'] === $column ) {
+				return ! isset( $column_schema['modify'] ) || $column_schema['modify'];
+			}
 		}
 
-		// phpcs:ignore
-		$search_query .= $wpdb->prepare( " {$this->get_table_id() } > %d", $offset );
+		return false;
+	}
 
-		// This is a known and validated query
-		// phpcs:ignore
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT {$columns} FROM {$this->get_table_name()} WHERE {$search_query} ORDER BY {$this->get_table_id()} ASC LIMIT %d", $limit ), ARRAY_A );
-		if ( $results === false || $wpdb->last_error ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
+	/**
+	 * Get array of columns to change
+	 *
+	 * @param array $updates Array of updates.
+	 * @return array Array of column name => replacement
+	 */
+	protected function get_columns_to_change( array $updates ) {
+		$columns = [];
+
+		foreach ( $updates as $column => $update ) {
+			foreach ( $update['change'] as $change ) {
+				if ( $change->get_type() === Match_Context_Replace::TYPE_REPLACE && $this->can_replace_column( $column ) ) {
+					$columns[ $column ] = $change->get_replacement();
+				}
+			}
 		}
 
-		return $results;
+		return $columns;
 	}
 
 	/**
 	 * Save a replacement to the database
 	 *
-	 * @param int    $row_id The row ID to save.
-	 * @param String $column_id The column to save.
-	 * @param String $content The value to save to the column in the row.
+	 * @param int   $row_id The row ID to save.
+	 * @param array $changes The value to save to the column in the row.
 	 * @return Bool|\WP_Error True on success, or WP_Error on error
 	 */
-	public function save( $row_id, $column_id, $content ) {
-		global $wpdb;
-
-		// Final check that is specific to this handler. The API check is general over all handlers
-		$columns = $this->get_columns();
-		if ( ! in_array( $column_id, $columns, true ) ) {
-			return new \WP_Error( 'searchregex_database', 'Unknown column for database' );
-		}
-
-		$result = $wpdb->update( $this->get_table_name(), [ $column_id => $content ], [ $this->get_table_id() => $row_id ] );
-
-		if ( $result === null ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
-		}
-
-		return true;
-	}
+	abstract public function save( $row_id, array $changes );
 
 	/**
 	 * Delete a row from the source
@@ -362,83 +327,144 @@ abstract class Search_Source {
 	 * @param int $row_id The row ID.
 	 * @return Bool|\WP_Error true on success, or WP_Error on error
 	 */
-	public function delete_row( $row_id ) {
-		global $wpdb;
-
-		if ( $wpdb->delete( $this->get_table_name(), [ $this->get_table_id() => $row_id ] ) === false ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error, 401 );
-		}
-
-		return true;
-	}
+	abstract public function delete_row( $row_id );
 
 	/**
 	 * Returns database columns in SQL format
 	 *
 	 * @internal
-	 * @return String SQL string
+	 * @return Sql_Select[] SQL string
 	 */
-	protected function get_query_columns() {
-		$columns = array_merge(
-			[ $this->get_table_id() ],
-			$this->get_columns(),
-			$this->get_info_columns()
+	protected function get_query_selects() {
+		return array_merge(
+			// Table ID column
+			[ new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_table_id() ) ) ],
+			// Any extra 'info' columns
+			$this->get_info_columns(),
 		);
-
-		return implode( ', ', $columns );
 	}
 
 	/**
-	 * Returns a LIKE query for a given column and search phrase
+	 * Get source filters
 	 *
-	 * @internal
-	 * @param String $column Column name.
-	 * @param String $search Search phrase.
-	 * @return String SQL string
+	 * @return Search_Filter[]
 	 */
-	protected function get_search_query_as_like( $column, $search ) {
-		global $wpdb;
-
-		if ( $this->search_flags->is_case_insensitive() ) {
-			return 'UPPER(' . $column . ') ' . $wpdb->prepare( 'LIKE %s', '%' . $wpdb->esc_like( strtoupper( $search ) ) . '%' );
-		}
-
-		return $column . ' ' . $wpdb->prepare( 'LIKE %s', '%' . $wpdb->esc_like( $search ) . '%' );
+	public function get_filters() {
+		return $this->filters;
 	}
 
 	/**
-	 * Returns the search for each of the columns in SQL format
+	 * Get schema for a source
 	 *
-	 * @internal
-	 * @param String $search Search phrase.
-	 * @return String SQL string
+	 * @return array
 	 */
-	protected function get_search_query( $search ) {
-		$source_matches = [];
-
-		// Look for the text in all the columns
-		foreach ( $this->get_columns() as $column ) {
-			$source_matches[] = $this->get_search_query_as_like( $column, $search );
-		}
-
-		// Add any source specific conditions
-		$source_conditions = $this->get_search_conditions();
-
-		$search_phrase = '(' . implode( ' OR ', $source_matches ) . ')';
-		$conditions = '';
-		if ( $source_conditions ) {
-			$conditions = ' AND (' . $source_conditions . ')';
-		}
-
-		return $search_phrase . $conditions;
+	public function get_schema_for_source() {
+		return apply_filters( 'searchregex_schema_item', $this->get_schema() );
 	}
 
 	/**
-	 * Get search source flags
+	 * Get the columns in the order they are defined in the schema, suitable for ordering results
 	 *
-	 * @return Search_Flags
+	 * @return array
 	 */
-	public function get_flags() {
-		return $this->search_flags;
+	public function get_schema_order() {
+		$schema = $this->get_schema_for_source();
+		$values = range( 0, count( $schema['columns'] ) - 1 );
+		$keys = array_map( function( $column ) {
+			return $column['column'];
+		}, $schema['columns'] );
+
+		return array_combine( $keys, $values );
+	}
+
+	/**
+	 * Internal function to get schema, which is then filtered by `get_schema_for_source`
+	 *
+	 * @return array
+	 */
+	abstract protected function get_schema();
+
+	/**
+	 * Get the schema as a Schema_Source object
+	 *
+	 * @return Schema_Source
+	 */
+	public function get_schema_item() {
+		return new Schema_Source( $this->get_schema() );
+	}
+
+	/**
+	 * Get any preloadable data for the given filter
+	 *
+	 * @param array         $schema Schema.
+	 * @param Search_Filter $filter Filter.
+	 * @return array
+	 */
+	public function get_filter_preload( $schema, $filter ) {
+		return [];
+	}
+
+	/**
+	 * Perform autocompletion on a column and a value
+	 *
+	 * @param array  $column Column.
+	 * @param string $value  Value.
+	 * @return array
+	 */
+	abstract public function autocomplete( array $column, $value );
+
+	/**
+	 * Does this source have any advanced filters?
+	 *
+	 * @return boolean
+	 */
+	public function has_advanced_filter() {
+		foreach ( $this->filters as $filter ) {
+			if ( $filter->is_advanced() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Try and convert the column value into a text label. For example, user ID to user name
+	 *
+	 * @param Schema_Column $schema Schema.
+	 * @param string        $value Column value.
+	 * @return string Column label, or column value.
+	 */
+	public function convert_result_value( Schema_Column $schema, $value ) {
+		if ( $schema->get_options() ) {
+			foreach ( $schema->get_options() as $option ) {
+				/** @psalm-suppress DocblockTypeContradiction */
+				if ( $option['value'] === $value || intval( $option['value'], 10 ) === $value ) {
+					return $option['label'];
+				}
+			}
+		}
+
+		if ( $schema->get_source() ) {
+			$convert = new Convert_Values();
+
+			return $convert->convert( $schema, $value );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Helper function to log actions if WP_DEBUG is enabled
+	 *
+	 * @param string               $title Log title.
+	 * @param array|string|integer $update Log data.
+	 * @return void
+	 */
+	protected function log_save( $title, $update ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			// phpcs:ignore
+			error_log( $title . ': ' . print_r( $update, true ) );
+		}
 	}
 }

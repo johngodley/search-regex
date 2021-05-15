@@ -24,7 +24,7 @@ const ReplacementPhrase = ( { match, originalMatch } ) => {
 		);
 	}
 
-	return showInvisible( match );
+	return showInvisible( String( match ) );
 }
 
 export default ReplacementPhrase;

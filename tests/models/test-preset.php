@@ -12,8 +12,10 @@ class PresetTest extends WP_UnitTestCase {
 				'replacement' => '',
 				'perPage' => 25,
 				'searchFlags' => [],
-				'sourceFlags' => [],
 				'source' => [],
+				'filters' => [],
+				'view' => [],
+				'action' => 'nothing',
 			],
 			'locked' => [],
 			'tags' => [],
@@ -35,7 +37,6 @@ class PresetTest extends WP_UnitTestCase {
 				'replacement' => 'dog',
 				'perPage' => 100,
 				'searchFlags' => [ 'case' ],
-				'sourceFlags' => [ 'comment_spam' ],
 				'source' => [ 'comment' ],
 			],
 			'locked' => [ 'perPage' ],
@@ -52,6 +53,10 @@ class PresetTest extends WP_UnitTestCase {
 
 		unset( $actual['id'] );
 		$params['tags'] = [ [ 'title' => 'bad中"\'', 'name' => 'bad中"\'' ] ];
+		$params['search']['filters'] = [];
+		$params['search']['view'] = [];
+		$params['search']['action'] = 'replace';
+		$params['search']['actionOption'] = [];
 
 		$this->assertEquals( $params, $actual );
 	}
@@ -95,14 +100,6 @@ class PresetTest extends WP_UnitTestCase {
 
 		$preset = new Preset( [ 'search' => [ 'searchFlags' => [ 'cat' ] ] ] );
 		$this->assertEquals( [], $preset->to_json()['search']['searchFlags'] );
-	}
-
-	public function testBadSourceFlags() {
-		$preset = new Preset( [ 'search' => [ 'sourceFlags' => 'cat' ] ] );
-		$this->assertEquals( [], $preset->to_json()['search']['sourceFlags'] );
-
-		$preset = new Preset( [ 'search' => [ 'sourceFlags' => [ 'cat' ] ] ] );
-		$this->assertEquals( [], $preset->to_json()['search']['sourceFlags'] );
 	}
 
 	public function testBadLocked() {

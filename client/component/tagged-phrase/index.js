@@ -10,7 +10,6 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 
-import { getMatchedTags } from 'state/preset/selector';
 import Tag from './tag';
 
 /** @typedef {import('state/preset/type.js').PresetValue} PresetValue */
@@ -31,7 +30,7 @@ import Tag from './tag';
 /**
  *
  * @param {object} props - Component props
- * @param {string} props.phrase - Phrase to replace with
+ * @param {object} props.search - Search
  * @param {ChangeCallback} props.onChange
  * @param {string} [props.className] - Class name
  * @param {boolean} [props.disabled=false] - Is it disabled?
@@ -39,14 +38,13 @@ import Tag from './tag';
  * @returns {ReactElement[]}
  */
 function TaggedPhrases( props ) {
-	const { phrase, onChange, className, preset, disabled = false } = props;
-	const tags = getMatchedTags( preset.tags, phrase );
+	const { search, onChange, className, tags, disabled = false } = props;
 
 	return tags.map( ( tag ) => (
 		<tr className={ classnames( 'searchregex-preset__tag', className ) } key={ tag.name }>
 			<th>{ tag.title }</th>
 			<td>
-				<Tag tag={ tag } phrase={ phrase } onChange={ onChange } disabled={ disabled } />
+				<Tag tag={ tag } search={ search } onChange={ onChange } disabled={ disabled } />
 			</td>
 		</tr>
 	) );

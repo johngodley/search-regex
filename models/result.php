@@ -64,8 +64,6 @@ class Result {
 	 * @param Array         $raw Raw row data.
 	 */
 	public function __construct( $row_id, Search_Source $source, array $columns, $raw ) {
-		global $wpdb;
-
 		$this->row_id = $row_id;
 		$this->columns = $columns;
 		$this->raw = $raw;
@@ -74,6 +72,20 @@ class Result {
 		$this->result_title = isset( $raw[ $source->get_title_column() ] ) ? $raw[ $source->get_title_column() ] : false;
 		/** @psalm-suppress TooManyArguments */
 		$this->actions = \apply_filters( 'searchregex_result_actions', $source->get_actions( $this ), $this->source_type, $this );
+
+		// Get columns as positional values
+		$schema = $source->get_schema_order();
+
+		usort( $this->columns, function( $a, $b ) use ( $schema ) {
+			$a = $schema[ $a->get_column_id() ];
+			$b = $schema[ $b->get_column_id() ];
+
+			if ( $a === $b ) {
+				return 0;
+			}
+
+			return $a < $b ? -1 : 1;
+		} );
 	}
 
 	/**
@@ -92,9 +104,12 @@ class Result {
 			'row_id' => $this->row_id,
 			'source_type' => $this->source_type,
 			'source_name' => $this->source_name,
+
 			'columns' => $columns,
+
 			'actions' => $this->actions,
 			'title' => html_entity_decode( $this->result_title ),
+
 			'match_count' => \array_reduce( $columns, function( $carry, $column ) {
 				return $carry + $column['match_count'];
 			}, 0 ),
@@ -135,5 +150,28 @@ class Result {
 	 */
 	public function get_source_type() {
 		return $this->source_type;
+	}
+
+	/**
+	 * Get array of changes for this result
+	 *
+	 * @return array
+	 */
+	public function get_updates() {
+		$updates = [];
+
+		foreach ( $this->columns as $column ) {
+			$change = $column->get_changes( $this->raw );
+			$same = $column->get_same( $this->raw );
+
+			if ( count( $change ) > 0 ) {
+				$updates[ $column->get_column_id() ] = [
+					'change' => $change,
+					'same' => $same,
+				];
+			}
+		}
+
+		return $updates;
 	}
 }

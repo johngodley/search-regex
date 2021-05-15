@@ -14,12 +14,10 @@ const SOURCES = [
 		],
 	},
 ];
-const SOURCE_FLAGS = { comments: { guid: 'GUID' } };
 
 const getSearch = ( flags = {} ) => ( {
 	source: [],
 	searchFlags: [],
-	sourceFlags: [],
 	perPage: 25,
 	replacement: '',
 	searchPhrase: '',
@@ -29,7 +27,6 @@ const getSearch = ( flags = {} ) => ( {
 const getExpected = ( flags = {} ) => ( {
 	...getSearch(),
 	searchFlags: [],
-	sourceFlags: [],
 	...flags,
 } );
 
@@ -38,62 +35,48 @@ describe( 'search validate', () => {
 		const search = getSearch();
 		const expected = getExpected();
 
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
+		expect( getValidatedSearch( search, SOURCES ) ).toEqual( expected );
 	} );
 
 	test( 'invalid per page', () => {
 		const search = getSearch( { perPage: 13 } );
 		const expected = getExpected();
 
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
+		expect( getValidatedSearch( search, SOURCES ) ).toEqual( expected );
 	} );
 
 	test( 'valid per page', () => {
 		const search = getSearch( { perPage: 50 } );
 		const expected = getExpected( { perPage: 50 } );
 
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
+		expect( getValidatedSearch( search, SOURCES ) ).toEqual( expected );
 	} );
 
 	test( 'invalid search flag', () => {
 		const search = getSearch( { searchFlags: [ 'cats', 'dogs' ] } );
 		const expected = getExpected();
 
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
+		expect( getValidatedSearch( search, SOURCES ) ).toEqual( expected );
 	} );
 
 	test( 'valid search flags', () => {
 		const search = getSearch( { searchFlags: [ 'case', 'regex' ] } );
 		const expected = getExpected( { searchFlags: [ 'case', 'regex' ] } );
 
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
-	} );
-
-	test( 'invalid source flag', () => {
-		const search = getSearch( { sourceFlags: [ 'cats', 'dogs' ] } );
-		const expected = getExpected();
-
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
-	} );
-
-	test( 'valid source flags', () => {
-		const search = getSearch( { source: [ 'comments' ], sourceFlags: [ 'guid' ] } );
-		const expected = getExpected( { source: [ 'comments' ], sourceFlags: [ 'guid' ] } );
-
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
+		expect( getValidatedSearch( search, SOURCES ) ).toEqual( expected );
 	} );
 
 	test( 'invalid source', () => {
 		const search = getSearch( { source: [ 'cats' ] } );
 		const expected = getExpected();
 
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
+		expect( getValidatedSearch( search, SOURCES ) ).toEqual( expected );
 	} );
 
 	test( 'valid sources', () => {
 		const search = getSearch( { source: [ 'comments' ] } );
 		const expected = getExpected( { source: [ 'comments' ] } );
 
-		expect( getValidatedSearch( search, SOURCES, SOURCE_FLAGS ) ).toEqual( expected );
+		expect( getValidatedSearch( search, SOURCES ) ).toEqual( expected );
 	} );
 } );

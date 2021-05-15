@@ -1,7 +1,7 @@
 <?php
 
 use SearchRegex\Match;
-use SearchRegex\Match_Context;
+use SearchRegex\Match_Context_String;
 use SearchRegex\Search_Flags;
 
 class SearchApiTest extends SearchRegex_Api_Test {

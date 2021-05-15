@@ -40,13 +40,6 @@ class Preset {
 	private $search_flags;
 
 	/**
-	 * Array of source flags
-	 *
-	 * @var Source_Flags
-	 */
-	private $source_flags;
-
-	/**
 	 * Array of source names
 	 *
 	 * @var String[]
@@ -89,6 +82,27 @@ class Preset {
 	private $locked = [];
 
 	/**
+	 * Preset action
+	 *
+	 * @var Action|null
+	 */
+	private $action = null;
+
+	/**
+	 * Filters
+	 *
+	 * @var Search_Filter[]
+	 */
+	private $filters = [];
+
+	/**
+	 * View
+	 *
+	 * @var string[]
+	 */
+	private $view = [];
+
+	/**
 	 * Create a preset
 	 *
 	 * @param array $params Array of params.
@@ -96,7 +110,6 @@ class Preset {
 	public function __construct( array $params = [] ) {
 		$this->id = isset( $params['id'] ) ? $params['id'] : uniqid();
 		$this->search_flags = new Search_Flags();
-		$this->source_flags = new Source_Flags();
 
 		$this->set_values( $params );
 	}
@@ -194,6 +207,9 @@ class Preset {
 			'source',
 			'sourceFlags',
 			'perPage',
+			'filters',
+			'action',
+			'view',
 		];
 	}
 
@@ -216,8 +232,6 @@ class Preset {
 	 * @return void
 	 */
 	private function set_search( array $search ) {
-		$allowed_flags = [];
-
 		if ( isset( $search['searchPhrase'] ) ) {
 			$this->search = $search['searchPhrase'];
 		}
@@ -234,14 +248,10 @@ class Preset {
 			$this->search_flags = new Search_Flags( $search['searchFlags'] );
 		}
 
-		if ( isset( $search['sourceFlags'] ) && is_array( $search['sourceFlags'] ) ) {
-			$this->source_flags = new Source_Flags( $search['sourceFlags'] );
-		}
-
 		// Sanitize sources and ensure source flags are allowed by those sources
 		if ( isset( $search['source'] ) && is_array( $search['source'] ) ) {
 			$sources = array_map( function( $source ) {
-				$sources = Source_Manager::get( [ $source ], $this->search_flags, $this->source_flags );
+				$sources = Source_Manager::get( [ $source ], [] );
 				if ( $sources ) {
 					return $source;
 				}
@@ -249,9 +259,35 @@ class Preset {
 				return false;
 			}, $search['source'] );
 			$this->source = array_values( array_filter( $sources ) );
-		} else {
-			// No source, no flags
-			$this->source_flags->set_allowed_flags( [] );
+		}
+
+		$schema = new Schema( Source_Manager::get_schema( $this->source ) );
+
+		// If there is a replacement then default to global replace, for backwards compatability
+		$this->action = new Action_Nothing( [], $schema );
+
+		if ( $this->search !== '' ) {
+			$this->action = new Action_Global_Replace( [
+				'search' => $this->search,
+				'replacement' => $this->replacement,
+				'flags' => $this->search_flags->to_json(),
+			], $schema );
+		}
+
+		if ( isset( $search['action'] ) ) {
+			$this->action = Action::create( $search['action'], Action::get_options( $search ), $schema );
+		}
+
+		if ( isset( $search['filters'] ) && is_array( $search['filters'] ) ) {
+			$this->filters = Search_Filter::create( $search['filters'], $schema );
+		}
+
+		if ( isset( $search['view'] ) && is_array( $search['view'] ) ) {
+			$this->view = array_values( array_filter( $search['view'], function( $view ) {
+				$parts = explode( '__', $view );
+
+				return count( $parts ) === 2;
+			} ) );
 		}
 	}
 
@@ -330,18 +366,32 @@ class Preset {
 	 * @return Array
 	 */
 	public function to_json() {
-		return [
-			'id' => $this->id,
-			'name' => \html_entity_decode( $this->name ),
-			'description' => \html_entity_decode( $this->description ),
-			'search' => [
+		$search = array_merge(
+			[
 				'searchPhrase' => $this->search,
 				'replacement' => $this->replacement,
 				'perPage' => $this->per_page,
 				'searchFlags' => $this->search_flags->to_json(),
-				'sourceFlags' => $this->source_flags->to_json(),
 				'source' => $this->source,
+				'filters' => array_map( function( $filter ) {
+					return $filter->to_json();
+				}, $this->filters ),
+				'view' => $this->view,
 			],
+			$this->action === null ? [] : $this->action->to_json()
+		);
+
+		// Remove replace value if not a global replace
+		if ( $search['action'] !== 'replace' ) {
+			$search['replacement'] = '';
+			$search['searchFlags'] = [];
+		}
+
+		return [
+			'id' => $this->id,
+			'name' => \html_entity_decode( $this->name ),
+			'description' => \html_entity_decode( $this->description ),
+			'search' => $search,
 			'locked' => $this->locked,
 			'tags' => $this->tags,
 		];
@@ -409,6 +459,7 @@ class Preset {
 	 * @return integer Number of presets imported
 	 */
 	public static function import( $filename ) {
+		// phpcs:ignore
 		$file = file_get_contents( $filename );
 
 		if ( $file ) {
@@ -421,7 +472,7 @@ class Preset {
 					$preset = new Preset( $params );
 
 					if ( $preset->is_valid() ) {
-						$name = $preset->create();
+						$preset->create();
 						$imported++;
 					}
 				}

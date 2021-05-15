@@ -4,7 +4,7 @@
 Plugin Name: Search Regex
 Plugin URI: https://searchregex.com/
 Description: Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support
-Version: 2.4.1
+Version: 3.0-beta-1
 Author: John Godley
 Text Domain: search-regex
 Domain Path: /locale
@@ -23,6 +23,7 @@ For full license details see license.txt
 
 define( 'SEARCHREGEX_FILE', __FILE__ );
 define( 'SEARCHREGEX_DEV_MODE', false );
+define( 'SEARCHREGEX_DEBUG', false );
 
 // This file must support PHP < 5.6 so as not to crash
 if ( version_compare( phpversion(), '5.6' ) < 0 ) {

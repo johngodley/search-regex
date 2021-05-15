@@ -58,15 +58,15 @@ describe( 'search selectors', () => {
 		];
 
 		test( 'post types are removed if all posts are searched', () => {
-			const search = { source: [ 'posts', 'post' ], searchFlags: [], sourceFlags: [], replacement: '' };
-			const expected = { source: [ 'posts' ], searchFlags: [], sourceFlags: [], replacement: '' };
+			const search = { source: [ 'posts', 'post' ], searchFlags: [], replacement: '' };
+			const expected = { source: [ 'posts' ], searchFlags: [], replacement: '' };
 
 			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
 		} );
 
 		test( 'null replacement is converted to empty string', () => {
-			const search = { source: [ 'post' ], searchFlags: [], sourceFlags: [], replacement: null };
-			const expected = { source: [ 'post' ], searchFlags: [], sourceFlags: [], replacement: '' };
+			const search = { source: [ 'post' ], searchFlags: [], replacement: null };
+			const expected = { source: [ 'post' ], searchFlags: [], replacement: '' };
 
 			expect( getSearchValues( search, SOURCES ) ).toStrictEqual( expected );
 		} );

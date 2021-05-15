@@ -37,8 +37,7 @@ const config = {
 				loader: 'json-loader',
 			},
 			{
-				test: /\.scss$/,
-				exclude: /node_modules/,
+				test: /\.s(a|c)ss$/,
 				use: [ 'style-loader', 'css-loader', 'postcss-loader', 'sass-loader' ],
 			},
 			{
@@ -85,7 +84,9 @@ const config = {
 				extractComments: {
 					condition: true,
 					banner: () => {
-						return 'Search Regex v' + pkg.version + ' - please refer to license.txt for license information';
+						return (
+							'Search Regex v' + pkg.version + ' - please refer to license.txt for license information'
+						);
 					},
 				},
 			} ),

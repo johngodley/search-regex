@@ -2,16 +2,16 @@
  * External dependencies
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { translate as __ } from 'i18n-calypso';
 
 /**
  * Internal dependencies
  */
 
-import { Select } from 'wp-plugin-components';
 import './style.scss';
-import TaggedPhrases from 'component/tagged-phrase';
+import { Select } from 'wp-plugin-components';
+import { setSearch } from 'state/search/action';
 
 /** @typedef {import('state/preset/type.js').PresetValue} PresetValue */
 
@@ -24,31 +24,6 @@ import TaggedPhrases from 'component/tagged-phrase';
  * @callback CancelCallback
  */
 
-const getReplaceOptions = () => [
-	{
-		value: 'single',
-		label: __( 'Single' ),
-	},
-	{
-		value: 'multi',
-		label: __( 'Multi' ),
-	},
-	{
-		value: 'remove',
-		label: __( 'Remove' ),
-	},
-];
-
-function getReplaceFlag( replace ) {
-	if ( replace === null ) {
-		return 'remove';
-	} else if ( replace.indexOf( '\n' ) !== -1 ) {
-		return 'multi';
-	}
-
-	return '';
-}
-
 /**
  * A replacement dialog
  *
@@ -56,72 +31,50 @@ function getReplaceFlag( replace ) {
  * @param {boolean} props.disabled - Whether we can replace this
  * @param {string} props.className - Class
  * @param {string|React} props.placeholder - Placeholder string
- * @param {SaveCallback} props.setReplace - Change the replacement string
- * @param {string} props.replace - Replacement string
+ * @param {import('state/search/type').SetReplace} props.setReplacement - Change the replacement
+ * @param {object|null} props.replacement - Row replacement value
  * @param {?PresetValue} [props.preset]
+ * @param {import('state/search/type').SchemaColumn} props.schema
+ * @param {import('state/search/type').ResultColumn} props.column
  */
 function Replace( props ) {
-	const {
-		disabled,
-		setReplace,
-		className,
-		placeholder,
-		replace,
-		preset = null,
-	} = props;
-	const [ replaceFlag, setReplaceFlag ] = useState( getReplaceFlag( replace ) );
-
+	const { disabled, schema, replacement, setReplace } = props;
+	const [ searchFlags, setFlags ] = useState( 'single' );
 	const value = {
 		id: 'replace',
-		value: replace === null ? '' : replace,
+		value: replacement,
+		disabled: disabled || searchFlags === 'remove',
+		placeholder: searchFlags === 'remove' ? __( 'Matched values will be removed' ) : __( 'Enter replacement value' ),
 		name: 'replace',
-		onChange: ( ev ) => setReplace( ev.target.value ),
-		disabled: disabled || replaceFlag === 'remove',
-		placeholder: replaceFlag === 'remove' ? __( 'Search phrase will be removed' ) : placeholder,
+		onChange: ( ev ) => {
+			setReplace( { replacement: ev.target.value } );
+		},
 	};
 
-	/** @param {string} replaceFlag */
-	function changeReplace( replaceFlag ) {
-		setReplaceFlag( replaceFlag );
-
-		if ( replaceFlag !== '' ) {
-			setReplace( replaceFlag === 'remove' ? null : replace );
+	useEffect( () => {
+		if ( searchFlags === 'remove' ) {
+			setReplace( { replacement: null } );
+		} else if ( replacement === null ) {
+			setReplace( { replacement: '' } );
 		}
-	}
-
-	useEffect(() => {
-		const flag = getReplaceFlag( replace );
-
-		if ( replace === '' && replaceFlag === 'multi' && flag === '' ) {
-			return;
-		}
-	}, [ replace ]);
-
-	if ( preset && preset.tags.length > 0 ) {
-		return (
-			<TaggedPhrases
-				disabled={ disabled }
-				preset={ preset }
-				phrase={ preset.search.replacement }
-				onChange={ setReplace }
-				className={ className }
-				key={ preset.id }
-			/>
-		);
-	}
+	}, [ searchFlags ] );
 
 	return (
-		<div className="searchregex-replace__input">
-			{ replaceFlag === 'multi' ? <textarea rows={ 4 } { ...value } /> : <input type="text" { ...value } /> }
+		<>
+			{ searchFlags.indexOf( 'multi' ) === -1 ? <input type="text" { ...value } /> : <textarea { ...value } /> }
 
 			<Select
-				items={ getReplaceOptions() }
-				name="replace_flags"
-				value={ replaceFlag }
-				onChange={ ( ev ) => changeReplace( ev.target.value ) }
 				disabled={ disabled }
+				items={ [
+					{ value: '', label: __( 'Single' ) },
+					{ value: 'multi', label: __( 'Multi' ) },
+					{ value: 'remove', label: __( 'Remove' ) },
+				] }
+				value={ searchFlags }
+				name="search-flags"
+				onChange={ ( ev ) => setFlags( ev.target.value ) }
 			/>
-		</div>
+		</>
 	);
 }
 

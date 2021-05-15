@@ -8,6 +8,7 @@ class Match_Column {
 	/**
 	 * Column ID
 	 *
+	 * @readonly
 	 * @var string
 	 **/
 	private $column_id;
@@ -15,6 +16,7 @@ class Match_Column {
 	/**
 	 * Column label
 	 *
+	 * @readonly
 	 * @var string
 	 **/
 	private $column_label;
@@ -24,7 +26,7 @@ class Match_Column {
 	 *
 	 * @var Match_Context[]
 	 **/
-	private $contexts;
+	private $contexts = [];
 
 	/**
 	 * Total number of match contexts
@@ -41,53 +43,119 @@ class Match_Column {
 	private $match_count;
 
 	/**
-	 * Replacement phrase
+	 * Raw data for this column
 	 *
-	 * @var string
-	 **/
-	private $replacement;
+	 * @readonly
+	 * @var array
+	 */
+	private $raw;
 
 	/**
-	 * Create a Match Column, which contains an array of Match_Context items for a particular database column.
+	 * Create a Match Column, which contains an array of Match_Context_String items for a particular database column.
 	 *
-	 * @param string          $column_id Column ID.
-	 * @param string          $column_label Descriptive column label, shown to the user.
-	 * @param string          $replacement The replaced value.
-	 * @param Match_Context[] $contexts Array of Match_Context items for this column.
+	 * @param string               $column_id Column ID.
+	 * @param string               $column_label Descriptive column label, shown to the user.
+	 * @param array<Match_Context> $contexts Contexts.
+	 * @param array                $raw Raw data.
 	 */
-	public function __construct( $column_id, $column_label, $replacement, array $contexts ) {
+	public function __construct( $column_id, $column_label, array $contexts, array $raw ) {
 		$this->match_count = 0;
-
-		foreach ( $contexts as $context ) {
-			$this->match_count += $context->get_match_count();
-		}
-
 		$this->column_id = $column_id;
 		$this->column_label = $column_label;
-		$this->context_count = count( $contexts );
-		$this->contexts = array_slice( $contexts, 0, self::CONTEXT_LIMIT );
-		$this->replacement = $replacement;
+		$this->raw = $raw;
+		$this->context_count = 0;
+
+		$this->set_contexts( $contexts );
 	}
 
 	/**
-	 * Convert the Match_Context to JSON
+	 * Get contexts
 	 *
-	 * @return Array{column_id: string, column_label: string, contexts: array, context_count: int, match_count: int, replacement: string} JSON data
+	 * @return array<Match_Context>
 	 */
-	public function to_json() {
-		$contexts = [];
+	public function get_contexts() {
+		return $this->contexts;
+	}
 
-		foreach ( $this->contexts as $context ) {
-			$contexts[] = $context->to_json();
+	/**
+	 * Add contexts if:
+	 * - there are no contexts and it is unmatched
+	 * - the contexts match
+	 *
+	 * The aim is to ensure that we either have all matches, or one unmatched
+	 *
+	 * @param array<Match_Context> $contexts Contexts.
+	 * @return void
+	 */
+	public function add_contexts_if_matching( array $contexts ) {
+		$this->add_contexts( $contexts );
+
+		// Ensure if we have any matches then there are no unmatched
+		$matched = array_filter( $this->contexts, function( $context ) {
+			return $context->is_matched();
+		} );
+
+		if ( count( $matched ) > 0 ) {
+			// Remove unmatched
+			$this->set_contexts( $matched );
+		}
+	}
+
+	/**
+	 * Add contexts to the column, ensuring we don't have duplicates
+	 *
+	 * @param array<Match_Context> $contexts Contexts.
+	 * @return void
+	 */
+	public function add_contexts( array $contexts ) {
+		foreach ( $contexts as $context ) {
+			$found = false;
+
+			// Remove duplicates
+			foreach ( $this->contexts as $existing ) {
+				if ( $existing->is_equal( $context ) ) {
+					$found = true;
+					break;
+				}
+			}
+
+			if ( ! $found ) {
+				$context->set_context_id( count( $this->contexts ) );
+
+				$this->contexts[] = $context;
+				$this->match_count += $context->get_match_count();
+			}
 		}
 
+		$this->context_count = count( $this->contexts );
+		$this->contexts = array_slice( $this->contexts, 0, self::CONTEXT_LIMIT );
+	}
+
+	/**
+	 * Set the context array
+	 *
+	 * @param Match_Context[] $contexts Array of contexts.
+	 * @return void
+	 */
+	public function set_contexts( array $contexts ) {
+		$this->contexts = [];
+		$this->add_contexts( $contexts );
+	}
+
+	/**
+	 * Convert the Match_Context_String to JSON
+	 *
+	 * @return Array{column_id: string, column_label: string, contexts: array, context_count: int, match_count: int} JSON data
+	 */
+	public function to_json() {
 		return [
 			'column_id' => $this->column_id,
 			'column_label' => $this->column_label,
-			'contexts' => $contexts,
+			'contexts' => array_map( function( $item ) {
+				return $item->to_json();
+			}, $this->contexts ),
 			'context_count' => $this->context_count,
 			'match_count' => $this->match_count,
-			'replacement' => $this->replacement,
 		];
 	}
 
@@ -110,26 +178,35 @@ class Match_Column {
 	}
 
 	/**
-	 * Get the replacement
+	 * Get contexts that have changed
 	 *
-	 * @param Int|null $pos_id Position within the raw data.
-	 * @param Array    $raw Raw column data.
-	 * @return Bool|String Replaced data, or false
+	 * @param array $raw Raw data.
+	 * @return array<Match_Context>
 	 */
-	public function get_replacement( $pos_id, array $raw ) {
-		if ( $pos_id !== null ) {
-			foreach ( $this->contexts as $context ) {
-				$match = $context->get_match_at_position( $pos_id );
+	public function get_changes( array $raw ) {
+		return array_values( array_filter( $this->contexts, function( $context ) {
+			return $context->needs_saving();
+		} ) );
+	}
 
-				if ( is_object( $match ) && isset( $raw[ $this->column_id ] ) ) {
-					// Need to replace the match with the result in the raw data
-					return $match->replace_at_position( $raw[ $this->column_id ] );
-				}
-			}
+	/**
+	 * Get contexts that have not changed
+	 *
+	 * @param array $raw Raw data.
+	 * @return array<Match_Context>
+	 */
+	public function get_same( array $raw ) {
+		return array_values( array_filter( $this->contexts, function( $context ) {
+			return ! $context->needs_saving();
+		} ) );
+	}
 
-			return false;
-		}
-
-		return $this->replacement;
+	/**
+	 * Get the value for this column
+	 *
+	 * @return string
+	 */
+	public function get_value() {
+		return array_values( $this->raw )[0];
 	}
 }

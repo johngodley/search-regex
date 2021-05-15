@@ -8,25 +8,31 @@ use SearchRegex\Totals;
 
 require_once __DIR__ . '/source.php';
 require_once __DIR__ . '/source-manager.php';
-require_once __DIR__ . '/match.php';
+require_once __DIR__ . '/match-text.php';
 require_once __DIR__ . '/match-context.php';
 require_once __DIR__ . '/match-column.php';
 require_once __DIR__ . '/search-flags.php';
-require_once __DIR__ . '/source-flags.php';
+require_once __DIR__ . '/search-filter.php';
 require_once __DIR__ . '/totals.php';
 require_once __DIR__ . '/preset.php';
+require_once __DIR__ . '/autocomplete.php';
+require_once __DIR__ . '/convert-values.php';
+require_once __DIR__ . '/schema.php';
+require_once __DIR__ . '/dynamic-column.php';
+require_once __DIR__ . '/value-type.php';
+require_once __DIR__ . '/context/context-value.php';
+require_once __DIR__ . '/context/context-matched.php';
+require_once __DIR__ . '/context/context-add.php';
+require_once __DIR__ . '/context/context-delete.php';
+require_once __DIR__ . '/context/context-pair.php';
+require_once __DIR__ . '/context/context-empty.php';
+require_once __DIR__ . '/context/context-replace.php';
+require_once __DIR__ . '/context/context-string.php';
 
 /**
  * Perform a search
  */
 class Search {
-	/**
-	 * The phrase to search for.
-	 *
-	 * @var String
-	 **/
-	private $search;
-
 	/**
 	 * The sources to search across.
 	 *
@@ -35,66 +41,51 @@ class Search {
 	private $sources = [];
 
 	/**
-	 * The search flags to use when searching.
-	 *
-	 * @var Search_Flags
-	 **/
-	private $flags;
-
-	/**
 	 * Create a Search object, with a search value, an array of sources, and some search flags
 	 *
-	 * @param String       $search_value The value to search for.
-	 * @param Array        $sources Array of Search_Source objects. Only one is supported.
-	 * @param Search_Flags $flags Search flags.
+	 * @param Array $sources Array of Search_Source objects. Only one is supported.
 	 */
-	public function __construct( $search_value, array $sources, Search_Flags $flags ) {
-		$this->search = $search_value;
-		$this->flags = $flags;
+	public function __construct( array $sources ) {
 		$this->sources = $sources;
 	}
 
 	/**
 	 * Get a single database row
 	 *
-	 * @param Search_Source $source Source that contains the row.
-	 * @param int           $row_id Row ID to return.
-	 * @param Replace       $replacer The Replace object used when replacing data.
+	 * @param integer $row_id Row ID to return.
+	 * @param Action  $action Action.
 	 * @return \WP_Error|Array Return a single database row, or WP_Error on error
 	 */
-	public function get_row( Search_Source $source, $row_id, Replace $replacer ) {
-		global $wpdb;
-
-		$row = $source->get_row( $row_id );
+	public function get_row( $row_id, Action $action ) {
+		$results = $this->sources[0]->get_row( $row_id );
 
 		// Error
-		if ( is_wp_error( $row ) ) {
-			return new \WP_Error( 'searchregex_database', $wpdb->last_error );
+		if ( is_wp_error( $results ) ) {
+			return $results;
 		}
 
-		$results = [
+		return $this->convert_rows_to_results( [
 			[
-				'results' => [ $row ],
+				'results' => $results,
 				'source_pos' => 0,
 			],
-		];
-		return $this->convert_rows_to_results( $results, $replacer );
+		], $action );
 	}
 
 	/**
 	 * Perform the search, returning a result array that contains the totals, the progress, and an array of Result objects
 	 *
-	 * @param Replace $replacer The replacer which performs any replacements.
-	 * @param int     $offset Current page offset.
-	 * @param int     $per_page Per page limit.
-	 * @param int     $limit Max number of results.
+	 * @param Action $action The action to perform on the search.
+	 * @param int    $offset Current page offset.
+	 * @param int    $per_page Per page limit.
+	 * @param int    $limit Max number of results.
 	 * @return Array|\WP_Error Array containing `totals`, `progress`, and `results`
 	 */
-	public function get_search_results( Replace $replacer, $offset, $per_page, $limit = 0 ) {
+	public function get_search_results( Action $action, $offset, $per_page, $limit = 0 ) {
 		$totals = new Totals();
 
 		// Get total results
-		$result = $totals->get_totals( $this->sources, $this->search );
+		$result = $totals->get_totals( $this->sources );
 		if ( $result instanceof \WP_Error ) {
 			return $result;
 		}
@@ -105,20 +96,20 @@ class Search {
 			return $rows;
 		}
 
-		// Convert it to Results
-		$results = $this->convert_rows_to_results( (array) $rows, $replacer );
+		// Convert it to Results, performing any action along the way
+		$results = $this->convert_rows_to_results( $rows, $action );
 		if ( $results instanceof \WP_Error ) {
 			return $results;
 		}
 
 		// Calculate the prev/next pages of results
 		$previous = max( 0, $offset - $per_page );
-		$next = $totals->get_next_page( $offset + $per_page, $this->flags->is_regex() );
+		$next = $totals->get_next_page( $offset + $per_page );
 
 		// We always go in $per_page groups, but we need to limit if we only need a few more to fill a result set
 		if ( $limit > 0 && $limit < count( $results ) ) {
 			$next = min( $offset + $limit, $next );
-			$results = array_slice( $results, 0, $limit === 0 ? $per_page : $limit );
+			$results = array_slice( $results, 0, $limit );
 		}
 
 		if ( $next === $offset ) {
@@ -130,7 +121,7 @@ class Search {
 		}
 
 		return [
-			'results' => $results,
+			'results' => $action->should_save() ? [] : $results,
 			'totals' => $totals->to_json(),
 			'progress' => [
 				'current' => $offset,
@@ -139,6 +130,17 @@ class Search {
 				'next' => $next,
 			],
 		];
+	}
+
+	/**
+	 * Get totals for source
+	 *
+	 * @param Totals        $totals Totals.
+	 * @param Search_Source $source Source.
+	 * @return integer
+	 */
+	protected function get_total_for_source( Totals $totals, Search_Source $source ) {
+		return $totals->get_total_rows_for_source( $source->get_type() );
 	}
 
 	/**
@@ -152,26 +154,21 @@ class Search {
 	public function get_search_data( $absolute_offset, $limit, Totals $totals ) {
 		$results = [];
 		$current_offset = 0;
-		$source_offset = 0;
 		$remaining_limit = $limit;
 
 		// Go through each row and see if our $absolute_offset + $limit is within it's result set
 		foreach ( $this->sources as $source_pos => $source ) {
-			$num_rows = $totals->get_total_for_source( $source->get_type(), $this->flags->is_regex() );
+			// Get total number of rows for this source
+			$num_rows = $totals->get_matched_rows_for_source( $source->get_type() );
 
 			// Are we within the correct result set?
-			if ( $current_offset + $num_rows >= $absolute_offset && $num_rows > 0 ) {
+			if ( $num_rows > 0 && $current_offset + $num_rows >= $absolute_offset ) {
 				// Adjust for the current source offset
 				$source_offset = max( 0, $absolute_offset - $current_offset );
 
 				// Read up to our remaining limit, or the remaining number of rows
 				$source_limit = min( $remaining_limit, $num_rows - $source_offset );
-
-				if ( $this->flags->is_regex() ) {
-					$source_results = $source->get_all_rows( $this->search, $source_offset, $source_limit );
-				} else {
-					$source_results = $source->get_matched_rows( $this->search, $source_offset, $source_limit );
-				}
+				$source_results = $source->get_matched_rows( $source_offset, $source_limit );
 
 				// Check for an error
 				if ( $source_results instanceof \WP_Error ) {
@@ -180,19 +177,20 @@ class Search {
 
 				// Subtract the rows we've read from this source. There could be rows in another source to read
 				$remaining_limit -= $source_limit;
+				$current_offset = $source_offset + count( $source_results );
 
 				// Append to merged set
 				$results[] = [
 					'source_pos' => $source_pos,
 					'results' => $source_results,
 				];
-			}
 
-			// Move on to the next absolute offset
-			$current_offset += $num_rows;
-
-			if ( $remaining_limit <= 0 ) {
-				break;
+				if ( $remaining_limit <= 0 ) {
+					break;
+				}
+			} else {
+				// Move on to the next absolute offset
+				$current_offset += $num_rows;
 			}
 		}
 
@@ -200,109 +198,14 @@ class Search {
 	}
 
 	/**
-	 * Perform the search for a global replace, returning a result array that contains the totals, the progress, and an array of Result objects
-	 *
-	 * @param Replace $replacer The replacer which performs any replacements.
-	 * @param String  $offset Current page offset.
-	 * @param int     $per_page Per page limit.
-	 * @return Array|\WP_Error Array containing `totals`, `progress`, and `results`
-	 */
-	public function get_replace_results( Replace $replacer, $offset, $per_page ) {
-		$totals = new Totals();
-
-		// Get total results
-		$result = $totals->get_totals( $this->sources, $this->search );
-		if ( $result instanceof \WP_Error ) {
-			return $result;
-		}
-
-		// Get the data
-		$rows = $this->get_replace_data( $offset, $per_page );
-		if ( $rows instanceof \WP_Error ) {
-			return $rows;
-		}
-
-		// Convert it to Results
-		$results = $this->convert_rows_to_results( $rows['results'], $replacer );
-		if ( $results instanceof \WP_Error ) {
-			return $results;
-		}
-
-		return [
-			'results' => $results,
-			'totals' => $totals->to_json(),
-			'next' => $rows['next'],
-			'rows' => array_reduce( $rows['results'], function( $carry, $item ) {
-				return $carry + count( $item['results'] );
-			}, 0 ),
-		];
-	}
-
-	/**
-	 * Get the replacement data. We use a different paging method than searching as we're also replacing rows, and this means we can't page.
-	 *
-	 * @param String $offset Current offset token.
-	 * @param Int    $limit Page limit.
-	 * @return \WP_Error|Array Data array
-	 */
-	public function get_replace_data( $offset, $limit ) {
-		$results = [];
-		$parts = explode( '-', $offset );
-		$current_source = $this->sources[0]->get_type();
-		$offset = 0;
-		$remaining_limit = $limit;
-		$last_row_id = false;
-
-		if ( count( $parts ) > 1 ) {
-			$current_source = implode( '-', array_slice( $parts, 0, -1 ) );
-			$offset = intval( $parts[ count( $parts ) - 1 ], 10 );
-		}
-
-		foreach ( $this->sources as $source_pos => $source ) {
-			if ( $source->get_type() === $current_source ) {
-				$source_results = $source->get_matched_rows_offset( $this->search, $offset, $remaining_limit, $this->flags->is_regex() );
-				if ( $source_results instanceof \WP_Error ) {
-					return $source_results;
-				}
-
-				if ( count( $source_results ) > 0 ) {
-					$last_row_id = $current_source . '-';
-					$last_row_id .= strval( intval( $source_results[ count( $source_results ) - 1 ][ $source->get_table_id() ], 10 ) );
-				}
-
-				// Merge with existing results
-				$results[] = [
-					'source_pos' => $source_pos,
-					'results' => $source_results,
-				];
-
-				// Do we have any more to get?
-				$remaining_limit -= count( $source_results );
-				if ( $remaining_limit <= 0 || $source_pos + 1 >= count( $this->sources ) ) {
-					break;
-				}
-
-				// Move on to next source and reset offset to 0
-				$current_source = $this->sources[ $source_pos + 1 ]->get_type();
-				$offset = 0;
-			}
-		}
-
-		return [
-			'results' => $results,
-			'next' => $last_row_id && $remaining_limit === 0 ? $last_row_id : false,
-		];
-	}
-
-	/**
 	 * Convert database rows into Result objects
 	 *
 	 * @internal
-	 * @param Array   $source_results Array of row data.
-	 * @param Replace $replacer Replace object.
+	 * @param array  $source_results Array of row data.
+	 * @param Action $action Action object.
 	 * @return Result[]|\WP_Error Array of results
 	 */
-	public function convert_rows_to_results( array $source_results, Replace $replacer ) {
+	public function convert_rows_to_results( array $source_results, Action $action ) {
 		$results = [];
 
 		// Loop over the source results, extracting the source and results for that source
@@ -312,22 +215,14 @@ class Search {
 
 			// Loop over the results for the source
 			foreach ( $rows as $row ) {
-				$columns = array_keys( $row );
-				$match_columns = [];
-				$row_id = 0;
+				$result = $this->convert_search_results( $action, $row, $source );
 
-				foreach ( array_slice( $columns, 1 ) as $column ) {
-					$row_id = intval( array_values( $row )[0], 10 );
-					$replacement = $replacer->get_replace_positions( $this->search, $row[ $column ] );
-					$contexts = Match::get_all( $this->search, $source->get_flags(), $replacement, $row[ $column ] );
-
-					if ( count( $contexts ) > 0 ) {
-						$match_columns[] = new Match_Column( $column, $source->get_column_label( $column, $row[ $column ] ), $replacer->get_global_replace( $this->search, $row[ $column ] ), $contexts );
-					}
+				if ( $result instanceof \WP_Error ) {
+					return $result;
 				}
 
-				if ( count( $match_columns ) > 0 && $row_id > 0 ) {
-					$results[] = new Result( $row_id, $source, $match_columns, $row );
+				if ( $result ) {
+					$results[] = $result;
 				}
 			}
 		}
@@ -336,27 +231,54 @@ class Search {
 	}
 
 	/**
-	 * Convert a set of search results into JSON
+	 * Convert a database row into a Result, after performing any action
 	 *
-	 * @param Array $results Array of Results.
-	 * @return Array JSON array
+	 * @param Action        $action Action.
+	 * @param array         $row Data.
+	 * @param Search_Source $source Source.
+	 * @return Result|\WP_Error|false
 	 */
-	public function results_to_json( array $results ) {
-		$json = [];
+	private function convert_search_results( Action $action, $row, $source ) {
+		// Get the matches
+		$matches = Search_Filter::get_result_matches( $source, $row, $action );
+		$row_id = intval( array_values( $row )[0], 10 );
 
-		foreach ( $results as $result ) {
-			$json[] = $result->to_json();
+		// Perform the actions, if we are saving
+		$matches = $action->perform( $row_id, $row, $source, $matches );
+		if ( $matches instanceof \WP_Error ) {
+			return $matches;
 		}
 
-		return $json;
+		if ( count( $matches ) > 0 ) {
+			return new Result( $row_id, $source, $matches, $row );
+		}
+
+		if ( count( $source->get_filters() ) === 0 ) {
+			// No filters - just return the row as-is
+			return new Result( $row_id, $source, [], $row );
+		}
+
+		return false;
 	}
 
 	/**
-	 * Return the associated Search_Flags
+	 * Save a set of changes on results.
 	 *
-	 * @return Search_Flags Search_Flags object
+	 * @param Result $result Result.
+	 * @return boolean|\WP_Error
 	 */
-	public function get_flags() {
-		return $this->flags;
+	public function save_changes( Result $result ) {
+		foreach ( $this->sources as $source ) {
+			if ( $source->is_type( $result->get_source_type() ) ) {
+				$updates = $result->get_updates();
+
+				if ( count( $updates ) > 0 ) {
+					return $source->save( $result->get_row_id(), $updates );
+				}
+			}
+		}
+
+		// No changes
+		return false;
 	}
 }
