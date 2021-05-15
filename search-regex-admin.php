@@ -141,7 +141,7 @@ class Search_Regex_Admin {
 		/** @psalm-suppress UndefinedClass */
 		$caps = Search_Regex_Capabilities::get_all_capabilities();
 
-		$is_new = true;
+		$is_new = false;
 		$major_version = implode( '.', array_slice( explode( '.', SEARCHREGEX_VERSION ), 0, 2 ) );
 
 		// phpcs:ignore
