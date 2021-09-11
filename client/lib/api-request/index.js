@@ -17,8 +17,8 @@ const SearchRegexApi = {
 	preset: {
 		save: ( search, name ) => postApiRequest( 'search-regex/v1/preset', { ...search, name } ),
 		update: /** @param {PresetValue} preset */ ( preset ) =>
-			postApiRequest( `search-regex/v1/preset/${ preset.id }`, preset ),
-		delete: ( id ) => postApiRequest( `search-regex/v1/preset/${ id }/delete` ),
+			postApiRequest( `search-regex/v1/preset/id/${ preset.id }`, preset ),
+		delete: ( id ) => postApiRequest( `search-regex/v1/preset/id/${ id }/delete` ),
 		export: () => getApiRequest( 'search-regex/v1/preset', { force: true } ),
 		upload: ( file ) => uploadApiRequest( 'search-regex/v1/preset/import', {}, file ),
 	},
