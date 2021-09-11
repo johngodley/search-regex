@@ -37,7 +37,7 @@ const SearchRegexApi = {
 				: getApiRequest( 'search-regex/v1/plugin/test' );
 
 			// Replace normal request URL with the URL to check
-			request.url = url + request.url;
+			request.url = url.substr( 0, 4 ) === 'http' ? url + request.url : request.url;
 
 			return request;
 		},
