@@ -35,6 +35,7 @@ const NOTICES = {
 	SEARCH_REPLACE_COMPLETE: __( 'Row replaced' ),
 	SEARCH_SAVE_ROW_COMPLETE: __( 'Row updated' ),
 	PRESET_SAVED: __( 'Preset saved' ),
+	PRESET_UPLOAD_COMPLETE: __( 'Preset uploaded' ),
 };
 
 export default function messages( state = {}, action ) {

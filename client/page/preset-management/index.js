@@ -176,7 +176,7 @@ function PresetManagement( props ) {
 				) }
 
 				<textarea
-					placeholder={ __( 'Paste a single preset JSON.' ) }
+					placeholder={ __( 'Paste preset JSON.' ) }
 					rows={ 3 }
 					value={ clipboard }
 					onChange={ ( ev ) => onSetClipboard( ev.target.value ) }
@@ -184,7 +184,7 @@ function PresetManagement( props ) {
 				/>
 				<p>
 					<button
-						disabled={ uploadStatus === STATUS_IN_PROGRESS }
+						disabled={ uploadStatus === STATUS_IN_PROGRESS || clipboard.length === 0 }
 						className="button button-secondary"
 						onClick={ () => onImportClipboard( clipboard ) }
 					>

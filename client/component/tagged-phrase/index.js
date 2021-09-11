@@ -2,15 +2,14 @@
  * External dependencies
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { translate as __ } from 'i18n-calypso';
 import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
-
-import Tag from './tag';
+import replaceSearchTags from './tag';
 
 /** @typedef {import('state/preset/type.js').PresetValue} PresetValue */
 /** @typedef {import('react').ReactElement} ReactElement */
@@ -38,13 +37,27 @@ import Tag from './tag';
  * @returns {ReactElement[]}
  */
 function TaggedPhrases( props ) {
-	const { search, onChange, className, tags, disabled = false } = props;
+	const { search, values, onChange, className, tags, disabled = false } = props;
+	const [ tagValues, setTagValues ] = useState( tags.map( ( item ) => '' ) );
 
-	return tags.map( ( tag ) => (
+	function updateTag( value, pos ) {
+		const newValues = tagValues.slice( 0, pos ).concat( value, tagValues.slice( pos + 1 ) );
+
+		setTagValues( newValues );
+		onChange( { ...values, ...replaceSearchTags( search, tags, newValues ) } );
+	}
+
+	return tags.map( ( tag, pos ) => (
 		<tr className={ classnames( 'searchregex-preset__tag', className ) } key={ tag.name }>
 			<th>{ tag.title }</th>
 			<td>
-				<Tag tag={ tag } search={ search } onChange={ onChange } disabled={ disabled } />
+				<input
+					type="text"
+					value={ tagValues[ pos ] }
+					placeholder={ tag.title }
+					onChange={ ( ev ) => updateTag( ev.target.value, pos ) }
+					disabled={ disabled }
+				/>
 			</td>
 		</tr>
 	) );

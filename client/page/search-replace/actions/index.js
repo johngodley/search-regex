@@ -179,7 +179,7 @@ function Actions( props ) {
 				</tr>
 			) }
 
-			{ action === 'replace' && (
+			{ action === 'replace' && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
 				<tr className="searchregex-search__replace">
 					<th>{ __( 'Replace' ) }</th>
 					<td>
