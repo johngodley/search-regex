@@ -106,26 +106,8 @@ if ( isProduction() ) {
 		historyApiFallback: {
 			index: '/',
 		},
-		contentBase: path.resolve( __dirname ),
-		publicPath: getDevUrl,
 		headers: { 'Access-Control-Allow-Origin': '*' },
-		stats: {
-			colors: true,
-			hash: false,
-			version: true,
-			timings: true,
-			assets: true,
-			chunks: false,
-			modules: false,
-			reasons: false,
-			children: false,
-			source: false,
-			errors: true,
-			errorDetails: true,
-			warnings: false,
-			publicPath: false,
-		},
-		disableHostCheck: true,
+		allowedHosts: 'all'
 	};
 }
 
