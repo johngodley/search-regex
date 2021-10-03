@@ -163,16 +163,19 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 	const [ currentFilter, setCurrentFilter ] = useState( filterOptions.length > 0 ? filterOptions[ 0 ].value : '' );
 	const viewFilters = hasVisibleFilters( filters, tags ) && ! isLocked( locked, 'filters' );
 
-	useEffect(() => {
+	useEffect( () => {
 		if ( filterOptions.indexOf( currentFilter ) === -1 ) {
 			setCurrentFilter( filterOptions.length > 0 ? filterOptions[ 0 ].value : '' );
 		}
-	}, [ source ]);
+	}, [ source ] );
 
 	function applySources( selected, changed ) {
 		const newSource = convertToSource( selected );
 		const allowedFilters = getSearchOptionsForSources( newSource, schema ).map( ( item ) => item.value );
-		const newFilters = newSource.indexOf( changed ) !== -1 ? getDefaultFilters( changed ) : [];
+		const newFilters =
+			newSource.indexOf( changed ) !== -1
+				? getDefaultFilters( changed ).filter( ( f ) => allowedFilters.indexOf( f.type ) === -1 )
+				: [];
 
 		return {
 			source: newSource,
@@ -213,6 +216,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 								multiple
 								disabled={ isBusy }
 								badges
+								title={ source.length === 0 ? __( 'Source' ) : '' }
 								aria-label={ __( 'Sources' ) }
 							/>
 						) }
@@ -229,10 +233,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 									onChange={ ( ev ) => setCurrentFilter( ev.target.value ) }
 									items={ filterOptions }
 								/>
-								<Button
-									onClick={ addFilter }
-									disabled={ isBusy || filters.length >= MAX_AND_FILTERS }
-								>
+								<Button onClick={ addFilter } disabled={ isBusy || filters.length >= MAX_AND_FILTERS }>
 									{ __( 'Add' ) }
 								</Button>
 							</>
@@ -282,6 +283,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 				<TaggedPhrases
 					disabled={ isBusy }
 					search={ preset.search }
+					values={ search }
 					onChange={ ( value ) => onSetSearch( value ) }
 					tags={ tags }
 					className={ headerClass }
@@ -316,7 +318,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 							/>
 						) }
 
-						{ ! isLocked( locked, 'view' ) && (
+						{ ! isLocked( locked, 'view' ) && source.length > 0 && (
 							<MultiOptionDropdown
 								options={ getColumnsForDropdown( source, schema, filters, actionOption ) }
 								selected={ view }
@@ -355,7 +357,4 @@ function mapStateToProps( state ) {
 	};
 }
 
-export default connect(
-	mapStateToProps,
-	null
-)( Form );
+export default connect( mapStateToProps, null )( Form );

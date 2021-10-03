@@ -45,7 +45,7 @@ function Actions( props ) {
 
 	actionList.push(
 		<a key="delete" href="#" onClick={ onDelete }>
-			{ __( 'Delete Row' ) }
+			{ __( 'Delete database row' ) }
 		</a>
 	);
 

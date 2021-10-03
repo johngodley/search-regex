@@ -17,8 +17,8 @@ const SearchRegexApi = {
 	preset: {
 		save: ( search, name ) => postApiRequest( 'search-regex/v1/preset', { ...search, name } ),
 		update: /** @param {PresetValue} preset */ ( preset ) =>
-			postApiRequest( `search-regex/v1/preset/${ preset.id }`, preset ),
-		delete: ( id ) => postApiRequest( `search-regex/v1/preset/${ id }/delete` ),
+			postApiRequest( `search-regex/v1/preset/id/${ preset.id }`, preset ),
+		delete: ( id ) => postApiRequest( `search-regex/v1/preset/id/${ id }/delete` ),
 		export: () => getApiRequest( 'search-regex/v1/preset', { force: true } ),
 		upload: ( file ) => uploadApiRequest( 'search-regex/v1/preset/import', {}, file ),
 	},
@@ -37,7 +37,7 @@ const SearchRegexApi = {
 				: getApiRequest( 'search-regex/v1/plugin/test' );
 
 			// Replace normal request URL with the URL to check
-			request.url = url + request.url;
+			request.url = url.substr( 0, 4 ) === 'http' ? url + request.url : request.url;
 
 			return request;
 		},

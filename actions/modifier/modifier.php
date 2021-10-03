@@ -157,7 +157,8 @@ abstract class Modifier {
 	 * @param Search_Source $source Source.
 	 * @param Match_Column  $column Column.
 	 * @param array         $raw Raw database data.
+	 * @param boolean       $save_mode Is the save mode enabled.
 	 * @return Match_Column
 	 */
-	abstract public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw );
+	abstract public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw, $save_mode );
 }

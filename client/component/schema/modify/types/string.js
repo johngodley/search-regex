@@ -18,8 +18,12 @@ function canRemote( flags ) {
 	return flags.indexOf( 'regex' ) === -1 && flags.indexOf( 'multi' ) === -1;
 }
 
-function getFilterForAction( filters, column ) {
+function getFilterForAction( filters, column, globalSearch, globalFlags ) {
 	const columns = [];
+
+	if ( globalSearch ) {
+		columns.push( { column: 'global', value: globalSearch, logic: 'contains', flags: globalFlags } );
+	}
 
 	for ( let index = 0; index < filters.length; index++ ) {
 		if ( filters[ index ].type === column.source ) {
@@ -27,7 +31,7 @@ function getFilterForAction( filters, column ) {
 				if ( filters[ index ].items[ itemIndex ].column === column.column ) {
 					const filter = filters[ index ].items[ itemIndex ];
 
-					if ( filter.logic !== 'notcontains' && filter.logic !== 'notequals' ) {
+					if ( filter.logic !== 'notcontains' && filter.logic !== 'notequals' && filter.value ) {
 						columns.push( filters[ index ].items[ itemIndex ] );
 					}
 				}
@@ -69,7 +73,7 @@ function getOperation( operation, filters ) {
 	return {
 		operation: found ? 'replace' : operation,
 		searchValue: found ? getSearchOperationValue( found ) : '',
-		searchFlags: found ? getSearchOperationRegex( found ): [],
+		searchFlags: found ? getSearchOperationRegex( found ) : [],
 	};
 }
 
@@ -78,8 +82,8 @@ function ModifyString( props ) {
 	const { operation = 'set', searchValue = '', replaceValue = '', searchFlags = [ 'case' ] } = item;
 	const [ localOperation, setLocalOperation ] = useState( 'set' );
 	const remote = schema.options === 'api' && canRemote( searchFlags ) ? fetchData : false;
-	const { filters } = useSelector( ( state ) => state.search.search );
-	const modifiedFilters = getFilterForAction( filters, item );
+	const { filters, searchPhrase, searchFlags: globalFlags } = useSelector( ( state ) => state.search.search );
+	const modifiedFilters = getFilterForAction( filters, item, searchPhrase, globalFlags );
 	const searchProps = {
 		value: searchValue,
 		disabled: disabled,
@@ -92,9 +96,9 @@ function ModifyString( props ) {
 		length: schema.length ? schema.length : 0,
 	};
 
-	useEffect(() => {
+	useEffect( () => {
 		onChange( getOperation( localOperation, modifiedFilters ) );
-	}, [ localOperation, filters ]);
+	}, [ localOperation, filters ] );
 
 	if ( searchFlags.indexOf( 'multi' ) === -1 ) {
 		searchProps.fetchData = remote;

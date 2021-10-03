@@ -27,7 +27,7 @@ class TotalsTest extends SearchRegex_Api_Test {
 
 	public function testSingleSource() {
 		$expected = [
-			'rows' => 105,
+			'rows' => 100,
 			'matched_rows' => 18,
 		];
 
@@ -42,7 +42,7 @@ class TotalsTest extends SearchRegex_Api_Test {
 
 	public function testMultipleSource() {
 		$expected = [
-			'rows' => 205,
+			'rows' => 200,
 			'matched_rows' => 25,
 		];
 
@@ -51,7 +51,7 @@ class TotalsTest extends SearchRegex_Api_Test {
 		$totals = new Totals();
 		$this->assertTrue( $totals->get_totals( $sources ) );
 
-		$this->assertEquals( 105, $totals->get_total_rows_for_source( 'posts' ) );
+		$this->assertEquals( 100, $totals->get_total_rows_for_source( 'posts' ) );
 		$this->assertEquals( 18, $totals->get_matched_rows_for_source( 'posts' ) );
 		$this->assertEquals( 100, $totals->get_total_rows_for_source( 'comment' ) );
 		$this->assertEquals( 7, $totals->get_matched_rows_for_source( 'comment' ) );

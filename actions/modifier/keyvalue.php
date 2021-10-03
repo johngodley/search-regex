@@ -80,7 +80,7 @@ class Modify_Keyvalue extends Modifier {
 		return $column === $this->schema->get_column() . '_key' || $column === $this->schema->get_column() . '_value' || $column === $this->schema->get_column();
 	}
 
-	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw ) {
+	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw, $save_mode ) {
 		$replace = [];
 
 		// Go through contexts and find the matching action that modifies it

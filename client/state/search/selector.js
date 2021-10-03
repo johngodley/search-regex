@@ -189,7 +189,7 @@ export function getDefaultSearch() {
 		perPage: 25,
 		filters: getDefaultFilters( 'posts' ),
 
-		action: '',
+		action: 'replace',
 		actionOption: [],
 
 		view: [],

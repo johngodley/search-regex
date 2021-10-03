@@ -21,7 +21,7 @@ class Modifier_String_Test extends SearchRegex_Api_Test {
 		$context = new Match_Context_Value( $value );
 		$column = new Match_Column( 1, 1, [ $context ], [] );
 
-		$results = $modifier->perform( 1, $value, $source[0], $column, [] );
+		$results = $modifier->perform( 1, $value, $source[0], $column, [], true );
 
 		return $results->get_contexts()[0];
 	}

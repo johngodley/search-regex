@@ -1,31 +1,24 @@
 /**
- * External dependencies
- */
-
-import React, { useState } from 'react';
-
-/** @typedef {import('./index.js').ChangeCallback} ChangeCallback */
-/** @typedef {import('state/preset/type.js').PresetTag} PresetTag */
-/** @typedef {import('react').SyntheticEvent} SyntheticEvent */
-
-/**
  * Replace all occurences of the tag in the phrase
  *
  * @param {string} phrase
  * @param {string} tag
  * @param {string} value
  */
-function replaceTags( phrase, tag, value ) {
+function replaceTag( phrase, tag, value ) {
 	const name = tag.replace( /[.*+\-?^${}()|[\]\\]/g, '\\$&' );
 
 	return phrase.replace( new RegExp( name, 'g' ), value );
 }
 
-function replaceSearchTags( search, tag, value ) {
+function replaceTags( phrase, tags, tagValues ) {
+	return tags.reduce( ( prev, current, index ) => replaceTag( prev, current.name, tagValues[ index ] ), phrase );
+}
+
+export default function replaceSearchTags( search, tags, tagValues ) {
 	return {
-		...search,
-		searchPhrase: replaceTags( search.searchPhrase, tag, value ),
-		replacement: replaceTags( search.replacement, tag, value ),
+		searchPhrase: replaceTags( search.searchPhrase, tags, tagValues ),
+		replacement: replaceTags( search.replacement, tags, tagValues ),
 		filters: search.filters.map( ( filter ) => ( {
 			...filter,
 			items: filter.items.map( ( item ) => ( {
@@ -33,7 +26,7 @@ function replaceSearchTags( search, tag, value ) {
 				...( item.value === undefined
 					? {}
 					: {
-							value: replaceTags( item.value, tag, value ),
+							value: replaceTags( item.value, tags, tagValues ),
 					  } ),
 			} ) ),
 		} ) ),
@@ -43,35 +36,10 @@ function replaceSearchTags( search, tag, value ) {
 						? item
 						: {
 								...item,
-								searchValue: replaceTags( item.searchValue, tag, value ),
-								replaceValue: replaceTags( item.replaceValue, tag, value ),
+								searchValue: replaceTags( item.searchValue, tags, tagValues ),
+								replaceValue: replaceTags( item.replaceValue, tags, tagValues ),
 						  }
 			  )
 			: search.actionOption,
 	};
 }
-
-/**
- * Tag
- * @param {object} props - Component props
- * @param {boolean} props.disabled - Disabled
- * @param {ChangeCallback} props.onChange
- * @param {PresetTag} props.tag
- */
-function Tag( props ) {
-	const { tag, onChange, search, disabled } = props;
-	const [ value, setValue ] = useState( '' );
-
-	/**
-	 * @param {SyntheticEvent} ev Event
-	 */
-	function updateTag( ev ) {
-		setValue( ev.target.value );
-
-		onChange( replaceSearchTags( search, tag.name, ev.target.value ) );
-	}
-
-	return <input type="text" value={ value } placeholder={ tag.title } onChange={ updateTag } disabled={ disabled } />;
-}
-
-export default Tag;

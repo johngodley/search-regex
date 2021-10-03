@@ -1,373 +1,373 @@
-# Translation of Plugins - Search Regex - Development (trunk) in Dutch (Belgium)
+# Translation of Plugins - Search Regex - Development (trunk) in Spanish (Spain)
 # This file is distributed under the same license as the Plugins - Search Regex - Development (trunk) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-19 08:38:29+0000\n"
+"PO-Revision-Date: 2021-07-25 07:54:25+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: GlotPress/3.0.0-alpha.2\n"
-"Language: nl_BE\n"
+"Language: es\n"
 "Project-Id-Version: Plugins - Search Regex - Development (trunk)\n"
 
 #: source/core/meta.php:24
 msgid "Serialized Value"
-msgstr ""
+msgstr "Valor de la serie"
 
 #: source/core/post.php:85
 msgid "Exclude drafts"
-msgstr ""
+msgstr "Excluir borradores"
 
 #: search-regex-strings.php:236
 msgid "Please review your data and try again."
-msgstr ""
+msgstr "Por favor, revisa tus datos e inténtalo de nuevo."
 
 #: search-regex-strings.php:235
 msgid "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request."
-msgstr ""
+msgstr "Ha habido un problema al hacer una solicitud a tu sitio. Esto podría indicar que has proporcionado datos que no coinciden con los requisitos o que plugin ha enviado una solicitud errónea."
 
 #: search-regex-strings.php:234
 msgid "Bad data"
-msgstr ""
+msgstr "Datos erróneos"
 
 #: search-regex-strings.php:218
 msgid "Your REST API is returning a 404 page. This is almost certainly an external plugin or server configuration issue."
-msgstr ""
+msgstr "Tu API REST está devolviendo una página 404. Es casi seguro que sea debido a un problema con un plugin externo o con la configuración del servidor."
 
 #: search-regex-strings.php:180
 msgid "2000 per page"
-msgstr ""
+msgstr "2000 por página"
 
 #: search-regex-strings.php:179
 msgid "1000 per page"
-msgstr ""
+msgstr "1000 por página"
 
 #: search-regex-strings.php:92
 msgid "Set a preset to use by default when Search Regex is loaded."
-msgstr ""
+msgstr "Establece un preajuste para usar por defecto cuando se cargue Search Regex."
 
 #: search-regex-strings.php:91
 msgid "No default preset"
-msgstr ""
+msgstr "Ningún preajuste por defecto"
 
 #: search-regex-strings.php:90
 msgid "Default Preset"
-msgstr ""
+msgstr "Preajuste por defecto"
 
 #: search-regex-strings.php:244
 msgid "Your admin pages are being cached. Clear this cache and try again. There may be multiple caches involved."
-msgstr ""
+msgstr "Tus páginas de administración están almacenadas en la caché. Vacía esta caché e inténtalo de nuevo. Puede haber varias cachés involucradas."
 
 #: search-regex-strings.php:241
 msgid "This is usually fixed by doing one of the following:"
-msgstr ""
+msgstr "Esto normalmente se corrige haciendo algo de lo siguiente:"
 
 #: search-regex-strings.php:240
 msgid "You are using an old or cached session"
-msgstr ""
+msgstr "Estás usando una sesión antigua o almacenada en la caché"
 
 #: search-regex-strings.php:214
 msgid "Debug Information"
-msgstr ""
+msgstr "Información de depuración"
 
 #: search-regex-strings.php:213
 msgid "Show debug"
-msgstr ""
+msgstr "Mostrar la depuración"
 
 #: search-regex-strings.php:230
 msgid "WordPress returned an unexpected message. This could be a PHP error from another plugin, or data inserted by your theme."
-msgstr ""
+msgstr "WordPress ha devuelto un mensaje inesperado. Esto podría ser un error de PHP de otro plugin o a datos insertados por tu tema."
 
 #: search-regex-strings.php:229
 msgid "Your WordPress REST API has been disabled. You will need to enable it to continue."
-msgstr ""
+msgstr "Tu API REST de WordPress ha sido desactivada. Tendrás que activarla para continuar."
 
 #: search-regex-strings.php:224
 msgid "Your REST API is being redirected. Please remove the redirection for the API."
-msgstr ""
+msgstr "Tu API REST está siendo redirigida. Por favor, elimina la redirección para la API."
 
 #: search-regex-strings.php:222
 msgid "A security plugin or firewall is blocking access. You will need to whitelist the REST API."
-msgstr ""
+msgstr "Un plugin de seguridad o un cortafuegos está bloqueando el acceso. Tendrás que poner a la API REST en lista blanca."
 
 #: search-regex-strings.php:221
 msgid "Your server configuration is blocking access to the REST API. You will need to fix this."
-msgstr ""
+msgstr "La configuración de tu servidor está bloqueando el acceso a la API REST. Tendrás que corregirla."
 
 #: search-regex-strings.php:220
 msgid "Check your {{link}}Site Health{{/link}} and fix any issues."
-msgstr ""
+msgstr "Comprueba tu {{link}}salud del sitio{{/link}} y corrige cualquier problema."
 
 #: search-regex-strings.php:219
 msgid "Can you access your {{api}}REST API{{/api}} without it redirecting? If not then you will need to fix any issues."
-msgstr ""
+msgstr "¿Puedes acceder a tu {{api}}API REST{{/api}} sin que redirija? Si no es así, tendrás que corregir cualquier problema."
 
 #: search-regex-strings.php:205
 msgid "Preset"
-msgstr ""
+msgstr "Preajuste"
 
 #: search-regex-strings.php:183
 msgid "Upload"
-msgstr ""
+msgstr "Subir"
 
 #: search-regex-strings.php:182
 msgid "Add File"
-msgstr ""
+msgstr "Añadir un archivo"
 
 #: search-regex-strings.php:171
 msgid "Preset saved"
-msgstr ""
+msgstr "Preajuste guardado"
 
 #: search-regex-strings.php:148
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Copiar al portapapeles"
 
 #: search-regex-strings.php:145
 msgid "Are you sure you want to delete this preset?"
-msgstr ""
+msgstr "¿Seguro que quieres borrar este preajuste?"
 
 #: search-regex-strings.php:144
 msgid "Locked fields"
-msgstr ""
+msgstr "Campos bloqueados"
 
 #: search-regex-strings.php:139
 msgid "For example, create tag {{code}}URL{{/code}} and title {{code}}Image URL{{/code}}. Your search could be {{code}}<img src=\"URL\">{{/code}}. When the preset is used it will ask the user for the {{code}}Image URL{{/code}} instead of the full search phrase."
-msgstr ""
+msgstr "Por ejemplo, crea la etiqueta {{code}}URL{{/code}} y el título {{code}}URL de la imagen{{/code}}. Tu búsqueda podría ser {{code}}<img src=\"URL\">{{/code}}. Cuando se use el preajuste, pedirá al usuario la {{code}}URL de la imagen{{/code}} en lugar de la frase completa de búsqueda."
 
 #: search-regex-strings.php:138
 msgid "A tag creates a custom input field. Insert the tag anywhere in the search or replace field and when the preset is used it will be replaced with a custom text field with the tag label."
-msgstr ""
+msgstr "Una etiqueta crea un campo de entrada personalizado. Inserta la etiqueta en cualquier parte del campo de búsqueda o de reemplazo y, cuando se use el preajuste, será reemplazada por un campo de texto personalizado con la etiqueta."
 
 #: search-regex-strings.php:137
 msgid "Enter tag which is used in the field"
-msgstr ""
+msgstr "Introduce la etiqueta que se usa en el campo"
 
 #: search-regex-strings.php:136
 msgid "Tag"
-msgstr ""
+msgstr "Etiqueta"
 
 #: search-regex-strings.php:135
 msgid "Enter tag title shown to user"
-msgstr ""
+msgstr "Introduce el título de la etiqueta mostrado al usuario"
 
 #: search-regex-strings.php:133
 msgid "Tags"
-msgstr ""
+msgstr "Etiquetas"
 
 #: search-regex-strings.php:132
 msgid "Locking a field removes it from the search form and prevents changes."
-msgstr ""
+msgstr "Bloquear un campo lo elimina del formulario de búsqueda y evita cambios."
 
 #: search-regex-strings.php:131
 msgid "Fields"
-msgstr ""
+msgstr "Campos"
 
 #: search-regex-strings.php:130
 msgid "Locked Fields"
-msgstr ""
+msgstr "Campos bloqueados"
 
 #: search-regex-strings.php:129
 msgid "Advanced preset"
-msgstr ""
+msgstr "Preajuste avanzado"
 
 #: search-regex-strings.php:128
 msgid "Describe the preset"
-msgstr ""
+msgstr "Describe el preajuste"
 
 #: search-regex-strings.php:127
 msgid "Preset Description"
-msgstr ""
+msgstr "Descripción del preajuste"
 
 #: search-regex-strings.php:126
 msgid "Give the preset a name"
-msgstr ""
+msgstr "Dar un nombre al preajuste"
 
 #: search-regex-strings.php:125
 msgid "Preset Name"
-msgstr ""
+msgstr "Nombre del preajuste"
 
 #: search-regex-strings.php:124
 msgid "Edit preset"
-msgstr ""
+msgstr "Editar el preajuste"
 
 #: search-regex-strings.php:123
 msgid "Results per page"
-msgstr ""
+msgstr "Resultados por página"
 
 #: search-regex-strings.php:122
 msgid "Source Flags"
-msgstr ""
+msgstr "Etiquetas de origen"
 
 #: search-regex-strings.php:117
 msgid "remove phrase"
-msgstr ""
+msgstr "eliminar la frase"
 
 #: search-regex-strings.php:116
 msgid "no phrase"
-msgstr ""
+msgstr "ninguna frase"
 
 #: search-regex-strings.php:115
 msgid "Import"
-msgstr ""
+msgstr "Importar "
 
 #: search-regex-strings.php:114
 msgid "Paste a single preset JSON."
-msgstr ""
+msgstr "Pegar un único preajuste JSON."
 
 #: search-regex-strings.php:113
 msgid "Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset."
-msgstr ""
+msgstr "Por favor, comprueba que tus datos JSON son un preajuste válido. Puede que los hayas copiado de forma incorrecta o que hayas pegado algo que no es un preajuste."
 
 #: search-regex-strings.php:112
 msgid "Unable to import preset"
-msgstr ""
+msgstr "No ha sido posible importar el preajuste"
 
 #: search-regex-strings.php:111
 msgid "Import preset from clipboard"
-msgstr ""
+msgstr "Importar un preajuste desde el portapapeles"
 
 #: search-regex-strings.php:110
 msgid "Done"
-msgstr ""
+msgstr "Hecho"
 
 #: search-regex-strings.php:109
 msgid "Uploaded %(total)d preset"
 msgid_plural "Uploaded %(total)d presets"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Subido %(total)d preajuste"
+msgstr[1] "Subidos %(total)d preajustes"
 
 #: search-regex-strings.php:108
 msgid "Importing"
-msgstr ""
+msgstr "Importando"
 
 #: search-regex-strings.php:107
 msgid "File selected"
-msgstr ""
+msgstr "Archivo seleccionado"
 
 #: search-regex-strings.php:106
 msgid "Click 'Add File' or drag and drop here."
-msgstr ""
+msgstr "Haz clic en «Añadir archivo» o arrástralo y suéltalo aquí."
 
 #: search-regex-strings.php:105
 msgid "Import a JSON file"
-msgstr ""
+msgstr "Importar un archivo JSON"
 
 #: search-regex-strings.php:104
 msgid "Import JSON"
-msgstr ""
+msgstr "Importar JSON"
 
 #: search-regex-strings.php:103
 msgid "Export JSON"
-msgstr ""
+msgstr "Exportar JSON"
 
 #: search-regex-strings.php:102
 msgid "Download presets!"
-msgstr ""
+msgstr "¡Descargar los preajustes!"
 
 #: search-regex-strings.php:101
 msgid "There are no presets"
-msgstr ""
+msgstr "No hay preajustes"
 
 #: search-regex-strings.php:100
 msgid "Flags"
-msgstr ""
+msgstr "Etiquetas"
 
 #: search-regex-strings.php:73 search-regex-strings.php:75
 msgid "Presets"
-msgstr ""
+msgstr "Preajustes"
 
 #: search-regex-strings.php:62
 msgid "If that did not help then {{strong}}create an issue{{/strong}} or send it in an {{strong}}email{{/strong}}."
-msgstr ""
+msgstr "Si eso no ha ayudado, {{strong}}crea una incidencia{{/strong}} o envíalo por {{strong}}correo electrónico{{/strong}}."
 
 #: search-regex-strings.php:61
 msgid "Please check the {{link}}support site{{/link}} before proceeding further."
-msgstr ""
+msgstr "Por favor, consulta el {{link}}sitio de soporte{{/link}} antes de seguir adelante."
 
 #: search-regex-strings.php:15
 msgid "Enter preset name"
-msgstr ""
+msgstr "Introducir el nombre del preajuste"
 
 #: search-regex-strings.php:14
 msgid "Enter a name for your preset"
-msgstr ""
+msgstr "Introduce un nombre para tu preajuste"
 
 #: search-regex-strings.php:13
 msgid "Saving Preset"
-msgstr ""
+msgstr "Guardando el preajuste"
 
 #: search-regex-strings.php:12
 msgid "Update current preset"
-msgstr ""
+msgstr "Actualizar el preajuste actual"
 
 #: search-regex-strings.php:11
 msgid "Save search as new preset"
-msgstr ""
+msgstr "Guardar la búsqueda como un nuevo preajuste"
 
 #: search-regex-strings.php:10
 msgid "No preset"
-msgstr ""
+msgstr "Ningún preajuste"
 
 #: search-regex-strings.php:9
 msgid "Saving preset"
-msgstr ""
+msgstr "Guardando el preajuste"
 
 #: models/source-manager.php:177
 msgid "Advanced"
-msgstr ""
+msgstr "Avanzado"
 
 #: models/source-manager.php:163
 msgid "Standard"
-msgstr ""
+msgstr "Estándar"
 
 #: search-regex-strings.php:186
 msgid "matched rows = %(searched)s, phrases = %(found)s"
-msgstr ""
+msgstr "filas coincidentes = %(searched)s, frases = %(found)s"
 
 #: search-regex-strings.php:149
 msgid "Please backup your data before making modifications."
-msgstr ""
+msgstr "Por favor, haz una copia de seguridad de sus datos antes de realizar modificaciones."
 
 #: search-regex-strings.php:89
 msgid "Show row actions as dropdown menu."
-msgstr ""
+msgstr "Mostrar las acciones de las filas como menú desplegable."
 
 #: search-regex-strings.php:48
 msgid "Replace Row"
-msgstr ""
+msgstr "Reemplazar la fila"
 
 #: search-regex-strings.php:47
 msgid "Delete Row"
-msgstr ""
+msgstr "Borrar la fila"
 
 #: search-regex-strings.php:46
 msgid "Inline Editor"
-msgstr ""
+msgstr "Editor integrado"
 
 #: search-regex-strings.php:45
 msgid "Edit Page"
-msgstr ""
+msgstr "Editar la página"
 
 #: search-regex-strings.php:27
 msgid "%s row."
 msgid_plural "%s rows."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s fila."
+msgstr[1] "%s filas."
 
 #: search-regex-strings.php:26
 msgid "%s phrase."
 msgid_plural "%s phrases."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s frase."
+msgstr[1] "%s frases."
 
 #: search-regex-strings.php:25
 msgid "Replace Information"
-msgstr ""
+msgstr "Reemplazar información"
 
 #: search-regex-strings.php:226
 msgid "An unknown error occurred."
-msgstr ""
+msgstr "Se ha producido un error desconocido"
 
 #: source/core/post.php:132
 msgid "GUID"
@@ -379,49 +379,49 @@ msgstr "Slug"
 
 #: source/core/post.php:129
 msgid "Excerpt"
-msgstr "Samenvatting"
+msgstr "Extracto"
 
 #: source/core/post.php:128
 msgid "Content"
-msgstr "Inhoud"
+msgstr "Contenido"
 
 #: source/core/post.php:84
 msgid "Search GUID"
-msgstr "Zoek GUID"
+msgstr "Buscar GUID"
 
 #: source/core/user.php:37
 msgid "Display name"
-msgstr "Schermnaam (getoond op site)"
+msgstr "Nombre visible"
 
 #: source/core/user.php:35
 msgid "Nicename"
-msgstr "Schermnaam (backend)"
+msgstr "Slug de usuario"
 
 #: source/core/options.php:20 source/core/meta.php:27
 msgid "Value"
-msgstr "Waarde"
+msgstr "Valor"
 
 #: source/core/comment.php:66
 msgid "Include spam comments"
-msgstr "Inclusief spam reacties"
+msgstr "Incluir los comentarios spam"
 
 #: source/core/comment.php:25
 msgid "Comment"
-msgstr "Reactie"
+msgstr "Comentario"
 
 #: search-regex-strings.php:98 source/core/comment.php:22
 #: source/core/options.php:19 source/core/meta.php:19
 msgid "Name"
-msgstr "Naam"
+msgstr "Nombre"
 
 #: source/plugin/redirection.php:82
 msgid "Search your redirects"
-msgstr "Zoek je redirects"
+msgstr "Busca en tus redirecciones"
 
 #: search-regex-strings.php:134 source/plugin/redirection.php:28
 #: source/core/post.php:130
 msgid "Title"
-msgstr "Titel"
+msgstr "Título"
 
 #: source/plugin/redirection.php:27 source/core/comment.php:24
 #: source/core/user.php:36
@@ -431,7 +431,7 @@ msgstr "URL"
 #. translators: 1: server PHP version. 2: required PHP version.
 #: search-regex.php:39
 msgid "Disabled! Detected PHP %1$s, need PHP %2$s+"
-msgstr "Uitgeschakeld! Gedetecteerd PHP %1$s, nodig PHP %2$s+"
+msgstr "¡Desactivado! Detectado PHP %1$s, se necesita PHP %2$s o superior"
 
 #: models/source-manager.php:184
 msgid "Plugins"
@@ -439,639 +439,635 @@ msgstr "Plugins"
 
 #: models/source-manager.php:170
 msgid "Specific Post Types"
-msgstr "Specifieke berichttypen"
+msgstr "Tipos de contenido específicos"
 
 #: models/source-manager.php:52
 msgid "Search all WordPress options."
-msgstr "Doorzoek alle WordPress opties"
+msgstr "Busca en todas las opciones de WordPress."
 
 #: models/source-manager.php:51
 msgid "WordPress Options"
-msgstr "WordPress opties"
+msgstr "Opciones de WordPress"
 
 #: models/source-manager.php:85
 msgid "Search user meta name and values."
-msgstr "Zoek gebruiker gegevens naam en waarden."
+msgstr "Buscar en meta y valores del usuario."
 
 #: models/source-manager.php:84
 msgid "User Meta"
-msgstr "Gebruiker Meta"
+msgstr "Meta de usuario"
 
 #: models/source-manager.php:45
 msgid "Search user email, URL, and name."
-msgstr "Zoek e-mail, URL en naam van gebruiker."
+msgstr "Buscar correo electrónico del usuario, URL y nombre."
 
 #: models/source-manager.php:44
 msgid "Users"
-msgstr "Gebruikers"
+msgstr "Usuarios"
 
 #: models/source-manager.php:78
 msgid "Search comment meta names and values."
-msgstr "Zoek reactie meta namen en waarden"
+msgstr "Busca los nombres y valores meta de los comentarios."
 
 #: models/source-manager.php:77
 msgid "Comment Meta"
-msgstr "Reactie Meta"
+msgstr "Meta de comentario"
 
 #: models/source-manager.php:38
 msgid "Search comment content, URL, and author, with optional support for spam comments."
-msgstr "Doorzoek reactie inhoud, URL en auteur, met optie voor spam reacties. "
+msgstr "Busca en el contenido de los comentarios, la URL y el autor, con compatibilidad opcional para los comentarios de spam."
 
 #: models/source-manager.php:37
 msgid "Comments"
-msgstr "Reacties"
+msgstr "Comentarios"
 
 #: models/source-manager.php:71
 msgid "Search post meta names and values."
-msgstr "Zoek bericht meta namen en waarden"
+msgstr "Buscar nombres y valores de las meta de las entradas."
 
 #: models/source-manager.php:70
 msgid "Post Meta"
-msgstr "Bericht meta"
+msgstr "Meta de la entrada"
 
 #: models/source-manager.php:21
 msgid "Search all posts, pages, and custom post types."
-msgstr "Doorzoek alle berichten, pagina's en aangepaste bericht typen."
+msgstr "Busca en todas las entradas, páginas y tipos de contenido personalizadas."
 
 #: models/source-manager.php:20
 msgid "All Post Types"
-msgstr "Alle berichttypen"
+msgstr "Todos los tipos de contenido"
 
 #: search-regex-admin.php:401
 msgid "Please enable JavaScript"
-msgstr "Schakel Javascript in"
+msgstr "Por favor, activar JavaScript"
 
 #: search-regex-admin.php:397
 msgid "Loading, please wait..."
-msgstr "Aan het laden..."
+msgstr "Cargando, por favor espere..."
 
 #: search-regex-admin.php:380
 msgid "Create Issue"
-msgstr "Meld een probleem"
+msgstr "Crear incidencia"
 
 #: search-regex-admin.php:377
 msgid "<code>SearchRegexi10n</code> is not defined. This usually means another plugin is blocking Search Regex from loading. Please disable all plugins and try again."
-msgstr "<code>SearchRegexi10n</code> is niet gedefinieerd. Dit betekent meestal dat een andere plugin Search Regex blokkeert om te laden. Zet alle plugins uit en probeer het opnieuw."
+msgstr "<code>SearchRegexi10n</code> no está definido. Esto generalmente significa que otro plugin está bloqueando la carga de Search Regex. Por favor, desactiva todos los plugins e inténtalo de nuevo."
 
 #: search-regex-admin.php:376
 msgid "If you think Search Regex is at fault then create an issue."
-msgstr "Denk je dat Search Regex het probleem veroorzaakt, maak dan een probleemrapport aan."
+msgstr ""
 
 #: search-regex-admin.php:375
 msgid "Please see the <a href=\"https://searchregex.com/support/problems/\">list of common problems</a>."
-msgstr "Bekijk hier de <a href=\"https://searchregex.com/support/problems/\">lijst van algemene problemen</a>."
+msgstr ""
 
 #: search-regex-admin.php:374
 msgid "Please note that Search Regex requires the WordPress REST API to be enabled. If you have disabled this then you won't be able to use Search Regex"
-msgstr "Search Regex vereist dat de WordPress REST API geactiveerd is. Heb je deze uitgezet, dan kun je Search Regex niet gebruiken."
+msgstr "Tenga en cuenta que Search Regex requiere que la API REST de WordPress esté activada. Si la ha desactivado, no podrá utilizar Search Regex."
 
 #: search-regex-admin.php:372
 msgid "Also check if your browser is able to load <code>search-regex.js</code>:"
-msgstr "Controleer ook of je browser <code>search-regex.js</code> kan laden:"
+msgstr "Comprueba también si tu navegador es capaz de cargar <code>search-regex.js</code>:"
 
 #: search-regex-admin.php:370
 msgid "This may be caused by another plugin - look at your browser's error console for more details."
-msgstr "Dit kan worden veroorzaakt door een andere plugin - bekijk je browser's foutconsole voor meer gegevens."
+msgstr ""
 
 #: search-regex-admin.php:369
 msgid "Unable to load Search Regex ☹️"
-msgstr "Laden van Search Regex ☹️ onmogelijk"
+msgstr "No ha sido posible cargar Search Regex ☹️"
 
 #: search-regex-admin.php:354
 msgid "Unable to load Search Regex"
-msgstr "Laden van Search Regex onmogelijk"
+msgstr "No ha sido posible cargar Search Regex"
 
 #. translators: 1: Expected WordPress version, 2: Actual WordPress version
 #: search-regex-admin.php:351
 msgid "Search Regex requires WordPress v%1$1s, you are using v%2$2s - please update your WordPress"
-msgstr "Search Regex heeft WordPress v%1$1s nodig, en je gebruikt v%2$2s - update je WordPress"
+msgstr ""
 
 #: search-regex-admin.php:255
 msgid "Search Regex Support"
-msgstr "Search Regex ondersteuning"
+msgstr "Soporte de Search Regex"
 
 #. translators: URL
 #: search-regex-admin.php:246
 msgid "You can find full documentation about using Search Regex on the <a href=\"%s\" target=\"_blank\">searchregex.com</a> support site."
-msgstr "Je kunt de volledige documentatie over het gebruik van Search Regex vinden op de <a href=\"%s\" target=\"_blank\">searchregex.com</a> support site."
+msgstr ""
 
 #: search-regex-admin.php:65
 msgid "Settings"
-msgstr "Instellingen"
+msgstr "Ajustes"
 
 #: search-regex-strings.php:88 search-regex-strings.php:212
 msgid "Actions"
-msgstr "Acties"
+msgstr "Acciones"
 
 #: search-regex-strings.php:211
 msgid "Matched Phrases"
-msgstr "Gevonden zoektermen"
+msgstr "Frases coincidentes"
 
 #: search-regex-strings.php:210
 msgid "Matches"
-msgstr "Gevonden"
+msgstr "Coincidencias"
 
 #: search-regex-strings.php:209
 msgid "Row ID"
-msgstr "Regel ID"
+msgstr "ID de fila"
 
 #: search-regex-strings.php:207
 msgid "Maximum number of page requests has been exceeded and the search stopped. Try to be more specific with your search term."
-msgstr "Het maximum aantal van pagina aanvragen is overschreven en zoeken is gestopt. Probeer een preciezere zoekterm te gebruiken."
+msgstr ""
 
 #: search-regex-strings.php:206
 msgid "No more matching results found."
-msgstr "Geen resultaten meer gevonden."
+msgstr "No se encontraron más resultados coincidentes."
 
 #: search-regex-strings.php:196
 msgid "Last page"
-msgstr "Laatste pagina"
+msgstr "Última página"
 
 #: search-regex-strings.php:194
 msgid "Page %(current)s of %(total)s"
-msgstr "Pagina %(current)s van %(total)s"
+msgstr "Página %(current)s de %(total)s"
 
 #: search-regex-strings.php:191
 msgid "Matches: %(phrases)s across %(rows)s database row."
 msgid_plural "Matches: %(phrases)s across %(rows)s database rows."
-msgstr[0] "Gevonden in: %(phrases)s in %(rows)s database regel."
-msgstr[1] "Gevonden in: %(phrases)s in %(rows)s database regels."
+msgstr[0] "Coincidencias: %(phrases)s en %(rows)s fila de bases de datos."
+msgstr[1] "Coincidencias: %(phrases)s en %(rows)s filas de bases de datos."
 
 #: search-regex-strings.php:190 search-regex-strings.php:195
 msgid "Next page"
-msgstr "Volgende pagina"
+msgstr "Página siguiente"
 
 #: search-regex-strings.php:189
 msgid "Progress %(current)s$"
-msgstr "Voortgang %(current)s$"
+msgstr "Progreso %(current)s$"
 
 #: search-regex-strings.php:188 search-regex-strings.php:193
 msgid "Prev page"
-msgstr "Vorige pagina"
+msgstr "Página anterior"
 
 #: search-regex-strings.php:187 search-regex-strings.php:192
 msgid "First page"
-msgstr "Eerste pagina"
+msgstr "Primera página"
 
 #: search-regex-strings.php:185
 msgid "%s database row in total"
 msgid_plural "%s database rows in total"
-msgstr[0] "%s database regel totaal"
-msgstr[1] "%s database regels totaal"
+msgstr[0] "%s fila de la base de datos en total"
+msgstr[1] "%s filas de la base de datos en total"
 
 #: search-regex-strings.php:178
 msgid "500 per page"
-msgstr "500 per pagina"
+msgstr "500 por página"
 
 #: search-regex-strings.php:177
 msgid "250 per page"
-msgstr "250 per pagina"
+msgstr "250 por página"
 
 #: search-regex-strings.php:176
 msgid "100 per page"
-msgstr "100 per pagina"
+msgstr "100 por página"
 
 #: search-regex-strings.php:175
 msgid "50 per page"
-msgstr "50 per pagina "
+msgstr "50 por página"
 
 #: search-regex-strings.php:174
 msgid "25 per page"
-msgstr "25 per pagina "
+msgstr "25 por página"
 
 #: search-regex-strings.php:173
 msgid "Ignore Case"
-msgstr "Negeer hoofdletter gebruik"
+msgstr "Ignorar mayúsculas/minúsculas"
 
 #: search-regex-strings.php:172
 msgid "Regular Expression"
-msgstr "Reguliere expressie"
+msgstr "Expresión regular"
 
 #: search-regex-strings.php:170
 msgid "Row updated"
-msgstr "Regel bijgewerkt"
+msgstr "Fila actualizada"
 
 #: search-regex-strings.php:169
 msgid "Row replaced"
-msgstr "Regel vervangen"
+msgstr "Fila reemplazada"
 
 #: search-regex-strings.php:168
 msgid "Row deleted"
-msgstr "Regel verwijderd"
+msgstr "Fila borrada"
 
 #: search-regex-strings.php:167
 msgid "Settings saved"
-msgstr "Instellingen opgeslagen"
+msgstr "Ajustes guardados"
 
 #: search-regex-strings.php:166 search-regex-admin.php:238
 msgid "{{link}}Source Flags{{/link}} - additional options for the selected source. For example, include post {{guid}}GUID{{/guid}} in the search."
-msgstr ""
-"{{link}}Zoekopties{{/link}} - aanvullende opties voor de selecteerde bron. Bijvoorbeeld\n"
-"om bericht {{guid}}GUID{{/guid}} toe te voegen aan de zoekterm."
+msgstr "{{link}}Banderas de búsqueda{{/link}} - añade opciones para seleccionar el origin. Por ejemplo, incluye la entrada {{guid}}GUID{{/guid}} en la búsqueda."
 
 #: search-regex-strings.php:165 search-regex-admin.php:251
 msgid "{{link}}Source{{/link}} - the source of data you wish to search. For example, posts, pages, or comments."
-msgstr "{{link}}Bron{{/link}} - de bron van de gegevens waarin je zoekt. Bijvoorbeeld: berichten, pagina's, reacties."
+msgstr ""
 
 #: search-regex-strings.php:164 search-regex-admin.php:250
 msgid "{{link}}Regular expression{{/link}} - a way of defining a pattern for text matching. Provides more advanced matches."
-msgstr "{{link}}Reguliere expressie{{/link}} - een manier om patronen aan maken om tekst mee te zoeken. Geeft meer geavanceerde zoekresultaten."
+msgstr "{{link}}Expresión regular{{/link}} - una forma de definir un patrón para la coincidencia de texto. Proporciona coincidencias más avanzadas."
 
 #: search-regex-strings.php:163 search-regex-admin.php:249
 msgid "{{link}}Search Flags{{/link}} - additional qualifiers for your search, to enable case insensitivity, and to enable regular expression support."
-msgstr "{{link}}Zoekopties{{/link}} - aanvullende opties voor je zoekterm, om hoofdlettergebruik te negeren en voor gebruik van reguliere expressies."
+msgstr "{{link}}Banderas de búsqueda{{/link}} - añade calificadores adicionales a tu búsqueda, para activar sensibilidad de mayúsculas y minúsculas, y el soporte de expresiones regulares."
 
 #: search-regex-strings.php:162 search-regex-admin.php:247
 msgid "The following concepts are used by Search Regex:"
-msgstr "De volgende concepten worden gebruikt door Search Regex:"
+msgstr "Search Regex utiliza los siguientes conceptos:"
 
 #: search-regex-strings.php:161
 msgid "Quick Help"
-msgstr "Snelle hulp"
+msgstr "Ayuda rápida"
 
 #: search-regex-strings.php:160
 msgid "Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, from the same author."
-msgstr "Vind je deze plugin leuk? Je kunt overwegen {{link}}Redirection{{/link}}, een plugin om omleidingen te beheren, van dezelfde auteur."
+msgstr "¿Te gusta este plugin? Quizás quieras considerar probar {{link}}Redirection{/link}}, un plugin para gestionar redirecciones, del mismo autor."
 
 #: search-regex-strings.php:159 source/plugin/redirection.php:81
 msgid "Redirection"
-msgstr "Omleiding"
+msgstr "Redirección"
 
 #: search-regex-strings.php:158
 msgid "If you want to submit information that you don't want in a public repository then send it directly via {{email}}email{{/email}} - include as much information as you can!"
-msgstr "Als je informatie wilt sturen, maar die je niet in de openbare repository wilt delen, stuur dan een {{email}}email{{/email}} direct aan mij - met zoveel informatie als mogelijk!"
+msgstr ""
 
 #: search-regex-strings.php:157
 msgid "Please note that any support is provide on as-time-is-available basis and is not guaranteed. I do not provide paid support."
-msgstr "Support wordt gegeven op basis van beschikbare tijd en is niet gegarandeerd. Ik geef geen betaalde ondersteuning."
+msgstr ""
 
 #: search-regex-strings.php:156
 msgid "If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide."
-msgstr "Wil je een bug doorgeven, lees dan de {{report}}Reporting Bugs{{/report}} gids."
+msgstr ""
 
 #: search-regex-strings.php:155
 msgid "Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}."
-msgstr "Volledige documentatie voor Search Regex kan je vinden op {{site}}https://searchregex.com{{/site}}."
+msgstr "La documentación completa para Search Regex se puede encontrar en el {{site}}https://searchregex.com{{/site}}."
 
 #: search-regex-strings.php:154
 msgid "Need more help?"
-msgstr "Meer hulp nodig?"
+msgstr "¿Necesitas más ayuda?"
 
 #: search-regex-strings.php:204
 msgid "Results"
-msgstr "Resultaten"
+msgstr "Resultados"
 
 #: search-regex-strings.php:203
 msgid "Source Options"
-msgstr "Bron opties"
+msgstr "Opciones de la fuente"
 
 #: search-regex-strings.php:121 search-regex-strings.php:202
 #: search-regex-strings.php:208
 msgid "Source"
-msgstr "Bron"
+msgstr "Fuente"
 
 #: search-regex-strings.php:200 search-regex-strings.php:201
 msgid "Enter global replacement text"
-msgstr "Term voor vervangen invoeren"
+msgstr ""
 
 #: search-regex-strings.php:120 search-regex-strings.php:198
 msgid "Search Flags"
-msgstr "Zoek opties"
+msgstr "Buscar banderas"
 
 #: search-regex-strings.php:53
 msgid "Enter search phrase"
-msgstr "Zoekterm invoeren"
+msgstr "Introduce la frase a buscar"
 
 #: search-regex-strings.php:152
 msgid "Replace All"
-msgstr "Alles vervangen"
+msgstr "Reemplazar todo"
 
 #: search-regex-strings.php:99 search-regex-strings.php:118
 #: search-regex-strings.php:142 search-regex-strings.php:151
 #: search-regex-strings.php:197
 msgid "Search"
-msgstr "Zoeken"
+msgstr "Buscar"
 
 #: search-regex-strings.php:150
 msgid "Search and replace information in your database."
-msgstr "Zoek en vervang informatie in je database."
+msgstr "Busca y reemplaza la información en tu base de datos."
 
 #: search-regex-strings.php:95
 msgid "Update"
-msgstr "Bijwerken"
+msgstr "Actualizar"
 
 #: search-regex-strings.php:94
 msgid "How Search Regex uses the REST API - don't change unless necessary"
-msgstr "Hoe Search Regex de REST API gebruikt - niet veranderen als het niet noodzakelijk is"
+msgstr "Cómo utiliza Search Regex la API REST - no lo cambies salvo que sea necesario"
 
 #: search-regex-strings.php:93
 msgid "REST API"
-msgstr "REST API"
+msgstr "API REST"
 
 #: search-regex-strings.php:87
 msgid "I'm a nice person and I have helped support the author of this plugin"
-msgstr "Ik ben een aardig persoon en ik heb de auteur van deze plugin geholpen met ondersteuning"
+msgstr "Soy una buena persona y he ayudado al autor de este plugin"
 
 #: search-regex-strings.php:86
 msgid "Relative REST API"
-msgstr "Relatieve REST API"
+msgstr "API REST relativa"
 
 #: search-regex-strings.php:85
 msgid "Raw REST API"
-msgstr "Raw REST API"
+msgstr "Raw API REST"
 
 #: search-regex-strings.php:84
 msgid "Default REST API"
-msgstr "Standaard REST API"
+msgstr "REST API por defecto"
 
 #: search-regex-strings.php:83
 msgid "Plugin Support"
-msgstr "Plugin ondersteuning"
+msgstr "Soporte del plugin"
 
 #: search-regex-strings.php:82
 msgid "Support 💰"
-msgstr "Ondersteuning 💰"
+msgstr "Soporte 💰"
 
 #: search-regex-strings.php:81
 msgid "You get useful software and I get to carry on making it better."
-msgstr "Je krijgt goed bruikbare software en ik kan doorgaan met het verbeteren ervan."
+msgstr "Tú obtienes un software útil y yo sigo mejorándolo."
 
 #: search-regex-strings.php:80
 msgid "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}."
-msgstr "Search Regex is gratis te gebruiken - het leven is life is wonderbaarlijk en verrukkelijk! Het kostte me veel tijd en moeite om dit te ontwikkelen. Je kunt verdere ontwikkeling ondersteunen met het doen van {{strong}}een kleine donatie{{/strong}}."
+msgstr ""
 
 #: search-regex-strings.php:79
 msgid "I'd like to support some more."
-msgstr "Ik wil graag meer bijdragen."
+msgstr "Me gustaría apoyar un poco más."
 
 #: search-regex-strings.php:78
 msgid "You've supported this plugin - thank you!"
-msgstr "Je hebt deze plugin gesteund - dankjewel!"
+msgstr "Has apoyado este plugin - ¡gracias!"
 
 #: search-regex-strings.php:60
 msgid "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details."
-msgstr "Werkt dit niet, open dan je browser's foutconsole en maak een {{link}}nieuw probleemrapport{{/link}} aan met alle gegevens."
+msgstr "Si eso no ayuda, abre la consola de errores de tu navegador y crea {{link}}una nueva incidencia{{/link}} con los detalles."
 
 #: search-regex-strings.php:59 search-regex-admin.php:371
 msgid "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache."
-msgstr "Als je gebruik maakt van een pagina caching plugin of dienst (CloudFlare, OVH, etc.), dan kan je ook proberen om die cache leeg te maken."
+msgstr ""
 
 #: search-regex-strings.php:58
 msgid "Search Regex is not working. Try clearing your browser cache and reloading this page."
-msgstr "Search Regex werkt niet. Probeer je browser cache leeg te maken en deze pagina opnieuw te laden."
+msgstr "Search Regex no está funcionando. Prueba a vaciar la caché de tu navegador y recargar esta página."
 
 #: search-regex-strings.php:57
 msgid "clearing your cache."
-msgstr "je cache opschonen."
+msgstr "vaciando su caché."
 
 #: search-regex-strings.php:56
 msgid "If you are using a caching system such as Cloudflare then please read this: "
-msgstr "Gebruik je een caching systeem zoals Cloudflare, lees dan dit:"
+msgstr ""
 
 #: search-regex-strings.php:55
 msgid "Please clear your browser cache and reload this page."
-msgstr "Maak je browser cache leeg en laad deze pagina nogmaals."
+msgstr ""
 
 #: search-regex-strings.php:54
 msgid "Cached Search Regex detected"
-msgstr "Gecachede Search Regex gevonden"
+msgstr "Se ha detectado Search Regex en la caché"
 
 #: search-regex-strings.php:52
 msgid "Show %s more"
 msgid_plural "Show %s more"
-msgstr[0] "Nog %s weergeven"
-msgstr[1] "Nog %s weergeven"
+msgstr[0] "Mostrar %s más"
+msgstr[1] "Mostrar %s más"
 
 #: search-regex-strings.php:51
 msgid "Maximum number of matches exceeded and hidden from view. These will be included in any replacements."
-msgstr ""
-"Het maximum aantal zoekresultaten is overschreden en niet zichtbaar. Deze zullen \n"
-"worden gebruikt bij vervangingen."
+msgstr "Se ha superado el número máximo de coincidencias y se ha ocultado a la vista. Estos se incluirán en cualquier reemplazo."
 
 #: search-regex-strings.php:50
 msgid "Replace %(count)s match."
 msgid_plural "Replace %(count)s matches."
-msgstr[0] "Vervang %(count)s gevonden."
-msgstr[1] "Vervang %(count)s gevonden."
+msgstr[0] "Reemplazar %(count)s coincidencia."
+msgstr[1] "Reemplazar %(count)s coincidencias."
 
 #: search-regex-strings.php:147
 msgid "Delete"
-msgstr "Verwijderen"
+msgstr "Borrar"
 
 #: search-regex-strings.php:146
 msgid "Edit"
-msgstr "Bewerken"
+msgstr "Editar"
 
 #: search-regex-strings.php:49
 msgid "Replacement for all matches in this row"
-msgstr "Vervanging voor alle gevonden zoektermen in deze regel"
+msgstr "Reemplazar todos las coincidencias de esta fila"
 
 #: search-regex-strings.php:44
 msgid "Check Again"
-msgstr "Opnieuw controleren"
+msgstr "Comprobar de nuevo"
 
 #: search-regex-strings.php:43
 msgid "Testing - %s$"
-msgstr "Aan het testen - %s$"
+msgstr "Pruebas - %s$"
 
 #: search-regex-strings.php:42
 msgid "Show Problems"
-msgstr "Toon problemen"
+msgstr "Mostrar problemas"
 
 #: search-regex-strings.php:41
 msgid "Summary"
-msgstr "Samenvatting"
+msgstr "Resumen"
 
 #: search-regex-strings.php:40
 msgid "You are using a broken REST API route. Changing to a working API should fix the problem."
-msgstr "Je gebruikte een defecte REST API route. Wijziging naar een werkende API zou het probleem moeten oplossen."
+msgstr ""
 
 #: search-regex-strings.php:39
 msgid "Your REST API is not working and the plugin will not be able to continue until this is fixed."
-msgstr "Je REST API werkt niet en de plugin kan niet verder voordat dit is opgelost."
+msgstr ""
 
 #: search-regex-strings.php:38
 msgid "There are some problems connecting to your REST API. It is not necessary to fix these problems and the plugin is able to work."
-msgstr "Er zijn enkele problemen in de verbinding met je REST API. Het is niet nodig om deze problemen op te lossen en de plugin werkt gewoon."
+msgstr ""
 
 #: search-regex-strings.php:37
 msgid "Unavailable"
-msgstr "Niet beschikbaar"
+msgstr "No disponible"
 
 #: search-regex-strings.php:36
 msgid "Not working but fixable"
-msgstr "Werkt niet, maar te repareren"
+msgstr "No funciona pero se puede corregir"
 
 #: search-regex-strings.php:35
 msgid "Working but some issues"
-msgstr "Werkt, maar met problemen"
+msgstr "Funciona pero tiene algunos problemas"
 
 #: search-regex-strings.php:34
 msgid "Good"
-msgstr "Goed"
+msgstr "Bien"
 
 #: search-regex-strings.php:33
 msgid "Current API"
-msgstr "Huidige API"
+msgstr "API actual"
 
 #: search-regex-strings.php:32
 msgid "Switch to this API"
-msgstr "Gebruik deze API"
+msgstr "Cambiar a esta API"
 
 #: search-regex-strings.php:31
 msgid "Hide"
-msgstr "Verberg"
+msgstr "Ocultar"
 
 #: search-regex-strings.php:30
 msgid "Show Full"
-msgstr "Toon volledig"
+msgstr "Mostrar todo"
 
 #: search-regex-strings.php:29
 msgid "Working!"
-msgstr "Werkt!"
+msgstr "¡Funcionando!"
 
 #: search-regex-strings.php:28
 msgid "Finished!"
-msgstr "Klaar!"
+msgstr "¡Finalizado!"
 
 #: search-regex-strings.php:24
 msgid "Replace progress"
-msgstr "Voortgang vervangen"
+msgstr "Reemplazar progreso"
 
 #: search-regex-strings.php:17 search-regex-strings.php:23
 #: search-regex-strings.php:141 search-regex-strings.php:153
 #: search-regex-strings.php:184
 msgid "Cancel"
-msgstr "Annuleren"
+msgstr "Cancelar"
 
 #: search-regex-strings.php:22 search-regex-strings.php:119
 #: search-regex-strings.php:143 search-regex-strings.php:199
 msgid "Replace"
-msgstr "Vervangen"
+msgstr "Reemplazar"
 
 #: search-regex-strings.php:21
 msgid "Search phrase will be removed"
-msgstr "Zoekterm zal worden verwijderd"
+msgstr "Se eliminará la frase de búsqueda"
 
 #: search-regex-strings.php:20
 msgid "Remove"
-msgstr "Verwijderen"
+msgstr "Eliminar"
 
 #: search-regex-strings.php:19
 msgid "Multi"
-msgstr "Meerdere"
+msgstr "Multi"
 
 #: search-regex-strings.php:18
 msgid "Single"
-msgstr "Enkel"
+msgstr "Individual"
 
 #: search-regex-strings.php:181
 msgid "View notice"
-msgstr "Toon bericht"
+msgstr "Ver aviso"
 
 #: search-regex-strings.php:8
 msgid "Replace single phrase."
-msgstr "Vervang enkele zoekterm"
+msgstr "Reemplaza una sola frase."
 
 #: search-regex-strings.php:7
 msgid "Replacement for this match"
-msgstr "Vervanging voor deze gevonden zoekterm"
+msgstr "Reemplazo para esta coincidencia"
 
 #: search-regex-strings.php:72 search-regex-strings.php:77
 msgid "Support"
-msgstr "Support"
+msgstr "Soporte"
 
 #: search-regex-strings.php:71 search-regex-strings.php:76
 msgid "Options"
-msgstr "Opties"
+msgstr "Opciones"
 
 #: search-regex-strings.php:74
 msgid "Search & Replace"
-msgstr "Zoek en vervang"
+msgstr "Buscar y reemplazar"
 
 #: search-regex-strings.php:69
 msgid "If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues."
-msgstr "Als je WordPress 5.2 of nieuwer gebruikt, kijk dan bij {{link}}Sitediagnose{{/link}} en los de problemen op."
+msgstr "Si estás usando WordPress 5.2 o superior, revisa la {{link}}salud del sitio{{/link}} y resuelve cualquier problema."
 
 #: search-regex-strings.php:68
 msgid "{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems."
-msgstr "{{link}}Zet andere plugins tijdelijk uit!{{/link}} Dit lost heel vaak problemen op."
+msgstr ""
 
 #: search-regex-strings.php:67
 msgid "{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches."
-msgstr "{{link}}Caching software{{/link}}, en zeker Cloudflare, kunnen het verkeerde cachen. Probeer alle cache te verwijderen."
+msgstr "{{link}}El software de almacenamiento en caché{/link}}, en particular Cloudflare, puede almacenar en caché algo incorrecto. Prueba a borrar todas las cachés."
 
 #: search-regex-strings.php:66
 msgid "What do I do next?"
-msgstr "Wat moet ik nu doen?"
+msgstr "¿Qué hago ahora?"
 
 #: search-regex-strings.php:237 search-regex-strings.php:238
 #: search-regex-strings.php:239
 msgid "Something went wrong 🙁"
-msgstr "Er is iets fout gegaan 🙁"
+msgstr "Algo ha ido mal 🙁"
 
 #: search-regex-strings.php:243
 msgid "Log out, clear your browser cache, and log in again - your browser has cached an old session."
-msgstr "Log uit, wis de browsercache en log opnieuw in - je browser heeft een oude sessie in de cache opgeslagen."
+msgstr "Sal, vacía la caché de tu navegador y vuelve a acceder - tu navegador ha guardado en la caché una sesión antigua."
 
 #: search-regex-strings.php:242
 msgid "Reload the page - your current session is old."
-msgstr "Herlaad de pagina - je huidige sessie is oud."
+msgstr ""
 
 #: search-regex-strings.php:65
 msgid "Include these details in your report along with a description of what you were doing and a screenshot."
-msgstr "Voeg deze gegevens toe aan je melding, samen met een beschrijving van wat je deed en een schermafbeelding."
+msgstr "Incluye estos detalles en tu informe junto con una descripción de lo que estabas haciendo y una captura de pantalla."
 
 #: search-regex-strings.php:64 search-regex-strings.php:97
 #: source/core/comment.php:23
 msgid "Email"
-msgstr "E-mail"
+msgstr "Correo eletrónico"
 
 #: search-regex-strings.php:63 search-regex-strings.php:96
 msgid "Create An Issue"
-msgstr "Meld een probleem"
+msgstr "Crear una incidencia"
 
 #: search-regex-strings.php:6
 msgid "Close"
-msgstr "Sluiten"
+msgstr "Cerrar"
 
 #: search-regex-strings.php:5 search-regex-strings.php:16
 #: search-regex-strings.php:140
 msgid "Save"
-msgstr "Opslaan"
+msgstr "Guardar"
 
 #: search-regex-strings.php:4
 msgid "Editing %s"
-msgstr "Aan het bewerken %s"
+msgstr "Editando %s "
 
 #: search-regex-strings.php:232
 msgid "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy."
-msgstr "Niet mogelijk om een verzoek te doen vanwege browser beveiliging. Dit gebeurt meestal omdat WordPress en de site URL niet overeenkomen, of het verzoek wordt geblokkeerd door het CORS beleid van je site."
+msgstr "No se puede realizar la solicitud debido a la seguridad del navegador. Esto suele ocurrir porque los ajustes de WordPress y de la URL del sitio son inconsistentes o la política de intercambio de recursos de origen cruzado («CORS») de tu sitio ha bloqueado la solicitud."
 
 #: search-regex-strings.php:231
 msgid "Possible cause"
-msgstr "Mogelijke oorzaak"
+msgstr "Causa posible"
 
 #: search-regex-strings.php:227
 msgid "This could be a security plugin, or your server is out of memory or has an external error. Please check your server error log"
-msgstr "Dit kan een beveiliging plugin zijn. Of je server heeft geen geheugen meer of heeft een externe fout. Bekijk de error log op je server"
+msgstr ""
 
 #: search-regex-strings.php:225
 msgid "Your server has rejected the request for being too big. You will need to reconfigure it to continue."
-msgstr "Je server heeft de aanvraag geweigerd omdat het te groot is. Je moet het aanpassen om door te gaan."
+msgstr "Tu servidor rechazó la petición por ser demasiado grande. Necesitarás volver a configurarla para continuar."
 
 #: search-regex-strings.php:216
 msgid "Your REST API is probably being blocked by a security plugin. Please disable this, or configure it to allow REST API requests."
-msgstr "Je REST API wordt waarschijnlijk geblokkeerd door een beveiliging plugin. Zet de plugin uit, of configureer hem zodat hij REST API verzoeken toestaat."
+msgstr ""
 
 #: search-regex-strings.php:217 search-regex-strings.php:223
 #: search-regex-strings.php:228 search-regex-strings.php:233
 msgid "Read this REST API guide for more information."
-msgstr "Lees deze REST API gids voor meer informatie."
+msgstr "Lea esta guía de la API REST para obtener más información."
 
 #: search-regex-strings.php:215
 msgid "WordPress did not return a response. This could mean an error occurred or that the request was blocked. Please check your server error_log."
-msgstr "WordPress heeft geen reactie gegeven. Dit kan betekenen dat er een fout is opgetreden of dat het verzoek werd geblokkeerd. Bekijk je server foutlog."
+msgstr ""
 
 #. Author of the plugin
 msgid "John Godley"
@@ -1079,7 +1075,7 @@ msgstr "John Godley"
 
 #. Description of the plugin
 msgid "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support"
-msgstr "Voeg zoek en vervang functionaliteit toe in berichten, pagina's, reacties en meta-data, met volledige ondersteuning van reguliere expressies."
+msgstr "Añade la funcionalidad de búsqueda y reemplazo en entradas, páginas, comentarios y metadatos, con un soporte completo de expresiones regulares."
 
 #. Plugin URI of the plugin
 msgid "https://searchregex.com/"

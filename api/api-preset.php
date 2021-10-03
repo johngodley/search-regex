@@ -184,17 +184,17 @@ class Search_Regex_Api_Preset extends Search_Regex_Api_Route {
 			$this->get_route( WP_REST_Server::EDITABLE, 'route_create', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/preset/(?P<id>[A-Za-z0-9]+)', [
+		register_rest_route( $namespace, '/preset/import', [
+			$this->get_route( WP_REST_Server::EDITABLE, 'route_import', [ $this, 'permission_callback' ] ),
+		] );
+
+		register_rest_route( $namespace, '/preset/id/(?P<id>[A-Za-z0-9]+)', [
 			'args' => $this->get_preset_params(),
 			$this->get_route( WP_REST_Server::EDITABLE, 'route_update', [ $this, 'permission_callback' ] ),
 		] );
 
-		register_rest_route( $namespace, '/preset/(?P<id>[A-Za-z0-9]+)/delete', [
+		register_rest_route( $namespace, '/preset/id/(?P<id>[A-Za-z0-9]+)/delete', [
 			$this->get_route( WP_REST_Server::EDITABLE, 'route_delete', [ $this, 'permission_callback' ] ),
-		] );
-
-		register_rest_route( $namespace, '/preset/import', [
-			$this->get_route( WP_REST_Server::EDITABLE, 'route_import', [ $this, 'permission_callback' ] ),
 		] );
 	}
 

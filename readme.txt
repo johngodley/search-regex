@@ -117,6 +117,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 - Major update with many, many, new features
 - Advanced searches with fully customisable filters that can be combined together with AND and OR logic
 - Search any WordPress table, including posts, comments, users, meta-data, and options
+- Search any column, including text, numeric, and date
 - Can be used as a general-purpose data viewer and data updater
 - Export rows to CSV and SQL
 - Mass delete matching rows

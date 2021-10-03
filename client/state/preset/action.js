@@ -105,10 +105,9 @@ export const uploadPreset = ( file ) => ( dispatch ) => {
 export const importClipboard = ( text ) => ( dispatch ) => {
 	try {
 		const json = JSON.parse( text );
+		const presets = Array.isArray( json ) ? json : [ json ];
 
-		if ( json.name && json.search ) {
-			return createPreset( dispatch, json.name, json.search );
-		}
+		return uploadPreset( new File( [ new Blob( [ JSON.stringify( presets ) ] ) ], 'preset.json' ) )( dispatch );
 	} catch ( error ) {
 		return dispatch( { type: PRESET_CLIPBOARD_FAIL, error, errorContext: text } );
 	}

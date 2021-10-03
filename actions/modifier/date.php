@@ -108,7 +108,7 @@ class Modify_Date extends Modifier {
 		return mktime( $hour, $minute, $second, $month, $day, $year );
 	}
 
-	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw ) {
+	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw, $save_mode ) {
 		// Go through contexts and find the matching action that modifies it
 		if ( count( $column->get_contexts() ) === 1 ) {
 			$context = $column->get_contexts()[0];

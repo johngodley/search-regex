@@ -103,7 +103,7 @@ class Modify_Member extends Modifier {
 		return array_diff( $action_values, $column_values );
 	}
 
-	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw ) {
+	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw, $save_mode ) {
 		$action_values = $this->values;
 		$column_values = array_map(
 			function( $context ) {

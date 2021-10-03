@@ -36,8 +36,7 @@ export function getActions( hasGlobalSearch, hasSingleSource ) {
 		{
 			label: __( 'Global Text Replace' ),
 			value: 'replace',
-			desc: __( 'Globally replace the global search values.' ),
-			disabled: ! hasGlobalSearch,
+			desc: __( 'Replace the global search values.' ),
 		},
 		{
 			label: __( 'Modify Matches' ),

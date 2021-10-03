@@ -99,20 +99,8 @@ function getTotals( newTotals, existingTotals, totalRows ) {
 	};
 }
 
-function orderFilters( item1, item2 ) {
-	if ( item1.type < item2.type ) {
-		return -1;
-	}
-
-	if ( item1.type > item2.type ) {
-		return 1;
-	}
-
-	return 0;
-}
-
 function canResetResults( state, searchValue ) {
-	if ( searchValue.replacement !== undefined ) {
+	if ( searchValue.replacement !== undefined && searchValue.replacement === state.replacement ) {
 		return false;
 	}
 
