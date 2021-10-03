@@ -60,6 +60,16 @@ class Matched_Text {
 	}
 
 	/**
+	 * Set the replacement text for this match
+	 *
+	 * @param string $replacement Replacement text.
+	 * @return void
+	 */
+	public function set_replacement( $replacement ) {
+		$this->replacement = $replacement;
+	}
+
+	/**
 	 * Add a regular expression capture value
 	 *
 	 * @param String $capture Captured value.

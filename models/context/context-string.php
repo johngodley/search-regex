@@ -227,4 +227,13 @@ class Match_Context_String extends Match_Context {
 
 		return false;
 	}
+
+	/**
+	 * Get matches from this context
+	 *
+	 * @return Matched_Text[]
+	 */
+	public function get_matches() {
+		return $this->matches;
+	}
 }

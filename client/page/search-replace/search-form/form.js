@@ -282,7 +282,6 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 			{ preset && (
 				<TaggedPhrases
 					disabled={ isBusy }
-					// XXX its preset.search, not the actual search
 					search={ preset.search }
 					values={ search }
 					onChange={ ( value ) => onSetSearch( value ) }

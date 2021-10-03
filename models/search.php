@@ -222,6 +222,10 @@ class Search {
 				}
 
 				if ( $result ) {
+					if ( $action->should_save() ) {
+						$this->save_changes( $result );
+					}
+
 					$results[] = $result;
 				}
 			}

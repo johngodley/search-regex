@@ -105,7 +105,7 @@ class Search_Filter_String extends Search_Filter_Item {
 	 * @param Search_Flags  $flags Flags.
 	 * @return list<Match_Context>
 	 */
-	public function get_match( Search_Source $source, Action $action, $logic, $original_value, $row_value, Search_Flags $flags ) {
+	public function get_match( Search_Source $source, Action $action, $logic, $original_value, $row_value, Search_Flags $flags, $replacements = [] ) {
 		if ( $original_value ) {
 			$flag_copy = Search_Flags::copy( $flags );
 			$value = $original_value;
@@ -128,7 +128,7 @@ class Search_Filter_String extends Search_Filter_Item {
 			}
 
 			// Do we have a match?
-			$contexts = Matched_Text::get_all( $value, $flag_copy, [], $row_value );
+			$contexts = Matched_Text::get_all( $value, $flag_copy, $replacements, $row_value );
 			if ( count( $contexts ) > 0 ) {
 				if ( $logic === 'notcontains' || $logic === 'notequals' ) {
 					return $this->get_unmatched_context( $source, $row_value );

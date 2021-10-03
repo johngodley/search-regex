@@ -142,7 +142,7 @@ class Modify_String extends Modifier {
 		return preg_replace( $pattern, $replace, $value );
 	}
 
-	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw ) {
+	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw, $save_mode ) {
 		if ( $this->operation === 'set' ) {
 			// Identical - just return value
 			if ( $this->replace_value === $row_value ) {
@@ -154,9 +154,11 @@ class Modify_String extends Modifier {
 			 */
 			$value = apply_filters( 'searchregex_text', $this->replace_value, $row_id, $row_value, $raw, $source->get_schema_item() );
 
-			$replacement = new Match_Context_Replace( $row_value );
-			$replacement->set_replacement( $value );
-			$column->set_contexts( [ $replacement ] );
+			if ( $value !== $row_value ) {
+				$replacement = new Match_Context_Replace( $row_value );
+				$replacement->set_replacement( $value );
+				$column->set_contexts( [ $replacement ] );
+			}
 
 			return $column;
 		}
@@ -170,17 +172,34 @@ class Modify_String extends Modifier {
 				return $column;
 			}
 
-			$global_replace = $this->replace_all( $this->search_value, $this->replace_value, $row_value );
+			// When not saving we need to return the individual replacements. If saving then we want to return the whole text
+			if ( $save_mode ) {
+				$global_replace = $this->replace_all( $this->search_value, $this->replace_value, $row_value );
 
-			/**
-			 * @psalm-suppress TooManyArguments
-			 */
-			$value = apply_filters( 'searchregex_text', $global_replace, $row_id, $row_value, $raw, $source->get_schema_item() );
+				/**
+				 * @psalm-suppress TooManyArguments
+				 */
+				$value = apply_filters( 'searchregex_text', $global_replace, $row_id, $row_value, $raw, $source->get_schema_item() );
 
-			// Global replace
-			$replacement = new Match_Context_Replace( $row_value );
-			$replacement->set_replacement( $value );
-			$column->set_contexts( [ $replacement ] );
+				// Global replace
+				if ( $row_value !== $value ) {
+					$replacement = new Match_Context_Replace( $row_value );
+					$replacement->set_replacement( $value );
+					$column->set_contexts( [ $replacement ] );
+				}
+
+				return $column;
+			}
+
+			$replacements = $this->get_replace_positions( $row_value );
+
+			$filter = new Search_Filter_String( [ 'value' => $this->search_value, 'logic' => 'contains', 'flags' => $this->search_flags->to_json() ], $this->schema );
+			$matches = $filter->get_match( $source, new Action_Nothing(), 'contains', $this->search_value, $row_value, $this->search_flags, $replacements );
+
+			// If we replaced anything then update the context with our new matches, otherwise just return whatever we have
+			if ( ( count( $matches ) === 1 && ! $matches[0] instanceof Match_Context_Value ) || count( $matches ) > 1 ) {
+				$column->set_contexts( $matches );
+			}
 
 			return $column;
 		}
@@ -199,9 +218,11 @@ class Modify_String extends Modifier {
 				$value = apply_filters( 'searchregex_text', $match->replace_at_position( $row_value ), $row_id, $row_value, $raw, $source->get_schema_item() );
 
 				// Need to replace the match with the result in the raw data
-				$context = new Match_Context_Replace( $row_value );
-				$context->set_replacement( $value );
-				$column->set_contexts( [ $context ] );
+				if ( $row_value !== $value ) {
+					$context = new Match_Context_Replace( $row_value );
+					$context->set_replacement( $value );
+					$column->set_contexts( [ $context ] );
+				}
 
 				return $column;
 			}

@@ -91,6 +91,7 @@ function replaceListColumn( context, replacement, schema ) {
 		}
 
 		if ( replacement.matchesOnly ) {
+			console.log( context );
 			return {
 				...context,
 				matches: context.matches.map( ( match ) => ( {

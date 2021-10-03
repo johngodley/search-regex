@@ -113,7 +113,7 @@ class Action_Modify extends Action {
 					$value = $action_column->get_row_data( $row );
 
 					if ( $value ) {
-						$columns[ $pos ] = $action_column->perform( $row_id, $value, $source, $column, $row );
+						$columns[ $pos ] = $action_column->perform( $row_id, $value, $source, $column, $row, $this->should_save() );
 					}
 
 					break;

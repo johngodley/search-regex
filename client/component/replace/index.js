@@ -11,7 +11,6 @@ import { translate as __ } from 'i18n-calypso';
 
 import './style.scss';
 import { Select } from 'wp-plugin-components';
-import { setSearch } from 'state/search/action';
 
 /** @typedef {import('state/preset/type.js').PresetValue} PresetValue */
 
@@ -38,7 +37,7 @@ import { setSearch } from 'state/search/action';
  * @param {import('state/search/type').ResultColumn} props.column
  */
 function Replace( props ) {
-	const { disabled, schema, replacement, setReplace } = props;
+	const { disabled, replacement, setReplace } = props;
 	const [ searchFlags, setFlags ] = useState( 'single' );
 	const value = {
 		id: 'replace',

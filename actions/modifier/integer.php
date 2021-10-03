@@ -33,7 +33,7 @@ class Modify_Integer extends Modifier {
 		);
 	}
 
-	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw ) {
+	public function perform( $row_id, $row_value, Search_Source $source, Match_Column $column, array $raw, $save_mode ) {
 		// Go through contexts and find the matching action that modifies it
 		if ( count( $column->get_contexts() ) === 1 && $this->value !== null ) {
 			$context = $column->get_contexts()[0];
