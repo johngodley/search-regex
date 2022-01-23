@@ -96,8 +96,14 @@ class Modify_String extends Modifier {
 			return [];
 		}
 
+		$replace_value = $this->replace_value;
+		if ( ! $this->search_flags->is_regex() ) {
+			// Escape the replace value, in case it has a $ in it
+			$replace_value = \preg_quote( $this->replace_value, '@' );
+		}
+
 		// Global replace
-		$result = $this->replace_all( $this->search_value, self::BEFORE . $this->replace_value . self::AFTER, $value );
+		$result = $this->replace_all( $this->search_value, self::BEFORE . $replace_value . self::AFTER, $value );
 
 		// Split into array
 		$pattern = '@' . self::BEFORE . '(.*?)' . self::AFTER . '@';
