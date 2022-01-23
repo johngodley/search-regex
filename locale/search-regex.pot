@@ -1,4 +1,4 @@
-# Copyright (C) 2021 Search Regex
+# Copyright (C) 2022 Search Regex
 # This file is distributed under the same license as the Search Regex package.
 msgid ""
 msgstr ""
@@ -64,7 +64,7 @@ msgstr ""
 msgid "This may be caused by another plugin - look at your browser's error console for more details."
 msgstr ""
 
-#: search-regex-admin.php:433, search-regex-strings.php:76
+#: search-regex-admin.php:433, search-regex-strings.php:60
 msgid "If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache."
 msgstr ""
 
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: search-regex-strings.php:19, search-regex-strings.php:153, search-regex-strings.php:233, search-regex-strings.php:259, search-regex-strings.php:262, search-regex-strings.php:346
+#: search-regex-strings.php:19, search-regex-strings.php:153, search-regex-strings.php:233, search-regex-strings.php:259, search-regex-strings.php:262, search-regex-strings.php:348
 msgid "Replace"
 msgstr ""
 
@@ -305,170 +305,170 @@ msgid "HTML"
 msgstr ""
 
 #: search-regex-strings.php:55
-msgid "You've supported this plugin - thank you!"
-msgstr ""
-
-#: search-regex-strings.php:56
-msgid "I'd like to support some more."
-msgstr ""
-
-#: search-regex-strings.php:57
-msgid "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}."
-msgstr ""
-
-#: search-regex-strings.php:58
-msgid "You get useful software and I get to carry on making it better."
-msgstr ""
-
-#: search-regex-strings.php:59
-msgid "Support 💰"
-msgstr ""
-
-#: search-regex-strings.php:60
-msgid "Plugin Support"
-msgstr ""
-
-#: search-regex-strings.php:61
-msgid "Default REST API"
-msgstr ""
-
-#: search-regex-strings.php:62
-msgid "Raw REST API"
-msgstr ""
-
-#: search-regex-strings.php:63
-msgid "Relative REST API"
-msgstr ""
-
-#: search-regex-strings.php:64
-msgid "I'm a nice person and I have helped support the author of this plugin"
-msgstr ""
-
-#: search-regex-strings.php:65
-msgid "Default Preset"
-msgstr ""
-
-#: search-regex-strings.php:66
-msgid "No default preset"
-msgstr ""
-
-#: search-regex-strings.php:67
-msgid "Set a preset to use by default when Search Regex is loaded."
-msgstr ""
-
-#: search-regex-strings.php:68
-msgid "REST API"
-msgstr ""
-
-#: search-regex-strings.php:69
-msgid "How Search Regex uses the REST API - don't change unless necessary"
-msgstr ""
-
-#: search-regex-strings.php:70
-msgid "Update"
-msgstr ""
-
-#: search-regex-strings.php:71
 msgid "Cached Search Regex detected"
 msgstr ""
 
-#: search-regex-strings.php:72
+#: search-regex-strings.php:56
 msgid "Please clear your browser cache and reload this page."
 msgstr ""
 
-#: search-regex-strings.php:73
+#: search-regex-strings.php:57
 msgid "If you are using a caching system such as Cloudflare then please read this: "
 msgstr ""
 
-#: search-regex-strings.php:74
+#: search-regex-strings.php:58
 msgid "clearing your cache."
 msgstr ""
 
-#: search-regex-strings.php:75
+#: search-regex-strings.php:59
 msgid "Search Regex is not working. Try clearing your browser cache and reloading this page."
 msgstr ""
 
-#: search-regex-strings.php:77
+#: search-regex-strings.php:61
 msgid "If that doesn't help, open your browser's error console and create a {{link}}new issue{{/link}} with the details."
 msgstr ""
 
-#: search-regex-strings.php:78
+#: search-regex-strings.php:62
 msgid "Query Problem"
 msgstr ""
 
-#: search-regex-strings.php:79
+#: search-regex-strings.php:63
 msgid "A problem occurred with your last query. This is likely caused by a combination of search filters that haven't been handled properly."
 msgstr ""
 
-#: search-regex-strings.php:80, search-regex-strings.php:88
+#: search-regex-strings.php:64, search-regex-strings.php:72
 msgid "What do I do next?"
 msgstr ""
 
-#: search-regex-strings.php:81, search-regex-strings.php:85, search-regex-strings.php:102
+#: search-regex-strings.php:65, search-regex-strings.php:69, search-regex-strings.php:102
 msgid "Create An Issue"
 msgstr ""
 
-#: search-regex-strings.php:82, search-regex-strings.php:86, search-regex-strings.php:103
+#: search-regex-strings.php:66, search-regex-strings.php:70, search-regex-strings.php:103
 msgid "Email"
 msgstr ""
 
-#: search-regex-strings.php:83
+#: search-regex-strings.php:67
 msgid "Please check the {{link}}support site{{/link}} before proceeding further."
 msgstr ""
 
-#: search-regex-strings.php:84
+#: search-regex-strings.php:68
 msgid "If that did not help then {{strong}}create an issue{{/strong}} or send it in an {{strong}}email{{/strong}}."
 msgstr ""
 
-#: search-regex-strings.php:87
+#: search-regex-strings.php:71
 msgid "Include these details in your report along with a description of what you were doing and a screenshot."
 msgstr ""
 
-#: search-regex-strings.php:89
+#: search-regex-strings.php:73
 msgid "{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches."
 msgstr ""
 
-#: search-regex-strings.php:90
+#: search-regex-strings.php:74
 msgid "{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems."
 msgstr ""
 
-#: search-regex-strings.php:91
+#: search-regex-strings.php:75
 msgid "If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues."
 msgstr ""
 
-#: search-regex-strings.php:92
+#: search-regex-strings.php:76
 msgid "Search Regex"
 msgstr ""
 
-#: search-regex-strings.php:93, search-regex-strings.php:98
+#: search-regex-strings.php:77, search-regex-strings.php:82
 msgid "Options"
 msgstr ""
 
-#: search-regex-strings.php:94, search-regex-strings.php:99
+#: search-regex-strings.php:78, search-regex-strings.php:83
 msgid "Support"
 msgstr ""
 
-#: search-regex-strings.php:95, search-regex-strings.php:97
+#: search-regex-strings.php:79, search-regex-strings.php:81
 msgid "Presets"
 msgstr ""
 
-#: search-regex-strings.php:96
+#: search-regex-strings.php:80
 msgid "Search & Replace"
 msgstr ""
 
-#: search-regex-strings.php:100
+#: search-regex-strings.php:84
 msgid "Version %s installed! Please read the {{url}}release notes{{/url}} for details."
 msgstr ""
 
-#: search-regex-strings.php:101
+#: search-regex-strings.php:85
 msgid "OK"
+msgstr ""
+
+#: search-regex-strings.php:86
+msgid "You've supported this plugin - thank you!"
+msgstr ""
+
+#: search-regex-strings.php:87
+msgid "I'd like to support some more."
+msgstr ""
+
+#: search-regex-strings.php:88
+msgid "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}."
+msgstr ""
+
+#: search-regex-strings.php:89
+msgid "You get useful software and I get to carry on making it better."
+msgstr ""
+
+#: search-regex-strings.php:90
+msgid "Support 💰"
+msgstr ""
+
+#: search-regex-strings.php:91
+msgid "Plugin Support"
+msgstr ""
+
+#: search-regex-strings.php:92
+msgid "Default REST API"
+msgstr ""
+
+#: search-regex-strings.php:93
+msgid "Raw REST API"
+msgstr ""
+
+#: search-regex-strings.php:94
+msgid "Relative REST API"
+msgstr ""
+
+#: search-regex-strings.php:95
+msgid "I'm a nice person and I have helped support the author of this plugin"
+msgstr ""
+
+#: search-regex-strings.php:96
+msgid "Default Preset"
+msgstr ""
+
+#: search-regex-strings.php:97
+msgid "No default preset"
+msgstr ""
+
+#: search-regex-strings.php:98
+msgid "Set a preset to use by default when Search Regex is loaded."
+msgstr ""
+
+#: search-regex-strings.php:99
+msgid "REST API"
+msgstr ""
+
+#: search-regex-strings.php:100
+msgid "How Search Regex uses the REST API - don't change unless necessary"
+msgstr ""
+
+#: search-regex-strings.php:101
+msgid "Update"
 msgstr ""
 
 #: search-regex-strings.php:104
 msgid "Name"
 msgstr ""
 
-#: search-regex-strings.php:105, search-regex-strings.php:150, search-regex-strings.php:166, search-regex-strings.php:285, search-regex-strings.php:341, search-regex-strings.php:343, search-regex-strings.php:345
+#: search-regex-strings.php:105, search-regex-strings.php:150, search-regex-strings.php:166, search-regex-strings.php:285, search-regex-strings.php:343, search-regex-strings.php:345, search-regex-strings.php:347
 msgid "Search"
 msgstr ""
 
@@ -646,7 +646,7 @@ msgstr ""
 msgid "Are you sure you want to delete this preset?"
 msgstr ""
 
-#: search-regex-strings.php:157, search-regex-strings.php:350
+#: search-regex-strings.php:157, search-regex-strings.php:352
 msgid "Delete"
 msgstr ""
 
@@ -904,7 +904,7 @@ msgstr ""
 msgid "Replace With"
 msgstr ""
 
-#: search-regex-strings.php:235, search-regex-strings.php:237, search-regex-strings.php:261, search-regex-strings.php:284, search-regex-strings.php:349
+#: search-regex-strings.php:235, search-regex-strings.php:237, search-regex-strings.php:261, search-regex-strings.php:284, search-regex-strings.php:351
 msgid "Add"
 msgstr ""
 
@@ -1058,172 +1058,180 @@ msgstr ""
 msgid "Your REST API is probably being blocked by a security plugin. Please disable this, or configure it to allow REST API requests."
 msgstr ""
 
-#: search-regex-strings.php:298, search-regex-strings.php:304, search-regex-strings.php:310, search-regex-strings.php:315
+#: search-regex-strings.php:298, search-regex-strings.php:305, search-regex-strings.php:311, search-regex-strings.php:316
 msgid "Read this REST API guide for more information."
 msgstr ""
 
 #: search-regex-strings.php:299
-msgid "Your REST API is returning a 404 page. This is almost certainly an external plugin or server configuration issue."
+msgid "Your WordPress REST API is returning a 404 page. This is almost certainly an external plugin or server configuration issue."
 msgstr ""
 
 #: search-regex-strings.php:300
-msgid "Can you access your {{api}}REST API{{/api}} without it redirecting? If not then you will need to fix any issues."
+msgid "You will will need to fix this on your site. Redirection is not causing the error."
 msgstr ""
 
 #: search-regex-strings.php:301
-msgid "Check your {{link}}Site Health{{/link}} and fix any issues."
+msgid "Can you access your {{api}}REST API{{/api}} without it redirecting?."
 msgstr ""
 
 #: search-regex-strings.php:302
-msgid "Your server configuration is blocking access to the REST API. You will need to fix this."
+msgid "Check your {{link}}Site Health{{/link}} and fix any issues."
 msgstr ""
 
 #: search-regex-strings.php:303
+msgid "Your server configuration is blocking access to the REST API."
+msgstr ""
+
+#: search-regex-strings.php:304
 msgid "A security plugin or firewall is blocking access. You will need to whitelist the REST API."
 msgstr ""
 
-#: search-regex-strings.php:305
+#: search-regex-strings.php:306
 msgid "Your REST API is being redirected. Please remove the redirection for the API."
 msgstr ""
 
-#: search-regex-strings.php:306
+#: search-regex-strings.php:307
 msgid "Your server has rejected the request for being too big. You will need to reconfigure it to continue."
 msgstr ""
 
-#: search-regex-strings.php:307
+#: search-regex-strings.php:308
 msgid "An unknown error occurred."
 msgstr ""
 
-#: search-regex-strings.php:308
+#: search-regex-strings.php:309
 msgid "Your REST API is showing a deprecated PHP error. Please fix this error."
 msgstr ""
 
-#: search-regex-strings.php:309
+#: search-regex-strings.php:310
 msgid "This could be a security plugin, or your server is out of memory or has an external error. Please check your server error log"
 msgstr ""
 
-#: search-regex-strings.php:311
+#: search-regex-strings.php:312
 msgid "Your WordPress REST API has been disabled. You will need to enable it to continue."
 msgstr ""
 
-#: search-regex-strings.php:312
+#: search-regex-strings.php:313
 msgid "WordPress returned an unexpected message. This could be a PHP error from another plugin, or data inserted by your theme."
 msgstr ""
 
-#: search-regex-strings.php:313
+#: search-regex-strings.php:314
 msgid "Possible cause"
 msgstr ""
 
-#: search-regex-strings.php:314
+#: search-regex-strings.php:315
 msgid "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy."
 msgstr ""
 
-#: search-regex-strings.php:316
+#: search-regex-strings.php:317
 msgid "Your REST API appears to be cached and this will cause problems. Please exclude your REST API from your caching system."
 msgstr ""
 
-#: search-regex-strings.php:317
+#: search-regex-strings.php:318
 msgid "Bad data"
 msgstr ""
 
-#: search-regex-strings.php:318
+#: search-regex-strings.php:319
 msgid "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request."
 msgstr ""
 
-#: search-regex-strings.php:319
+#: search-regex-strings.php:320
 msgid "Please review your data and try again."
 msgstr ""
 
-#: search-regex-strings.php:320, search-regex-strings.php:321, search-regex-strings.php:322
+#: search-regex-strings.php:321
+msgid "REST API 404"
+msgstr ""
+
+#: search-regex-strings.php:322, search-regex-strings.php:323, search-regex-strings.php:324
 msgid "Something went wrong 🙁"
 msgstr ""
 
-#: search-regex-strings.php:323
+#: search-regex-strings.php:325
 msgid "You are using an old or cached session"
 msgstr ""
 
-#: search-regex-strings.php:324
+#: search-regex-strings.php:326
 msgid "This is usually fixed by doing one of the following:"
 msgstr ""
 
-#: search-regex-strings.php:325
+#: search-regex-strings.php:327
 msgid "Reload the page - your current session is old."
 msgstr ""
 
-#: search-regex-strings.php:326
+#: search-regex-strings.php:328
 msgid "Log out, clear your browser cache, and log in again - your browser has cached an old session."
 msgstr ""
 
-#: search-regex-strings.php:327
+#: search-regex-strings.php:329
 msgid "Your admin pages are being cached. Clear this cache and try again. There may be multiple caches involved."
 msgstr ""
 
-#: search-regex-strings.php:328, search-regex-strings.php:329
+#: search-regex-strings.php:330, search-regex-strings.php:331
 msgid "between {{first/}} and {{second/}}"
 msgstr ""
 
-#: search-regex-strings.php:330, search-regex-strings.php:340, search-regex-strings.php:347
+#: search-regex-strings.php:332, search-regex-strings.php:342, search-regex-strings.php:349
 msgid "Meta Key"
 msgstr ""
 
-#: search-regex-strings.php:331, search-regex-strings.php:342, search-regex-strings.php:351
+#: search-regex-strings.php:333, search-regex-strings.php:344, search-regex-strings.php:353
 msgid "Meta Value"
 msgstr ""
 
-#: search-regex-strings.php:332
+#: search-regex-strings.php:334
 msgid "All"
 msgstr ""
 
-#: search-regex-strings.php:333
+#: search-regex-strings.php:335
 msgid "Seconds"
 msgstr ""
 
-#: search-regex-strings.php:334
+#: search-regex-strings.php:336
 msgid "Minutes"
 msgstr ""
 
-#: search-regex-strings.php:335
+#: search-regex-strings.php:337
 msgid "Hours"
 msgstr ""
 
-#: search-regex-strings.php:336
+#: search-regex-strings.php:338
 msgid "Days"
 msgstr ""
 
-#: search-regex-strings.php:337
+#: search-regex-strings.php:339
 msgid "Weeks"
 msgstr ""
 
-#: search-regex-strings.php:338
+#: search-regex-strings.php:340
 msgid "Months"
 msgstr ""
 
-#: search-regex-strings.php:339
+#: search-regex-strings.php:341
 msgid "Year"
 msgstr ""
 
-#: search-regex-strings.php:344
+#: search-regex-strings.php:346
 msgid "Replace \"%1s\""
 msgstr ""
 
-#: search-regex-strings.php:348
+#: search-regex-strings.php:350
 msgid "New meta key"
 msgstr ""
 
-#: search-regex-strings.php:352, search-regex-strings.php:353
+#: search-regex-strings.php:354, search-regex-strings.php:355
 msgid "New meta value"
 msgstr ""
 
-#: search-regex-strings.php:354
+#: search-regex-strings.php:356
 msgid "Enter replacement"
 msgstr ""
 
-#: search-regex-strings.php:355
+#: search-regex-strings.php:357
 msgid "Apply to matches only"
 msgstr ""
 
 #. translators: 1: server PHP version. 2: required PHP version.
-#: search-regex.php:40
+#: search-regex.php:39
 msgid "Disabled! Detected PHP %1$s, need PHP %2$s+"
 msgstr ""
 

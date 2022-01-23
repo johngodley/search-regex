@@ -11,18 +11,18 @@ __( "Enter a name for your preset", "search-regex" ), // client/component/preset
 __( "Enter preset name", "search-regex" ), // client/component/presets/index.js:110
 __( "Save", "search-regex" ), // client/component/presets/index.js:113
 __( "Cancel", "search-regex" ), // client/component/presets/index.js:121
-__( "Matched values will be removed", "search-regex" ), // client/component/replace/index.js:49
-__( "Enter replacement value", "search-regex" ), // client/component/replace/index.js:49
-__( "Single", "search-regex" ), // client/component/replace/index.js:71
-__( "Multi", "search-regex" ), // client/component/replace/index.js:72
-__( "Remove", "search-regex" ), // client/component/replace/index.js:73
+__( "Matched values will be removed", "search-regex" ), // client/component/replace/index.js:46
+__( "Enter replacement value", "search-regex" ), // client/component/replace/index.js:46
+__( "Single", "search-regex" ), // client/component/replace/index.js:68
+__( "Multi", "search-regex" ), // client/component/replace/index.js:69
+__( "Remove", "search-regex" ), // client/component/replace/index.js:70
 __( "Replace", "search-regex" ), // client/component/replace-form/index.js:80
 __( "Cancel", "search-regex" ), // client/component/replace-form/index.js:86
 _n( "%s row deleted.", "%s rows deleted.", 1, "search-regex" ), // client/component/replace-progress/index.js:30
 _n( "%s row.", "%s rows.", 1, "search-regex" ), // client/component/replace-progress/index.js:33
-__( "Progress", "search-regex" ), // client/component/replace-progress/index.js:63
-__( "Finished!", "search-regex" ), // client/component/replace-progress/index.js:78
-__( "Your search resulted in too many requests. Please narrow your search terms.", "search-regex" ), // client/component/replace-progress/index.js:110
+__( "Progress", "search-regex" ), // client/component/replace-progress/index.js:62
+__( "Finished!", "search-regex" ), // client/component/replace-progress/index.js:77
+__( "Your search resulted in too many requests. Please narrow your search terms.", "search-regex" ), // client/component/replace-progress/index.js:109
 __( "Working!", "search-regex" ), // client/component/rest-api-status/api-result-pass.js:15
 __( "Show Full", "search-regex" ), // client/component/rest-api-status/api-result-raw.js:27
 __( "Hide", "search-regex" ), // client/component/rest-api-status/api-result-raw.js:32
@@ -52,22 +52,6 @@ __( "Serialized PHP", "search-regex" ), // client/component/value-type/index.js:
 __( "JSON", "search-regex" ), // client/component/value-type/index.js:13
 __( "Blocks", "search-regex" ), // client/component/value-type/index.js:17
 __( "HTML", "search-regex" ), // client/component/value-type/index.js:21
-__( "You've supported this plugin - thank you!", "search-regex" ), // client/page/options/donation.js:82
-__( "I'd like to support some more.", "search-regex" ), // client/page/options/donation.js:83
-__( "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.", "search-regex" ), // client/page/options/donation.js:98
-__( "You get useful software and I get to carry on making it better.", "search-regex" ), // client/page/options/donation.js:103
-__( "Support 💰", "search-regex" ), // client/page/options/donation.js:125
-__( "Plugin Support", "search-regex" ), // client/page/options/donation.js:137
-__( "Default REST API", "search-regex" ), // client/page/options/options-form.js:19
-__( "Raw REST API", "search-regex" ), // client/page/options/options-form.js:20
-__( "Relative REST API", "search-regex" ), // client/page/options/options-form.js:21
-__( "I'm a nice person and I have helped support the author of this plugin", "search-regex" ), // client/page/options/options-form.js:55
-__( "Default Preset", "search-regex" ), // client/page/options/options-form.js:60
-__( "No default preset", "search-regex" ), // client/page/options/options-form.js:63
-__( "Set a preset to use by default when Search Regex is loaded.", "search-regex" ), // client/page/options/options-form.js:70
-__( "REST API", "search-regex" ), // client/page/options/options-form.js:74
-__( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:83
-__( "Update", "search-regex" ), // client/page/options/options-form.js:92
 __( "Cached Search Regex detected", "search-regex" ), // client/page/home/cache-detect.js:20
 __( "Please clear your browser cache and reload this page.", "search-regex" ), // client/page/home/cache-detect.js:23
 __( "If you are using a caching system such as Cloudflare then please read this: ", "search-regex" ), // client/page/home/cache-detect.js:25
@@ -99,6 +83,22 @@ __( "Options", "search-regex" ), // client/page/home/index.js:46
 __( "Support", "search-regex" ), // client/page/home/index.js:50
 __( "Version %s installed! Please read the {{url}}release notes{{/url}} for details.", "search-regex" ), // client/page/home/update-notice.js:32
 __( "OK", "search-regex" ), // client/page/home/update-notice.js:43
+__( "You've supported this plugin - thank you!", "search-regex" ), // client/page/options/donation.js:82
+__( "I'd like to support some more.", "search-regex" ), // client/page/options/donation.js:83
+__( "Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.", "search-regex" ), // client/page/options/donation.js:98
+__( "You get useful software and I get to carry on making it better.", "search-regex" ), // client/page/options/donation.js:103
+__( "Support 💰", "search-regex" ), // client/page/options/donation.js:125
+__( "Plugin Support", "search-regex" ), // client/page/options/donation.js:137
+__( "Default REST API", "search-regex" ), // client/page/options/options-form.js:19
+__( "Raw REST API", "search-regex" ), // client/page/options/options-form.js:20
+__( "Relative REST API", "search-regex" ), // client/page/options/options-form.js:21
+__( "I'm a nice person and I have helped support the author of this plugin", "search-regex" ), // client/page/options/options-form.js:55
+__( "Default Preset", "search-regex" ), // client/page/options/options-form.js:60
+__( "No default preset", "search-regex" ), // client/page/options/options-form.js:63
+__( "Set a preset to use by default when Search Regex is loaded.", "search-regex" ), // client/page/options/options-form.js:70
+__( "REST API", "search-regex" ), // client/page/options/options-form.js:74
+__( "How Search Regex uses the REST API - don't change unless necessary", "search-regex" ), // client/page/options/options-form.js:83
+__( "Update", "search-regex" ), // client/page/options/options-form.js:92
 __( "Create An Issue", "search-regex" ), // client/page/preset-management/index.js:30
 __( "Email", "search-regex" ), // client/page/preset-management/index.js:39
 __( "Name", "search-regex" ), // client/page/preset-management/index.js:77
@@ -296,28 +296,30 @@ __( "Debug Information", "search-regex" ), // client/wp-plugin-components/error/
 __( "WordPress did not return a response. This could mean an error occurred or that the request was blocked. Please check your server error_log.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:76
 __( "Your REST API is probably being blocked by a security plugin. Please disable this, or configure it to allow REST API requests.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:88
 __( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:94
-__( "Your REST API is returning a 404 page. This is almost certainly an external plugin or server configuration issue.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:106
-__( "Can you access your {{api}}REST API{{/api}} without it redirecting? If not then you will need to fix any issues.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:112
-__( "Check your {{link}}Site Health{{/link}} and fix any issues.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:122
-__( "Your server configuration is blocking access to the REST API. You will need to fix this.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:129
-__( "A security plugin or firewall is blocking access. You will need to whitelist the REST API.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:134
-__( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:141
-__( "Your REST API is being redirected. Please remove the redirection for the API.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:149
-__( "Your server has rejected the request for being too big. You will need to reconfigure it to continue.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:155
-__( "An unknown error occurred.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:163
-__( "Your REST API is showing a deprecated PHP error. Please fix this error.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:170
-__( "This could be a security plugin, or your server is out of memory or has an external error. Please check your server error log", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:180
-__( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:186
-__( "Your WordPress REST API has been disabled. You will need to enable it to continue.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:194
-__( "WordPress returned an unexpected message. This could be a PHP error from another plugin, or data inserted by your theme.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:204
-__( "Possible cause", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:210
-__( "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:222
-__( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:228
-__( "Your REST API appears to be cached and this will cause problems. Please exclude your REST API from your caching system.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:240
+__( "Your WordPress REST API is returning a 404 page. This is almost certainly an external plugin or server configuration issue.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:105
+__( "You will will need to fix this on your site. Redirection is not causing the error.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:111
+__( "Can you access your {{api}}REST API{{/api}} without it redirecting?.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:116
+__( "Check your {{link}}Site Health{{/link}} and fix any issues.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:123
+__( "Your server configuration is blocking access to the REST API.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:129
+__( "A security plugin or firewall is blocking access. You will need to whitelist the REST API.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:131
+__( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:138
+__( "Your REST API is being redirected. Please remove the redirection for the API.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:146
+__( "Your server has rejected the request for being too big. You will need to reconfigure it to continue.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:152
+__( "An unknown error occurred.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:160
+__( "Your REST API is showing a deprecated PHP error. Please fix this error.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:167
+__( "This could be a security plugin, or your server is out of memory or has an external error. Please check your server error log", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:177
+__( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:183
+__( "Your WordPress REST API has been disabled. You will need to enable it to continue.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:191
+__( "WordPress returned an unexpected message. This could be a PHP error from another plugin, or data inserted by your theme.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:201
+__( "Possible cause", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:207
+__( "Unable to make request due to browser security. This is typically because your WordPress and Site URL settings are inconsistent, or the request was blocked by your site CORS policy.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:219
+__( "Read this REST API guide for more information.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:225
+__( "Your REST API appears to be cached and this will cause problems. Please exclude your REST API from your caching system.", "search-regex" ), // client/wp-plugin-components/error/decode-error/index.js:237
 __( "Bad data", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:17
 __( "There was a problem making a request to your site. This could indicate you provided data that did not match requirements, or that the plugin sent a bad request.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:19
 __( "Please review your data and try again.", "search-regex" ), // client/wp-plugin-components/error/display/error-api.js:20
-__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:22
+__( "REST API 404", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:18
+__( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-default.js:21
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-fixed.js:19
 __( "Something went wrong 🙁", "search-regex" ), // client/wp-plugin-components/error/display/error-known.js:26
 __( "You are using an old or cached session", "search-regex" ), // client/wp-plugin-components/error/display/error-nonce.js:17

@@ -2,13 +2,13 @@
 Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
-Requires at least: 5.3
-Tested up to: 5.6
+Requires at least: 5.4
+Tested up to: 5.9
 Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
 
-Search Regex adds a powerful set of search and replace functions to WordPress posts, pages, custom post types, and other data sources.
+Search Regex adds a powerful set of search and replace functions to WordPress posts, pages, custom post types, and other data.
 
 == Description ==
 
@@ -113,7 +113,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.0 - 2021 =
+= 3.0 - 2022 =
 - Major update with many, many, new features
 - Advanced searches with fully customisable filters that can be combined together with AND and OR logic
 - Search any WordPress table, including posts, comments, users, meta-data, and options
@@ -127,6 +127,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 - Full support for saving advanced filter and actions to presets
 - Autocomplete filters and modifications
 - Support for serialized data (with conditions)
+- Fix replace with dollar ($) from being treated as a regular expression
 
 = 2.4.1 - 29th November 2020 =
 - Fix replacements with a backslashed character
