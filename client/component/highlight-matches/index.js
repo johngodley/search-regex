@@ -96,7 +96,7 @@ function HighlightMatches( props ) {
 
 	return (
 		<div className={ classnames( 'searchregex-match__context', className ) }>
-			{ matches.map( ( match ) => {
+			{ matches.map( ( match, pos ) => {
 				const oldOffset = offset;
 
 				offset = match.context_offset + match.match.length;
@@ -108,7 +108,7 @@ function HighlightMatches( props ) {
 						onReplace={ onReplace }
 						beforePhrase={
 							<>
-								{ crop.start > 0 && <>&hellip; </> }
+								{ crop.start > 0 && pos === 0 && <>&hellip; </> }
 								{ source.substring( oldOffset, match.context_offset ) }
 							</>
 						}
