@@ -83,7 +83,7 @@ export const performMore = ( page, perPage ) => ( dispatch, getState ) => {
 const getSearch = ( searchValues, dispatch ) =>
 	apiFetch( SearchRegexApi.search.perform( searchValues ) )
 		.then( ( json ) => {
-			dispatch( { type: SEARCH_COMPLETE, ...json, perPage: searchValues.perPage } );
+			dispatch( { type: SEARCH_COMPLETE, ...json, perPage: searchValues.perPage, isSave: !! searchValues.save } );
 		} )
 		.catch( ( error ) => {
 			dispatch( { type: SEARCH_FAIL, error } );

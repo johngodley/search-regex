@@ -57,7 +57,6 @@ function ReplaceProgress( props ) {
 
 	useSlidingActionWindow( canLoad, requestCount, ( size ) => onNext( progress.next, size ), onError );
 
-	console.log( totals, current );
 	return (
 		<div className="searchregex-replaceall">
 			<h3>{ __( 'Progress' ) }</h3>

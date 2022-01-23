@@ -84,14 +84,11 @@ function replaceListColumn( context, replacement, schema ) {
 			return {};
 		}
 
-		console.log(  );
-
 		if ( context.value === replacement.replaceValue ) {
 			return {};
 		}
 
 		if ( replacement.matchesOnly ) {
-			console.log( context );
 			return {
 				...context,
 				matches: context.matches.map( ( match ) => ( {

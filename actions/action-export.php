@@ -71,6 +71,10 @@ class Action_Export extends Action {
 	}
 
 	public function get_results( array $results ) {
+		if ( ! $this->save ) {
+			return parent::get_results( $results );
+		}
+
 		// Convert to whatever the chosen format is
 		$results['results'] = array_map( function( $item ) {
 			if ( $this->format === 'json' ) {
@@ -94,17 +98,13 @@ class Action_Export extends Action {
 	 * @return string
 	 */
 	private function convert_to_json( Result $result ) {
-		$json = $result->to_json();
+		$data = [];
 
-		// Remove the 'actions' for JSON
-		unset( $json['actions'] );
-
-		$json = wp_json_encode( $json );
-		if ( $json !== false ) {
-			return $json;
+		foreach ( $result->get_columns() as $column ) {
+			$data[ Sql_Value::column( $column->get_column_id() )->get_value() ] = $column->get_value();
 		}
 
-		return '';
+		return $data;
 	}
 
 	/**
