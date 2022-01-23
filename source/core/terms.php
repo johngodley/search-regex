@@ -12,7 +12,7 @@ use SearchRegex\Sql\Sql_Value;
  */
 class Source_Terms extends Search_Source {
 	public function get_table_id() {
-		return '';
+		return 'term_id';
 	}
 
 	public function get_table_name() {
