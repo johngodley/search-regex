@@ -1,50 +1,38 @@
 {
-    "compilerOptions": {
-        "allowJs": true,
-        "checkJs": true,
-        "allowSyntheticDefaultImports": true,
-        "jsx": "preserve",
-        "target": "esnext",
-        "module": "esnext",
-        "lib": [
-            "dom",
-            "esnext"
-        ],
-        "declaration": true,
-        "declarationMap": true,
-        "composite": true,
-        "emitDeclarationOnly": true,
-        "isolatedModules": true,
-        /* Strict Type-Checking Options */
-        "strict": true,
-        "strictNullChecks": true,
-        "noImplicitAny": false,
-        /* Additional Checks */
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        /* Module Resolution Options */
-        "moduleResolution": "node",
-        /* This needs to be false so our types are possible to consume without setting this */
-        "esModuleInterop": false,
-        "resolveJsonModule": true,
-        "typeRoots": [
-            "./node_modules/@types"
-        ],
-        "baseUrl": "./client",
-        "paths": {
-            "wp-plugin-library": [ "wp-plugin-library" ],
-        },
-        "rootDirs": [
-            "client",
-        ]
+	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": true,
+		"allowSyntheticDefaultImports": true,
+		"jsx": "react-jsx",
+		"target": "esnext",
+		"module": "esnext",
+		"lib": ["dom", "esnext"],
+		"declaration": true,
+		"declarationMap": true,
+		"composite": true,
+		"emitDeclarationOnly": true,
+		"isolatedModules": true,
+		/* Strict Type-Checking Options */
+		"strict": true,
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		/* Additional Checks */
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		/* Module Resolution Options */
+		"moduleResolution": "node",
+		/* This needs to be false so our types are possible to consume without setting this */
+		"esModuleInterop": false,
+		"resolveJsonModule": true,
+		"baseUrl": "src",
+		"paths": {
+			"@wp-plugin-lib": ["wp-plugin-lib"],
+			"@wp-plugin-components": ["wp-plugin-components"],
+		},
+		"rootDirs": ["src"]
 	},
-	"include": [
-        "client/**/*"
-	],
-	"exclude": [
-        "node_modules",
-        "**/*.spec.ts"
-    ]
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "**/*.spec.ts"]
 }

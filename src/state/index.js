@@ -1,0 +1,30 @@
+/**
+ * External dependencies
+ */
+
+import {
+	applyMiddleware,
+	createStore,
+} from 'redux';
+import thunk from 'redux-thunk';
+import reducers from './reducers';
+import { urlMiddleware } from './middleware';
+
+/**
+ * Internal dependencies
+ */
+
+const middlewares = [
+	thunk,
+	urlMiddleware,
+];
+
+export default function createReduxStore( initialState = {} ) {
+	const store = createStore(
+		reducers,
+		initialState,
+		applyMiddleware( ...middlewares )
+	);
+
+	return store;
+}

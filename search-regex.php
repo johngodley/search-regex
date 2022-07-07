@@ -22,7 +22,6 @@ For full license details see license.txt
 
 define( 'SEARCHREGEX_FILE', __FILE__ );
 define( 'SEARCHREGEX_DEV_MODE', false );
-define( 'SEARCHREGEX_DEBUG', false );
 
 // This file must support PHP < 5.6 so as not to crash
 if ( version_compare( phpversion(), '5.6' ) < 0 ) {
@@ -43,9 +42,9 @@ if ( version_compare( phpversion(), '5.6' ) < 0 ) {
 	return;
 }
 
-require_once __DIR__ . '/search-regex-version.php';
-require_once __DIR__ . '/search-regex-settings.php';
-require_once __DIR__ . '/search-regex-capabilities.php';
+require_once __DIR__ . '/build/search-regex-version.php';
+require_once __DIR__ . '/includes/search-regex-settings.php';
+require_once __DIR__ . '/includes/search-regex-capabilities.php';
 
 /**
  * Is the request for WP CLI?
@@ -79,8 +78,8 @@ function searchregex_is_admin() {
  * @return void
  */
 function searchregex_start_rest() {
-	require_once __DIR__ . '/search-regex-admin.php';
-	require_once __DIR__ . '/api/api.php';
+	require_once __DIR__ . '/includes/search-regex-admin.php';
+	require_once __DIR__ . '/includes/api/api.php';
 
 	Search_Regex_Api::init();
 	Search_Regex_Admin::init();
@@ -88,24 +87,13 @@ function searchregex_start_rest() {
 	remove_action( 'rest_api_init', 'searchregex_start_rest' );
 }
 
-/**
- * Set the Search Regex text domain
- *
- * @return void
- */
-function searchregex_locale() {
-	/** @psalm-suppress PossiblyFalseArgument */
-	load_plugin_textdomain( 'search-regex', false, dirname( plugin_basename( SEARCHREGEX_FILE ) ) . '/locale/' );
-}
-
 if ( searchregex_is_admin() || searchregex_is_wpcli() ) {
-	require_once __DIR__ . '/search-regex-admin.php';
-	require_once __DIR__ . '/api/api.php';
+	require_once __DIR__ . '/includes/search-regex-admin.php';
+	require_once __DIR__ . '/includes/api/api.php';
 }
 
 if ( searchregex_is_wpcli() ) {
-	require_once __DIR__ . '/search-regex-cli.php';
+	require_once __DIR__ . '/includes/search-regex-cli.php';
 }
 
 add_action( 'rest_api_init', 'searchregex_start_rest' );
-add_action( 'init', 'searchregex_locale' );
