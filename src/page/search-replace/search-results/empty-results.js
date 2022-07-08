@@ -8,7 +8,7 @@ import { __ } from '@wordpress/i18n';
 function EmptyResults( { columns } ) {
 	return (
 		<tr>
-			<td colSpan={ columns }>{ __( 'No more matching results found.' ) }</td>
+			<td colSpan={ columns }>{ __( 'No more matching results found.', 'search-regex' ) }</td>
 		</tr>
 	);
 }

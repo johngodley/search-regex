@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { __, numberFormat } from '@wordpress/i18n';
+import { _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -93,10 +93,9 @@ function ResultColumn( props ) {
 			{ ! showMore && contexts.length > MORE_CONTEXTS && (
 				<p>
 					<button className="button button-secondary" onClick={ () => setShowMore( true ) } type="button">
-						{ __( 'Show %s more', 'Show %s more', {
-							count: remainingCount,
-							args: numberFormat( remainingCount, 0 ),
-						} ) }
+						{ sprintf( _n( 'Show %s more', 'Show %s more', remainingCount, 'search-regex' ),
+							new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( remainingCount ),
+						) }
 					</button>
 				</p>
 			) }

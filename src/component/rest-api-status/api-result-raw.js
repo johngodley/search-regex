@@ -24,12 +24,12 @@ function ApiResultRaw( props ) {
 			<>
 				{ hide && needHiding && (
 					<a className="api-result-hide" onClick={ toggle } href="#">
-						{ __( 'Show Full' ) }
+						{ __( 'Show Full', 'search-regex' ) }
 					</a>
 				) }
 				{ ! hide && needHiding && (
 					<a className="api-result-hide" onClick={ toggle } href="#">
-						{ __( 'Hide' ) }
+						{ __( 'Hide', 'search-regex' ) }
 					</a>
 				) }
 				<pre>

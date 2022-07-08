@@ -68,7 +68,7 @@ function Replacement( props ) {
 			renderToggle={ ( isOpen, toggle ) => (
 				<span
 					onClick={ () => toggleIt( toggle ) }
-					title={ __( 'Click to replace match' ) }
+					title={ __( 'Click to replace match', 'search-regex' ) }
 					className={ classnames( {
 						'searchregex-result__replaced': typeOfReplacement === 'replace',
 						'searchregex-result__highlight': typeOfReplacement === 'match',

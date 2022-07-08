@@ -24,18 +24,18 @@ import { getDefaultPresetValues } from '../preset/selector';
 export const getAvailableSearchFlags = () => [
 	{
 		value: 'regex',
-		label: __( 'Regular Expression' ),
-		alt: __( 'Regex' ),
+		label: __( 'Regular Expression', 'search-regex' ),
+		alt: __( 'Regex', 'search-regex' ),
 	},
 	{
 		value: 'case',
-		label: __( 'Ignore Case' ),
-		alt: __( 'Case' ),
+		label: __( 'Ignore Case', 'search-regex' ),
+		alt: __( 'Case', 'search-regex' ),
 	},
 	{
 		value: 'multi',
-		label: __( 'Multiline' ),
-		alt: __( 'Multi' ),
+		label: __( 'Multiline', 'search-regex' ),
+		alt: __( 'Multi', 'search-regex' ),
 	},
 ];
 
@@ -45,31 +45,31 @@ export const getAvailableSearchFlags = () => [
 export const getAvailablePerPage = () => [
 	{
 		value: 25,
-		label: __( '25 per page' ),
+		label: __( '25 per page', 'search-regex' ),
 	},
 	{
 		value: 50,
-		label: __( '50 per page' ),
+		label: __( '50 per page', 'search-regex' ),
 	},
 	{
 		value: 100,
-		label: __( '100 per page' ),
+		label: __( '100 per page', 'search-regex' ),
 	},
 	{
 		value: 250,
-		label: __( '250 per page' ),
+		label: __( '250 per page', 'search-regex' ),
 	},
 	{
 		value: 500,
-		label: __( '500 per page' ),
+		label: __( '500 per page', 'search-regex' ),
 	},
 	{
 		value: 1000,
-		label: __( '1000 per page' ),
+		label: __( '1000 per page', 'search-regex' ),
 	},
 	{
 		value: 2000,
-		label: __( '2000 per page' ),
+		label: __( '2000 per page', 'search-regex' ),
 	},
 ];
 

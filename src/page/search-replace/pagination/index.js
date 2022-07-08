@@ -21,7 +21,7 @@ function Pagination( props ) {
 	}
 
 	if ( resultsDirty ) {
-		return <p className="searchregex-resultsdirty">{ __( 'Your search conditions have changed. Please refresh to see the latest results.' ) }</p>
+		return <p className="searchregex-resultsdirty">{ __( 'Your search conditions have changed. Please refresh to see the latest results.', 'search-regex' ) }</p>
 	}
 
 	if ( advanced ) {

@@ -4,7 +4,7 @@
 
 import classnames from 'classnames';
 import { connect } from 'react-redux';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf, _n } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -26,7 +26,7 @@ function PresetDebug( { debug } ) {
 					}
 					className="button-secondary"
 				>
-					{ __( 'Create An Issue' ) }
+					{ __( 'Create An Issue', 'search-regex' ) }
 				</a>{' '}
 				<a
 					href={
@@ -35,7 +35,7 @@ function PresetDebug( { debug } ) {
 					}
 					className="button-secondary"
 				>
-					{ __( 'Email' ) }
+					{ __( 'Email', 'search-regex' ) }
 				</a>
 			</p>
 		</>
@@ -73,9 +73,9 @@ function PresetManagement( props ) {
 			>
 				<thead>
 					<tr>
-						<th className="searchregex-preset__name">{ __( 'Name' ) }</th>
-						<th className="searchregex-preset__search">{ __( 'Search' ) }</th>
-						<th className="searchregex-preset__flags">{ __( 'Flags' ) }</th>
+						<th className="searchregex-preset__name">{ __( 'Name', 'search-regex' ) }</th>
+						<th className="searchregex-preset__search">{ __( 'Search', 'search-regex' ) }</th>
+						<th className="searchregex-preset__flags">{ __( 'Flags', 'search-regex' ) }</th>
 					</tr>
 				</thead>
 
@@ -86,25 +86,25 @@ function PresetManagement( props ) {
 
 					{ presets.length === 0 && (
 						<tr>
-							<td colSpan={ 3 }>{ __( 'There are no presets' ) }</td>
+							<td colSpan={ 3 }>{ __( 'There are no presets', 'search-regex' ) }</td>
 						</tr>
 					) }
 				</tbody>
 			</table>
 
 			<p>
-				<ExternalLink url="https://searchregex.com/preset/">{ __( 'Download presets!' ) }</ExternalLink>
+				<ExternalLink url="https://searchregex.com/preset/">{ __( 'Download presets!', 'search-regex' ) }</ExternalLink>
 			</p>
 
 			<div className="searchregex-presetactions">
 				{ presets.length > 0 && (
 					<button className="button button-secondary" onClick={ onExport }>
-						{ __( 'Export JSON' ) }
+						{ __( 'Export JSON', 'search-regex' ) }
 					</button>
 				) }
 			</div>
 
-			<h3>{ __( 'Import JSON' ) }</h3>
+			<h3>{ __( 'Import JSON', 'search-regex' ) }</h3>
 
 			<div className="searchregex-presetimport">
 				<Uploader
@@ -113,13 +113,13 @@ function PresetManagement( props ) {
 					disabled={ clipboardStatus === STATUS_IN_PROGRESS || uploadStatus === STATUS_IN_PROGRESS }
 					renderUnselected={ () => (
 						<>
-							<h3>{ __( 'Import a JSON file' ) }</h3>
+							<h3>{ __( 'Import a JSON file', 'search-regex' ) }</h3>
 							<p>{ __( "Click 'Add File' or drag and drop here." ) }</p>
 						</>
 					) }
 					renderSelected={ ( file ) => (
 						<>
-							<h3>{ __( 'File selected' ) }</h3>
+							<h3>{ __( 'File selected', 'search-regex' ) }</h3>
 							<p>
 								<code>{ file.name }</code>
 							</p>
@@ -127,7 +127,7 @@ function PresetManagement( props ) {
 					) }
 					renderUploading={ ( file ) => (
 						<>
-							<h3>{ __( 'Importing' ) }</h3>
+							<h3>{ __( 'Importing', 'search-regex' ) }</h3>
 
 							<p>
 								<code>{ file.name }</code>
@@ -139,29 +139,26 @@ function PresetManagement( props ) {
 					renderUploaded={ ( cancel ) => (
 						<>
 							<h3>
-								{ __( 'Uploaded %(total)d preset', 'Uploaded %(total)d presets', {
-									count: imported,
-									args: {
-										total: imported,
-									},
+								{ sprintf( _n( 'Uploaded %(total)d preset', 'Uploaded %(total)d presets', imported, 'search-regex' ), {
+									total: imported,
 								} ) }
 							</h3>
 
 							<button className="button-secondary" onClick={ cancel }>
-								{ __( 'Done' ) }
+								{ __( 'Done', 'search-regex' ) }
 							</button>
 						</>
 					) }
 					onUpload={ onUploadFile }
 				/>
 
-				<h4>{ __( 'Import preset from clipboard' ) }</h4>
+				<h4>{ __( 'Import preset from clipboard', 'search-regex' ) }</h4>
 
 				{ clipboardStatus === STATUS_FAILED && (
 					<Error
 						mini
 						errors={ [ error ] }
-						title={ __( 'Unable to import preset' ) }
+						title={ __( 'Unable to import preset', 'search-regex' ) }
 						type="error"
 						onClear={ onClearError }
 						context={ errorContext }
@@ -175,7 +172,7 @@ function PresetManagement( props ) {
 				) }
 
 				<textarea
-					placeholder={ __( 'Paste preset JSON.' ) }
+					placeholder={ __( 'Paste preset JSON.', 'search-regex' ) }
 					rows={ 3 }
 					value={ clipboard }
 					onChange={ ( ev ) => onSetClipboard( ev.target.value ) }
@@ -187,7 +184,7 @@ function PresetManagement( props ) {
 						className="button button-secondary"
 						onClick={ () => onImportClipboard( clipboard ) }
 					>
-						{ __( 'Import' ) }
+						{ __( 'Import', 'search-regex' ) }
 					</button>
 				</p>
 				{ uploadStatus === STATUS_IN_PROGRESS && clipboard && <Spinner /> }

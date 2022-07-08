@@ -66,11 +66,11 @@ function getPhraseWithTags( phrase, tags ) {
  */
 function Phrase( { phrase, tags } ) {
 	if ( phrase === '' ) {
-		return <em>{ __( 'no phrase' ) }</em>;
+		return <em>{ __( 'no phrase', 'search-regex' ) }</em>;
 	}
 
 	if ( phrase === null ) {
-		return <em>{ __( 'remove phrase' ) }</em>;
+		return <em>{ __( 'remove phrase', 'search-regex' ) }</em>;
 	}
 
 	return getPhraseWithTags( phrase, tags );

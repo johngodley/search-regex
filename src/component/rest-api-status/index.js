@@ -3,9 +3,8 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import classnames from 'classnames';
 
 /**
@@ -29,14 +28,6 @@ const isError = result => result.GET && result.POST && ( result.GET.status === S
 const isWorking = result => result.GET && result.POST && ( result.GET.status === STATUS_OK && result.POST.status === STATUS_OK );
 
 class RestApiStatus extends React.Component {
-	static propTypes = {
-		allowChange: PropTypes.bool,
-	};
-
-	static defaultProps = {
-		allowChange: true,
-	};
-
 	constructor( props ) {
 		super( props );
 
@@ -97,14 +88,14 @@ class RestApiStatus extends React.Component {
 
 	getApiStatusText( status ) {
 		if ( status === STATUS_OK ) {
-			return __( 'Good' );
+			return __( 'Good', 'search-regex' );
 		} else if ( status === STATUS_WARNING_CURRENT ) {
-			return __( 'Working but some issues' );
+			return __( 'Working but some issues', 'search-regex' );
 		} else if ( status === STATUS_WARNING ) {
-			return __( 'Not working but fixable' );
+			return __( 'Not working but fixable', 'search-regex' );
 		}
 
-		return __( 'Unavailable' );
+		return __( 'Unavailable', 'search-regex' );
 	}
 
 	onShow = () => {
@@ -119,24 +110,24 @@ class RestApiStatus extends React.Component {
 
 	renderError( status ) {
 		const showing = this.canShowProblem( status );
-		let message = __( 'There are some problems connecting to your REST API. It is not necessary to fix these problems and the plugin is able to work.' );
+		let message = __( 'There are some problems connecting to your REST API. It is not necessary to fix these problems and the plugin is able to work.', 'search-regex' );
 
 		if ( status === STATUS_FAIL ) {
-			message = __( 'Your REST API is not working and the plugin will not be able to continue until this is fixed.' );
+			message = __( 'Your REST API is not working and the plugin will not be able to continue until this is fixed.', 'search-regex' );
 		} else if ( status === STATUS_WARNING ) {
-			message = __( 'You are using a broken REST API route. Changing to a working API should fix the problem.' );
+			message = __( 'You are using a broken REST API route. Changing to a working API should fix the problem.', 'search-regex' );
 		}
 
 		return (
 			<div className="api-result-log">
 				<p>
-					<strong>{ __( 'Summary' ) }</strong>: { message }
+					<strong>{ __( 'Summary', 'search-regex' ) }</strong>: { message }
 				</p>
 
 				{ ! showing && (
 					<p>
 						<button className="button-secondary" type="button" onClick={ this.onShow }>
-							{ __( 'Show Problems' ) }
+							{ __( 'Show Problems', 'search-regex' ) }
 						</button>
 					</p>
 				) }
@@ -165,14 +156,14 @@ class RestApiStatus extends React.Component {
 
 					<div className="api-result-progress">
 						<span className={ statusClass }>
-							{ percent < 100 && __( 'Testing - %s%%', { args: [ percent ] } ) }
+							{ percent < 100 && sprintf( __( 'Testing - %s%%', 'search-regex' ), percent ) }
 							{ percent >= 100 && this.getApiStatusText( status ) }
 						</span>
 
 						{ percent < 100 && <Spinner /> }
 					</div>
 
-					{ percent >= 100 && status !== STATUS_OK && <button className="button button-secondary api-result-retry" onClick={ this.onRetry }>{ __( 'Check Again' ) }</button> }
+					{ percent >= 100 && status !== STATUS_OK && <button className="button button-secondary api-result-retry" onClick={ this.onRetry }>{ __( 'Check Again', 'search-regex' ) }</button> }
 				</div>
 
 				{ percent >= 100 && status !== STATUS_OK && this.renderError( status ) }

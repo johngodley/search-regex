@@ -14,15 +14,15 @@ function getIntegerLogicOptions() {
 	return [
 		{
 			value: 'set',
-			label: __( 'Set Value' ),
+			label: __( 'Set Value', 'search-regex' ),
 		},
 		{
 			value: 'increment',
-			label: __( 'Increment' ),
+			label: __( 'Increment', 'search-regex' ),
 		},
 		{
 			value: 'decrement',
-			label: __( 'Decrement' ),
+			label: __( 'Decrement', 'search-regex' ),
 		},
 	];
 }
@@ -31,11 +31,11 @@ function getStringLogicOptions() {
 	return [
 		{
 			value: 'set',
-			label: __( 'Set Value' ),
+			label: __( 'Set Value', 'search-regex' ),
 		},
 		{
 			value: 'replace',
-			label: __( 'Replace' ),
+			label: __( 'Replace', 'search-regex' ),
 		},
 	];
 }
@@ -44,15 +44,15 @@ function getMemberLogicOptions() {
 	return [
 		{
 			value: 'replace',
-			label: __( 'Replace With' ),
+			label: __( 'Replace With', 'search-regex' ),
 		},
 		{
 			value: 'include',
-			label: __( 'Add' ),
+			label: __( 'Add', 'search-regex' ),
 		},
 		{
 			value: 'exclude',
-			label: __( 'Remove' ),
+			label: __( 'Remove', 'search-regex' ),
 		},
 	];
 }
@@ -61,11 +61,11 @@ function getKeyValueLogicOptions() {
 	return [
 		{
 			value: 'add',
-			label: __( 'Add' ),
+			label: __( 'Add', 'search-regex' ),
 		},
 		{
 			value: 'remove',
-			label: __( 'Remove' ),
+			label: __( 'Remove', 'search-regex' ),
 		},
 	];
 }

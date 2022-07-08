@@ -19,23 +19,23 @@ function getIntegerLogicOptions() {
 	return [
 		{
 			value: 'equals',
-			label: __( 'Equals' ),
+			label: __( 'Equals', 'search-regex' ),
 		},
 		{
 			value: 'notequals',
-			label: __( 'Not Equals' ),
+			label: __( 'Not Equals', 'search-regex' ),
 		},
 		{
 			value: 'greater',
-			label: __( 'Greater' ),
+			label: __( 'Greater', 'search-regex' ),
 		},
 		{
 			value: 'less',
-			label: __( 'Less' ),
+			label: __( 'Less', 'search-regex' ),
 		},
 		{
 			value: 'range',
-			label: __( 'Range' ),
+			label: __( 'Range', 'search-regex' ),
 		},
 	];
 }
@@ -47,11 +47,11 @@ function getIntegerLogicJoin() {
 	return [
 		{
 			value: 'has',
-			label: __( 'Has Owner' ),
+			label: __( 'Has Owner', 'search-regex' ),
 		},
 		{
 			value: 'hasnot',
-			label: __( 'No Owner' ),
+			label: __( 'No Owner', 'search-regex' ),
 		},
 	];
 }
@@ -63,27 +63,27 @@ function getStringLogicOptions() {
 	return [
 		{
 			value: 'equals',
-			label: __( 'Equals' ),
+			label: __( 'Equals', 'search-regex' ),
 		},
 		{
 			value: 'notequals',
-			label: __( 'Not Equals' ),
+			label: __( 'Not Equals', 'search-regex' ),
 		},
 		{
 			value: 'contains',
-			label: __( 'Contains' ),
+			label: __( 'Contains', 'search-regex' ),
 		},
 		{
 			value: 'notcontains',
-			label: __( 'Not contains' ),
+			label: __( 'Not contains', 'search-regex' ),
 		},
 		{
 			value: 'begins',
-			label: __( 'Begins' ),
+			label: __( 'Begins', 'search-regex' ),
 		},
 		{
 			value: 'ends',
-			label: __( 'End' ),
+			label: __( 'End', 'search-regex' ),
 		},
 	];
 }
@@ -95,11 +95,11 @@ function getMemberLogicOptions() {
 	return [
 		{
 			value: 'include',
-			label: __( 'Includes any' ),
+			label: __( 'Includes any', 'search-regex' ),
 		},
 		{
 			value: 'exclude',
-			label: __( 'Excludes any' ),
+			label: __( 'Excludes any', 'search-regex' ),
 		},
 	];
 }
@@ -111,7 +111,7 @@ function getKeyValueLogicOptions() {
 	return [
 		{
 			value: 'any',
-			label: __( 'Any' ),
+			label: __( 'Any', 'search-regex' ),
 		},
 	].concat( getStringLogicOptions() );
 }

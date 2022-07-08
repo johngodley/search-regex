@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { __, numberFormat } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { connect } from 'react-redux';
 
 /**
@@ -23,34 +23,27 @@ function AdvancedPagination( props ) {
 	return (
 		<div className="tablenav-pages">
 			{ noTotal && <div>&nbsp;</div> }
-			{ ! noTotal && (
+			{ !noTotal && (
 				<div className="displaying-num">
-					{ __( '%s database row in total', '%s database rows in total', {
-						count: total,
-						args: numberFormat( total ),
-					} ) }
+					{ _n( '%s database row in total', '%s database rows in total', total, 'search-regex' ), new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( total ) } ) }
 					&nbsp;&mdash;&nbsp;
-					{ __( 'matched rows = %(searched)s, phrases = %(found)s', {
-						args: {
-							searched: numberFormat( totals.matched_rows ),
-							found: numberFormat( totals.matched_phrases ),
-						}
+					{ sprintf( __( 'matched rows = %(searched)s, phrases = %(found)s', 'search-regex' ), {
+						searched: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( totals.matched_rows ),
+						found: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( totals.matched_phrases ),
 					} ) }
 				</div>
 			) }
 			<div className="pagination-links">
-				<Nav title={ __( 'First page' ) } button="«" className="first-page" enabled={ previous && ! isLoading } onClick={ () => onChangePage( 0, SEARCH_FORWARD ) } />
-				<Nav title={ __( 'Prev page' ) } button="‹" className="prev-page" enabled={ previous && ! isLoading } onClick={ () => onChangePage( previous, SEARCH_BACKWARD ) } />
+				<Nav title={ __( 'First page', 'search-regex' ) } button="«" className="first-page" enabled={ previous && !isLoading } onClick={ () => onChangePage( 0, SEARCH_FORWARD ) } />
+				<Nav title={ __( 'Prev page', 'search-regex' ) } button="‹" className="prev-page" enabled={ previous && !isLoading } onClick={ () => onChangePage( previous, SEARCH_BACKWARD ) } />
 
 				<span className="tablenav-paging-text">
-					{ __( 'Progress %(current)s%%', {
-						args: {
-							current: numberFormat( searchDirection === SEARCH_FORWARD ? forwardPercent( total, next ) : backPercent( total, next == false ? previous : next ) ),
-						},
+					{ sprintf( __( 'Progress %(current)s%%', 'search-regex' ), {
+						current: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( searchDirection === SEARCH_FORWARD ? forwardPercent( total, next ) : backPercent( total, next == false ? previous : next ) ),
 					} ) }
 				</span>
 
-				<Nav title={ __( 'Next page' ) } button="›" className="next-page" enabled={ next !== false && ! isLoading } onClick={ () => onChangePage( next, SEARCH_FORWARD ) } />
+				<Nav title={ __( 'Next page', 'search-regex' ) } button="›" className="next-page" enabled={ next !== false && !isLoading } onClick={ () => onChangePage( next, SEARCH_FORWARD ) } />
 			</div>
 		</div>
 	);

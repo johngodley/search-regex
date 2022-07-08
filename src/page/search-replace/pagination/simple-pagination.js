@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { __, numberFormat } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { connect } from 'react-redux';
 
 /**
@@ -22,54 +22,50 @@ function SimplePagination( props ) {
 	return (
 		<div className="tablenav-pages">
 			{ noTotal && <div>&nbsp;</div> }
-			{ ! noTotal && (
+			{ !noTotal && (
 				<div className="displaying-num">
-					{ __( 'Matched rows: %(matches)s out of %(total)s total.', {
-						args: {
-							matches: numberFormat( matchedRows ),
-							total: numberFormat( total ),
-						},
-					} ) }{' '}
+					{ sprintf( __( 'Matched rows: %(matches)s out of %(total)s total.', 'redirection' ), {
+						matches: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( matchedRows ),
+						total: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( total ),
+					} ) }{ ' ' }
 				</div>
 			) }
 
 			<div className="pagination-links">
 				<Nav
-					title={ __( 'First page' ) }
+					title={ __( 'First page', 'search-regex' ) }
 					button="«"
 					className="first-page"
-					enabled={ previous !== false && ! isLoading }
+					enabled={ previous !== false && !isLoading }
 					onClick={ () => onChangePage( 0 ) }
 				/>
 				<Nav
-					title={ __( 'Prev page' ) }
+					title={ __( 'Prev page', 'search-regex' ) }
 					button="‹"
 					className="prev-page"
-					enabled={ previous !== false && ! isLoading }
+					enabled={ previous !== false && !isLoading }
 					onClick={ () => onChangePage( previous ) }
 				/>
 
 				<span className="tablenav-paging-text">
-					{ __( 'Page %(current)s of %(total)s', {
-						args: {
-							current: numberFormat( currentPage ),
-							total: numberFormat( totalPages ),
-						},
+					{ sprintf( __( 'Page %(current)s of %(total)s', 'redirection' ), {
+						current: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( currentPage ),
+						total: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( totalPages ),
 					} ) }
 				</span>
 
 				<Nav
-					title={ __( 'Next page' ) }
+					title={ __( 'Next page', 'search-regex' ) }
 					button="›"
 					className="next-page"
-					enabled={ hasNext && ! isLoading }
+					enabled={ hasNext && !isLoading }
 					onClick={ () => onChangePage( next ) }
 				/>
 				<Nav
-					title={ __( 'Last page' ) }
+					title={ __( 'Last page', 'search-regex' ) }
 					button="»"
 					className="last-page"
-					enabled={ hasNext && ! isLoading }
+					enabled={ hasNext && !isLoading }
 					onClick={ () => onChangePage( ( totalPages - 1 ) * perPage ) }
 				/>
 			</div>

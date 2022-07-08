@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { __, numberFormat } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 
@@ -57,7 +57,7 @@ function Result( props ) {
 			<td className="searchregex-result__table">
 				<span title={ source_type }>{ source_name }</span>
 			</td>
-			<td className="searchregex-result__row">{ numberFormat( row_id, 0 ) }</td>
+			<td className="searchregex-result__row">{ new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( row_id ) }</td>
 
 			<td className="searchregex-result__match">
 				<h2>

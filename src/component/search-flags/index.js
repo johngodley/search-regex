@@ -33,7 +33,7 @@ function SearchFlags( props ) {
 			options={ options }
 			selected={ flags }
 			onApply={ ( searchFlags ) => onChange( searchFlags ) }
-			title={ __( 'Flags' ) }
+			title={ __( 'Flags', 'search-regex' ) }
 			disabled={ disabled }
 			multiple
 			badges

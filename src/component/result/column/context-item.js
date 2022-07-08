@@ -70,7 +70,7 @@ function ContextItem( props ) {
 						className="searchregex-replace__modal"
 						description={ getValueType(
 							context.type === 'keyvalue' ? context.value.value_type : context.value_type
-						) ? __( 'Contains encoded data' ) : '' }
+						) ? __( 'Contains encoded data', 'search-regex' ) : '' }
 					/>
 				) }
 			/>

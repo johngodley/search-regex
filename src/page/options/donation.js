@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Table, TableRow } from '@wp-plugin-components';
+import { Table, TableRow, createInterpolateElement } from '@wp-plugin-components';
 import './style.scss';
 
 const MIN = 16;
@@ -20,7 +20,7 @@ class Donation extends React.Component {
 		support: PropTypes.bool.isRequired,
 	};
 
-	constructor( props ) {
+	constructor ( props ) {
 		super( props );
 
 		this.onDonate = this.handleDonation.bind( this );
@@ -95,12 +95,12 @@ class Donation extends React.Component {
 		return (
 			<div>
 				<p>
-					{ __( 'Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.', {
-						components: {
+					{ createInterpolateElement(
+						__( 'Search Regex is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by {{strong}}making a small donation{{/strong}}.', 'search-regex' ),
+						{
 							strong: <strong />,
-						},
-					} ) }
-					&nbsp;{ __( 'You get useful software and I get to carry on making it better.' ) }
+						} ) }
+					&nbsp;{ __( 'You get useful software and I get to carry on making it better.', 'search-regex' ) }
 				</p>
 
 				<input type="hidden" name="cmd" value="_xclick" />
@@ -122,7 +122,7 @@ class Donation extends React.Component {
 					$<input type="number" name="amount" min={ MIN } value={ this.state.amount } onChange={ this.onInput } onBlur={ this.onBlur } />
 
 					<span>{ this.getAmountoji( this.state.amount ) }</span>
-					<input type="submit" className="button-primary" value={ __( 'Support 💰' ) } />
+					<input type="submit" className="button-primary" value={ __( 'Support 💰', 'search-regex' ) } />
 				</div>
 			</div>
 		);
@@ -134,7 +134,7 @@ class Donation extends React.Component {
 		return (
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" className="donation">
 				<Table className="form-table">
-					<TableRow title={ __( 'Plugin Support' ) + ':' }>
+					<TableRow title={ __( 'Plugin Support', 'search-regex' ) + ':' }>
 						{ support ? this.renderSupported() : this.renderUnsupported() }
 					</TableRow>
 				</Table>

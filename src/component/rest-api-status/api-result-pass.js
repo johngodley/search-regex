@@ -12,7 +12,7 @@ const ApiResultPass = ( methods ) => {
 
 			{ methods.map( ( method, key ) => <span key={ key } className="api-result-method_pass">{ method }</span> ) }
 
-			{ __( 'Working!' ) }
+			{ __( 'Working!', 'search-regex' ) }
 		</p>
 	);
 };

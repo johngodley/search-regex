@@ -31,10 +31,10 @@ function SearchReplace( props ) {
 	return (
 		<>
 			<Notice level="warning">
-				<p>{ __( 'Please backup your data before making modifications.' ) }</p>
+				<p>{ __( 'Please backup your data before making modifications.', 'search-regex' ) }</p>
 			</Notice>
 
-			<p>{ __( 'Search and replace information in your database.' ) }</p>
+			<p>{ __( 'Search and replace information in your database.', 'search-regex' ) }</p>
 
 			<form className="searchregex-search" onSubmit={ ( ev ) => submit( ev ) }>
 				<SearchForm />

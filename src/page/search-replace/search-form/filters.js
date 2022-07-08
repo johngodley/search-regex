@@ -48,7 +48,7 @@ function Filters( { filters, disabled, onSetSearch, tags, presetFilters } ) {
 
 	return (
 		<tr>
-			<th>{ __( 'Filters' ) }</th>
+			<th>{ __( 'Filters', 'search-regex' ) }</th>
 			<td>
 				<div className="searchregex-filters">
 					{ filters.map( ( { type, items }, rowPosition ) => {
@@ -93,7 +93,7 @@ function Filters( { filters, disabled, onSetSearch, tags, presetFilters } ) {
 									}
 								/>
 								{ canShowBadge( rowPosition, type ) ? (
-									<Badge disabled={ disabled }>{ __( 'AND' ) }</Badge>
+									<Badge disabled={ disabled }>{ __( 'AND', 'search-regex' ) }</Badge>
 								) : (
 									<div className="searchregex-filters__break" />
 								) }

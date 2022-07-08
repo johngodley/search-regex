@@ -54,31 +54,31 @@ function ModifyDate( props ) {
 						items={ [
 							{
 								value: 'second',
-								label: __( 'Seconds' ),
+								label: __( 'Seconds', 'search-regex' ),
 							},
 							{
 								value: 'minute',
-								label: __( 'Minutes' ),
+								label: __( 'Minutes', 'search-regex' ),
 							},
 							{
 								value: 'hour',
-								label: __( 'Hours' ),
+								label: __( 'Hours', 'search-regex' ),
 							},
 							{
 								value: 'day',
-								label: __( 'Days' ),
+								label: __( 'Days', 'search-regex' ),
 							},
 							{
 								value: 'week',
-								label: __( 'Weeks' ),
+								label: __( 'Weeks', 'search-regex' ),
 							},
 							{
 								value: 'month',
-								label: __( 'Months' ),
+								label: __( 'Months', 'search-regex' ),
 							},
 							{
 								value: 'year',
-								label: __( 'Year' ),
+								label: __( 'Year', 'search-regex' ),
 							},
 						] }
 					/>

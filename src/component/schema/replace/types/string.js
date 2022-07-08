@@ -94,7 +94,7 @@ function ReplaceString( props ) {
 						type="text"
 						value={ replaceValue || '' }
 						onChange={ ( ev ) => setReplacement( { replaceValue: ev.target.value } ) }
-						placeholder={ __( 'Enter replacement' ) }
+						placeholder={ __( 'Enter replacement', 'search-regex' ) }
 					/>
 				) }
 			</div>
@@ -114,7 +114,7 @@ function ReplaceString( props ) {
 								} )
 							}
 						/>{' '}
-						{ __( 'Apply to matches only' ) }
+						{ __( 'Apply to matches only', 'search-regex' ) }
 					</label>
 				</p>
 			) }

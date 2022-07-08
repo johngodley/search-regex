@@ -22,8 +22,8 @@ function Actions( props ) {
 	const { actions } = result;
 	const actionList = [];
 	const actionMap = {
-		edit: __( 'Edit' ),
-		view: __( 'View' ),
+		edit: __( 'Edit', 'search-regex' ),
+		view: __( 'View', 'search-regex' ),
 	};
 
 	function onDelete( ev ) {
@@ -44,7 +44,7 @@ function Actions( props ) {
 
 	actionList.push(
 		<a key="delete" href="#" onClick={ onDelete }>
-			{ __( 'Delete database row' ) }
+			{ __( 'Delete database row', 'search-regex' ) }
 		</a>
 	);
 

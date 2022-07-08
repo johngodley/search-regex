@@ -86,9 +86,9 @@ function SearchResults( props ) {
 			>
 				<thead>
 					<tr>
-						<th className="searchregex-result__table">{ __( 'Source' ) }</th>
-						<th className="searchregex-result__row">{ __( 'Row ID' ) }</th>
-						<th className="searchregex-result__match">{ __( 'Matched Content' ) }</th>
+						<th className="searchregex-result__table">{ __( 'Source', 'search-regex' ) }</th>
+						<th className="searchregex-result__row">{ __( 'Row ID', 'search-regex' ) }</th>
+						<th className="searchregex-result__match">{ __( 'Matched Content', 'search-regex' ) }</th>
 					</tr>
 				</thead>
 
@@ -149,7 +149,7 @@ function mapDispatchToProps( dispatch ) {
 			dispatch( searchMore( page, perPage, limit ) );
 		},
 		onError: () => {
-			dispatch( setError( __( 'Your search resulted in too many requests. Please narrow your search terms.' ) ) );
+			dispatch( setError( __( 'Your search resulted in too many requests. Please narrow your search terms.', 'search-regex' ) ) );
 		}
 	};
 }

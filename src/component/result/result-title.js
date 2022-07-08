@@ -19,7 +19,7 @@ import { ExternalLink } from '@wp-plugin-components';
  * @returns {Element|string|object}
  */
 function ResultTitle( { view, title } ) {
-	const alwaysTitle = title ? title : __( 'No title' );
+	const alwaysTitle = title ? title : __( 'No title', 'search-regex' );
 
 	if ( view ) {
 		return <ExternalLink url={ view }>{ alwaysTitle }</ExternalLink>;

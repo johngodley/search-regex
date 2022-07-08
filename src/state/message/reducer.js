@@ -30,12 +30,12 @@ const addNotice = ( existing, notice ) => existing.slice( 0 ).concat( [ notice ]
 const reduceProgress = ( state ) => Math.max( 0, state.inProgress - 1 );
 
 const NOTICES = {
-	SETTING_SAVED: __( 'Settings saved' ),
-	SEARCH_DELETE_COMPLETE: __( 'Row deleted' ),
-	SEARCH_REPLACE_COMPLETE: __( 'Row replaced' ),
-	SEARCH_SAVE_ROW_COMPLETE: __( 'Row updated' ),
-	PRESET_SAVED: __( 'Preset saved' ),
-	PRESET_UPLOAD_COMPLETE: __( 'Preset uploaded' ),
+	SETTING_SAVED: __( 'Settings saved', 'search-regex' ),
+	SEARCH_DELETE_COMPLETE: __( 'Row deleted', 'search-regex' ),
+	SEARCH_REPLACE_COMPLETE: __( 'Row replaced', 'search-regex' ),
+	SEARCH_SAVE_ROW_COMPLETE: __( 'Row updated', 'search-regex' ),
+	PRESET_SAVED: __( 'Preset saved', 'search-regex' ),
+	PRESET_UPLOAD_COMPLETE: __( 'Preset uploaded', 'search-regex' ),
 };
 
 export default function messages( state = {}, action ) {

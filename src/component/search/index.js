@@ -37,7 +37,7 @@ function Search( props ) {
 				maxRows={ 5 }
 				onChange={ ( ev ) => onChange( ev.target.value ) }
 				disabled={ disabled }
-				placeholder={ __( 'Enter search phrase' ) }
+				placeholder={ __( 'Enter search phrase', 'search-regex' ) }
 			/>
 		);
 	}
@@ -49,7 +49,7 @@ function Search( props ) {
 			name="searchPhrase"
 			disabled={ disabled }
 			onChange={ ( ev ) => onChange( ev.target.value ) }
-			placeholder={ __( 'Optional global search phrase. Leave blank to use filters only.' ) }
+			placeholder={ __( 'Optional global search phrase. Leave blank to use filters only.', 'search-regex' ) }
 		/>
 	);
 }

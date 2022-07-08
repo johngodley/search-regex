@@ -49,7 +49,7 @@ function PresetFlags( props ) {
 	}
 
 	if ( locked.length > 0 ) {
-		flags.push( __( 'Locked fields' ) );
+		flags.push( __( 'Locked fields', 'search-regex' ) );
 	}
 
 	return <p>{ flags.join( ', ' ) }</p>;

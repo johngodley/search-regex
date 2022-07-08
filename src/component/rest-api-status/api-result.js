@@ -27,8 +27,8 @@ const ApiResult = ( { item, result, routes, isCurrent, allowChange } ) => {
 	return (
 		<div className="api-result-log">
 			<form className="api-result-select" action={ SearchRegexi10n.pluginRoot + '&sub=support' } method="POST">
-				{ allowChange && ! isCurrent && <input type="submit" className="button button-secondary" value={ __( 'Switch to this API' ) } /> }
-				{ allowChange && isCurrent && <span>{ __( 'Current API' ) }</span> }
+				{ allowChange && ! isCurrent && <input type="submit" className="button button-secondary" value={ __( 'Switch to this API', 'search-regex' ) } /> }
+				{ allowChange && isCurrent && <span>{ __( 'Current API', 'search-regex' ) }</span> }
 
 				<input type="hidden" name="rest_api" value={ item.value } />
 				<input type="hidden" name="_wpnonce" value={ getApiNonce() } />

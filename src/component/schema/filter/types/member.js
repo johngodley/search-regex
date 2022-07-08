@@ -35,7 +35,7 @@ function getOptions( options ) {
 	return [
 		{
 			value: '',
-			label: __( 'All' ),
+			label: __( 'All', 'search-regex' ),
 		},
 	].concat( options );
 }

@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import classnames from 'classnames';
 
 /**
@@ -18,11 +18,9 @@ const MAX_CONTEXT_LENGTH = 500;
 
 function getValue( label, value ) {
 	if ( parseInt( value, 10 ) > 0 ) {
-		return __( '%(label)s (ID %(id)d)', {
-			args: {
-				label,
-				id: value,
-			},
+		return sprintf( __( '%(label)s (ID %(id)d)', 'search-regex' ), {
+			label,
+			id: value,
 		} );
 	}
 
@@ -51,13 +49,13 @@ function ContextType( props ) {
 				) }
 			>
 				<Badge className={ 'searchregex-list__delete' }>
-					{ value.substring( 0, MAX_CONTEXT_LENGTH ) || __( 'No value' ) }
+					{ value.substring( 0, MAX_CONTEXT_LENGTH ) || __( 'No value', 'search-regex' ) }
 					{ value.length > MAX_CONTEXT_LENGTH && <span>...</span> }
 				</Badge>
 
 				<span
 					className={ classnames( 'dashicons', {
-						'dashicons-arrow-right-alt': ! isTooLong,
+						'dashicons-arrow-right-alt': !isTooLong,
 						'dashicons-arrow-down-alt': isTooLong,
 						'searchregex-list-replace__break': isTooLong,
 					} ) }
@@ -65,7 +63,7 @@ function ContextType( props ) {
 
 				{ replacement.length === 0 ? (
 					<span className={ classnames( 'searchregex-list__value', 'searchregex-list__novalue', className ) }>
-						{ __( 'Empty value' ) }
+						{ __( 'Empty value', 'search-regex' ) }
 					</span>
 				) : (
 					<Badge className={ 'searchregex-list__add' }>
@@ -80,7 +78,7 @@ function ContextType( props ) {
 	if ( type === 'empty' || ( type === 'value' && value.length === 0 ) ) {
 		return (
 			<span className={ classnames( 'searchregex-list__value', 'searchregex-list__novalue', className ) }>
-				{ __( 'No value' ) }
+				{ __( 'No value', 'search-regex' ) }
 			</span>
 		);
 	}

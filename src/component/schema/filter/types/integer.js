@@ -8,6 +8,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 
+import { createInterpolateElement } from '@wp-plugin-components';
 import Logic from '../logic';
 import IntegerInput from '../../../integer-input';
 
@@ -49,8 +50,9 @@ function FilterInteger( props ) {
 			) }
 
 			{ logic === 'range' &&
-				__( 'between {{first/}} and {{second/}}', {
-					components: {
+				createInterpolateElement(
+					__( 'between {{first/}} and {{second/}}', 'redirection' ),
+					{
 						first: (
 							<IntegerInput
 								name="startValue"
@@ -72,7 +74,7 @@ function FilterInteger( props ) {
 							/>
 						),
 					},
-				} ) }
+				) }
 		</>
 	);
 }

@@ -62,7 +62,7 @@ function Preset( props ) {
 	function deleteIt( ev ) {
 		ev.preventDefault();
 
-		if ( confirm( __( 'Are you sure you want to delete this preset?' ) ) ) {
+		if ( confirm( __( 'Are you sure you want to delete this preset?', 'search-regex' ) ) ) {
 			setSaving( true );
 			onDelete( id );
 		}
@@ -95,16 +95,16 @@ function Preset( props ) {
 						) : (
 							<>
 								<a href="#" onClick={ editIt }>
-									{ __( 'Edit' ) }
+									{ __( 'Edit', 'search-regex' ) }
 								</a>{' '}
 								|{' '}
 								<a href="#" onClick={ deleteIt }>
-									{ __( 'Delete' ) }
+									{ __( 'Delete', 'search-regex' ) }
 								</a>{' '}
 								|{' '}
 								<CopyToClipboard text={ JSON.stringify( cleanPreset( preset ) ) }>
 									<a href="#" onClick={ ( ev ) => ev.preventDefault() }>
-										{ __( 'Copy to clipboard' ) }
+										{ __( 'Copy to clipboard', 'search-regex' ) }
 									</a>
 								</CopyToClipboard>
 							</>

@@ -70,7 +70,7 @@ function Actions( props ) {
 		<>
 			{ ! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
 				<tr className={ classnames( 'searchregex-search__action', headerClass ) }>
-					<th>{ __( 'Action' ) }</th>
+					<th>{ __( 'Action', 'search-regex' ) }</th>
 					<td>
 						<Select
 							items={ actions }
@@ -83,7 +83,7 @@ function Actions( props ) {
 
 						{ action === 'modify' && (
 							<>
-								<span>{ __( 'Source' ) }</span>
+								<span>{ __( 'Source', 'search-regex' ) }</span>
 								<Select
 									disabled={ disabled }
 									name="actionSource"
@@ -103,7 +103,7 @@ function Actions( props ) {
 
 						{ action === 'export' && (
 							<>
-								<span>{ __( 'Export Format' ) }</span>
+								<span>{ __( 'Export Format', 'search-regex' ) }</span>
 
 								<Select
 									items={ getExportOptions() }
@@ -119,7 +119,7 @@ function Actions( props ) {
 
 						{ action === 'action' && (
 							<>
-								<span>{ __( 'WordPress Action' ) }</span>
+								<span>{ __( 'WordPress Action', 'search-regex' ) }</span>
 								<input
 									type="text"
 									className=""
@@ -152,7 +152,7 @@ function Actions( props ) {
 										} )
 									}
 								/>
-								{ __( 'Only include selected columns' ) }
+								{ __( 'Only include selected columns', 'search-regex' ) }
 							</label>
 						</p>
 					</td>
@@ -181,7 +181,7 @@ function Actions( props ) {
 
 			{ action === 'replace' && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
 				<tr className="searchregex-search__replace">
-					<th>{ __( 'Replace' ) }</th>
+					<th>{ __( 'Replace', 'search-regex' ) }</th>
 					<td>
 						<Replace
 							replacement={ replacement }

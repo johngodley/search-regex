@@ -35,18 +35,18 @@ function isPerformReady( action, actionOption ) {
 
 function getPerformButton( action ) {
 	if ( action === 'delete' ) {
-		return __( 'Delete Matches' );
+		return __( 'Delete Matches', 'search-regex' );
 	}
 
 	if ( action === 'export' ) {
-		return __( 'Export Matches' );
+		return __( 'Export Matches', 'search-regex' );
 	}
 
 	if ( action === 'action' ) {
-		return __( 'Run Action' );
+		return __( 'Run Action', 'search-regex' );
 	}
 
-	return __( 'Replace All' );
+	return __( 'Replace All', 'search-regex' );
 }
 
 /**
@@ -62,7 +62,7 @@ function SearchActions( props ) {
 	return (
 		<div className="searchregex-search__action">
 			<Button isPrimary isSubmit disabled={ status === STATUS_IN_PROGRESS || isSaving } name="search">
-				{ resultsDirty ? __( 'Refresh' ) : __( 'Search' ) }
+				{ resultsDirty ? __( 'Refresh', 'search-regex' ) : __( 'Search', 'search-regex' ) }
 			</Button>
 
 			{ action !== '' && (
@@ -79,7 +79,7 @@ function SearchActions( props ) {
 				<>
 					&nbsp;
 					<Button isDestructive onClick={ () => dispatch( cancel() ) }>
-						{ __( 'Cancel' ) }
+						{ __( 'Cancel', 'search-regex' ) }
 					</Button>
 					<Spinner />
 				</>

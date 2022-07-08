@@ -110,14 +110,14 @@ function Filter( props ) {
 							onRemove={ () => removeItem( columnPosition ) }
 						/>
 						{ columnPosition !== items.length - 1 && (
-							<Badge disabled={ disabled }>{ __( 'OR' ) }</Badge>
+							<Badge disabled={ disabled }>{ __( 'OR', 'search-regex' ) }</Badge>
 						) }
 					</React.Fragment>
 				) ) }
 			</div>
 			<div className="searchregex-filter__action">
 				<Button disabled={ disabled || items.length === MAX_OR_FILTERS } onClick={ addFilter }>
-					{ __( 'Add sub-filter (OR)' ) }
+					{ __( 'Add sub-filter (OR)', 'search-regex' ) }
 				</Button>
 			</div>
 		</div>

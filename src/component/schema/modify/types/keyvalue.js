@@ -33,9 +33,9 @@ function ModifyKeyValue( props ) {
 
 			<div className="searchregex-filter__keyvalue">
 				<div className="searchregex-filter__keyvalue__item">
-					<span>{ __( 'Meta Key' ) }</span>
+					<span>{ __( 'Meta Key', 'search-regex' ) }</span>
 
-					{ operation === 'replace_key' && __( 'Search' ) }
+					{ operation === 'replace_key' && __( 'Search', 'search-regex' ) }
 
 					<DropdownText
 						value={ key }
@@ -48,9 +48,9 @@ function ModifyKeyValue( props ) {
 
 				{ operation !== 'remove' && (
 					<div className="searchregex-filter__keyvalue__item">
-						<span>{ __( 'Meta Value' ) }</span>
+						<span>{ __( 'Meta Value', 'search-regex' ) }</span>
 
-						{ operation === 'replace_value' && __( 'Search' ) }
+						{ operation === 'replace_value' && __( 'Search', 'search-regex' ) }
 
 						{ valueFlags.indexOf( 'multi' ) === -1 ? (
 							<DropdownText

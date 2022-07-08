@@ -27,7 +27,7 @@ function FilterKeyValue( props ) {
 	return (
 		<div className="searchregex-filter__keyvalue">
 			<div className="searchregex-filter__keyvalue__item">
-				<span>{ __( 'Meta Key' ) }</span>
+				<span>{ __( 'Meta Key', 'search-regex' ) }</span>
 
 				<Logic
 					type="keyvalue"
@@ -53,7 +53,7 @@ function FilterKeyValue( props ) {
 				/>
 			</div>
 			<div className="searchregex-filter__keyvalue__item">
-				<span>{ __( 'Meta Value' ) }</span>
+				<span>{ __( 'Meta Value', 'search-regex' ) }</span>
 
 				<Logic
 					type="keyvalue"

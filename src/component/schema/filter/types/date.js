@@ -10,6 +10,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 
+import { createInterpolateElement } from '@wp-plugin-components';
 import Logic from '../logic';
 import './style.scss';
 
@@ -39,8 +40,9 @@ function FilterDate( props ) {
 			) }
 
 			{ logic === 'range' &&
-				__( 'between {{first/}} and {{second/}}', {
-					components: {
+				createInterpolateElement(
+					__( 'between {{first/}} and {{second/}}', 'redirection' ),
+					{
 						first: (
 							<DatePicker
 								selected={ startValueDate }
@@ -65,7 +67,7 @@ function FilterDate( props ) {
 							/>
 						),
 					},
-				} ) }
+				) }
 		</>
 	);
 }

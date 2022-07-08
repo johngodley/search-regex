@@ -46,8 +46,8 @@ function ColumnLabel( props ) {
 			) }
 			title={
 				valueType
-					? __( 'This column contains special formatting. Modifying it could break the format.' )
-					: __( 'Click to replace column' )
+					? __( 'This column contains special formatting. Modifying it could break the format.', 'search-regex' )
+					: __( 'Click to replace column', 'search-regex' )
 			}
 			onClick={ enable }
 		>

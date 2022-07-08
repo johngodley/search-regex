@@ -29,13 +29,13 @@ function MetaValue( props ) {
 	return (
 		<>
 			<div className="searchregex-filter__keyvalue__item">
-				<span>{ __( 'Meta Key' ) }</span>
+				<span>{ __( 'Meta Key', 'search-regex' ) }</span>
 
 				<input
 					type="text"
 					value={ item.key }
 					disabled={ disabled || item.type === 'delete' }
-					placeholder={ item.type === 'add' ? __( 'New meta key' ) : '' }
+					placeholder={ item.type === 'add' ? __( 'New meta key', 'search-regex' ) : '' }
 					onChange={ ( ev ) =>
 						onChange( {
 							key: ev.target.value,
@@ -44,8 +44,8 @@ function MetaValue( props ) {
 					}
 				/>
 
-				{ type === 'add' && isNew && <Button onClick={ onAdd }>{ __( 'Add' ) }</Button> }
-				{ type === 'add' && ! isNew && <Button onClick={ onDelete }>{ __( 'Delete' ) }</Button> }
+				{ type === 'add' && isNew && <Button onClick={ onAdd }>{ __( 'Add', 'search-regex' ) }</Button> }
+				{ type === 'add' && ! isNew && <Button onClick={ onDelete }>{ __( 'Delete', 'search-regex' ) }</Button> }
 				{ type !== 'add' && (
 					<input
 						type="checkbox"
@@ -57,7 +57,7 @@ function MetaValue( props ) {
 			</div>
 
 			<div className="searchregex-filter__keyvalue__item searchregex-filter__keyvalue__item__value">
-				<span>{ __( 'Meta Value' ) }</span>
+				<span>{ __( 'Meta Value', 'search-regex' ) }</span>
 
 				{ flags.indexOf( 'multi' ) === -1 ? (
 					<input
@@ -71,7 +71,7 @@ function MetaValue( props ) {
 									original && getType( original.value ) === ev.target.value ? 'value' : type,
 							} )
 						}
-						placeholder={ item.type === 'add' ? __( 'New meta value' ) : '' }
+						placeholder={ item.type === 'add' ? __( 'New meta value', 'search-regex' ) : '' }
 					/>
 				) : (
 					<textarea
@@ -84,7 +84,7 @@ function MetaValue( props ) {
 									original && getType( original.value ) === ev.target.value ? 'value' : type,
 							} )
 						}
-						placeholder={ item.type === 'add' ? __( 'New meta value' ) : '' }
+						placeholder={ item.type === 'add' ? __( 'New meta value', 'search-regex' ) : '' }
 					/>
 				) }
 

@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { __, numberFormat } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { Line } from 'rc-progress';
 import { connect } from 'react-redux';
 
@@ -22,7 +22,7 @@ const getPercent = ( current, total ) => ( total > 0 ? Math.round( ( current / t
 function getTotalCount( name, count ) {
 	const args = {
 		count: count,
-		args: numberFormat( count, 0 ),
+		args: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( count ),
 	};
 
 	if ( name === 'delete' ) {
@@ -58,7 +58,7 @@ function ReplaceProgress( props ) {
 
 	return (
 		<div className="searchregex-replaceall">
-			<h3>{ __( 'Progress' ) }</h3>
+			<h3>{ __( 'Progress', 'search-regex' ) }</h3>
 
 			<div className="searchregex-replaceall__progress">
 				<div className="searchregex-replaceall__container">
@@ -73,7 +73,7 @@ function ReplaceProgress( props ) {
 
 				{ status === STATUS_COMPLETE && (
 					<button type="button" className="button button-primary" onClick={ onClear }>
-						{ __( 'Finished!' ) }
+						{ __( 'Finished!', 'search-regex' ) }
 					</button>
 				) }
 			</div>
@@ -105,7 +105,7 @@ function mapDispatchToProps( dispatch ) {
 		},
 		onError: () => {
 			dispatch(
-				setError( __( 'Your search resulted in too many requests. Please narrow your search terms.' ) )
+				setError( __( 'Your search resulted in too many requests. Please narrow your search terms.', 'search-regex' ) )
 			);
 		},
 	};

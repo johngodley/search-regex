@@ -122,13 +122,13 @@ function ModifyString( props ) {
 
 			{ operation === 'replace' && localOperation === 'replace' && (
 				<>
-					{ __( 'Search' ) }
+					{ __( 'Search', 'search-regex' ) }
 					{ searchFlags.indexOf( 'multi' ) === -1 ? (
 						<DropdownText { ...searchProps } />
 					) : (
 						<textarea { ...searchProps } />
 					) }
-					{ __( 'Replace' ) }
+					{ __( 'Replace', 'search-regex' ) }
 				</>
 			) }
 

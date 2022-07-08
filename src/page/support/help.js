@@ -1,35 +1,29 @@
-/* global SearchRegexi10n */
 /**
  * External dependencies
  */
 
-import React from 'react';
 import { __ } from '@wordpress/i18n';
 
-import { ExternalLink, Notice } from '@wp-plugin-components';
+import { ExternalLink, Notice, createInterpolateElement } from '@wp-plugin-components';
 
 const Help = () => {
 	return (
 		<div>
-			<h2>{ __( 'Need more help?' ) }</h2>
+			<h2>{ __( 'Need more help?', 'search-regex' ) }</h2>
 			<p>
-				{ __(
-					'Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}.',
+				{ createInterpolateElement(
+					__( 'Full documentation for Search Regex can be found at {{site}}https://searchregex.com{{/site}}.', 'search-regex' ),
 					{
-						components: {
-							site: <ExternalLink url="https://searchregex.com/support/" />,
-						},
+						site: <ExternalLink url="https://searchregex.com/support/" />,
 					}
 				) }
 			</p>
 			<p>
 				<strong>
-					{ __(
-						'If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide.',
+					{ createInterpolateElement(
+						__( 'If you want to report a bug please read the {{report}}Reporting Bugs{{/report}} guide.', 'search-regex' ),
 						{
-							components: {
-								report: <ExternalLink url="https://searchregex.com/support/reporting-bugs/" />,
-							},
+							report: <ExternalLink url="https://searchregex.com/support/reporting-bugs/" />,
 						}
 					) }
 				</strong>
@@ -51,34 +45,31 @@ const Help = () => {
 			</Notice>
 			<p>
 				{ __(
-					'Please note that any support is provide on as-time-is-available basis and is not guaranteed. I do not provide paid support.'
+					'Please note that any support is provide on as-time-is-available basis and is not guaranteed. I do not provide paid support.',
+					'search-regex'
 				) }
 			</p>
 			<p>
-				{ __(
-					"If you want to submit information that you don't want in a public repository then send it directly via {{email}}email{{/email}} - include as much information as you can!",
+				{ createInterpolateElement(
+					__( "If you want to submit information that you don't want in a public repository then send it directly via {{email}}email{{/email}} - include as much information as you can!", 'search-regex' ),
 					{
-						components: {
-							email: (
-								<a
-									href={
-										'mailto:john@searchregex.com?subject=Search%20Regex%20Issue&body=' +
-										encodeURIComponent( 'Search Regex: ' + SearchRegexi10n.versions )
-									}
-								/>
-							),
-						},
-					}
+						email: (
+							<a
+								href={
+									'mailto:john@searchregex.com?subject=Search%20Regex%20Issue&body=' +
+									encodeURIComponent( 'Search Regex: ' + SearchRegexi10n.versions )
+								}
+							/>
+						),
+					},
 				) }
 			</p>
-			<h2>{ __( 'Redirection' ) }</h2>
+			<h2>{ __( 'Redirection', 'search-regex' ) }</h2>
 			<p>
-				{ __(
-					'Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, from the same author.',
+				{ createInterpolateElement(
+					__( 'Like this plugin? You might want to consider {{link}}Redirection{{/link}}, a plugin to manage redirects, from the same author.', 'search-regex' ),
 					{
-						components: {
-							link: <ExternalLink url="https://redirection.me" />,
-						},
+						link: <ExternalLink url="https://redirection.me" />,
 					}
 				) }
 			</p>

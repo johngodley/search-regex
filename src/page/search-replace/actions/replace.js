@@ -31,13 +31,13 @@ function ReplaceField( props ) {
 		<>
 			{ ! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
 				<tr className={ classnames( 'searchregex-search__replace', headerClass ) }>
-					<th>{ __( 'Replace' ) }</th>
+					<th>{ __( 'Replace', 'search-regex' ) }</th>
 					<td>
 						<Replace
 							disabled={ disabled }
 							setReplace={ ( replacement ) => dispatch( setSearch( { replacement } ) ) }
 							replace={ replacement }
-							placeholder={ __( 'Enter global replacement text' ) }
+							placeholder={ __( 'Enter global replacement text', 'search-regex' ) }
 						/>
 					</td>
 				</tr>
@@ -49,7 +49,7 @@ function ReplaceField( props ) {
 					disabled={ disabled }
 					setReplace={ setTaggedReplace }
 					replace={ replacement }
-					placeholder={ __( 'Enter global replacement text' ) }
+					placeholder={ __( 'Enter global replacement text', 'search-regex' ) }
 					className={ headerClass }
 				/>
 			) }

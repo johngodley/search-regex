@@ -44,11 +44,11 @@ function Presets( props ) {
 	const [ presetName, setPresetName ] = useState( '' );
 	const savingItem = [
 		{
-			label: __( 'Saving preset' ),
+			label: __( 'Saving preset', 'search-regex' ),
 			value: '',
 		},
 	];
-	const items = [ { label: __( 'No preset' ), value: '' } ].concat(
+	const items = [ { label: __( 'No preset', 'search-regex' ), value: '' } ].concat(
 		presets.map( ( item ) => ( {
 			label: item.name.substr( 0, 50 ),
 			value: item.id,
@@ -81,7 +81,7 @@ function Presets( props ) {
 	if ( ! currentPreset || currentPreset ===  '0' ) {
 		presetActions.push(
 			<a href="#" onClick={ askPresetName }>
-				{ __( 'Save search as new preset' ) }
+				{ __( 'Save search as new preset', 'search-regex' ) }
 			</a>
 		);
 	}
@@ -89,7 +89,7 @@ function Presets( props ) {
 	if ( currentPreset && currentPreset !== '0' ) {
 		presetActions.push(
 			<a href="#" onClick={ updatePreset }>
-				{ __( 'Update current preset' ) }
+				{ __( 'Update current preset', 'search-regex' ) }
 			</a>
 		);
 	}
@@ -98,8 +98,8 @@ function Presets( props ) {
 		<div className="searchregex-saved">
 			{ askName && (
 				<Modal onClose={ () => showName( false ) } className="searchregex-preset__name">
-					<h2>{ __( 'Saving Preset' ) }</h2>
-					<p>{ __( 'Enter a name for your preset' ) }</p>
+					<h2>{ __( 'Saving Preset', 'search-regex' ) }</h2>
+					<p>{ __( 'Enter a name for your preset', 'search-regex' ) }</p>
 					<form onSubmit={ savePreset }>
 						<input
 							type="text"
@@ -107,10 +107,10 @@ function Presets( props ) {
 							autoFocus
 							value={ presetName }
 							onChange={ ( ev ) => setPresetName( ev.target.value ) }
-							placeholder={ __( 'Enter preset name' ) }
+							placeholder={ __( 'Enter preset name', 'search-regex' ) }
 						/>
 						<button className="button button-primary" disabled={ presetName.length === 0 }>
-							{ __( 'Save' ) }
+							{ __( 'Save', 'search-regex' ) }
 						</button>
 
 						<button
@@ -118,7 +118,7 @@ function Presets( props ) {
 							onClick={ () => showName( false ) }
 							type="button"
 						>
-							{ __( 'Cancel' ) }
+							{ __( 'Cancel', 'search-regex' ) }
 						</button>
 					</form>
 				</Modal>

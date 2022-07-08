@@ -16,9 +16,9 @@ import { Table, TableRow } from '@wp-plugin-components';
 import { Select } from '@wp-plugin-components';
 
 export const getRestApi = () => [
-	{ value: 0, label: __( 'Default REST API' ) },
-	{ value: 1, label: __( 'Raw REST API' ) },
-	{ value: 3, label: __( 'Relative REST API' ) },
+	{ value: 0, label: __( 'Default REST API', 'search-regex' ) },
+	{ value: 1, label: __( 'Raw REST API', 'search-regex' ) },
+	{ value: 3, label: __( 'Relative REST API', 'search-regex' ) },
 ];
 
 function OptionsForm( props ) {
@@ -57,21 +57,21 @@ function OptionsForm( props ) {
 					</label>
 				</TableRow>
 
-				<TableRow title={ __( 'Default Preset' ) }>
+				<TableRow title={ __( 'Default Preset', 'search-regex' ) }>
 					<label>
 						<Select
-							items={ [ { value: 0, label: __( 'No default preset' ) } ].concat(
+							items={ [ { value: 0, label: __( 'No default preset', 'search-regex' ) } ].concat(
 								presets.map( ( preset ) => ( { value: preset.id, label: preset.name } ) )
 							) }
 							name="defaultPreset"
 							value={ defaultPreset }
 							onChange={ ( ev ) => setDefaultPreset( ev.target.value ) }
 						/>{' '}
-						{ __( 'Set a preset to use by default when Search Regex is loaded.' ) }
+						{ __( 'Set a preset to use by default when Search Regex is loaded.', 'search-regex' ) }
 					</label>
 				</TableRow>
 
-				<TableRow title={ __( 'REST API' ) }>
+				<TableRow title={ __( 'REST API', 'search-regex' ) }>
 					<Select
 						items={ getRestApi() }
 						name="rest_api"
@@ -80,7 +80,7 @@ function OptionsForm( props ) {
 					/>
 					&nbsp;
 					<span className="sub">
-						{ __( "How Search Regex uses the REST API - don't change unless necessary" ) }
+						{ __( "How Search Regex uses the REST API - don't change unless necessary", 'search-regex' ) }
 					</span>
 				</TableRow>
 			</Table>
@@ -89,7 +89,7 @@ function OptionsForm( props ) {
 				className="button-primary"
 				type="submit"
 				name="update"
-				value={ __( 'Update' ) }
+				value={ __( 'Update', 'search-regex' ) }
 				disabled={ saveStatus === STATUS_IN_PROGRESS }
 			/>
 		</form>

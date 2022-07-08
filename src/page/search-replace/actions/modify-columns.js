@@ -50,7 +50,7 @@ function ModifyColumns( props ) {
 
 	return (
 		<>
-			<span>{ __( 'Column' ) }</span>
+			<span>{ __( 'Column', 'search-regex' ) }</span>
 			<Select
 				items={ filteredColumns }
 				name="modify"
@@ -60,7 +60,7 @@ function ModifyColumns( props ) {
 				onChange={ ( ev ) => setModify( ev.target.value ) }
 			/>
 			<Button disabled={ disabled } onClick={ addActionOption }>
-				{ __( 'Add' ) }
+				{ __( 'Add', 'search-regex' ) }
 			</Button>
 		</>
 	);

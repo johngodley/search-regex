@@ -42,7 +42,7 @@ function SearchForm( { search, onSetSearch, replaceAll, currentPreset, status } 
 		<table>
 			<tbody>
 				<tr className={ classnames( headerClass ) }>
-					<th>{ __( 'Preset' ) }</th>
+					<th>{ __( 'Preset', 'search-regex' ) }</th>
 					<td>
 						<Presets />
 					</td>

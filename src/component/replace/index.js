@@ -43,7 +43,7 @@ function Replace( props ) {
 		id: 'replace',
 		value: replacement,
 		disabled: disabled || searchFlags === 'remove',
-		placeholder: searchFlags === 'remove' ? __( 'Matched values will be removed' ) : __( 'Enter replacement value' ),
+		placeholder: searchFlags === 'remove' ? __( 'Matched values will be removed', 'search-regex' ) : __( 'Enter replacement value', 'search-regex' ),
 		name: 'replace',
 		onChange: ( ev ) => {
 			setReplace( { replacement: ev.target.value } );
@@ -65,9 +65,9 @@ function Replace( props ) {
 			<Select
 				disabled={ disabled }
 				items={ [
-					{ value: '', label: __( 'Single' ) },
-					{ value: 'multi', label: __( 'Multi' ) },
-					{ value: 'remove', label: __( 'Remove' ) },
+					{ value: '', label: __( 'Single', 'search-regex' ) },
+					{ value: 'multi', label: __( 'Multi', 'search-regex' ) },
+					{ value: 'remove', label: __( 'Remove', 'search-regex' ) },
 				] }
 				value={ searchFlags }
 				name="search-flags"

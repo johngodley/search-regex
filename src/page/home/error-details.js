@@ -8,7 +8,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 
-import { ExternalLink } from '@wp-plugin-components';
+import { ExternalLink, createInterpolateElement } from '@wp-plugin-components';
 import RestApiStatus from '../../component/rest-api-status';
 
 function ErrorDetails() {
@@ -16,33 +16,30 @@ function ErrorDetails() {
 		<>
 			<RestApiStatus />
 
-			<h3>{ __( 'What do I do next?' ) }</h3>
+			<h3>{ __( 'What do I do next?', 'search-regex' ) }</h3>
 
 			<ol>
 				<li>
-					{ __(
-						'{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches.',
+					{ createInterpolateElement(
+						__( '{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches.', 'redirection' ),
 						{
-							components: {
-								link: <ExternalLink url="https://searchregex.com/support/problems/cloudflare/" />,
-							},
+							link: <ExternalLink url="https://searchregex.com/support/problems/cloudflare/" />,
 						}
 					) }
 				</li>
 				<li>
-					{ __( '{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems.', {
-						components: {
+					{ createInterpolateElement(
+						__( '{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems.', 'redirection' ),
+						{
 							link: <ExternalLink url="https://searchregex.com/support/problems/plugins/" />,
 						},
-					} ) }
+					) }
 				</li>
 				<li>
-					{ __(
-						'If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues.',
+					{ createInterpolateElement(
+						__( 'If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues.', 'redirection' ),
 						{
-							components: {
-								link: <ExternalLink url="/wp-admin/site-health.php" />,
-							},
+							link: <ExternalLink url="/wp-admin/site-health.php" />,
 						}
 					) }
 				</li>

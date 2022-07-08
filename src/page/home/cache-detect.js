@@ -16,14 +16,14 @@ function CacheDetect() {
 			errors={ '' }
 			details={ getErrorDetails().concat( [ getCacheBuster() ] ) }
 			type="fixed"
-			title={ __( 'Cached Search Regex detected' ) }
+			title={ __( 'Cached Search Regex detected', 'search-regex' ) }
 			links={ getErrorLinks() }
 		>
-			<p>{ __( 'Please clear your browser cache and reload this page.' ) }</p>
+			<p>{ __( 'Please clear your browser cache and reload this page.', 'search-regex' ) }</p>
 			<p>
-				{ __( 'If you are using a caching system such as Cloudflare then please read this: ' ) }
+				{ __( 'If you are using a caching system such as Cloudflare then please read this: ', 'search-regex' ) }
 				<ExternalLink url="https://searchregex.com/support/problems/cloudflare/">
-					{ __( 'clearing your cache.' ) }
+					{ __( 'clearing your cache.', 'search-regex' ) }
 				</ExternalLink>
 			</p>
 		</Error>

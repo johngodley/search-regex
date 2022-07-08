@@ -34,22 +34,22 @@ function PresetEntry( props ) {
 			<td className="searchregex-preset__search">
 				{ searchPhrase.length > 0 && (
 					<p>
-						<strong>{ __( 'Search' ) }</strong>: <Phrase phrase={ searchPhrase } tags={ tags } />
+						<strong>{ __( 'Search', 'search-regex' ) }</strong>: <Phrase phrase={ searchPhrase } tags={ tags } />
 					</p>
 				) }
 				{ filters.length > 0 && (
 					<p>
-						<strong>{ __( 'Filters' ) }</strong>: { filters.length }
+						<strong>{ __( 'Filters', 'search-regex' ) }</strong>: { filters.length }
 					</p>
 				) }
 				{ description && (
 					<p>
-						<strong>{ __( 'Action' ) }</strong>: { description.label }
+						<strong>{ __( 'Action', 'search-regex' ) }</strong>: { description.label }
 					</p>
 				) }
 				{ replacement.length > 0 && (
 					<p>
-						<strong>{ __( 'Replace' ) }</strong>: <Phrase phrase={ replacement } tags={ tags } />
+						<strong>{ __( 'Replace', 'search-regex' ) }</strong>: <Phrase phrase={ replacement } tags={ tags } />
 					</p>
 				) }
 

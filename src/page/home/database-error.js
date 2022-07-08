@@ -18,7 +18,7 @@ function DatabaseError( props ) {
 			<div className="closer" onClick={ onClear }>
 				<span className="dashicons dashicons-no-alt" />
 			</div>
-			<h2>{ __( 'Query Problem' ) }</h2>
+			<h2>{ __( 'Query Problem', 'search-regex' ) }</h2>
 			<p>
 				{ __(
 					"A problem occurred with your last query. This is likely caused by a combination of search filters that haven't been handled properly."
@@ -29,13 +29,13 @@ function DatabaseError( props ) {
 				<code>{ error.jsonData }</code>
 			</p>
 
-			<h3>{ __( 'What do I do next?' ) }</h3>
+			<h3>{ __( 'What do I do next?', 'search-regex' ) }</h3>
 			<p>
 				<a href={ github } className="button-primary">
-					{ __( 'Create An Issue' ) }
+					{ __( 'Create An Issue', 'search-regex' ) }
 				</a>{' '}
 				<a href={ email } className="button-secondary">
-					{ __( 'Email' ) }
+					{ __( 'Email', 'search-regex' ) }
 				</a>
 			</p>
 		</div>

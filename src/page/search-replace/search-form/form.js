@@ -204,7 +204,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 
 			{ ( ! isLocked( locked, 'source' ) || viewFilters ) && (
 				<tr className={ classnames( 'searchregex-search__source', headerClass ) }>
-					<th>{ __( 'Source' ) }</th>
+					<th>{ __( 'Source', 'search-regex' ) }</th>
 					<td>
 						{ ! isLocked( locked, 'source' ) && (
 							<MultiOptionDropdown
@@ -216,15 +216,15 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 								multiple
 								disabled={ isBusy }
 								badges
-								title={ source.length === 0 ? __( 'Source' ) : '' }
-								aria-label={ __( 'Sources' ) }
+								title={ source.length === 0 ? __( 'Source', 'search-regex' ) : '' }
+								aria-label={ __( 'Sources', 'search-regex' ) }
 							/>
 						) }
 
 						{ viewFilters && (
 							<>
 								<span>
-									<strong>{ __( 'Filters' ) }</strong>
+									<strong>{ __( 'Filters', 'search-regex' ) }</strong>
 								</span>
 								<Select
 									disabled={ isBusy }
@@ -234,7 +234,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 									items={ filterOptions }
 								/>
 								<Button onClick={ addFilter } disabled={ isBusy || filters.length >= MAX_AND_FILTERS }>
-									{ __( 'Add' ) }
+									{ __( 'Add', 'search-regex' ) }
 								</Button>
 							</>
 						) }
@@ -255,7 +255,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 			{ ( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
 				! hasTags( tags, preset?.search?.searchPhrase ?? '' ) && (
 					<tr className={ classnames( 'searchregex-search__search', headerClass ) }>
-						<th>{ __( 'Search' ) }</th>
+						<th>{ __( 'Search', 'search-regex' ) }</th>
 
 						<td>
 							{ ! isLocked( locked, 'searchPhrase' ) && (
@@ -306,7 +306,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 			) }
 			{ ( ! isLocked( locked, 'perPage' ) || ! isLocked( locked, 'view' ) ) && (
 				<tr className={ classnames( 'searchregex-search__results', headerClass ) }>
-					<th>{ __( 'Results' ) }</th>
+					<th>{ __( 'Results', 'search-regex' ) }</th>
 					<td>
 						{ ! isLocked( locked, 'perPage' ) && (
 							<Select
@@ -325,7 +325,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema } ) {
 								onApply={ ( selected ) => onSetSearch( { view: selected } ) }
 								multiple
 								disabled={ isBusy }
-								title={ __( 'View Columns' ) }
+								title={ __( 'View Columns', 'search-regex' ) }
 							/>
 						) }
 					</td>

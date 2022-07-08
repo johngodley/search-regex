@@ -77,13 +77,13 @@ function ReplaceForm( props ) {
 						<input
 							type="submit"
 							className="button button-primary"
-							value={ __( 'Replace' ) }
+							value={ __( 'Replace', 'search-regex' ) }
 							disabled={ ! canReplace }
 						/>
 						<input
 							type="button"
 							className="button button-secondary"
-							value={ __( 'Cancel' ) }
+							value={ __( 'Cancel', 'search-regex' ) }
 							onClick={ onCancel }
 						/>
 					</p>

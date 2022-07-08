@@ -26,28 +26,28 @@ import UpdateNotice from './update-notice';
 import './style.scss';
 
 const getTitles = () => ( {
-	search: __( 'Search Regex' ),
-	options: __( 'Options' ),
-	support: __( 'Support' ),
-	presets: __( 'Presets' ),
+	search: __( 'Search Regex', 'search-regex' ),
+	options: __( 'Options', 'search-regex' ),
+	support: __( 'Support', 'search-regex' ),
+	presets: __( 'Presets', 'search-regex' ),
 } );
 
 const getMenu = () =>
 	[
 		{
-			name: __( 'Search & Replace' ),
+			name: __( 'Search & Replace', 'search-regex' ),
 			value: '',
 		},
 		{
-			name: __( 'Presets' ),
+			name: __( 'Presets', 'search-regex' ),
 			value: 'presets',
 		},
 		{
-			name: __( 'Options' ),
+			name: __( 'Options', 'search-regex' ),
 			value: 'options',
 		},
 		{
-			name: __( 'Support' ),
+			name: __( 'Support', 'search-regex' ),
 			value: 'support',
 		},
 	].filter( ( option ) => has_page_access( option.value ) || ( option.value === '' && has_page_access( 'search' ) ) );

@@ -6,19 +6,19 @@ import { __ } from '@wordpress/i18n';
 
 export default function getValueType( type ) {
 	if ( type === 'php' ) {
-		return __( 'Serialized PHP' );
+		return __( 'Serialized PHP', 'search-regex' );
 	}
 
 	if ( type === 'json' ) {
-		return __( 'JSON' );
+		return __( 'JSON', 'search-regex' );
 	}
 
 	if ( type === 'blocks' ) {
-		return __( 'Blocks' );
+		return __( 'Blocks', 'search-regex' );
 	}
 
 	if ( type === 'html' ) {
-		return __( 'HTML' );
+		return __( 'HTML', 'search-regex' );
 	}
 
 	return null;
