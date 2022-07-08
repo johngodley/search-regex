@@ -2,7 +2,7 @@
 
 namespace SearchRegex\Sql;
 
-use SearchRegex\Search_Flags;
+use Search\Flags;
 
 /**
  * WHERE for a string
@@ -30,11 +30,11 @@ class Sql_Where_String extends Sql_Where {
 	 * @param Sql_Select   $column Column.
 	 * @param string       $logic Logic.
 	 * @param string       $value Value.
-	 * @param Search_Flags $flags Search flags.
+	 * @param Search\Flags $flags Search flags.
 	 */
-	public function __construct( Sql_Select $column, $logic, $value, Search_Flags $flags = null ) {
+	public function __construct( Sql_Select $column, $logic, $value, Search\Flags $flags = null ) {
 		if ( $flags === null ) {
-			$flags = new Search_Flags( [ 'case' ] );
+			$flags = new Search\Flags( [ 'case' ] );
 		}
 
 		$logic_sql = 'LIKE';

@@ -2,7 +2,7 @@
 
 namespace SearchRegex\Sql;
 
-use SearchRegex\Search_Source;
+use SearchRegex\Source;
 
 /**
  * Join on comments table

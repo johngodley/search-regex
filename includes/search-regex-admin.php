@@ -1,26 +1,32 @@
 <?php
 
-require_once __DIR__ . '/models/search.php';
-require_once __DIR__ . '/models/result.php';
-require_once __DIR__ . '/actions/actions.php';
+namespace SearchRegex\Admin;
+
+use SearchRegex\Source;
+use SearchRegex\Search;
+use SearchRegex\Plugin;
+
+require_once __DIR__ . '/search/class-search.php';
+require_once __DIR__ . '/filter/class-search-filter.php';
+require_once __DIR__ . '/modifier/class-modifier.php';
+require_once __DIR__ . '/source/class-source.php';
+require_once __DIR__ . '/schema/class-schema.php';
+require_once __DIR__ . '/context/class-context.php';
+require_once __DIR__ . '/action/class-action.php';
 require_once __DIR__ . '/sql/sql.php';
 
-use SearchRegex\Source_Manager;
-use SearchRegex\Search_Flags;
-use SearchRegex\Preset;
-
-class Search_Regex_Admin {
-	/** @var null|Search_Regex_Admin */
+class Admin {
+	/** @var null|Admin */
 	private static $instance = null;
 
 	/**
 	 * Initialize the object
 	 *
-	 * @return Search_Regex_Admin
+	 * @return Admin
 	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
-			self::$instance = new Search_Regex_Admin();
+			self::$instance = new self();
 		}
 
 		return self::$instance;
@@ -33,8 +39,20 @@ class Search_Regex_Admin {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10, 4 );
 		add_filter( 'searchregex_result_actions', [ $this, 'extra_actions' ], 10, 3 );
+		add_filter( 'load_script_translation_file', [ $this, 'load_script_translation_file' ], 10, 3 );
 
-		register_uninstall_hook( SEARCHREGEX_FILE, [ 'Search_Regex_Admin', 'plugin_uninstall' ] );
+		register_uninstall_hook( SEARCHREGEX_FILE, [ $this, 'plugin_uninstall' ] );
+	}
+
+	/**
+	 * Massage the Search Regex WP translations.
+	 */
+	public function load_script_translation_file( $file, $handle, $domain ) {
+		if ( $domain === 'search-regex' ) {
+			return preg_replace( '/-\w*\./', '.', $file );
+		}
+
+		return $file;
 	}
 
 	/**
@@ -83,7 +101,7 @@ class Search_Regex_Admin {
 	 */
 	private function get_first_available_page_url() {
 		/** @psalm-suppress UndefinedClass */
-		$pages = Search_Regex_Capabilities::get_available_pages();
+		$pages = Plugin\Capabilities::get_available_pages();
 
 		if ( count( $pages ) > 0 ) {
 			return $this->get_plugin_url() . ( $pages[0] === 'search' ? '' : '&sub=' . rawurlencode( $pages[0] ) );
@@ -115,24 +133,24 @@ class Search_Regex_Admin {
 
 		$build = SEARCHREGEX_VERSION . '-' . SEARCHREGEX_BUILD;
 		$preload = $this->get_preload_data();
-		$options = searchregex_get_options();
+		$options = Plugin\searchregex_get_options();
 		$versions = array(
 			'Plugin: ' . SEARCHREGEX_VERSION,
 			'WordPress: ' . $wp_version . ' (' . ( is_multisite() ? 'multi' : 'single' ) . ')',
 			'PHP: ' . phpversion() . ' ' . ini_get( 'memory_limit' ) . ' ' . ini_get( 'max_execution_time' ) . 's',
 			'Browser: ' . $this->get_user_agent(),
 			'JavaScript: ' . plugin_dir_url( SEARCHREGEX_FILE ) . 'search-regex.js',
-			'REST API: ' . searchregex_get_rest_api(),
+			'REST API: ' . Plugin\searchregex_get_rest_api(),
 		);
 
 		wp_enqueue_script( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.js', [], $build, true );
 		wp_enqueue_style( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.css', [], $build );
 
 		/** @psalm-suppress UndefinedClass */
-		$pages = Search_Regex_Capabilities::get_available_pages();
+		$pages = Plugin\Capabilities::get_available_pages();
 
 		/** @psalm-suppress UndefinedClass */
-		$caps = Search_Regex_Capabilities::get_all_capabilities();
+		$caps = Plugin\Capabilities::get_all_capabilities();
 
 		$is_new = false;
 		$major_version = implode( '.', array_slice( explode( '.', SEARCHREGEX_VERSION ), 0, 2 ) );
@@ -144,19 +162,19 @@ class Search_Regex_Admin {
 
 		wp_localize_script( 'search-regex', 'SearchRegexi10n', array(
 			'api' => [
-				'WP_API_root' => esc_url_raw( searchregex_get_rest_api() ),
+				'WP_API_root' => esc_url_raw( Plugin\searchregex_get_rest_api() ),
 				'WP_API_nonce' => wp_create_nonce( 'wp_rest' ),
 				'site_health' => admin_url( 'site-health.php' ),
 				'current' => $options['rest_api'],
 				'routes' => [
-					SEARCHREGEX_API_JSON => searchregex_get_rest_api( SEARCHREGEX_API_JSON ),
-					SEARCHREGEX_API_JSON_INDEX => searchregex_get_rest_api( SEARCHREGEX_API_JSON_INDEX ),
-					SEARCHREGEX_API_JSON_RELATIVE => searchregex_get_rest_api( SEARCHREGEX_API_JSON_RELATIVE ),
+					SEARCHREGEX_API_JSON => Plugin\searchregex_get_rest_api( SEARCHREGEX_API_JSON ),
+					SEARCHREGEX_API_JSON_INDEX => Plugin\searchregex_get_rest_api( SEARCHREGEX_API_JSON_INDEX ),
+					SEARCHREGEX_API_JSON_RELATIVE => Plugin\searchregex_get_rest_api( SEARCHREGEX_API_JSON_RELATIVE ),
 				],
 			],
 			'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
 			'pluginRoot' => $this->get_plugin_url(),
-			'locale' => get_locale(),
+			'locale' => str_replace( '_', '-', get_locale() ),
 			'settings' => $options,
 			'preload' => $preload,
 			'versions' => implode( "\n", $versions ),
@@ -167,6 +185,8 @@ class Search_Regex_Admin {
 			],
 			'update_notice' => $is_new ? $major_version : false,
 		) );
+
+		wp_set_script_translations( 'search-regex', 'search-regex', plugin_dir_path( SEARCHREGEX_FILE ) . 'languages/json/' );
 
 		$this->add_help_tab();
 	}
@@ -194,7 +214,7 @@ class Search_Regex_Admin {
 	 */
 	private function set_rest_api( $api ) {
 		if ( $api >= 0 && $api <= SEARCHREGEX_API_JSON_RELATIVE ) {
-			searchregex_set_options( array( 'rest_api' => intval( $api, 10 ) ) );
+			Plugin\searchregex_set_options( array( 'rest_api' => intval( $api, 10 ) ) );
 		}
 	}
 
@@ -204,11 +224,11 @@ class Search_Regex_Admin {
 	 * @return Array
 	 */
 	private function get_preload_data() {
-		$schema = Source_Manager::get_schema();
-		$presets = Preset::get_all();
+		$schema = Source\Manager::get_schema();
+		$presets = Search\Preset::get_all();
 
 		return [
-			'sources' => Source_Manager::get_all_grouped(),
+			'sources' => Source\Manager::get_all_grouped(),
 			'presets' => $presets,
 			'schema' => $schema,
 			'labels' => $this->get_preload_labels( $presets ),
@@ -253,7 +273,7 @@ class Search_Regex_Admin {
 		foreach ( $filters_to_preload as $filter ) {
 			if ( is_array( $filter ) && isset( $filter['type'] ) && isset( $filter['items'] ) ) {
 				foreach ( $filter['items'] as $filt ) {
-					$preload = array_merge( $preload, Source_Manager::get_schema_preload( $filter['type'], $filt ) );
+					$preload = array_merge( $preload, Source\Manager::get_schema_preload( $filter['type'], $filt ) );
 				}
 			}
 		}
@@ -348,7 +368,7 @@ class Search_Regex_Admin {
 	 */
 	public function admin_menu() {
 		/** @psalm-suppress UndefinedClass */
-		$access = Search_Regex_Capabilities::get_plugin_access();
+		$access = Plugin\Capabilities::get_plugin_access();
 		$hook = add_management_page( 'Search Regex', 'Search Regex', $access, basename( SEARCHREGEX_FILE ), [ $this, 'admin_screen' ] );
 		if ( $hook ) {
 			add_action( 'load-' . $hook, [ $this, 'searchregex_head' ] );
@@ -377,7 +397,7 @@ class Search_Regex_Admin {
 	 */
 	public function admin_screen() {
 		/** @psalm-suppress UndefinedClass */
-		if ( count( Search_Regex_Capabilities::get_all_capabilities() ) === 0 ) {
+		if ( count( Plugin\Capabilities::get_all_capabilities() ) === 0 ) {
 			die( 'You do not have sufficient permissions to access this page.' );
 		}
 
@@ -518,7 +538,7 @@ class Search_Regex_Admin {
 
 		// Are we allowed to access this page?
 		/** @psalm-suppress UndefinedClass */
-		if ( in_array( $page, Search_Regex_Capabilities::get_available_pages(), true ) ) {
+		if ( in_array( $page, Plugin\Capabilities::get_available_pages(), true ) ) {
 			// phpcs:ignore
 			return $page;
 		}
@@ -552,6 +572,5 @@ class Search_Regex_Admin {
 	}
 }
 
-register_activation_hook( SEARCHREGEX_FILE, array( 'Search_Regex_Admin', 'plugin_activated' ) );
-
-add_action( 'init', array( 'Search_Regex_Admin', 'init' ) );
+register_activation_hook( SEARCHREGEX_FILE, array( '\SearchRegex\Admin\Admin', 'plugin_activated' ) );
+add_action( 'init', array( '\SearchRegex\Admin\Admin', 'init' ) );

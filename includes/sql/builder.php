@@ -24,7 +24,7 @@ class Sql_Builder {
 	 * Get total number of matching rows from a table using the filters
 	 *
 	 * @param Sql_Query $query Query.
-	 * @return Int|\WP_Error The number of rows, or WP_Error on error
+	 * @return Int|\WP_Error The number of rows, or \WP_Error on error
 	 */
 	public function get_count( Sql_Query $query ) {
 		global $wpdb;
