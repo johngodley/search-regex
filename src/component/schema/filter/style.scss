@@ -1,4 +1,4 @@
-@import '../../../global.scss';
+@import "../../../global.scss";
 
 .searchregex-filter {
 	display: flex;
@@ -14,14 +14,6 @@
 	> .wpl-badge {
 		margin-top: 10px;
 		margin-bottom: 10px;
-	}
-}
-
-.searchregex-filter__item {
-	margin-right: 10px;
-
-	p {
-		margin: 0;
 	}
 }
 
@@ -57,10 +49,15 @@
 	align-items: flex-start;
 	margin-left: 20px;
 
+	p {
+		margin: 0;
+	}
+
 	.dashicons-trash {
 		margin-right: 3px;
-		padding-top: 0;
 		cursor: pointer;
+		margin-left: 5px;
+		padding-top: 3px;
 	}
 
 	input,
@@ -84,11 +81,6 @@
 			width: 100px;
 		}
 	}
-
-	.dashicons-trash {
-		margin-left: 5px;
-		padding-top: 3px;
-	}
 }
 
 .searchregex-filter__content,
@@ -102,7 +94,7 @@
 	}
 
 	&::before {
-		content: '';
+		content: "";
 		display: block;
 		background-color: #333;
 		position: absolute;

@@ -1,4 +1,7 @@
-.react-error h1, .react-loading h1 {
+@import "global.scss";
+
+.react-error h1,
+.react-loading h1 {
 	text-align: center;
 	color: #999;
 	margin-top: 150px;
@@ -19,8 +22,8 @@
 
 	background-color: #333;
 	border-radius: 100%;
-	-webkit-animation: sk-scaleout-loading 1.0s infinite ease-in-out;
-	animation: sk-scaleout-loading 1.0s infinite ease-in-out;
+	-webkit-animation: sk-scaleout-loading 1s infinite ease-in-out;
+	animation: sk-scaleout-loading 1s infinite ease-in-out;
 }
 
 .react-error p {
@@ -30,7 +33,7 @@
 
 .react-error pre {
 	border: 1px solid #aaa;
-	background-color: white;
+	background-color: $white;
 	padding: 10px;
 	margin: 0 auto;
 	width: 600px;
@@ -43,26 +46,29 @@ p.versions {
 	line-height: 1.6;
 	color: #666;
 	font-size: 12px;
-	background-color: white;
+	background-color: $white;
 	padding: 10px;
 	border: 1px solid #ddd;
 }
 
 @-webkit-keyframes sk-scaleout-loading {
-  0% { -webkit-transform: scale(0) }
-  100% {
-    -webkit-transform: scale(1.0);
-    opacity: 0;
-  }
+	0% {
+		-webkit-transform: scale(0);
+	}
+	100% {
+		-webkit-transform: scale(1);
+		opacity: 0;
+	}
 }
 
 @keyframes sk-scaleout-loading {
-  0% {
-    -webkit-transform: scale(0);
-    transform: scale(0);
-  } 100% {
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
-    opacity: 0;
-  }
+	0% {
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	}
+	100% {
+		-webkit-transform: scale(1);
+		transform: scale(1);
+		opacity: 0;
+	}
 }

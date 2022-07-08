@@ -95,7 +95,7 @@
 .searchregex-search__search {
 	.wpl-popover__toggle {
 		margin-left: 5px;
-		margin-right: 0px;
+		margin-right: 0;
 	}
 }
 
@@ -117,7 +117,7 @@
 .searchregex-search__action {
 	margin-top: 10px;
 
-	button[type='submit'] {
+	button[type="submit"] {
 		margin-right: 10px;
 	}
 

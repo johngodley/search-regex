@@ -1,11 +1,10 @@
-@import '../../global.scss';
+@import "../../global.scss";
 
 .searchregex-result__deleted,
 .searchregex-result__replaced,
 .searchregex-result__highlight {
 	background-color: $yellow;
 	font-weight: bold;
-	padding: 1px;
 	cursor: pointer;
 	display: inline;
 	padding: 3px;
@@ -47,7 +46,7 @@
 		font-size: 10px;
 	}
 
-	span:not( .searchregex-result__highlight ),
+	span:not(.searchregex-result__highlight),
 	.wpl-badge {
 		margin-right: 5px;
 	}

@@ -1,4 +1,4 @@
-@import '../../global.scss';
+@import "../../global.scss";
 
 .searchregex-result__more {
 	font-style: italic;
@@ -56,7 +56,7 @@
 	p.searchregex-replace__actions {
 		margin-bottom: 10px;
 
-		input[type='button'] {
+		input[type="button"] {
 			margin-left: 10px;
 		}
 	}
@@ -71,7 +71,7 @@
 		margin-left: 0;
 	}
 
-	input[type='text'] {
+	input[type="text"] {
 		margin-left: 0;
 		min-width: 200px;
 	}
@@ -225,13 +225,13 @@ td.searchregex-result__match {
 	.searchregex-list__add {
 		background-color: $green;
 		margin-right: 0;
-		color: white;
+		color: $white;
 	}
 
 	.searchregex-list__delete {
 		background-color: $red;
 		text-decoration: line-through;
-		color: white;
+		color: $white;
 		margin-right: 0;
 	}
 }

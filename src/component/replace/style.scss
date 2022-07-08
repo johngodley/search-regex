@@ -1,3 +1,5 @@
+@import "../../../global.scss";
+
 .searchregex-replace__modal .wpl-table {
 	width: 100%;
 
@@ -57,7 +59,7 @@
 		}
 	}
 
-	input[type='text'] {
+	input[type="text"] {
 		width: 100%;
 		margin-left: 0;
 	}
@@ -65,7 +67,7 @@
 	.wpl-dropdowntext__suggestion {
 		flex-wrap: wrap;
 
-		input[type='text'] {
+		input[type="text"] {
 			margin-left: 0;
 		}
 	}
@@ -75,6 +77,6 @@
 		justify-content: flex-end;
 		margin-top: -10px;
 		margin-bottom: 10px !important;
-		color: red;
+		color: $red;
 	}
 }

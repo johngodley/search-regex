@@ -4,7 +4,7 @@
 	margin-bottom: 5px;
 
 	.wpl-dropdowntext,
-	input[type='text'],
+	input[type="text"],
 	textarea,
 	select {
 		margin-left: 8px;
@@ -16,12 +16,12 @@
 		}
 	}
 
-	.wpl-dropdowntext > input[type='text'] {
+	.wpl-dropdowntext > input[type="text"] {
 		margin-right: 0;
 		margin-left: 0;
 	}
 
-	.wpl-dropdowntext:last-of-type input[type='text'] {
+	.wpl-dropdowntext:last-of-type input[type="text"] {
 		margin-right: 0;
 	}
 
@@ -29,7 +29,7 @@
 		margin-left: 0;
 	}
 
-	input[type='number'] {
+	input[type="number"] {
 		width: 100px;
 	}
 
@@ -42,7 +42,7 @@
 		width: 100%;
 	}
 
-	.wpl-badge:not( :first-of-type ) {
+	.wpl-badge:not(:first-of-type) {
 		margin-left: 5px;
 	}
 
@@ -77,7 +77,7 @@
 		}
 
 		button,
-		input[type='checkbox'] {
+		input[type="checkbox"] {
 			margin-left: 5px;
 		}
 	}

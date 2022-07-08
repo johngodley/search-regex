@@ -13,14 +13,14 @@
 	position: relative;
 
 	.api-result-method_fail {
-		color: white;
+		color: $white;
 		background-color: $error;
 		padding: 3px 5px;
 		margin-right: 5px;
 	}
 
 	.api-result-method_pass {
-		color: white;
+		color: $white;
 		background-color: $ok;
 		padding: 3px 5px;
 		width: 150px;
@@ -100,7 +100,7 @@
 
 	span {
 		background-color: #777;
-		color: white;
+		color: $white;
 		padding: 5px 10px;
 		margin-left: 10px;
 	}
@@ -131,7 +131,7 @@
 
 	.api-result-status_good {
 		background-color: $ok;
-		color: white;
+		color: $white;
 	}
 
 	.api-result-status_problem {
@@ -140,6 +140,6 @@
 
 	.api-result-status_failed {
 		background-color: $error;
-		color: white;
+		color: $white;
 	}
 }

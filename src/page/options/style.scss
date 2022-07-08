@@ -18,7 +18,7 @@
 		}
 	}
 
-	.donation-amount:after {
+	.donation-amount::after {
 		content: "";
 		display: block;
 		clear: both;
