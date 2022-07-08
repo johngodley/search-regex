@@ -21,8 +21,7 @@
     </projectFiles>
     <globals>
         <var name="wpdb" type="object"/>
-        <var name="RED_MAX_PER_PAGE" type="integer" />
-        <var name="REDIRECTION_VERSION" type="string" />
+        <var name="SEARCH_REGEX_VERSION" type="string" />
     </globals>
     <issueHandlers>
 		<LessSpecificReturnType errorLevel="info"/>

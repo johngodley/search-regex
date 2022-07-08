@@ -9,4 +9,4 @@ node_modules
 build
 languages
 /.phpunit.result.cache
-/redirection*.zip
+/search-regex*.zip

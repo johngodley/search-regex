@@ -403,13 +403,7 @@
          is deprecated in PHP 7.2. Both of these must not be used. -->
     <rule ref="WordPress.PHP.RestrictedPHPFunctions"/>
 
-
-
-	<file>./source</file>
-	<file>./models</file>
-	<file>./search-regex-admin.php</file>
-	<file>./search-regex-capabilities.php</file>
-	<file>./search-regex-settings.php</file>
+	<file>./includes</file>
 	<file>./search-regex.php</file>
 
 	<!-- Ignore snake case error in parser -->

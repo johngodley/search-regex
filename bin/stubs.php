@@ -54,7 +54,7 @@ class Red_Item {
 	 * Update a redirect
 	 *
 	 * @param Array $json Item ID.
-	 * @return WP_Error|Bool
+	 * @return \WP_Error|Bool
 	 */
 	public function update( array $json ) {
 	}
@@ -73,7 +73,7 @@ class Red_Item {
  *
  * @return Array Array of data
  */
-function searchregex_get_options() {
+function Plugin\searchregex_get_options() {
 }
 
 /**
@@ -82,7 +82,7 @@ function searchregex_get_options() {
  * @param Int|Bool $type Type of API.
  * @return String API URL
  */
-function searchregex_get_rest_api( $type = false ) {
+function Plugin\searchregex_get_rest_api( $type = false ) {
 }
 
 /**
@@ -91,5 +91,5 @@ function searchregex_get_rest_api( $type = false ) {
  * @param Array $settings Array of name => value.
  * @return Array Array of name => value
  */
-function searchregex_set_options( array $settings = array() ) {
+function Plugin\searchregex_set_options( array $settings = array() ) {
 }
