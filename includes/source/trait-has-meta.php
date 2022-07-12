@@ -3,6 +3,7 @@
 namespace SearchRegex\Source;
 
 use SearchRegex\Context\Type;
+use SearchRegex\Plugin;
 
 /**
  * Provides meta table support to sources

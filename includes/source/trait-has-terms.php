@@ -3,6 +3,7 @@
 namespace SearchRegex\Source;
 
 use SearchRegex\Context\Type;
+use SearchRegex\Plugin;
 
 /**
  * Trait to add term support to a source

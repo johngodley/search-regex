@@ -4,6 +4,7 @@ namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
 use SearchRegex\Sql;
+use SearchRegex\Plugin;
 
 /**
  * Source for WP options

@@ -3,10 +3,11 @@
 namespace SearchRegex\Action\Type;
 
 use SearchRegex\Sql;
-use SearchRegex\Action\Action;
+use SearchRegex\Action;
 use SearchRegex\Schema;
+use SearchRegex\Search;
 
-class Export extends Action {
+class Export extends Action\Action {
 	const ALLOWED_FORMATS = [ 'json', 'csv', 'sql' ];
 
 	/**
@@ -96,10 +97,10 @@ class Export extends Action {
 	/**
 	 * Convert Result to JSON
 	 *
-	 * @param Result $result Result.
+	 * @param Search\Result $result Result.
 	 * @return string
 	 */
-	private function convert_to_json( Result $result ) {
+	private function convert_to_json( Search\Result $result ) {
 		$data = [];
 
 		foreach ( $result->get_columns() as $column ) {
@@ -112,10 +113,10 @@ class Export extends Action {
 	/**
 	 * Convert Result to SQL
 	 *
-	 * @param Result $result Result.
+	 * @param Search\Result $result Result.
 	 * @return string
 	 */
-	private function convert_to_sql( Result $result ) {
+	private function convert_to_sql( Search\Result $result ) {
 		$values = array_map( function( $column ) {
 			global $wpdb;
 
@@ -138,10 +139,10 @@ class Export extends Action {
 	/**
 	 * Convert a Result to CSV
 	 *
-	 * @param Result $result Result.
+	 * @param Search\Result $result Result.
 	 * @return string
 	 */
-	private function convert_to_csv( Result $result ) {
+	private function convert_to_csv( Search\Result $result ) {
 		$csv = array_map( function( $column ) {
 			return $column->get_value();
 		}, $result->get_columns() );

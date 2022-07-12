@@ -4,6 +4,7 @@ namespace SearchRegex\Action\Type;
 
 use SearchRegex\Action\Action;
 use SearchRegex\Source;
+use SearchRegex\Plugin;
 
 /**
  * Action to delete rows

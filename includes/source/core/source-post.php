@@ -6,6 +6,7 @@ use SearchRegex\Source;
 use SearchRegex\Search;
 use SearchRegex\Filter\Filter_Member;
 use SearchRegex\Sql;
+use SearchRegex\Plugin;
 
 /**
  * Source for posts, pages, and other custom post types

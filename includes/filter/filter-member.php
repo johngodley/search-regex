@@ -55,7 +55,7 @@ class Filter_Member extends Filter_Type {
 		}
 
 		if ( $this->schema->get_join_column() ) {
-			$this->join = Sql\Join::create( $this->schema->get_column(), $schema->get_source() );
+			$this->join = Sql\Join\Join::create( $this->schema->get_column(), $schema->get_source() );
 		}
 	}
 

@@ -2,7 +2,7 @@
 
 namespace SearchRegex\Api\Route;
 
-use SearchRegex\Preset;
+use SearchRegex\Search;
 use SearchRegex\Api;
 
 /**
@@ -210,12 +210,12 @@ class Preset_Route extends Api\Route {
 	public function route_create( \WP_REST_Request $request ) {
 		$params = $request->get_params();
 
-		$preset = new Preset( $params );
+		$preset = new Search\Preset( $params );
 		$preset->create();
 
 		return [
 			'current' => $preset->to_json(),
-			'presets' => Preset::get_all(),
+			'presets' => Search\Preset::get_all(),
 		];
 	}
 
@@ -230,11 +230,11 @@ class Preset_Route extends Api\Route {
 		$upload = isset( $upload['file'] ) ? $upload['file'] : false;
 
 		if ( $upload && is_uploaded_file( $upload['tmp_name'] ) ) {
-			$imported = Preset::import( $upload['tmp_name'] );
+			$imported = Search\Preset::import( $upload['tmp_name'] );
 
 			if ( $imported > 0 ) {
 				return [
-					'presets' => Preset::get_all(),
+					'presets' => Search\Preset::get_all(),
 					'import' => $imported,
 				];
 			}
@@ -252,13 +252,13 @@ class Preset_Route extends Api\Route {
 	public function route_update( \WP_REST_Request $request ) {
 		$params = $request->get_params();
 
-		$preset = Preset::get( $params['id'] );
+		$preset = Search\Preset::get( $params['id'] );
 		if ( $preset ) {
 			$preset->update( $params );
 
 			return [
 				'current' => $preset->to_json(),
-				'presets' => Preset::get_all(),
+				'presets' => Search\Preset::get_all(),
 			];
 		}
 
@@ -274,13 +274,13 @@ class Preset_Route extends Api\Route {
 	public function route_delete( \WP_REST_Request $request ) {
 		$params = $request->get_params();
 
-		$preset = Preset::get( $params['id'] );
+		$preset = Search\Preset::get( $params['id'] );
 		if ( $preset ) {
 			$preset->delete();
 
 			return [
 				'current' => $preset->to_json(),
-				'presets' => Preset::get_all(),
+				'presets' => Search\Preset::get_all(),
 			];
 		}
 
@@ -313,11 +313,11 @@ class Preset_Route extends Api\Route {
 				}
 
 				return $preset;
-			}, Preset::get_all() );
+			}, Search\Preset::get_all() );
 		}
 
 		return [
-			'presets' => Preset::get_all(),
+			'presets' => Search\Preset::get_all(),
 		];
 	}
 
@@ -330,7 +330,7 @@ class Preset_Route extends Api\Route {
 	 * @return \WP_Error|Bool true or false
 	 */
 	public function validate_locked( $value, \WP_REST_Request $request, $param ) {
-		$preset = new Preset();
+		$preset = new Search\Preset();
 
 		if ( is_array( $value ) ) {
 			$filtered = array_filter( $value, function( $item ) use ( $preset ) {

@@ -92,7 +92,7 @@ class Manager {
 		$advanced_sources = self::get_advanced_sources();
 
 		// Load custom stuff here
-		$plugin_sources = glob( dirname( SEARCHREGEX_FILE ) . '/source/plugin/*.php' );
+		$plugin_sources = glob( __DIR__ . '/plugin/*.php' );
 		foreach ( $plugin_sources as $plugin ) {
 			/**
 			 * @psalm-suppress UnresolvableInclude

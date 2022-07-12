@@ -3,16 +3,17 @@
 namespace SearchRegex\Source\Plugin;
 
 use SearchRegex\Source;
-use SearchRegex\Result;
+use SearchRegex\Search;
 use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Filter;
+use SearchRegex\Plugin;
 
 /**
  * Source: Redirection items
  */
 class Redirection extends Source\Source {
-	public function get_actions( Result $result ) {
+	public function get_actions( Search\Result $result ) {
 		$edit = admin_url( 'tools.php?page=redirection.php' );
 
 		return [
@@ -34,12 +35,27 @@ class Redirection extends Source\Source {
 		return 'url';
 	}
 
+	private function get_item( $row_id ) {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Redirect\Redirect::get_by_id( $row_id );
+		}
+
+		return \Red_Item::get_by_id( $row_id );
+	}
+
+	private function delete_item( $row_id ) {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Redirect\Redirect::delete( $row_id );
+		}
+
+		return \Red_Item::delete( $row_id );
+	}
+
 	public function save( $row_id, array $changes ) {
 		$redirect = $this->get_columns_to_change( $changes );
 
 		if ( count( $redirect ) > 0 ) {
-			// XXX
-			$item = \Red_Item::get_by_id( $row_id );
+			$item = $this->get_item( $row_id );
 
 			if ( ! $item instanceof \WP_Error ) {
 				$this->log_save( 'redirect', array_merge( [ 'id' => $row_id ], $redirect ) );
@@ -70,10 +86,7 @@ class Redirection extends Source\Source {
 
 		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\searchregex_can_save() ) {
-			/**
-			 * @psalm-suppress UndefinedMethod
-			 */
-			if ( Red_Item::delete( $row_id ) ) {
+			if ( $this->delete_item( $row_id ) ) {
 				return true;
 			}
 
@@ -138,6 +151,13 @@ class Redirection extends Source\Source {
 					'column' => 'url',
 					'type' => 'string',
 					'title' => __( 'Source URL', 'search-regex' ),
+					'options' => 'api',
+					'global' => true,
+				],
+				[
+					'column' => 'match_url',
+					'type' => 'string',
+					'title' => __( 'Source URL (matching)', 'search-regex' ),
 					'options' => 'api',
 					'global' => true,
 				],
@@ -212,23 +232,33 @@ class Redirection extends Source\Source {
 		];
 	}
 
+	private function get_available_actions() {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Action\Action::available();
+		}
+
+		return \Red_Action::available();
+	}
+
+	private function create_action( $action, $code ) {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Action\Action::create( $action, $code );
+		}
+
+		return \Red_Action::create( $action, $code );
+	}
+
 	/**
 	 * Get action types
 	 *
 	 * @return array
 	 */
 	private function get_action_types() {
-		/**
-		 * @psalm-suppress UndefinedClass
-		 */
-		$types = Red_Action::available();
+		$types = $this->get_available_actions();
 		$actions = [];
 
 		foreach ( array_keys( $types ) as $type ) {
-			/**
-			 * @psalm-suppress UndefinedClass
-			 */
-			$obj = Red_Action::create( $type, 301 );
+			$obj = $this->create_action( $type, 301 );
 			$actions[] = [
 				'value' => $type,
 				'label' => $obj->name(),
@@ -238,23 +268,33 @@ class Redirection extends Source\Source {
 		return $actions;
 	}
 
+	private function get_available_matches() {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Match\Match::available();
+		}
+
+		return \Red_Match::available();
+	}
+
+	private function create_match( $type ) {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Match\Match::create( $type );
+		}
+
+		return \Red_Match::create( $type );
+	}
+
 	/**
 	 * Get match types
 	 *
 	 * @return array
 	 */
 	private function get_match_types() {
-		/**
-		 * @psalm-suppress UndefinedClass
-		 */
-		$types = Red_Match::available();
+		$types = $this->get_available_matches();
 		$actions = [];
 
 		foreach ( array_keys( $types ) as $type ) {
-			/**
-			 * @psalm-suppress UndefinedClass
-			 */
-			$obj = Red_Match::create( $type );
+			$obj = $this->create_match( $type );
 			$actions[] = [
 				'value' => $type,
 				'label' => $obj->name(),
@@ -283,12 +323,17 @@ class Redirection extends Source\Source {
 		return $http;
 	}
 
+	private function get_group( $group_id ) {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Redirect\Group::get( $group_id );
+		}
+
+		return Red_Group::get( $group_id );
+	}
+
 	public function convert_result_value( Schema\Column $schema, $value ) {
 		if ( $schema->get_column() === 'group_id' ) {
-			/**
-			 * @psalm-suppress UndefinedClass
-			 */
-			$group = Red_Group::get( $value );
+			$group = $this->get_group( $value );
 			if ( $group ) {
 				return $group->get_name();
 			}
@@ -321,12 +366,27 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 		return 'name';
 	}
 
+	private function get_group( $group_id ) {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Redirect\Group::get( $group_id );
+		}
+
+		return \Red_Group::get( $group_id );
+	}
+
+	private function delete_group( $group_id ) {
+		if ( class_exists( '\Redirection\Module\Module' ) ) {
+			return \Redirection\Redirect\Group::delete( $group_id );
+		}
+
+		return \Red_Group::delete( $group_id );
+	}
+
 	public function save( $row_id, array $changes ) {
 		$redirect = $this->get_columns_to_change( $changes );
 
 		if ( count( $redirect ) > 0 ) {
-			/** @psalm-suppress UndefinedClass */
-			$item = \Red_Group::get( $row_id );
+			$item = $this->get_groupt( $row_id );
 
 			if ( ! is_wp_error( $item ) ) {
 				$this->log_save( 'redirect', array_merge( [ 'id' => $row_id ], $redirect ) );
@@ -357,8 +417,7 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 
 		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\searchregex_can_save() ) {
-			/** @psalm-suppress UndefinedClass */
-			if ( Red_Group::delete( $row_id ) ) {
+			if ( $this->delete_group( $row_id ) ) {
 				return true;
 			}
 
@@ -392,13 +451,13 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 			$nginx_id = \Redirection\Module\Nginx::MODULE_ID;
 		} else {
 			/** @psalm-suppress UndefinedClass */
-			$wp_id = WordPress_Module::MODULE_ID;
+			$wp_id = \WordPress_Module::MODULE_ID;
 
 			/** @psalm-suppress UndefinedClass */
-			$apache_id = Apache_Module::MODULE_ID;
+			$apache_id = \Apache_Module::MODULE_ID;
 
 			/** @psalm-suppress UndefinedClass */
-			$nginx_id = Nginx_Module::MODULE_ID;
+			$nginx_id = \Nginx_Module::MODULE_ID;
 		}
 
 		return [
@@ -456,23 +515,24 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 		];
 	}
 }
+// XXX replace settings
 
-add_filter( 'searchregex_sources_plugin', function( $plugins ) {
-	// Only show if Redirection is loaded
-	if ( defined( 'REDIRECTION_VERSION' ) ) {
-		$plugins[] = [
-			'name' => 'redirection',
-			'label' => __( 'Redirection', 'search-regex' ),
-			'class' => 'Redirection_Search_Regex',
-			'type' => 'plugin',
-		];
-		$plugins[] = [
-			'name' => 'redirection-groups',
-			'label' => __( 'Redirection Groups', 'search-regex' ),
-			'class' => 'Redirection_Groups_Search_Regex',
-			'type' => 'plugin',
-		];
-	}
+// add_filter( 'searchregex_sources_plugin', function( $plugins ) {
+// 	// Only show if Redirection is loaded
+// 	if ( defined( 'REDIRECTION_VERSION' ) ) {
+// 		$plugins[] = [
+// 			'name' => 'redirection',
+// 			'label' => __( 'Redirection', 'search-regex' ),
+// 			'class' => 'SearchRegex\Source\Plugin\Redirection',
+// 			'type' => 'plugin',
+// 		];
+// 		$plugins[] = [
+// 			'name' => 'redirection-groups',
+// 			'label' => __( 'Redirection Groups', 'search-regex' ),
+// 			'class' => 'SearchRegex\Source\Plugin\Redirection_Groups_Search_Regex',
+// 			'type' => 'plugin',
+// 		];
+// 	}
 
-	return $plugins;
-} );
+// 	return $plugins;
+// } );

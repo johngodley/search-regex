@@ -5,6 +5,7 @@ namespace SearchRegex\Source\Core;
 use SearchRegex\Source;
 use SearchRegex\Result;
 use SearchRegex\Sql;
+use SearchRegex\Plugin;
 
 /**
  * Term source

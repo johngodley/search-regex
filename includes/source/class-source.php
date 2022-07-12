@@ -7,6 +7,7 @@ use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Search;
 use SearchRegex\Filter;
+use SearchRegex\Context;
 
 require_once __DIR__ . '/class-manager.php';
 require_once __DIR__ . '/class-convert-values.php';

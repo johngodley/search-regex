@@ -6,6 +6,7 @@ use SearchRegex\Sql;
 use SearchRegex\Source;
 use SearchRegex\Action;
 use SearchRegex\Schema;
+use SearchRegex\Search;
 
 /**
  * Filter a key/value column (meta data)
@@ -105,7 +106,7 @@ class Filter_Keyvalue extends Filter_Type {
 		$joiner = $schema->get_join_column();
 		if ( $joiner !== null ) {
 			if ( $this->key || $this->key_logic === 'any' ) {
-				$join = Sql\Join::create( $schema->get_column() . '_key', $joiner );
+				$join = Sql\Join\Join::create( $schema->get_column() . '_key', $joiner );
 
 				if ( $join instanceof Sql\Join\Meta ) {
 					$this->join_key = $join;
@@ -113,7 +114,7 @@ class Filter_Keyvalue extends Filter_Type {
 			}
 
 			if ( $this->value || $this->value_logic === 'any' ) {
-				$join = Sql\Join::create( $schema->get_column() . '_value', $joiner );
+				$join = Sql\Join\Join::create( $schema->get_column() . '_value', $joiner );
 
 				if ( $join instanceof Sql\Join\Meta ) {
 					$this->join_value = $join;
