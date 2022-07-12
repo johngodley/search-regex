@@ -107,7 +107,7 @@ class String_Value extends Modifier\Modifier {
 		$replace_value = $this->replace_value;
 		if ( ! $this->search_flags->is_regex() ) {
 			// Escape the replace value, in case it has a $ in it
-			$replace_value = \preg_quote( $this->replace_value, '@' );
+			$replace_value = \preg_replace( '/(?<!\\\)\$/', '\\$', $this->replace_value );
 		}
 
 		// Global replace
