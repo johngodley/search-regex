@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useSelector } from 'react-redux';
 
 /**
@@ -114,9 +114,7 @@ function ModifyString( props ) {
 				onChange={ setLocalOperation }
 				extraItems={ modifiedFilters.map( ( item ) => ( {
 					value: item.column + '-' + item.value,
-					label: __( 'Replace "%1s"', {
-						args: item.value.substr( 0, 20 ),
-					} ),
+					label: sprintf( __( 'Replace "%1s"', 'redirection' ), item.value.substr( 0, 20 ) )
 				} ) ) }
 			/>
 

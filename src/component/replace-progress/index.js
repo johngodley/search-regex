@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { Line } from 'rc-progress';
 import { connect } from 'react-redux';
 
@@ -20,16 +20,13 @@ const getTotal = ( isAdvanced, totals ) => ( isAdvanced ? totals.rows : totals.m
 const getPercent = ( current, total ) => ( total > 0 ? Math.round( ( current / total ) * 100 ) : 0 );
 
 function getTotalCount( name, count ) {
-	const args = {
-		count: count,
-		args: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( count ),
-	};
+	const formattedCount = new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( count );
 
 	if ( name === 'delete' ) {
-		return __( '%s row deleted.', '%s rows deleted.', args );
+		return sprintf( _n( '%s row deleted.', '%s rows deleted.', count, 'search-regex' ), formattedCount );
 	}
 
-	return __( '%s row.', '%s rows.', args );
+	return sprintf( _n( '%s row.', '%s rows.', count, 'search-regex' ), formattedCount );
 }
 
 function Totals( { totals, current } ) {
