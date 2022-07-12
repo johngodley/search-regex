@@ -13,7 +13,11 @@ import { Spinner, Button } from '@wp-plugin-components';
 import { STATUS_IN_PROGRESS } from '../../state/settings/type';
 import { cancel, perform } from '../../state/search/action';
 
-function isPerformReady( action, actionOption ) {
+function isPerformReady( action, actionOption, replacement ) {
+	if ( action === 'replace' && replacement.length > 0 ) {
+		return true;
+	}
+
 	if ( action === 'delete' ) {
 		return true;
 	}
@@ -56,7 +60,7 @@ function getPerformButton( action ) {
  */
 function SearchActions( props ) {
 	const { search, status, canCancel, resultsDirty, isSaving } = useSelector( ( state ) => state.search );
-	const { action, actionOption } = search;
+	const { action, actionOption, replacement } = search;
 	const dispatch = useDispatch();
 
 	return (
@@ -68,7 +72,7 @@ function SearchActions( props ) {
 			{ action !== '' && (
 				<Button
 					isDestructive
-					disabled={ ! isPerformReady( action, actionOption ) || status === STATUS_IN_PROGRESS || isSaving }
+					disabled={ ! isPerformReady( action, actionOption, replacement ) || status === STATUS_IN_PROGRESS || isSaving }
 					onClick={ () => dispatch( perform( 0 ) ) }
 				>
 					{ getPerformButton( action ) }
