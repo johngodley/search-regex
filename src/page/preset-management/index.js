@@ -108,6 +108,9 @@ function PresetManagement( props ) {
 
 			<div className="searchregex-presetimport">
 				<Uploader
+					addFileText={ __( 'Add file', 'search-regex' ) }
+					uploadText={ __( 'Upload', 'search-regex' ) }
+					cancelText={ __( 'Cancel', 'search-regex' ) }
 					isUploading={ isUploading }
 					isUploaded={ uploadStatus === STATUS_COMPLETE }
 					disabled={ clipboardStatus === STATUS_IN_PROGRESS || uploadStatus === STATUS_IN_PROGRESS }
