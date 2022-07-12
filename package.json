@@ -37,7 +37,7 @@
 	"homepage": "https://github.com/johngodley/search-regex",
 	"devDependencies": {
 		"@types/jest": "^28.1.4",
-		"@types/react": "^18.0.14",
+		"@types/react": "^18.0.15",
 		"@types/react-dom": "^18.0.6",
 		"@types/react-highlight-words": "^0.16.4",
 		"@types/react-redux": "^7.1.24",
@@ -68,6 +68,7 @@
 	},
 	"dependencies": {
 		"@emotion/react": "^11.9.3",
+		"@redux-devtools/extension": "^3.2.2",
 		"@wordpress/element": "^4.10.0",
 		"@wordpress/i18n": "^4.12.0",
 		"classnames": "^2.3.1",

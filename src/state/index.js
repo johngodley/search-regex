@@ -2,10 +2,8 @@
  * External dependencies
  */
 
-import {
-	applyMiddleware,
-	createStore,
-} from 'redux';
+import { applyMiddleware, createStore } from 'redux';
+import { composeWithDevTools } from '@redux-devtools/extension';
 import thunk from 'redux-thunk';
 import reducers from './reducers';
 import { urlMiddleware } from './middleware';
@@ -23,7 +21,7 @@ export default function createReduxStore( initialState = {} ) {
 	const store = createStore(
 		reducers,
 		initialState,
-		applyMiddleware( ...middlewares )
+		composeWithDevTools( applyMiddleware( ...middlewares ) )
 	);
 
 	return store;
