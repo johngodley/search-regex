@@ -2,7 +2,7 @@
 
 namespace SearchRegex\Sql;
 
-use Search\Flags;
+use SearchRegex\Search;
 
 /**
  * WHERE for a string

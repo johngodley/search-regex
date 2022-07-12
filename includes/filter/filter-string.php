@@ -131,7 +131,7 @@ class Filter_String extends Filter_Type {
 			}
 
 			// Do we have a match?
-			$contexts = Matched_Text::get_all( $value, $flag_copy, $replacements, $row_value );
+			$contexts = Search\Text::get_all( $value, $flag_copy, $replacements, $row_value );
 			if ( count( $contexts ) > 0 ) {
 				if ( $logic === 'notcontains' || $logic === 'notequals' ) {
 					return $this->get_unmatched_context( $source, $row_value );

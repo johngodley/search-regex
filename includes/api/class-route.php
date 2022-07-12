@@ -257,7 +257,7 @@ class Route {
 
 		// Convert global search to filters
 		if ( isset( $params['searchPhrase'] ) && $params['searchPhrase'] ) {
-			$filters[] = new Global_Filter\Filter( $params['searchPhrase'], $params['searchFlags'] );
+			$filters[] = new Filter\Global_Filter( $params['searchPhrase'], $params['searchFlags'] );
 		}
 
 		// Are we doing the action for real or just a dry run?

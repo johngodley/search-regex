@@ -10,6 +10,7 @@ use SearchRegex\Schema;
 use SearchRegex\Search;
 use SearchRegex\Modifier;
 use SearchRegex\Source;
+use SearchRegex\Context;
 
 /**
  * Modify a date column

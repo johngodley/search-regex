@@ -7,7 +7,7 @@ use SearchRegex\Context;
 /**
  * Context for a deleted value
  */
-class Delete extends Context\Context {
+class Delete extends Context\Type\Value {
 	const TYPE_DELETE = 'delete';
 
 	public function get_type() {

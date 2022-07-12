@@ -2,6 +2,11 @@
 
 namespace SearchRegex\Search;
 
+use SearchRegex\Action;
+use SearchRegex\Schema;
+use SearchRegex\Source;
+use SearchRegex\Filter;
+
 /**
  * A saved search
  */
@@ -84,7 +89,7 @@ class Preset {
 	/**
 	 * Preset action
 	 *
-	 * @var Action|null
+	 * @var Action\Action|null
 	 */
 	private $action = null;
 
@@ -109,7 +114,7 @@ class Preset {
 	 */
 	public function __construct( array $params = [] ) {
 		$this->id = isset( $params['id'] ) ? $params['id'] : uniqid();
-		$this->search_flags = new search_flags();
+		$this->search_flags = new Flags();
 
 		$this->set_values( $params );
 	}
@@ -245,7 +250,7 @@ class Preset {
 		}
 
 		if ( isset( $search['searchFlags'] ) && is_array( $search['searchFlags'] ) ) {
-			$this->search_flags = new search_flags( $search['searchFlags'] );
+			$this->search_flags = new Flags( $search['searchFlags'] );
 		}
 
 		// Sanitize sources and ensure source flags are allowed by those sources
@@ -261,13 +266,13 @@ class Preset {
 			$this->source = array_values( array_filter( $sources ) );
 		}
 
-		$schema = new Schema( Source\Manager::get_schema( $this->source ) );
+		$schema = new Schema\Schema( Source\Manager::get_schema( $this->source ) );
 
 		// If there is a replacement then default to global replace, for backwards compatability
-		$this->action = new Action_Nothing( [], $schema );
+		$this->action = new Action\Type\Nothing( [], $schema );
 
 		if ( $this->search !== '' ) {
-			$this->action = new Type\Global_Replace( [
+			$this->action = new Action\Type\Global_Replace( [
 				'search' => $this->search,
 				'replacement' => $this->replacement,
 				'flags' => $this->search_flags->to_json(),
@@ -275,7 +280,7 @@ class Preset {
 		}
 
 		if ( isset( $search['action'] ) ) {
-			$this->action = Action::create( $search['action'], Action::get_options( $search ), $schema );
+			$this->action = Action\Action::create( $search['action'], Action\Action::get_options( $search ), $schema );
 		}
 
 		if ( isset( $search['filters'] ) && is_array( $search['filters'] ) ) {

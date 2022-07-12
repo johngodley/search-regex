@@ -34,7 +34,7 @@ function searchregex_get_default_options() {
  * @return Array Array of name => value
  */
 function searchregex_set_options( array $settings = array() ) {
-	$options = Plugin\searchregex_get_options();
+	$options = searchregex_get_options();
 
 	if ( isset( $settings['rest_api'] ) && in_array( intval( $settings['rest_api'], 10 ), array( 0, 1, 2, 3, 4 ), true ) ) {
 		$options['rest_api'] = intval( $settings['rest_api'], 10 );

@@ -7,7 +7,7 @@ use SearchRegex\Context;
 /**
  * Context for a matched value
  */
-class Matched extends Context\Context {
+class Matched extends Context\Type\Value {
 	const TYPE_MATCH = 'match';
 
 	public function get_type() {

@@ -259,7 +259,7 @@ class Filter {
 	}
 
 	/**
-	 * Get the results as Matched_Texts
+	 * Get the results as Search\Text
 	 *
 	 * @param Source\Source $source Source.
 	 * @param array         $row Row data.

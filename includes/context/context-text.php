@@ -3,6 +3,7 @@
 namespace SearchRegex\Context\Type;
 
 use SearchRegex\Context;
+use SearchRegex\Search;
 
 /**
  * Context for a substring(s) in a string
@@ -31,7 +32,7 @@ class Text extends Context\Context {
 	/**
 	 * Array of matches
 	 *
-	 * @var Matched_Text[]
+	 * @var Search\Text[]
 	 **/
 	private $matches = [];
 
@@ -143,10 +144,10 @@ class Text extends Context\Context {
 	/**
 	 * Determine if the Match object is within this context.
 	 *
-	 * @param Matched_Text $match The match to check.
+	 * @param Search\Text $match The match to check.
 	 * @return Bool true if within the context, false otherwise
 	 */
-	public function is_within_context( Matched_Text $match ) {
+	public function is_within_context( Search\Text $match ) {
 		if ( count( $this->matches ) === 0 ) {
 			return true;
 		}
@@ -159,11 +160,11 @@ class Text extends Context\Context {
 	/**
 	 * Add a Match to this context
 	 *
-	 * @param Matched_Text $match The match to do.
-	 * @param Text       $value The column value.
+	 * @param Search\Text $match The match to do.
+	 * @param Text        $value The column value.
 	 * @return void
 	 */
-	public function add_match( Matched_Text $match, $value ) {
+	public function add_match( Search\Text $match, $value ) {
 		$this->match_count++;
 
 		if ( count( $this->matches ) === self::MATCH_LIMIT ) {
@@ -197,7 +198,7 @@ class Text extends Context\Context {
 	 * Find the Match that exists at the given position
 	 *
 	 * @param int $pos_id Position.
-	 * @return Matched_Text|Bool Match at position
+	 * @return Search\Text|Bool Match at position
 	 */
 	public function get_match_at_position( $pos_id ) {
 		foreach ( $this->matches as $match ) {
@@ -233,7 +234,7 @@ class Text extends Context\Context {
 	/**
 	 * Get matches from this context
 	 *
-	 * @return Matched_Text[]
+	 * @return Search\Text[]
 	 */
 	public function get_matches() {
 		return $this->matches;

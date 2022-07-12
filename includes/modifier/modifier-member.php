@@ -2,11 +2,11 @@
 
 namespace SearchRegex\Modifier\Value;
 
-use SearchRegex\Type;
 use SearchRegex\Schema;
 use SearchRegex\Search;
 use SearchRegex\Source;
 use SearchRegex\Modifier;
+use SearchRegex\Context;
 
 /**
  * Modifier for member columns
@@ -109,7 +109,7 @@ class Member_Value extends Modifier\Modifier {
 		$action_values = $this->values;
 		$column_values = array_map(
 			function( $context ) {
-				return $this->get_value( $context instanceof Type\Value ? $context->get_value() : '' );
+				return $this->get_value( $context instanceof Context\Type\Value ? $context->get_value() : '' );
 			},
 			$column->get_contexts()
 		);
@@ -129,7 +129,7 @@ class Member_Value extends Modifier\Modifier {
 			// Which one of the 'deletes' can 'replace' an 'add'
 			foreach ( $add as $pos => $value ) {
 				if ( count( $delete ) > 0 ) {
-					$context = new Type\Replace( $delete[0], $source->convert_result_value( $this->schema, (string) $delete[0] ) );
+					$context = new Context\Type\Replace( $delete[0], $source->convert_result_value( $this->schema, (string) $delete[0] ) );
 					$context->set_replacement( (string) $value, $source->convert_result_value( $this->schema, (string) $value ) );
 					$updated[] = $context;
 
@@ -149,9 +149,9 @@ class Member_Value extends Modifier\Modifier {
 		// Replace existing contexts with the new ones
 		/** @psalm-suppress all */
 		$contexts = array_merge(
-			$this->get_contexts( $source, $same, 'SearchRegex\Type\Value' ),
-			$this->get_contexts( $source, $add, 'SearchRegex\Type\Add' ),
-			$this->get_contexts( $source, $delete, 'SearchRegex\Type\Delete' ),
+			$this->get_contexts( $source, $same, '\SearchRegex\Context\Type\Value' ),
+			$this->get_contexts( $source, $add, '\SearchRegex\Context\Type\Add' ),
+			$this->get_contexts( $source, $delete, '\SearchRegex\Context\Type\Delete' ),
 			$updated,
 		);
 

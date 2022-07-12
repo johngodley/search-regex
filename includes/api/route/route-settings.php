@@ -3,6 +3,7 @@
 namespace SearchRegex\Api\Route;
 
 use SearchRegex\Api;
+use SearchRegex\Plugin;
 
 /**
  * @api {get} /search-regex/v1/setting Get settings

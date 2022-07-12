@@ -6,6 +6,7 @@ use SearchRegex\Schema;
 use SearchRegex\Search;
 use SearchRegex\Source;
 use SearchRegex\Modifier;
+use SearchRegex\Context;
 
 class Integer_Value extends Modifier\Modifier {
 	/**

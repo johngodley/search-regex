@@ -41,7 +41,7 @@ class Admin {
 		add_filter( 'searchregex_result_actions', [ $this, 'extra_actions' ], 10, 3 );
 		add_filter( 'load_script_translation_file', [ $this, 'load_script_translation_file' ], 10, 3 );
 
-		register_uninstall_hook( SEARCHREGEX_FILE, [ $this, 'plugin_uninstall' ] );
+		register_uninstall_hook( SEARCHREGEX_FILE, [ '\SearchRegex\Admin\Admin', 'plugin_uninstall' ] );
 	}
 
 	/**

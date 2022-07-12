@@ -2,7 +2,7 @@
 
 namespace SearchRegex\Search;
 
-use SearchRegex\Context\Type;
+use SearchRegex\Context;
 
 /**
  * Represents a single match
@@ -129,7 +129,7 @@ class Text {
 	 * @param Search\Flags $flags Is this regular expression.
 	 * @return String Encoded search phrase
 	 */
-	public static function get_pattern( $search, Search\Flags $flags ) {
+	public static function get_pattern( $search, Flags $flags ) {
 		$pattern = \preg_quote( $search, '@' );
 
 		if ( $flags->is_regex() ) {
@@ -155,13 +155,13 @@ class Text {
 	 * @param String       $column_value The content to match.
 	 * @return Array Array of Match contexts
 	 */
-	public static function get_all( $search, Search\Flags $flags, array $replacements, $column_value ) {
+	public static function get_all( $search, Flags $flags, array $replacements, $column_value ) {
 		$pattern = self::get_pattern( $search, $flags );
 		$contexts = [];
 
 		if ( \preg_match_all( $pattern, $column_value, $searches, PREG_OFFSET_CAPTURE ) > 0 ) {
 			$current_context = new Context\Type\Text( $search, $flags );
-			$current_context->set_type( Value_Type::get( $column_value ) );
+			$current_context->set_type( Context\Value_Type::get( $column_value ) );
 			$contexts[] = $current_context;
 
 			// Go through each search match and create a Match
@@ -181,7 +181,7 @@ class Text {
 				if ( ! $current_context->is_within_context( $match ) ) {
 					// No - create a new context
 					$current_context = new Context\Type\Text( $search, $flags );
-					$current_context->set_type( Value_Type::get( $column_value ) );
+					$current_context->set_type( Context\Value_Type::get( $column_value ) );
 					$current_context->set_context_id( count( $contexts ) );
 					$contexts[] = $current_context;
 				}

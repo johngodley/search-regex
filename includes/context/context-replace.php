@@ -7,7 +7,7 @@ use SearchRegex\Context;
 /**
  * Context when something has been replaced
  */
-class Replace extends Context\Context {
+class Replace extends Context\Type\Value {
 	const TYPE_REPLACE = 'replace';
 
 	/**

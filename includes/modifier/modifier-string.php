@@ -6,6 +6,9 @@ use SearchRegex\Modifier;
 use SearchRegex\Schema;
 use SearchRegex\Source;
 use SearchRegex\Search;
+use SearchRegex\Context;
+use SearchRegex\Filter;
+use SearchRegex\Action;
 
 /**
  * Modify a string
@@ -133,7 +136,7 @@ class String_Value extends Modifier\Modifier {
 	 * @return String
 	 */
 	private function replace_all( $search, $replace, $value ) {
-		$pattern = Matched_Text::get_pattern( $search, $this->search_flags );
+		$pattern = Search\Text::get_pattern( $search, $this->search_flags );
 
 		if ( ! $this->search_flags->is_regex() && is_serialized( $value ) ) {
 			$serial = '/s:(\d*):"(.*?)";/s';
@@ -204,8 +207,12 @@ class String_Value extends Modifier\Modifier {
 
 			$replacements = $this->get_replace_positions( $row_value );
 
-			$filter = new Filter\Filter_String( [ 'value' => $this->search_value, 'logic' => 'contains', 'flags' => $this->search_flags->to_json() ], $this->schema );
-			$matches = $filter->get_match( $source, new Action_Nothing(), 'contains', $this->search_value, $row_value, $this->search_flags, $replacements );
+			$filter = new Filter\Type\Filter_String( [
+				'value' => $this->search_value,
+				'logic' => 'contains',
+				'flags' => $this->search_flags->to_json(),
+			], $this->schema );
+			$matches = $filter->get_match( $source, new Action\Type\Nothing(), 'contains', $this->search_value, $row_value, $this->search_flags, $replacements );
 
 			// If we replaced anything then update the context with our new matches, otherwise just return whatever we have
 			if ( ( count( $matches ) === 1 && ! $matches[0] instanceof Context\Type\Value ) || count( $matches ) > 1 ) {
@@ -217,7 +224,7 @@ class String_Value extends Modifier\Modifier {
 
 		// Replace a specific position
 		$replacements = $this->get_replace_positions( $row_value );
-		$contexts = Matched_Text::get_all( $this->search_value, $this->search_flags, $replacements, $row_value );
+		$contexts = Search\Text::get_all( $this->search_value, $this->search_flags, $replacements, $row_value );
 
 		foreach ( $contexts as $context ) {
 			$match = $context->get_match_at_position( $this->pos_id );

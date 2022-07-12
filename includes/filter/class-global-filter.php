@@ -1,15 +1,14 @@
 <?php
 
-namespace SearchRegex;
+namespace SearchRegex\Filter;
 
 use SearchRegex\Schema;
 use SearchRegex\Source;
-use SearchRegex\Filter;
 
 /**
  * A global search filter that performs a string match on any column marked 'global' in the schema
  */
-class Global_Filter extends Filter\Filter {
+class Global_Filter extends Filter {
 	/**
 	 * Global search phrase
 	 *
@@ -75,7 +74,7 @@ class Global_Filter extends Filter\Filter {
 				'logic' => 'contains',
 			];
 
-			$items[] = new Filter\Filter_String( $filter, $column );
+			$items[] = new Type\Filter_String( $filter, $column );
 		}
 
 		return array_merge( $items, $this->items );

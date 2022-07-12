@@ -4,7 +4,6 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Search;
 use SearchRegex\Replace;
-use Search\Flags;
 use SearchRegex\Source;
 use SearchRegex\Source\Manager;
 use SearchRegex\Api;

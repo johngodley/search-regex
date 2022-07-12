@@ -98,7 +98,7 @@ class Sql_Builder {
 	 * @return void
 	 */
 	private function log_sql( $title, $query ) {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! defined( 'SEARCHREGEX_TESTS' ) ) {
 			// phpcs:ignore
 			error_log( $title . ': ' . preg_replace( '/\{.*?\}/', '%', $query ) );
 		}
