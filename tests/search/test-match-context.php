@@ -1,17 +1,11 @@
 <?php
 
-use SearchRegex\Match_Context_Value;
-use SearchRegex\Match_Context_Add;
-use SearchRegex\Match_Context_Delete;
-use SearchRegex\Match_Context_Replace;
-use SearchRegex\Match_Context_Pair;
-use SearchRegex\Match_Context_String;
-use SearchRegex\Search_Flags;
-use SearchRegex\Matched_Text;
+use SearchRegex\Context;
+use SearchRegex\Search;
 
 class ContextTest extends WP_UnitTestCase {
 	public function testContextValue() {
-		$context = new Match_Context_Value( 'value', 'label' );
+		$context = new Context\Type\Value( 'value', 'label' );
 		$json = [
 			'value' => 'value',
 			'value_type' => 'text',
@@ -29,43 +23,43 @@ class ContextTest extends WP_UnitTestCase {
 	}
 
 	public function testContextValueCrop() {
-		$context = new Match_Context_Value( str_repeat( 'thing', 100 ) );
+		$context = new Context\Type\Value( str_repeat( 'thing', 100 ) );
 
-		$this->assertEquals( Match_Context_Value::MAX_LENGTH, strlen( $context->to_json()['value'] ) );
+		$this->assertEquals( Context\Type\Value::MAX_LENGTH, strlen( $context->to_json()['value'] ) );
 	}
 
 	public function testContextEquals() {
-		$context = new Match_Context_Value( 'value', 'label' );
-		$context2 = new Match_Context_Value( 'value', 'label' );
-		$context3 = new Match_Context_Value( 'value2', 'label2' );
+		$context = new Context\Type\Value( 'value', 'label' );
+		$context2 = new Context\Type\Value( 'value', 'label' );
+		$context3 = new Context\Type\Value( 'value2', 'label2' );
 
 		$this->assertTrue( $context->is_equal( $context2 ) );
 		$this->assertFalse( $context->is_equal( $context3 ) );
 	}
 
 	public function testContextAdd() {
-		$context = new Match_Context_Add( 'value', 'label' );
+		$context = new Context\Type\Add( 'value', 'label' );
 
 		$this->assertTrue( $context->is_matched() );
 		$this->assertTrue( $context->needs_saving() );
 	}
 
 	public function testContextDelete() {
-		$context = new Match_Context_Delete( 'value', 'label' );
+		$context = new Context\Type\Delete( 'value', 'label' );
 
 		$this->assertTrue( $context->is_matched() );
 		$this->assertTrue( $context->needs_saving() );
 	}
 
 	public function testContextMatched() {
-		$context = new Match_Context_Delete( 'value', 'label' );
+		$context = new Context\Type\Delete( 'value', 'label' );
 
 		$this->assertTrue( $context->is_matched() );
 		$this->assertTrue( $context->needs_saving() );
 	}
 
 	public function testContextReplace() {
-		$context = new Match_Context_Replace( 'value', 'label' );
+		$context = new Context\Type\Replace( 'value', 'label' );
 		$context->set_replacement( 'replace', 'replace_label' );
 
 		$json = [
@@ -87,9 +81,9 @@ class ContextTest extends WP_UnitTestCase {
 	}
 
 	public function testContextReplaceEquals() {
-		$context = new Match_Context_Replace( 'value', 'label' );
-		$context2 = new Match_Context_Replace( 'value', 'label' );
-		$context3 = new Match_Context_Replace( 'value2', 'label2' );
+		$context = new Context\Type\Replace( 'value', 'label' );
+		$context2 = new Context\Type\Replace( 'value', 'label' );
+		$context3 = new Context\Type\Replace( 'value2', 'label2' );
 
 		$context->set_replacement( 'replace', 'replace' );
 		$context2->set_replacement( 'replace', 'replace' );
@@ -100,9 +94,9 @@ class ContextTest extends WP_UnitTestCase {
 	}
 
 	public function testContextPair() {
-		$key = new Match_Context_Value( 'key' );
-		$value = new Match_Context_Value( 'value' );
-		$context = new Match_Context_Pair( $key, $value );
+		$key = new Context\Type\Value( 'key' );
+		$value = new Context\Type\Value( 'value' );
+		$context = new Context\Type\Pair( $key, $value );
 
 		$json = [
 			'value' => [
@@ -129,26 +123,26 @@ class ContextTest extends WP_UnitTestCase {
 	}
 
 	public function testContextPairEquals() {
-		$key1 = new Match_Context_Value( 'key1' );
-		$key2 = new Match_Context_Value( 'key2' );
-		$value1 = new Match_Context_Value( 'value1' );
-		$value2 = new Match_Context_Value( 'value2' );
+		$key1 = new Context\Type\Value( 'key1' );
+		$key2 = new Context\Type\Value( 'key2' );
+		$value1 = new Context\Type\Value( 'value1' );
+		$value2 = new Context\Type\Value( 'value2' );
 
-		$context = new Match_Context_Pair( $key1, $value1 );
-		$context2 = new Match_Context_Pair( $key1, $value1 );
-		$context3 = new Match_Context_Pair( $key1, $value2 );
+		$context = new Context\Type\Pair( $key1, $value1 );
+		$context2 = new Context\Type\Pair( $key1, $value1 );
+		$context3 = new Context\Type\Pair( $key1, $value2 );
 
 		$this->assertTrue( $context->is_equal( $context2 ) );
 		$this->assertFalse( $context->is_equal( $context3 ) );
 	}
 
 	public function testContextString() {
-		$context = new Match_Context_String( 'value', new Search_Flags( [ 'case' ] ) );
+		$context = new Context\Type\Text( 'value', new Search\Flags( [ 'case' ] ) );
 
 		$this->assertTrue( $context->is_matched() );
 		$this->assertTrue( $context->needs_saving() );
 
-		$context->add_match( new Matched_Text( 'full', 12 ), 'this is the full string' . str_repeat( 'filler', 100 ) );
+		$context->add_match( new Search\Text( 'full', 12 ), 'this is the full string' . str_repeat( 'filler', 100 ) );
 
 		$json = $context->to_json();
 		$this->assertEquals( 1, $json['match_count'] );
@@ -158,9 +152,9 @@ class ContextTest extends WP_UnitTestCase {
 	}
 
 	public function testContextStringEquals() {
-		$context1 = new Match_Context_String( 'value1', new Search_Flags( [ 'case' ] ) );
-		$context2 = new Match_Context_String( 'value1', new Search_Flags( [ 'case' ] ) );
-		$context3 = new Match_Context_String( 'value2', new Search_Flags( [ 'case' ] ) );
+		$context1 = new Context\Type\Text( 'value1', new Search\Flags( [ 'case' ] ) );
+		$context2 = new Context\Type\Text( 'value1', new Search\Flags( [ 'case' ] ) );
+		$context3 = new Context\Type\Text( 'value2', new Search\Flags( [ 'case' ] ) );
 
 		$this->assertTrue( $context1->is_equal( $context2 ) );
 		$this->assertTrue( $context1->is_equal( $context3 ) );

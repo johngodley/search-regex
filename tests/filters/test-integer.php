@@ -1,22 +1,18 @@
 <?php
 
-use SearchRegex\Action_Nothing;
-use SearchRegex\Schema_Column;
-use SearchRegex\Schema_Source;
-use SearchRegex\Search_Source;
-use SearchRegex\Search_Filter_Integer;
-use SearchRegex\Source_Post;
+use SearchRegex\Source;
+use SearchRegex\Filter;
 use SearchRegex\Schema;
-use SearchRegex\Match_Context_Matched;
-use SearchRegex\Match_Context_Value;
+use SearchRegex\Context;
+use SearchRegex\Action;
 use SearchRegex\Sql\Sql_Value;
 use SearchRegex\Sql\Sql_From;
 
 class Filter_Integer_Test extends SearchRegex_Api_Test {
 	private function get_filter( $options ) {
-		$source = new Schema_Source( [ 'type' => 'posts' ] );
-		$column = new Schema_Column( [ 'column' => 'author', 'joined_by' => 'user' ], $source );
-		return new Search_Filter_Integer( $options, $column );
+		$source = new Schema\Source( [ 'type' => 'posts' ] );
+		$column = new Schema\Column( [ 'column' => 'author', 'joined_by' => 'user' ], $source );
+		return new Filter\Type\Filter_Integer( $options, $column );
 	}
 
 	private function get_query_for_filter( $filter ) {
@@ -27,8 +23,8 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 	}
 
 	private function get_data_for_filter( $filter, $value ) {
-		$schema = new Schema( [ [ 'type' => 'posts'] ] );
-		return $filter->get_column_data( '', $value, new Source_Post( [], [ $filter ] ), new Action_Nothing( [], $schema ) );
+		$schema = new Schema\Schema( [ [ 'type' => 'posts'] ] );
+		return $filter->get_column_data( '', $value, new Source\Core\Post( [], [ $filter ] ), new Action\Type\Nothing( [], $schema ) );
 	}
 
 	public function testDefault() {
@@ -105,7 +101,7 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 2 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataEquals() {
@@ -113,10 +109,10 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 1 );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 2 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataNotEquals() {
@@ -124,10 +120,10 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 1 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 2 );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 	}
 
 	public function testGetDataGreater() {
@@ -135,13 +131,13 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 1 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 3 );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 2 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataLess() {
@@ -149,13 +145,13 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 1 );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 2 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 3 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataRange() {
@@ -163,13 +159,13 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 1 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 2 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 3 );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 	}
 
 	public function testGetDataNotRange() {
@@ -177,12 +173,12 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 1 );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 2 );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 3 );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 }

@@ -1,26 +1,24 @@
 <?php
 
-use SearchRegex\Schema_Column;
-use SearchRegex\Schema_Source;
-use SearchRegex\Modify_Integer;
-use SearchRegex\Match_Context_Replace;
-use SearchRegex\Match_Context_Value;
-use SearchRegex\Source_Manager;
-use SearchRegex\Match_Column;
+use SearchRegex\Schema;
+use SearchRegex\Modifier;
+use SearchRegex\Context;
+use SearchRegex\Source;
+use SearchRegex\Search;
 
 class Modifier_Integer_Test extends SearchRegex_Api_Test {
 	private function get_modifier( $options ) {
-		$source = new Schema_Source( [ 'type' => 'posts' ] );
-		$column = new Schema_Column( [ 'column' => 'date' ], $source );
-		return new Modify_Integer( $options, $column );
+		$source = new Schema\Source( [ 'type' => 'posts' ] );
+		$column = new Schema\Column( [ 'column' => 'date' ], $source );
+		return new Modifier\Value\Integer_Value( $options, $column );
 	}
 
 	private function perform( $modifier, $value ) {
-		$source = Source_Manager::get( [ 'posts' ], [] );
-		$context = new Match_Context_Value( $value );
-		$column = new Match_Column( 1, 1, [ $context ], [] );
+		$source = Source\Manager::get( [ 'posts' ], [] );
+		$context = new Context\Type\Value( $value );
+		$column = new Search\Column( 1, 1, [ $context ], [] );
 
-		$results = $modifier->perform( 1, $value, $source[0], $column, [] );
+		$results = $modifier->perform( 1, $value, $source[0], $column, [], true );
 
 		return $results->get_contexts()[0];
 	}
@@ -42,7 +40,7 @@ class Modifier_Integer_Test extends SearchRegex_Api_Test {
 		$context = $this->perform( $modifier, 10 );
 
 		$this->assertEquals( 100, $context->get_replacement() );
-		$this->assertInstanceOf( Match_Context_Replace::class, $context );
+		$this->assertInstanceOf( Context\Type\Replace::class, $context );
 	}
 
 	public function testSetBad() {
@@ -50,20 +48,20 @@ class Modifier_Integer_Test extends SearchRegex_Api_Test {
 		$context = $this->perform( $modifier, 10 );
 
 		$this->assertEquals( 0, $context->get_replacement() );
-		$this->assertInstanceOf( Match_Context_Replace::class, $context );
+		$this->assertInstanceOf( Context\Type\Replace::class, $context );
 
 		$modifier = $this->get_modifier( [ 'operation' => 'set', 'value' => [] ] );
 		$context = $this->perform( $modifier, 10 );
 
 		$this->assertEquals( 0, $context->get_replacement() );
-		$this->assertInstanceOf( Match_Context_Replace::class, $context );
+		$this->assertInstanceOf( Context\Type\Replace::class, $context );
 	}
 
 	public function testSetSame() {
 		$modifier = $this->get_modifier( [ 'operation' => 'set', 'value' => 10 ] );
 		$context = $this->perform( $modifier, 10 );
 
-		$this->assertInstanceOf( Match_Context_Value::class, $context );
+		$this->assertInstanceOf( Context\Type\Value::class, $context );
 	}
 
 	public function testIncrementSecond() {
@@ -72,7 +70,7 @@ class Modifier_Integer_Test extends SearchRegex_Api_Test {
 		$json = $context->to_json();
 
 		$this->assertEquals( 15, $context->get_replacement() );
-		$this->assertInstanceOf( Match_Context_Replace::class, $context );
+		$this->assertInstanceOf( Context\Type\Replace::class, $context );
 	}
 
 	public function testDecrementYear() {
@@ -80,6 +78,6 @@ class Modifier_Integer_Test extends SearchRegex_Api_Test {
 		$context = $this->perform( $modifier, 10 );
 
 		$this->assertEquals( 5, $context->get_replacement() );
-		$this->assertInstanceOf( Match_Context_Replace::class, $context );
+		$this->assertInstanceOf( Context\Type\Replace::class, $context );
 	}
 }

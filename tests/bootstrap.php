@@ -12,7 +12,7 @@ require_once $_tests_dir . '/includes/functions.php';
 
 function _manually_load_plugin() {
 	require dirname( __FILE__ ) . '/../search-regex.php';
-	require dirname( __FILE__ ) . '/../search-regex-admin.php';
+	require dirname( __FILE__ ) . '/../includes/search-regex-admin.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
@@ -113,7 +113,7 @@ class SearchRegex_Api_Test extends WP_Ajax_UnitTestCase {
 		foreach ( $csv as $entry ) {
 			$post_id = wp_insert_post( $entry );
 
-			if ( $post_id instanceof WP_Error ) {
+			if ( $post_id instanceof \WP_Error ) {
 				die( 'Failed to create post' );
 			}
 
@@ -125,7 +125,7 @@ class SearchRegex_Api_Test extends WP_Ajax_UnitTestCase {
 		foreach ( $csv as $entry ) {
 			$comment_id = wp_insert_comment( $entry );
 
-			if ( $comment_id instanceof WP_Error ) {
+			if ( $comment_id instanceof \WP_Error ) {
 				die( 'Failed to create comment' );
 			}
 		}

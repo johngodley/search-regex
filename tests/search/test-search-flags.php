@@ -1,10 +1,10 @@
 <?php
 
-use SearchRegex\Search_Flags;
+use SearchRegex\Search;
 
 class SearchFlagsTest extends WP_UnitTestCase {
 	public function testNoFlags() {
-		$flags = new Search_Flags();
+		$flags = new Search\Flags();
 
 		$this->assertEquals( [], $flags->get_flags() );
 		$this->assertFalse( $flags->is_regex() );
@@ -12,7 +12,7 @@ class SearchFlagsTest extends WP_UnitTestCase {
 	}
 
 	public function testInvalidFlags() {
-		$flags = new Search_Flags( [ 'cat', 'dog', 'monkey' ] );
+		$flags = new Search\Flags( [ 'cat', 'dog', 'monkey' ] );
 
 		$this->assertEquals( [], $flags->get_flags() );
 		$this->assertFalse( $flags->is_regex() );
@@ -20,7 +20,7 @@ class SearchFlagsTest extends WP_UnitTestCase {
 	}
 
 	public function testValidFlags() {
-		$flags = new Search_Flags( [ 'regex', 'case' ] );
+		$flags = new Search\Flags( [ 'regex', 'case' ] );
 
 		$this->assertEquals( 2, count( $flags->get_flags() ) );
 		$this->assertTrue( $flags->is_regex() );

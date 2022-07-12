@@ -1,12 +1,11 @@
 <?php
 
-use SearchRegex\Totals;
-use SearchRegex\Search_Flags;
-use SearchRegex\Source_Manager;
-use SearchRegex\Global_Search_Filter;
+use SearchRegex\Source;
+use SearchRegex\Filter;
+use SearchRegex\Search;
 
 class TotalsTest extends SearchRegex_Api_Test {
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass() : void {
 		$posts = self::load_fixture( 'posts.csv', 100 );
 		$comments = self::load_fixture( 'comments.csv', 100 );
 
@@ -15,7 +14,7 @@ class TotalsTest extends SearchRegex_Api_Test {
 	}
 
 	public function testEmpty() {
-		$totals = new Totals();
+		$totals = new Search\Totals();
 		$expected_grand = [
 			'rows' => 0,
 			'matched_rows' => 0,
@@ -31,9 +30,9 @@ class TotalsTest extends SearchRegex_Api_Test {
 			'matched_rows' => 18,
 		];
 
-		$sources = Source_Manager::get( [ 'posts' ], [ new Global_Search_Filter( 'the', [] ) ] );
+		$sources = Source\Manager::get( [ 'posts' ], [ new Filter\Global_Filter( 'the', [] ) ] );
 
-		$totals = new Totals();
+		$totals = new Search\Totals();
 		$this->assertTrue( $totals->get_totals( $sources ) );
 		$this->assertEquals( $expected['rows'], $totals->get_total_rows_for_source( 'posts' ) );
 		$this->assertEquals( $expected['matched_rows'], $totals->get_matched_rows_for_source( 'posts' ) );
@@ -46,9 +45,9 @@ class TotalsTest extends SearchRegex_Api_Test {
 			'matched_rows' => 25,
 		];
 
-		$sources = Source_Manager::get( [ 'posts', 'comment' ], [ new Global_Search_Filter( 'the', [] ) ] );
+		$sources = Source\Manager::get( [ 'posts', 'comment' ], [ new Filter\Global_Filter( 'the', [] ) ] );
 
-		$totals = new Totals();
+		$totals = new Search\Totals();
 		$this->assertTrue( $totals->get_totals( $sources ) );
 
 		$this->assertEquals( 100, $totals->get_total_rows_for_source( 'posts' ) );

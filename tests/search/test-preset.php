@@ -1,6 +1,6 @@
 <?php
 
-use SearchRegex\Preset;
+use SearchRegex\Search;
 
 class PresetTest extends WP_UnitTestCase {
 	public function testEmptyPreset() {
@@ -21,7 +21,7 @@ class PresetTest extends WP_UnitTestCase {
 			'tags' => [],
 		];
 
-		$preset = new Preset();
+		$preset = new Search\Preset();
 		$actual = $preset->to_json();
 		unset( $actual['id'] );
 
@@ -48,7 +48,7 @@ class PresetTest extends WP_UnitTestCase {
 			],
 		];
 
-		$preset = new Preset( $params );
+		$preset = new Search\Preset( $params );
 		$actual = $preset->to_json();
 
 		unset( $actual['id'] );
@@ -63,101 +63,101 @@ class PresetTest extends WP_UnitTestCase {
 
 	public function testBadName() {
 		$params = [ 'name' => '<strong>bad中"\'</strong>' ];
-		$preset = new Preset( $params );
+		$preset = new Search\Preset( $params );
 
 		$this->assertEquals( 'bad中"\'', $preset->to_json()['name'] );
 	}
 
 	public function testBadDescription() {
 		$params = [ 'description' => '<strong>bad中"\'</strong>' ];
-		$preset = new Preset( $params );
+		$preset = new Search\Preset( $params );
 
 		$this->assertEquals( 'bad中"\'', $preset->to_json()['description'] );
 	}
 
 	public function testBadPerPage() {
-		$preset = new Preset( [ 'search' => [ 'perPage' => 'cat' ] ] );
+		$preset = new Search\Preset( [ 'search' => [ 'perPage' => 'cat' ] ] );
 		$this->assertEquals( 25, $preset->to_json()['search']['perPage'] );
 
-		$preset = new Preset( [ 'search' => [ 'perPage' => 5001 ] ] );
+		$preset = new Search\Preset( [ 'search' => [ 'perPage' => 5001 ] ] );
 		$this->assertEquals( 5000, $preset->to_json()['search']['perPage'] );
 
-		$preset = new Preset( [ 'search' => [ 'perPage' => 5 ] ] );
+		$preset = new Search\Preset( [ 'search' => [ 'perPage' => 5 ] ] );
 		$this->assertEquals( 25, $preset->to_json()['search']['perPage'] );
 	}
 
 	public function testBadSource() {
-		$preset = new Preset( [ 'search' => [ 'source' => 5 ] ] );
+		$preset = new Search\Preset( [ 'search' => [ 'source' => 5 ] ] );
 		$this->assertEquals( [], $preset->to_json()['search']['source'] );
 
-		$preset = new Preset( [ 'search' => [ 'source' => 'cat' ] ] );
+		$preset = new Search\Preset( [ 'search' => [ 'source' => 'cat' ] ] );
 		$this->assertEquals( [], $preset->to_json()['search']['source'] );
 	}
 
 	public function testBadSearchFlags() {
-		$preset = new Preset( [ 'search' => [ 'searchFlags' => 'cat' ] ] );
+		$preset = new Search\Preset( [ 'search' => [ 'searchFlags' => 'cat' ] ] );
 		$this->assertEquals( [], $preset->to_json()['search']['searchFlags'] );
 
-		$preset = new Preset( [ 'search' => [ 'searchFlags' => [ 'cat' ] ] ] );
+		$preset = new Search\Preset( [ 'search' => [ 'searchFlags' => [ 'cat' ] ] ] );
 		$this->assertEquals( [], $preset->to_json()['search']['searchFlags'] );
 	}
 
 	public function testBadLocked() {
-		$preset = new Preset( [ 'locked' => 5 ] );
+		$preset = new Search\Preset( [ 'locked' => 5 ] );
 		$this->assertEquals( [], $preset->to_json()['locked'] );
 
-		$preset = new Preset( [ 'locked' => [ 'cat' ] ] );
+		$preset = new Search\Preset( [ 'locked' => [ 'cat' ] ] );
 		$this->assertEquals( [], $preset->to_json()['locked'] );
 	}
 
 	public function testBadTags() {
-		$preset = new Preset( [ 'tags' => 5 ] );
+		$preset = new Search\Preset( [ 'tags' => 5 ] );
 		$this->assertEquals( [], $preset->to_json()['tags'] );
 
-		$preset = new Preset( [ 'tags' => [ 'cat' ] ] );
+		$preset = new Search\Preset( [ 'tags' => [ 'cat' ] ] );
 		$this->assertEquals( [], $preset->to_json()['tags'] );
 
-		$preset = new Preset( [ 'tags' => [ [ 'cat' ] ] ] );
+		$preset = new Search\Preset( [ 'tags' => [ [ 'cat' ] ] ] );
 		$this->assertEquals( [], $preset->to_json()['tags'] );
 	}
 
 	public function testDuplicateTags() {
 		$tag = [ 'name' => 'name', 'title' => 'title' ];
-		$preset = new Preset( [ 'tags' => [ $tag, $tag ] ] );
+		$preset = new Search\Preset( [ 'tags' => [ $tag, $tag ] ] );
 		$this->assertEquals( [ $tag ], $preset->to_json()['tags'] );
 	}
 
 	public function testCreate() {
-		delete_option( Preset::OPTION_NAME );
+		delete_option( Search\Preset::OPTION_NAME );
 
-		$preset = new Preset( [ 'name' => 'cat' ] );
+		$preset = new Search\Preset( [ 'name' => 'cat' ] );
 		$created = $preset->create();
 
-		$get = Preset::get( $preset->get_id() );
+		$get = Search\Preset::get( $preset->get_id() );
 
 		$this->assertEquals( $get->to_json(), $preset->to_json() );
 	}
 
 	public function testUpdate() {
-		delete_option( Preset::OPTION_NAME );
+		delete_option( Search\Preset::OPTION_NAME );
 
-		$preset = new Preset( [ 'name' => 'cat' ] );
+		$preset = new Search\Preset( [ 'name' => 'cat' ] );
 		$created = $preset->create();
 		$preset->update( [ 'name' => 'dog' ] );
 
-		$get = Preset::get( $preset->get_id() );
+		$get = Search\Preset::get( $preset->get_id() );
 
 		$this->assertEquals( $get->to_json(), $preset->to_json() );
 	}
 
 	public function testDelete() {
-		delete_option( Preset::OPTION_NAME );
+		delete_option( Search\Preset::OPTION_NAME );
 
-		$preset = new Preset( [ 'name' => 'cat' ] );
+		$preset = new Search\Preset( [ 'name' => 'cat' ] );
 		$created = $preset->create();
 		$preset->delete();
 
-		$get = Preset::get( $preset->get_id() );
+		$get = Search\Preset::get( $preset->get_id() );
 
 		$this->assertEquals( null, $get );
 	}

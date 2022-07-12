@@ -2,14 +2,12 @@
 
 use SearchRegex\Search;
 use SearchRegex\Action;
-use SearchRegex\Search_Flags;
-use SearchRegex\Source_Manager;
+use SearchRegex\Source;
 use SearchRegex\Schema;
-use SearchRegex\Global_Search_Filter;
-use SearchRegex\Search_Filter;
+use SearchRegex\Filter;
 
 class SearchTest extends SearchRegex_Api_Test {
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass() : void {
 		global $wpdb;
 
 		$wpdb->query( "DELETE FROM {$wpdb->posts}" );
@@ -22,7 +20,7 @@ class SearchTest extends SearchRegex_Api_Test {
 		self::create_comments_from_csv( $comments );
 	}
 
-	public function setUp() {
+	public function setUp() : void {
 		global $wpdb;
 
 		$wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_name LIKE 'post-title-%'" );
@@ -32,13 +30,13 @@ class SearchTest extends SearchRegex_Api_Test {
 
 	private function get_search_replace( $sources, $search_phrase, $replace_phrase, $regex ) {
 		$flags = $regex ? [ 'regex', 'case', ] : [ 'case' ];
-		$schema = new Schema( Source_Manager::get_schema( $sources ) );
+		$schema = new Schema\Schema( Source\Manager::get_schema( $sources ) );
 
-		$filters = [ new Global_Search_Filter( $search_phrase, $flags ) ];
-		$sources = Source_Manager::get( $sources, $filters );
+		$filters = [ new Filter\Global_Filter( $search_phrase, $flags ) ];
+		$sources = Source\Manager::get( $sources, $filters );
 
-		$search = new Search( $sources );
-		$action = Action::create( 'replace', [ 'search' => $search_phrase, 'replacement' => $replace_phrase, 'flags' => $flags ], $schema );
+		$search = new Search\Search( $sources );
+		$action = Action\Action::create( 'replace', [ 'search' => $search_phrase, 'replacement' => $replace_phrase, 'flags' => $flags ], $schema );
 
 		return [ $search, $action ];
 	}
