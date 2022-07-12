@@ -1,0 +1,61 @@
+@import "../../global.scss";
+
+.searchregex-replaceall {
+	max-width: 600px;
+	margin: 0 auto;
+	margin-top: 50px;
+	border: 1px solid #ddd;
+	padding: 15px;
+	border-radius: 5px;
+	background-color: $white;
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+
+	svg {
+		min-height: 40px;
+		border-radius: 3px;
+	}
+
+	h3 {
+		margin-top: 0;
+	}
+}
+
+.searchregex-replaceall__progress {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.searchregex-replaceall__status {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: -2px;
+}
+
+.searchregex-replaceall__container {
+	width: 100%;
+
+	svg {
+		width: 100%;
+	}
+}
+
+.searchregex-replaceall__stats {
+	text-align: center;
+
+	.wp-core-ui .button-primary {
+		margin-top: 20px;
+	}
+}
+
+.rc-progress-line-path {
+	transition: stroke-dashoffset 0s ease 0s, stroke-dasharray 1s ease 0.5s, stroke linear 0.5s !important;
+}
+
+.rc-progress-line-trail {
+	//	animation: wpl-loading-fade 1.6s ease-in-out infinite;
+}

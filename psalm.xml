@@ -1,45 +1,58 @@
 <?xml version="1.0"?>
 <psalm
-    totallyTyped="false"
-    errorLevel="3"
     phpVersion="5.6"
-    resolveFromConfigFile="true"
     findUnusedVariablesAndParams="true"
     strictBinaryOperands="true"
-    ensureArrayStringOffsetsExist="false"
+    runTaintAnalysis="true"
+    findUnusedCode="true"
     findUnusedPsalmSuppress="true"
+    hoistConstants="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
 >
     <projectFiles>
-        <file name="search-regex-settings.php" />
-        <file name="search-regex-version.php" />
-        <file name="search-regex-admin.php" />
-        <file name="search-regex-capabilities.php" />
-        <file name="search-regex-cli.php" />
+        <directory name="includes"/>
         <file name="search-regex.php" />
-        <directory name="api" />
-        <directory name="models" />
-        <directory name="source" />
-        <directory name="filters" />
-        <directory name="actions" />
-        <directory name="sql" />
-        <directory name="sql/join" />
+
         <ignoreFiles>
-            <directory name="vendor" />
+            <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>
     <globals>
-        <var name="wpdb" type="object" />
+        <var name="wpdb" type="object"/>
+        <var name="SEARCH_REGEX_VERSION" type="string" />
     </globals>
-    <stubs>
-        <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php" />
-        <file name="bin/stubs.php" />
-    </stubs>
     <issueHandlers>
-        <MissingClosureReturnType errorLevel="suppress" />
-        <MissingClosureParamType errorLevel="suppress" />
-        <UnusedPsalmSuppress errorLevel="suppress" />
+		<LessSpecificReturnType errorLevel="info"/>
+		<DeprecatedMethod errorLevel="info"/>
+		<DeprecatedProperty errorLevel="info"/>
+		<DeprecatedClass errorLevel="info"/>
+		<DeprecatedConstant errorLevel="info"/>
+		<DeprecatedFunction errorLevel="info"/>
+		<DeprecatedInterface errorLevel="info"/>
+		<DeprecatedTrait errorLevel="info"/>
+		<InternalMethod errorLevel="info"/>
+		<InternalProperty errorLevel="info"/>
+		<InternalClass errorLevel="info"/>
+		<MissingClosureReturnType errorLevel="info"/>
+		<MissingReturnType errorLevel="info"/>
+		<MissingPropertyType errorLevel="info"/>
+		<InvalidDocblock errorLevel="info"/>
+		<PropertyNotSetInConstructor errorLevel="info"/>
+		<MissingConstructor errorLevel="info"/>
+		<MissingClosureParamType errorLevel="info"/>
+		<RedundantCondition errorLevel="info"/>
+		<DocblockTypeContradiction errorLevel="info"/>
+		<RedundantConditionGivenDocblockType errorLevel="info"/>
+		<UnresolvableInclude errorLevel="info"/>
+		<RawObjectIteration errorLevel="info"/>
+		<InvalidStringClass errorLevel="info"/>
+
+		<TooManyArguments>
+			<errorLevel type="suppress">
+				<referencedFunction name="apply_filters" />
+			</errorLevel>
+		</TooManyArguments>
     </issueHandlers>
-</psalm>
+<plugins><pluginClass class="PsalmWordPress\Plugin"/></plugins></psalm>

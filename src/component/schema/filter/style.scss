@@ -1,0 +1,139 @@
+@import "../../../global.scss";
+
+.searchregex-filter {
+	display: flex;
+	align-items: center;
+	padding: 8px 0;
+
+	span {
+		margin-right: 10px;
+	}
+}
+
+.searchregex-filters {
+	> .wpl-badge {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+}
+
+.searchregex-filter__column {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	position: relative;
+
+	.searchregex-filter__type__integer {
+		align-items: center;
+
+		.searchregex-integer-input input {
+			width: 100%;
+		}
+	}
+}
+
+.searchregex-filter__name {
+	margin-right: 20px;
+	font-weight: bold;
+	min-width: 180px;
+	display: flex;
+	align-items: center;
+
+	.dashicons {
+		cursor: pointer;
+	}
+}
+
+.searchregex-filter__item {
+	display: flex;
+	align-items: flex-start;
+	margin-left: 20px;
+
+	p {
+		margin: 0;
+	}
+
+	.dashicons-trash {
+		margin-right: 3px;
+		cursor: pointer;
+		margin-left: 5px;
+		padding-top: 3px;
+	}
+
+	input,
+	textarea,
+	select {
+		margin-right: 5px;
+		margin-left: 5px;
+	}
+
+	select:first-child {
+		margin-left: 0;
+	}
+
+	textarea {
+		width: 100%;
+		height: 75px;
+	}
+
+	&.searchregex-filter__type__integer {
+		input {
+			width: 100px;
+		}
+	}
+}
+
+.searchregex-filter__content,
+.searchregex-filter__content .wpl-dropdowntext {
+	width: 100%;
+}
+
+.searchregex-filter__content__multiple {
+	> .wpl-badge {
+		margin: 10px 21px;
+	}
+
+	&::before {
+		content: "";
+		display: block;
+		background-color: #333;
+		position: absolute;
+		width: 3px;
+		top: 0;
+		height: 100%;
+	}
+}
+
+.searchregex-filter__type__date {
+	input {
+		width: 200px;
+	}
+}
+
+.searchregex-filters__break:not(:last-child) {
+	height: 30px;
+}
+
+.searchregex-filter__keyvalue {
+	width: 100%;
+
+	span {
+		min-width: 80px;
+		margin-top: 2px;
+	}
+}
+
+.searchregex-filter__keyvalue__item {
+	display: flex;
+	align-items: center;
+	margin-bottom: 5px;
+
+	.wpl-popover__toggle:last-child {
+		margin-right: 8px;
+	}
+}
+
+.dashicons__disabled {
+	opacity: 0.5;
+	cursor: inherit !important;
+}

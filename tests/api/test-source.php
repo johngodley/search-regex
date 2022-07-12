@@ -1,8 +1,7 @@
 <?php
 
 use SearchRegex\Match;
-use SearchRegex\Match_Context_String;
-use SearchRegex\Search_Flags;
+use SearchRegex\Context\Type;
 
 class SourceApiTest extends SearchRegex_Api_Test {
 	private function get_endpoints() {

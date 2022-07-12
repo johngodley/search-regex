@@ -1,17 +1,11 @@
 <?php
 
-use SearchRegex\Action_Nothing;
-use SearchRegex\Schema_Column;
-use SearchRegex\Schema_Source;
-use SearchRegex\Search_Source;
-use SearchRegex\Search_Filter_String;
-use SearchRegex\Source_Post;
+use SearchRegex\Source;
+use SearchRegex\Filter;
 use SearchRegex\Schema;
-use SearchRegex\Match_Context_String;
-use SearchRegex\Match_Context_Value;
-use SearchRegex\Match_Context_Matched;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_From;
+use SearchRegex\Context;
+use SearchRegex\Action;
+use SearchRegex\Sql;
 
 class Filter_String_Test extends SearchRegex_Api_Test {
 	private function unescape_like( $sql ) {
@@ -19,21 +13,21 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 	}
 
 	private function get_filter( $options ) {
-		$source = new Schema_Source( [ 'type' => 'posts' ] );
-		$column = new Schema_Column( [ 'column' => 'title' ], $source );
-		return new Search_Filter_String( $options, $column );
+		$source = new Schema\Source( [ 'type' => 'posts' ] );
+		$column = new Schema\Column( [ 'column' => 'title' ], $source );
+		return new Filter\Type\Filter_String( $options, $column );
 	}
 
 	private function get_query_for_filter( $filter ) {
 		$query = $filter->get_query();
-		$query->add_from( new Sql_From( Sql_Value::table( 'posts' ) ) );
+		$query->add_from( new Sql\From( Sql\Value::table( 'posts' ) ) );
 
 		return $query;
 	}
 
 	private function get_data_for_filter( $filter, $value ) {
-		$schema = new Schema( [ [ 'type' => 'posts'] ] );
-		return $filter->get_column_data( '', $value, new Source_Post( [], [ $filter ] ), new Action_Nothing( [], $schema ) );
+		$schema = new Schema\Schema( [ [ 'type' => 'posts'] ] );
+		return $filter->get_column_data( '', $value, new Source\Core\Post( [], [ $filter ] ), new Action\Type\Nothing( [], $schema ) );
 	}
 
 	public function testDefault() {
@@ -116,7 +110,7 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'cats' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataEquals() {
@@ -124,7 +118,7 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'cat' );
-		$this->assertInstanceOf( Match_Context_String::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Text::class, $results[0] );
 
 		$json = $results[0]->to_json();
 		$this->assertEquals( 'cat', $json['context'] );
@@ -132,7 +126,7 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$this->assertEquals( 0, $json['matches'][0]['pos_id'] );
 
 		$results = $this->get_data_for_filter( $filter, 'dog' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataNotEquals() {
@@ -140,10 +134,10 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'cat' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 'dog' );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 	}
 
 	public function testGetDataContains() {
@@ -151,7 +145,7 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a cat and monkey' );
-		$this->assertInstanceOf( Match_Context_String::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Text::class, $results[0] );
 
 		$json = $results[0]->to_json();
 		$this->assertEquals( 'this is a cat and monkey', $json['context'] );
@@ -159,7 +153,7 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$this->assertEquals( 10, $json['matches'][0]['pos_id'] );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a dog and monkey' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataNotContains() {
@@ -167,10 +161,10 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a cat and monkey' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a dog and monkey' );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 	}
 
 	public function testGetDataBegins() {
@@ -178,10 +172,10 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'cat and monkey' );
-		$this->assertInstanceOf( Match_Context_String::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Text::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 'dog and monkey' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataNotEnds() {
@@ -189,10 +183,10 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a dog' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a cat' );
-		$this->assertInstanceOf( Match_Context_String::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Text::class, $results[0] );
 	}
 
 	public function testGetDataRegex() {
@@ -200,10 +194,10 @@ class Filter_String_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a dog' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 'this is a cat' );
-		$this->assertInstanceOf( Match_Context_String::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Text::class, $results[0] );
 
 		$json = $results[0]->to_json();
 		$this->assertEquals( 'this is a cat', $json['context'] );

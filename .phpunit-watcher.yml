@@ -1,3 +1,0 @@
-phpunit:
-    binaryPath: /usr/local/bin/phpunit
-    timeout: 180

@@ -1,114 +1,98 @@
-/** @format */
+/**
+ * External dependencies
+ */
 
+const fs = require( 'fs' );
 const path = require( 'path' );
 const webpack = require( 'webpack' );
-const TerserPlugin = require( 'terser-webpack-plugin' );
-
-// PostCSS plugins
-const postcssPresetEnv = require( 'postcss-preset-env' );
-const postcssFocus = require( 'postcss-focus' );
-const postcssReporter = require( 'postcss-reporter' );
-
-const isProduction = () => process.env.NODE_ENV === 'production';
-const getDevUrl = 'http://localhost:3312/';
+const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
 const pkg = require( './package.json' );
+const TerserPlugin = require( 'terser-webpack-plugin' );
+const MiniCSSExtractPlugin = require( 'mini-css-extract-plugin' );
+const WebpackShellPluginNext = require( 'webpack-shell-plugin-next' );
+const crypto = require( 'crypto' );
 
-const config = {
-	entry: [ path.join( __dirname, 'client', 'index.js' ) ],
+const versionHeader = md5 => `<?php
+
+define( 'SEARCHREGEX_VERSION', '${ pkg.version }' );
+define( 'SEARCHREGEX_BUILD', '${ md5 }' );
+define( 'SEARCHREGEX_MIN_WP', '${ pkg.wordpress.supported }' );
+`;
+
+function generateVersion() {
+	fs.readFile( path.resolve( __dirname, 'build/search-regex.js' ), ( error, data ) => {
+		const md5 = crypto
+			.createHash( 'md5' )
+			.update( data, 'utf8' )
+			.digest( 'hex' );
+
+		fs.writeFileSync( path.resolve( __dirname, 'build/search-regex-version.php' ), versionHeader( md5 ) );
+	} );
+}
+
+process.env.WP_NO_EXTERNALS = true;
+
+const modified = {
+	...defaultConfig,
 	output: {
-		path: path.join( __dirname ),
+		...defaultConfig.output,
 		filename: 'search-regex.js',
-		chunkFilename: 'search-regex-[name]-[chunkhash].js',
 	},
-	module: {
-		rules: [
-			{
-				test: /\.js$/,
-				exclude: /node_modules/,
-				use: {
-					loader: 'babel-loader',
-					options: {
-						presets: [ '@babel/preset-env' ],
-					},
-				},
-			},
-			{
-				test: /\.json$/,
-				loader: 'json-loader',
-			},
-			{
-				test: /\.s(a|c)ss$/,
-				use: [ 'style-loader', 'css-loader', 'postcss-loader', 'sass-loader' ],
-			},
-			{
-				test: [ path.resolve( __dirname, 'node_modules/redbox-react' ) ],
-				use: 'null-loader',
-			},
-		],
-	},
-	resolve: {
-		extensions: [ '.js', '.jsx', '.json', '.scss', '.css' ],
-		modules: [ path.resolve( __dirname, 'client' ), 'node_modules' ],
+	externals: {
+		'@wordpress/i18n': 'wp.i18n'
 	},
 	plugins: [
-		new webpack.BannerPlugin( 'Search Regex v' + pkg.version ),
+		// Replace the default MiniCSSExtractPlugin with a custom one that doesn't externalise React
+		...defaultConfig.plugins.filter( ( plugin ) => !( plugin instanceof MiniCSSExtractPlugin ) && !( plugin instanceof DependencyExtractionWebpackPlugin ) ),
+		new MiniCSSExtractPlugin( { filename: 'search-regex.css' } ),
+
 		new webpack.DefinePlugin( {
 			'process.env': { NODE_ENV: JSON.stringify( process.env.NODE_ENV || 'development' ) },
 			SEARCHREGEX_VERSION: "'" + pkg.version + "'",
 		} ),
-		new webpack.LoaderOptionsPlugin( {
-			options: {
-				postcss: [
-					postcssFocus(),
-					postcssPresetEnv( {
-						browsers: [ 'last 2 versions', 'IE > 10' ],
-					} ),
-					postcssReporter( {
-						clearMessages: true,
-					} ),
-				],
+
+		new WebpackShellPluginNext( {
+			onBuildEnd: {
+				scripts: [ generateVersion ],
+				blocking: true,
+				parallel: false
 			},
-		} ),
+		} )
 	],
-	// watchOptions: {
-	// 	ignored: [ /node_modules/ ],
-	// },
-	performance: {
-		hints: false,
+	resolve: {
+		...defaultConfig.resolve,
+		alias: {
+			...defaultConfig.resolve.alias,
+			'@wp-plugin-components': path.resolve( __dirname, 'src/wp-plugin-components' ),
+			'@wp-plugin-lib': path.resolve( __dirname, 'src/wp-plugin-lib/' )
+		}
 	},
 	optimization: {
-		minimize: isProduction(),
+		...defaultConfig.optimization,
 		minimizer: [
 			new TerserPlugin( {
 				parallel: true,
+				terserOptions: {
+					output: {
+						comments: /translators:/i,
+					},
+					compress: {
+						passes: 2,
+					},
+					mangle: {
+						reserved: [ '__', '_n', '_nx', '_x' ],
+					},
+				},
 				extractComments: {
 					condition: true,
 					banner: () => {
-						return (
-							'Search Regex v' + pkg.version + ' - please refer to license.txt for license information'
-						);
+						return 'Search Regex v' + pkg.version + ' - please refer to license.txt for license information';
 					},
 				},
 			} ),
-		],
-	},
+		]
+	}
 };
 
-if ( isProduction() ) {
-	config.plugins.push( new webpack.LoaderOptionsPlugin( { minimize: true } ) );
-} else {
-	config.output.publicPath = getDevUrl;
-	config.devtool = 'inline-source-map';
-	config.resolve.alias = {
-		'react-dom': '@hot-loader/react-dom',
-	};
-	config.devServer = {
-		historyApiFallback: {
-			index: '/',
-		},
-		headers: { 'Access-Control-Allow-Origin': '*' },
-		allowedHosts: 'all'
-	};
-}
-
-module.exports = config;
+module.exports = modified;

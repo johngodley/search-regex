@@ -1,0 +1,145 @@
+.searchregex-loading {
+	opacity: 0.8;
+	animation: loading-fade 1.6s ease-in-out infinite;
+}
+
+.searchregex-search {
+	table {
+		table-layout: fixed;
+		width: 100%;
+	}
+
+	th {
+		text-align: left;
+		width: 80px;
+		vertical-align: top;
+		padding-top: 5px;
+	}
+
+	td {
+		width: 100%;
+	}
+
+	.inline-error {
+		margin-top: 20px;
+	}
+}
+
+.searchregex-search__results td {
+	display: flex;
+	align-items: center;
+
+	select {
+		margin-right: 5px;
+	}
+}
+
+.searchregex-search__replace,
+.searchregex-search__search,
+.searchregex-search__source {
+	td {
+		display: flex;
+		justify-content: flex-start;
+		align-items: flex-start;
+	}
+
+	input[type="text"],
+	textarea {
+		width: 100%;
+	}
+
+	.wpl-popover__toggle,
+	select {
+		margin-left: 5px;
+	}
+
+	textarea {
+		min-height: 30px;
+		padding: 4px 8px;
+		margin-left: 1px;
+	}
+
+	width: 100%;
+	margin-bottom: 10px;
+
+	> label {
+		font-weight: bold;
+		width: 60px;
+	}
+
+	.wpl-popover__toggle {
+		margin-left: 1px;
+		margin-right: 5px;
+
+		button {
+			min-width: 200px;
+			margin-right: 2px;
+		}
+	}
+
+	select {
+		min-width: 150px;
+		margin-right: 0;
+	}
+
+	span {
+		margin-right: 5px;
+		margin-left: 10px;
+	}
+
+	.wpl-badge.wpl-badge__small .wpl-badge__content {
+		max-width: 150px;
+	}
+}
+
+.searchregex-search__search {
+	.wpl-popover__toggle {
+		margin-left: 5px;
+		margin-right: 0;
+	}
+}
+
+.searchregex-search__source {
+	select {
+		margin-right: 10px;
+	}
+
+	td {
+		display: flex;
+		align-items: center;
+	}
+}
+
+.searchregex-search__source__description {
+	margin-left: 5px;
+}
+
+.searchregex-search__action {
+	margin-top: 10px;
+
+	button[type="submit"] {
+		margin-right: 10px;
+	}
+
+	.wpl-spinner__item {
+		width: 28px;
+		height: 28px;
+		margin-top: 10px;
+	}
+}
+
+.searchregex-search__tag__medium th {
+	width: 130px;
+}
+
+.searchregex-search__tag__long th {
+	width: 200px;
+}
+
+.searchregex-preset__description {
+	margin-top: 20px;
+	margin-bottom: 5px;
+	font-weight: normal;
+	font-size: 14px;
+	margin-left: 2px;
+}

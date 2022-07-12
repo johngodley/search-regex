@@ -1,0 +1,85 @@
+.searchregex-presets {
+	margin-top: 20px;
+
+	.searchregex-preset__name {
+		width: 200px;
+	}
+
+	.searchregex-preset__flags {
+		width: 200px;
+	}
+
+	table {
+		padding: 5px;
+		width: 100%;
+
+		h2 {
+			margin-top: 0;
+			margin-bottom: 5px;
+		}
+
+		td,
+		th {
+			padding: 2px 0;
+		}
+
+		th {
+			width: 150px;
+			vertical-align: top;
+			padding-top: 8px;
+		}
+
+		.searchregex-search__advanced__title td {
+			padding-top: 20px;
+		}
+
+		input[type="submit"] {
+			margin-right: 10px;
+		}
+
+		p:not(:first-child) {
+			padding-top: 4px;
+		}
+	}
+}
+
+.searchregex-search__advanced {
+	input[type="text"] {
+		margin-left: 5px;
+		margin-right: 10px;
+		min-width: 300px;
+	}
+}
+
+.searchregex-preset__saving {
+	opacity: 0.5;
+}
+
+.searchregex-preset__tag {
+	th {
+		vertical-align: top;
+	}
+
+	p {
+		margin: 1px 0;
+	}
+
+	input[type="text"] {
+		width: 100%;
+	}
+}
+
+.searchregex-presetactions {
+	margin-top: 20px;
+	margin-bottom: 20px;
+
+	button.button {
+		margin-right: 10px;
+	}
+}
+
+.searchregex-presetimport {
+	textarea {
+		width: 100%;
+	}
+}

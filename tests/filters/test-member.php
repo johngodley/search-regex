@@ -1,35 +1,30 @@
 <?php
 
-use SearchRegex\Action_Nothing;
-use SearchRegex\Schema_Column;
-use SearchRegex\Schema_Source;
-use SearchRegex\Search_Source;
-use SearchRegex\Search_Filter_Member;
-use SearchRegex\Source_Post;
+use SearchRegex\Source;
+use SearchRegex\Filter;
 use SearchRegex\Schema;
-use SearchRegex\Match_Context_Matched;
-use SearchRegex\Match_Context_Value;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_From;
+use SearchRegex\Context;
+use SearchRegex\Action;
+use SearchRegex\Sql;
 
 class Filter_Member_Test extends SearchRegex_Api_Test {
 	private function get_filter( $options ) {
 		$api_options = [ [ 'value' => 'page', 'label' => 'Page' ] ];
-		$source = new Schema_Source( [ 'type' => 'posts' ] );
-		$column = new Schema_Column( [ 'column' => 'term_id', 'options' => $api_options ], $source );
-		return new Search_Filter_Member( $options, $column );
+		$source = new Schema\Source( [ 'type' => 'posts' ] );
+		$column = new Schema\Column( [ 'column' => 'term_id', 'options' => $api_options ], $source );
+		return new Filter\Type\Filter_Member( $options, $column );
 	}
 
 	private function get_query_for_filter( $filter ) {
 		$query = $filter->get_query();
-		$query->add_from( new Sql_From( Sql_Value::table( 'posts' ) ) );
+		$query->add_from( new Sql\From( Sql\Value::table( 'posts' ) ) );
 
 		return $query;
 	}
 
 	private function get_data_for_filter( $filter, $value ) {
-		$schema = new Schema( [ [ 'type' => 'posts'] ] );
-		return $filter->get_column_data( '', $value, new Source_Post( [], [ $filter ] ), new Action_Nothing( [], $schema ) );
+		$schema = new Schema\Schema( [ [ 'type' => 'posts'] ] );
+		return $filter->get_column_data( '', $value, new Source\Core\Post( [], [ $filter ] ), new Action\Type\Nothing( [], $schema ) );
 	}
 
 	public function testDefault() {
@@ -78,7 +73,7 @@ class Filter_Member_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, '1' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataIncludes() {
@@ -86,10 +81,10 @@ class Filter_Member_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, '1' );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, '3,5' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testGetDataExcludes() {
@@ -97,10 +92,10 @@ class Filter_Member_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'monkey' );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 'dog\'s' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	public function testIncludeOptions() {
@@ -108,10 +103,10 @@ class Filter_Member_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 
 		$results = $this->get_data_for_filter( $filter, 'page' );
-		$this->assertInstanceOf( Match_Context_Matched::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Matched::class, $results[0] );
 
 		$results = $this->get_data_for_filter( $filter, 'post' );
-		$this->assertInstanceOf( Match_Context_Value::class, $results[0] );
+		$this->assertInstanceOf( Context\Type\Value::class, $results[0] );
 	}
 
 	// TODO: join

@@ -1,0 +1,104 @@
+@import "../../global";
+
+/**
+ * Delete button on options page
+ */
+.wp-core-ui .button-delete {
+	box-shadow: none;
+	text-shadow: none;
+
+	background-color: #ff3860;
+	border-color: transparent;
+	color: #fff;
+}
+
+.wp-core-ui .button-delete:hover {
+	background-color: #ff3860;
+	border-color: transparent;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+/**
+ * Adds a bit more space to the top of redirect 'add new' section
+ */
+
+.addTop {
+	margin-top: 20px;
+}
+
+/**
+ * Mobile version of stuff
+ */
+@media screen and (max-width: 782px) {
+	.newsletter form {
+		input[type="email"] {
+			display: block;
+			width: 100%;
+			margin: 5px 0;
+		}
+	}
+
+	.import {
+		select {
+			width: 100%;
+			margin: 5px 0;
+		}
+	}
+
+	.plugin-importer button {
+		width: 100%;
+	}
+}
+
+/**
+ * Import/export page
+ */
+
+.module-export {
+	border: 1px solid #ddd;
+	padding: 5px;
+	font-family: $monospace;
+	margin-top: 15px;
+	width: 100%;
+	background-color: $white !important;
+}
+
+.redirect-edit .table-actions {
+	margin-left: 1px;
+	margin-top: 2px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+
+	.redirection-edit_advanced {
+		text-decoration: none;
+		font-size: 16px;
+
+		svg {
+			padding-top: 2px;
+		}
+	}
+}
+
+.error {
+	padding-bottom: 10px !important;
+}
+
+/* Some plugins hide .notice - ensure our stuff always shows */
+.notice {
+	display: block !important;
+}
+
+.database-switch {
+	float: right;
+
+	a {
+		color: #444;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+}
