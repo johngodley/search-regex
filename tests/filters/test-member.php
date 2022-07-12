@@ -5,8 +5,7 @@ use SearchRegex\Filter;
 use SearchRegex\Schema;
 use SearchRegex\Context;
 use SearchRegex\Action;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_From;
+use SearchRegex\Sql;
 
 class Filter_Member_Test extends SearchRegex_Api_Test {
 	private function get_filter( $options ) {
@@ -18,7 +17,7 @@ class Filter_Member_Test extends SearchRegex_Api_Test {
 
 	private function get_query_for_filter( $filter ) {
 		$query = $filter->get_query();
-		$query->add_from( new Sql_From( Sql_Value::table( 'posts' ) ) );
+		$query->add_from( new Sql\From( Sql\Value::table( 'posts' ) ) );
 
 		return $query;
 	}
