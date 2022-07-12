@@ -76,8 +76,10 @@ class Settings_Route extends Api\Route {
 	 * @return Array Settings
 	 */
 	public function route_settings( \WP_REST_Request $request ) {
+		$settings = Plugin\Settings::init();
+
 		return [
-			'settings' => Plugin\searchregex_get_options(),
+			'settings' => $settings->get_as_json(),
 		];
 	}
 
@@ -89,8 +91,25 @@ class Settings_Route extends Api\Route {
 	 */
 	public function route_save_settings( \WP_REST_Request $request ) {
 		$params = $request->get_params();
+		$settings = Plugin\Settings::init();
 
-		Plugin\searchregex_set_options( $params );
+		if ( isset( $params['rest_api'] ) ) {
+			$settings->set_rest_api( $params['rest_api'] );
+		}
+
+		if ( isset( $params['support'] ) ) {
+			$settings->set_is_supported( $params['support'] );
+		}
+
+		if ( isset( $params['defaultPreset'] ) ) {
+			$settings->set_default_preset( $params['defaultPreset'] );
+		}
+
+		if ( isset( $params['update_notice'] ) ) {
+			$settings->set_latest_version();
+		}
+
+		$settings->save();
 
 		return $this->route_settings( $request );
 	}

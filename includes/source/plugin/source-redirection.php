@@ -66,7 +66,7 @@ class Redirection extends Source\Source {
 				$result = true;
 
 				/** @psalm-suppress UndefinedFunction */
-				if ( Plugin\searchregex_can_save() ) {
+				if ( Plugin\Settings::init()->can_save() ) {
 					$result = $item->update( $json );
 				}
 
@@ -85,7 +85,7 @@ class Redirection extends Source\Source {
 		$this->log_save( 'delete redirection', $row_id );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			if ( $this->delete_item( $row_id ) ) {
 				return true;
 			}
@@ -397,7 +397,7 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 				$result = true;
 
 				/** @psalm-suppress UndefinedFunction */
-				if ( Plugin\searchregex_can_save() ) {
+				if ( Plugin\Settings::init()->can_save() ) {
 					$result = $item->update( $json );
 				}
 
@@ -416,7 +416,7 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 		$this->log_save( 'delete redirection group', $row_id );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			if ( $this->delete_group( $row_id ) ) {
 				return true;
 			}
@@ -515,7 +515,6 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 		];
 	}
 }
-// XXX replace settings
 
 // add_filter( 'searchregex_sources_plugin', function( $plugins ) {
 // 	// Only show if Redirection is loaded

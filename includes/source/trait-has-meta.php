@@ -66,7 +66,7 @@ trait HasMeta {
 				$this->log_save( $meta_type . ' meta delete', (string) $row_id . ' = ' . $key->get_value() . ' = ' . $value->get_value() );
 
 				/** @psalm-suppress UndefinedFunction */
-				if ( Plugin\searchregex_can_save() ) {
+				if ( Plugin\Settings::init()->can_save() ) {
 					delete_metadata( $meta_type, $row_id, $key->get_value(), $value->get_value() );
 				}
 			}
@@ -79,7 +79,7 @@ trait HasMeta {
 				$this->log_save( $meta_type . ' meta update', (string) $row_id . ' = ' . $key_value . ' => ' . $value_value );
 
 				/** @psalm-suppress UndefinedFunction */
-				if ( Plugin\searchregex_can_save() ) {
+				if ( Plugin\Settings::init()->can_save() ) {
 					update_metadata( $meta_type, $row_id, $key_value, $value_value );
 				}
 			}
@@ -88,7 +88,7 @@ trait HasMeta {
 				$this->log_save( $meta_type . ' meta add', (string) $row_id . ' = ' . $key->get_value() . ' => ' . $value->get_value() );
 
 				/** @psalm-suppress UndefinedFunction */
-				if ( Plugin\searchregex_can_save() ) {
+				if ( Plugin\Settings::init()->can_save() ) {
 					update_metadata( $meta_type, $row_id, $key->get_value(), $value->get_value() );
 				}
 			}

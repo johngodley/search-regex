@@ -30,7 +30,7 @@ class Delete extends Action {
 			$this->log_action( 'Delete: ' . $source->get_table_name() . ' row ' . (string) $row_id );
 
 			/** @psalm-suppress UndefinedFunction */
-			if ( Plugin\searchregex_can_save() ) {
+			if ( Plugin\Settings::init()->can_save() ) {
 				$source->delete_row( $row_id );
 			}
 		}

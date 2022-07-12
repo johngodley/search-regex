@@ -45,7 +45,7 @@ class Terms extends Source\Source {
 			$result = true;
 
 			/** @psalm-suppress UndefinedFunction */
-			if ( Plugin\searchregex_can_save() && is_object( $existing ) ) {
+			if ( Plugin\Settings::init()->can_save() && is_object( $existing ) ) {
 				$result = wp_update_term( $row_id, $existing->taxonomy, $term );
 			}
 
@@ -63,7 +63,7 @@ class Terms extends Source\Source {
 		$this->log_save( 'delete term', $row_id );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			$term = get_term( $row_id );
 			if ( $term instanceof \WP_Term && wp_delete_term( $row_id, $term->taxonomy ) ) {
 				return true;

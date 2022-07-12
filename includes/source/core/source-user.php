@@ -59,7 +59,7 @@ class User extends Source\Source {
 			$result = true;
 
 			/** @psalm-suppress UndefinedFunction */
-			if ( Plugin\searchregex_can_save() ) {
+			if ( Plugin\Settings::init()->can_save() ) {
 				$result = wp_update_user( $user );
 			}
 
@@ -77,7 +77,7 @@ class User extends Source\Source {
 		$this->log_save( 'delete comment', $row_id );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			if ( wp_delete_user( $row_id ) ) {
 				return true;
 			}

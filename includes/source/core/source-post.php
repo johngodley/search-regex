@@ -126,7 +126,7 @@ class Post extends Source\Source {
 			$result = true;
 
 			/** @psalm-suppress UndefinedFunction */
-			if ( Plugin\searchregex_can_save() ) {
+			if ( Plugin\Settings::init()->can_save() ) {
 				$result = wp_update_post( $post );
 			}
 
@@ -144,7 +144,7 @@ class Post extends Source\Source {
 		$this->log_save( 'delete post', $row_id );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			if ( wp_delete_post( $row_id, true ) ) {
 				return true;
 			}

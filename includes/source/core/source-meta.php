@@ -48,7 +48,7 @@ abstract class Meta extends Source\Source {
 			$result = true;
 
 			/** @psalm-suppress UndefinedFunction */
-			if ( Plugin\searchregex_can_save() ) {
+			if ( Plugin\Settings::init()->can_save() ) {
 				$result = $wpdb->update( $this->get_meta_table(), $meta, [ $this->get_table_id() => $row_id ] );
 				if ( $result === null ) {
 					return new \WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
@@ -70,7 +70,7 @@ abstract class Meta extends Source\Source {
 		$this->log_save( 'delete meta', $row_id );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			$result = $wpdb->delete( $this->get_table_name(), [ $this->get_table_id() => $row_id ] );
 
 			if ( $result ) {

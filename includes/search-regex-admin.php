@@ -62,7 +62,7 @@ class Admin {
 	 */
 	public static function plugin_uninstall() {
 		/** @psalm-suppress UndefinedConstant */
-		delete_option( SEARCHREGEX_OPTION );
+		Plugin\Settings::init()->delete();
 		delete_option( Preset::OPTION_NAME );
 	}
 
@@ -133,14 +133,15 @@ class Admin {
 
 		$build = SEARCHREGEX_VERSION . '-' . SEARCHREGEX_BUILD;
 		$preload = $this->get_preload_data();
-		$options = Plugin\searchregex_get_options();
+		$settings = Plugin\Settings::init();
+
 		$versions = array(
 			'Plugin: ' . SEARCHREGEX_VERSION,
 			'WordPress: ' . $wp_version . ' (' . ( is_multisite() ? 'multi' : 'single' ) . ')',
 			'PHP: ' . phpversion() . ' ' . ini_get( 'memory_limit' ) . ' ' . ini_get( 'max_execution_time' ) . 's',
 			'Browser: ' . $this->get_user_agent(),
 			'JavaScript: ' . plugin_dir_url( SEARCHREGEX_FILE ) . 'search-regex.js',
-			'REST API: ' . Plugin\searchregex_get_rest_api(),
+			'REST API: ' . $settings->get_rest_api_url(),
 		);
 
 		wp_enqueue_script( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.js', [], $build, true );
@@ -157,25 +158,21 @@ class Admin {
 
 		// phpcs:ignore
 		if ( isset( $_GET['page'] ) && $_GET['page'] === 'search-regex.php' && strpos( SEARCHREGEX_VERSION, '-beta' ) === false ) {
-			$is_new = version_compare( $options['update_notice'], $major_version ) < 0;
+			$is_new = $settings->is_new_version( );
 		}
 
 		wp_localize_script( 'search-regex', 'SearchRegexi10n', array(
 			'api' => [
-				'WP_API_root' => esc_url_raw( Plugin\searchregex_get_rest_api() ),
+				'WP_API_root' => esc_url_raw( $settings->get_rest_api_url() ),
 				'WP_API_nonce' => wp_create_nonce( 'wp_rest' ),
 				'site_health' => admin_url( 'site-health.php' ),
-				'current' => $options['rest_api'],
-				'routes' => [
-					SEARCHREGEX_API_JSON => Plugin\searchregex_get_rest_api( SEARCHREGEX_API_JSON ),
-					SEARCHREGEX_API_JSON_INDEX => Plugin\searchregex_get_rest_api( SEARCHREGEX_API_JSON_INDEX ),
-					SEARCHREGEX_API_JSON_RELATIVE => Plugin\searchregex_get_rest_api( SEARCHREGEX_API_JSON_RELATIVE ),
-				],
+				'current' => $settings->get_rest_api(),
+				'routes' => $settings->get_available_rest_api(),
 			],
 			'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
 			'pluginRoot' => $this->get_plugin_url(),
 			'locale' => str_replace( '_', '-', get_locale() ),
-			'settings' => $options,
+			'settings' => $settings->get_as_json(),
 			'preload' => $preload,
 			'versions' => implode( "\n", $versions ),
 			'version' => SEARCHREGEX_VERSION,
@@ -213,9 +210,7 @@ class Admin {
 	 * @return void
 	 */
 	private function set_rest_api( $api ) {
-		if ( $api >= 0 && $api <= SEARCHREGEX_API_JSON_RELATIVE ) {
-			Plugin\searchregex_set_options( array( 'rest_api' => intval( $api, 10 ) ) );
-		}
+		Plugin\Settings::init()->set_rest_api( intval( $api, 10 ) );
 	}
 
 	/**

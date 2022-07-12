@@ -91,7 +91,7 @@ trait HasTerms {
 		$this->log_save( 'term ' . $column, $term_ids );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			wp_set_object_terms( $row_id, $term_ids, $column, false );
 		}
 	}

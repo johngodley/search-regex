@@ -41,7 +41,7 @@ class Options extends Source\Source {
 
 			// This does all the sanitization
 			/** @psalm-suppress UndefinedFunction */
-			if ( Plugin\searchregex_can_save() ) {
+			if ( Plugin\Settings::init()->can_save() ) {
 				if ( isset( $option['option_name'] ) ) {
 					// Changing the option name. Delete the current option and then recreate with the new option. This ensures it is correctly sanitized
 					delete_option( $row->option_name );
@@ -65,7 +65,7 @@ class Options extends Source\Source {
 		$this->log_save( 'delete option', $row_id );
 
 		/** @psalm-suppress UndefinedFunction */
-		if ( Plugin\searchregex_can_save() ) {
+		if ( Plugin\Settings::init()->can_save() ) {
 			// Get the option name for the row. This is so we can use the WP delete_option and have the cache cleared
 			// phpcs:ignore
 			$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_name,option_value,autoload FROM {$this->get_table_name()} WHERE option_id=%d", $row_id ) );
