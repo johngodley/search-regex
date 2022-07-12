@@ -2,26 +2,19 @@
  * Internal dependencies
  */
 
-import reducer from '../state/search/reducer';
-import { getInitialSearch } from '../state/search/initial';
+import reducer from '../../search/reducer';
+import { getInitialSearch } from '../../search/initial';
 import {
 	SEARCH_VALUES,
 	SEARCH_START_FRESH,
-	SEARCH_FAIL,
 	SEARCH_COMPLETE,
 	SEARCH_REPLACE_ALL,
-	SEARCH_REPLACE_ROW,
-	SEARCH_REPLACE_COMPLETE,
 	SEARCH_REPLACE_ALL_COMPLETE,
-	SEARCH_DELETE_COMPLETE,
 	SEARCH_CANCEL,
-	SEARCH_BACKWARD,
 	SEARCH_FORWARD,
-	SEARCH_LOAD_ROW_COMPLETE,
-	SEARCH_SAVE_ROW_COMPLETE,
 	SEARCH_START_MORE,
-} from '../state/search/type';
-import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from '../state/settings/type';
+} from '../../search/type';
+import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from '../../settings/type';
 
 const DEFAULT_STATE = getInitialSearch();
 

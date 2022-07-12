@@ -6,9 +6,9 @@ import {
 	isComplete,
 	getSearchValues,
 	getReplacement,
-} from '../state/search/selector';
-import { STATUS_COMPLETE, STATUS_IN_PROGRESS } from '../state/settings/type';
-import { SEARCH_FORWARD, SEARCH_BACKWARD } from '../state/search/type';
+} from '../../search/selector';
+import { STATUS_COMPLETE, STATUS_IN_PROGRESS } from '../../settings/type';
+import { SEARCH_FORWARD, SEARCH_BACKWARD } from '../../search/type';
 
 describe( 'search selectors', () => {
 	describe( 'isAlreadyFinished', () => {
