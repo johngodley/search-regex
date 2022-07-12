@@ -113,9 +113,17 @@ function PresetEdit( props ) {
 		setTags( [ ...presetTags.slice( 0, pos ), ...presetTags.slice( pos + 1 ) ] );
 	}
 
+	function cleanTags( tags ) {
+		if ( tags.length === 1 && tags[0].name === '' && tags[0].title === '' ) {
+			return [];
+		}
+
+		return tags;
+	}
+
 	function update( ev ) {
 		ev.preventDefault();
-		onUpdate( { name: presetName, description: presetDescription, search: presetValues, tags: presetTags, locked: lockedFields } );
+		onUpdate( { name: presetName, description: presetDescription, search: presetValues, tags: cleanTags( presetTags ), locked: lockedFields } );
 	}
 
 	return (
