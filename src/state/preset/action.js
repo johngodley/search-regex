@@ -85,7 +85,7 @@ export const setClipboard = ( clipboard ) => ( { type: PRESET_SET_CLIPBOARD, cli
 export const exportPresets = () => ( dispatch ) => {
 	const request = SearchRegexApi.preset.export();
 
-	document.location.href = apiFetch.getUrl( request.url );
+	document.location.href = apiFetch.getUrl( request.url ) + '&_wpnonce=' + SearchRegexi10n.api.WP_API_nonce;
 
 	dispatch( { type: PRESET_CLEAR } );
 };
