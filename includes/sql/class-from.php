@@ -5,7 +5,7 @@ namespace SearchRegex\Sql;
 /**
  * Sql FROM
  */
-class Sql_From {
+class From {
 	/**
 	 * Table name
 	 *
@@ -21,7 +21,7 @@ class Sql_From {
 	 */
 	private $alias = null;
 
-	public function __construct( Sql_Value $table, Sql_Value $alias = null ) {
+	public function __construct( Value $table, Value $alias = null ) {
 		$this->table = $table->get_value();
 		$this->alias = $alias ? $alias->get_value() : null;
 	}

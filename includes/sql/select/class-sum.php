@@ -1,11 +1,13 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Select;
+
+use SearchRegex\Schema;
 
 /**
  * @psalm-suppress all
  */
-class Sql_Select_Phrases extends Sql_Select_Column {
+class Select_Phrases extends Select_Column {
 	/**
 	 * Values
 	 *
@@ -13,8 +15,8 @@ class Sql_Select_Phrases extends Sql_Select_Column {
 	 */
 	private $values = [];
 
-	public function __construct( \SearchRegex\Schema\Column $column, Sql_Value $alias = null ) {
-		parent::__construct( $column, Sql_Value::column( 'match_total' ) );
+	public function __construct( Schema\Column $column, Sql\Value $alias = null ) {
+		parent::__construct( $column, Sql\Value::column( 'match_total' ) );
 
 		if ( $alias !== null ) {
 			// Not sanitized until later
@@ -34,10 +36,10 @@ class Sql_Select_Phrases extends Sql_Select_Column {
 	/**
 	 * Add
 	 *
-	 * @param Sql_Select_Phrases $phrase Phrase.
+	 * @param Select_Phrases $phrase Phrase.
 	 * @return void
 	 */
-	public function add_sum( Sql_Select_Phrases $phrase ) {
+	public function add_sum( Select_Phrases $phrase ) {
 		$this->values = array_merge( $this->values, $phrase->values );
 	}
 

@@ -1,13 +1,14 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Where;
 
 use SearchRegex\Search;
+use SearchRegex\Sql;
 
 /**
  * WHERE for a string
  */
-class Sql_Where_String extends Sql_Where {
+class Where_String extends Where {
 	/**
 	 * Prefix for the value
 	 *
@@ -27,12 +28,12 @@ class Sql_Where_String extends Sql_Where {
 	/**
 	 * Constructor
 	 *
-	 * @param Sql_Select   $column Column.
+	 * @param Sql\Select\Select   $column Column.
 	 * @param string       $logic Logic.
 	 * @param string       $value Value.
 	 * @param Search\Flags $flags Search flags.
 	 */
-	public function __construct( Sql_Select $column, $logic, $value, Search\Flags $flags = null ) {
+	public function __construct( Sql\Select\Select $column, $logic, $value, Search\Flags $flags = null ) {
 		if ( $flags === null ) {
 			$flags = new Search\Flags( [ 'case' ] );
 		}

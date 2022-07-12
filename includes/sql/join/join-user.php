@@ -1,11 +1,14 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Join;
+
+use SearchRegex\Source;
+use SearchRegex\Sql;
 
 /**
  * Undocumented class
  */
-class Sql_Join_User extends Sql_Join {
+class User extends Join {
 	/**
 	 * Join logic
 	 *
@@ -81,15 +84,15 @@ class Sql_Join_User extends Sql_Join {
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::table( $this->join_table ), Sql_Value::column( $this->join_column ), null, true );
+		return new Sql\Select\Select( Sql\Value::table( $this->join_table ), Sql\Value::column( $this->join_column ), null, true );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
-		$table = Sql_Value::table( $this->join_table );
-		$column = Sql_Value::column( $this->join_column );
-		return new Sql_From( Sql_Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->users} ON {$wpdb->users}.ID=%s.%s", $table->get_value(), $column->get_value() ) ) );
+		$table = Sql\Value::table( $this->join_table );
+		$column = Sql\Value::column( $this->join_column );
+		return new Sql\From( Sql\Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->users} ON {$wpdb->users}.ID=%s.%s", $table->get_value(), $column->get_value() ) ) );
 	}
 
 	public function get_join_column() {
@@ -97,7 +100,7 @@ class Sql_Join_User extends Sql_Join {
 	}
 
 	public function get_where() {
-		return new Sql_Where_Null( new Sql_Select( Sql_Value::table( $this->join_to ), Sql_Value::column( $this->join_to_column ) ), $this->logic );
+		return new Sql\Where\Where_Null( new Sql\Select\Select( Sql\Value::table( $this->join_to ), Sql\Value::column( $this->join_to_column ) ), $this->logic );
 	}
 
 	public function get_join_value( $value ) {

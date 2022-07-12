@@ -1,20 +1,22 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Where;
 
-class Sql_Where_Or extends Sql_Where {
+use SearchRegex\Sql;
+
+class Where_Or extends Where {
 	/**
 	 * Array of WHERE objects that will be ORd together
 	 *
 	 * @readonly
-	 * @var array<Sql_Where>
+	 * @var array<Where>
 	 */
 	protected $wheres = [];
 
 	/**
 	 * Constructor
 	 *
-	 * @param array<Sql_Where> $wheres Wheres.
+	 * @param array<Where> $wheres Wheres.
 	 */
 	public function __construct( array $wheres ) {
 		$this->wheres = $wheres;

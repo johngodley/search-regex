@@ -2,7 +2,7 @@
 
 namespace SearchRegex\Action\Type;
 
-use SearchRegex\Sql\Sql_Value;
+use SearchRegex\Sql;
 use SearchRegex\Action\Action;
 use SearchRegex\Schema;
 
@@ -103,7 +103,7 @@ class Export extends Action {
 		$data = [];
 
 		foreach ( $result->get_columns() as $column ) {
-			$data[ Sql_Value::column( $column->get_column_id() )->get_value() ] = $column->get_value();
+			$data[ Sql\Value::column( $column->get_column_id() )->get_value() ] = $column->get_value();
 		}
 
 		return $data;
@@ -129,7 +129,7 @@ class Export extends Action {
 		}, $result->get_columns() );
 
 		$names = array_map( function( $column ) {
-			return Sql_Value::column( $column->get_column_id() )->get_value();
+			return Sql\Value::column( $column->get_column_id() )->get_value();
 		}, $result->get_columns() );
 
 		return "INSERT INTO {$this->schema->get_table()} (" . implode( ', ', $names ) . ') VALUES(' . implode( ', ', $values ) . ');';

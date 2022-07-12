@@ -4,8 +4,7 @@ namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
 use SearchRegex\Result;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_Value;
+use SearchRegex\Sql;
 
 /**
  * Term source

@@ -1,19 +1,21 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Where;
+
+use SearchRegex\Sql;
 
 /**
  * WHERE for an integer
  */
-class Sql_Where_Integer extends Sql_Where {
+class Where_Integer extends Where {
 	/**
 	 * Constructor
 	 *
-	 * @param Sql_Select $column Column.
+	 * @param Sql\Select\Select $column Column.
 	 * @param string     $logic Logic.
 	 * @param integer    $value Value.
 	 */
-	public function __construct( Sql_Select $column, $logic, $value ) {
+	public function __construct( Sql\Select\Select $column, $logic, $value ) {
 		$map = [
 			'notequals' => '!=',
 			'greater' => '>',

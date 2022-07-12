@@ -2,16 +2,7 @@
 
 namespace SearchRegex\Filter\Type;
 
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Select_Column;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_Where_Integer;
-use SearchRegex\Sql\Sql_Where_And;
-use SearchRegex\Sql\Sql_Where_Or;
-use SearchRegex\Sql\Sql_Join;
-use SearchRegex\Sql\Sql_Join_Comment;
-use SearchRegex\Sql\Sql_Join_Post;
-use SearchRegex\Sql\Sql_Join_User;
+use SearchRegex\Sql;
 use SearchRegex\Source;
 use SearchRegex\Action;
 use SearchRegex\Schema;
@@ -58,7 +49,7 @@ class Filter_Integer extends Filter_Type {
 	 * Join object
 	 *
 	 * @readonly
-	 * @var Sql_Join|null
+	 * @var Sql\Join|null
 	 */
 	protected $join = null;
 
@@ -81,9 +72,9 @@ class Filter_Integer extends Filter_Type {
 
 		$joined_by = $schema->get_joined_by();
 		if ( ( $this->logic === 'has' || $this->logic === 'hasnot' ) && $joined_by !== null ) {
-			$this->join = Sql_Join::create( $joined_by, $schema->get_source() );
+			$this->join = Sql\Join\Join::create( $joined_by, $schema->get_source() );
 
-			if ( $this->join && ( $this->join instanceof Sql_Join_Comment || $this->join instanceof Sql_Join_Post || $this->join instanceof Sql_Join_User ) ) {
+			if ( $this->join && ( $this->join instanceof Sql\Join\Comment || $this->join instanceof Sql\Join\Post || $this->join instanceof Sql\Join\User ) ) {
 				$this->join->set_logic( $this->logic );
 				$this->has_value = true;
 			}
@@ -113,24 +104,24 @@ class Filter_Integer extends Filter_Type {
 	}
 
 	public function get_query() {
-		$query = new Sql_Query();
-		$select = new Sql_Select_Column( $this->schema );
+		$query = new Sql\Query();
+		$select = new Sql\Select\Select_Column( $this->schema );
 
 		if ( $this->is_valid() ) {
 			$where = false;
 
 			if ( $this->logic === 'range' ) {
-				$lower = new Sql_Where_Integer( $select, '>=', $this->start_value );
-				$upper = new Sql_Where_Integer( $select, '<=', $this->end_value );
+				$lower = new Sql\Where\Where_Integer( $select, '>=', $this->start_value );
+				$upper = new Sql\Where\Where_Integer( $select, '<=', $this->end_value );
 
-				$where = new Sql_Where_And( [ $lower, $upper ] );
+				$where = new Sql\Where\Where_And( [ $lower, $upper ] );
 			} elseif ( $this->logic === 'notrange' ) {
-				$lower = new Sql_Where_Integer( $select, '<=', $this->start_value );
-				$upper = new Sql_Where_Integer( $select, '>=', $this->end_value );
+				$lower = new Sql\Where\Where_Integer( $select, '<=', $this->start_value );
+				$upper = new Sql\Where\Where_Integer( $select, '>=', $this->end_value );
 
-				$where = new Sql_Where_Or( [ $lower, $upper ] );
+				$where = new Sql\Where\Where_Or( [ $lower, $upper ] );
 			} elseif ( $this->logic !== 'has' && $this->logic !== 'hasnot' ) {
-				$where = new Sql_Where_Integer( $select, $this->logic, $this->start_value );
+				$where = new Sql\Where\Where_Integer( $select, $this->logic, $this->start_value );
 			}
 
 			if ( $this->join ) {
@@ -176,7 +167,7 @@ class Filter_Integer extends Filter_Type {
 		return $this->get_unmatched_context( $source, (string) $value );
 	}
 
-	public function modify_query( Sql_Query $query ) {
+	public function modify_query( Sql\Query $query ) {
 		if ( $this->join ) {
 			$where = $this->join->get_where();
 

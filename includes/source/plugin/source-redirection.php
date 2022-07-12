@@ -4,10 +4,9 @@ namespace SearchRegex\Source\Plugin;
 
 use SearchRegex\Source;
 use SearchRegex\Result;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Schema\Column;
-use SearchRegex\Filter\Filter_Member;
+use SearchRegex\Sql;
+use SearchRegex\Schema;
+use SearchRegex\Filter;
 
 /**
  * Source: Redirection items

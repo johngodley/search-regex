@@ -5,8 +5,7 @@ namespace SearchRegex\Source\Core;
 use SearchRegex\Source;
 use SearchRegex\Search;
 use SearchRegex\Filter\Filter_Member;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_Value;
+use SearchRegex\Sql;
 
 /**
  * Source for posts, pages, and other custom post types
@@ -62,8 +61,8 @@ class Post extends Source\Source {
 
 	public function get_info_columns() {
 		return [
-			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_title_column() ) ),
-			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( 'post_type' ) ),   // We need this to show the 'source'
+			new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_title_column() ) ),
+			new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( 'post_type' ) ),   // We need this to show the 'source'
 		];
 	}
 
@@ -161,7 +160,7 @@ class Post extends Source\Source {
 		}
 
 		if ( $column['column'] === 'post_parent' ) {
-			return Source\Autocomplete::get_post( $value, Sql_Value::column( 'ID' ), Sql_Value::column( 'post_title' ) );
+			return Source\Autocomplete::get_post( $value, Sql\Value::column( 'ID' ), Sql\Value::column( 'post_title' ) );
 		}
 
 		if ( $column['column'] === 'category' ) {
@@ -173,12 +172,12 @@ class Post extends Source\Source {
 		}
 
 		if ( $column['column'] === 'meta' ) {
-			return Source\Autocomplete::get_meta( Sql_Value::table( 'postmeta' ), $value );
+			return Source\Autocomplete::get_meta( Sql\Value::table( 'postmeta' ), $value );
 		}
 
 		// General text
 		if ( in_array( $column['column'], [ 'post_title', 'post_name', 'guid', 'post_mime_type' ], true ) ) {
-			return Source\Autocomplete::get_post( $value, Sql_Value::column( $column['column'] ), Sql_Value::column( $column['column'] ) );
+			return Source\Autocomplete::get_post( $value, Sql\Value::column( $column['column'] ), Sql\Value::column( $column['column'] ) );
 		}
 
 		return [];

@@ -6,7 +6,7 @@ namespace SearchRegex\Sql;
  * A simple sanitizer for table names, column names, and raw (pre-sanitized) names. This shouldn't be treated as a replacement for $wpdb->prepare, and is just
  * a way of being extra-paranoid when forming queries with known column and table names.
  */
-class Sql_Value {
+class Value {
 	/**
 	 * Underlying value
 	 *
@@ -34,36 +34,36 @@ class Sql_Value {
 	}
 
 	/**
-	 * Create a Sql_Value with a known sanitized value. You should only use this when you are sure the value is safe.
+	 * Create a Value with a known sanitized value. You should only use this when you are sure the value is safe.
 	 *
 	 * @param string $value Value.
-	 * @return Sql_Value
+	 * @return Value
 	 */
 	public static function safe_raw( $value ) {
-		return new Sql_Value( $value );
+		return new Value( $value );
 	}
 
 	/**
-	 * Create a Sql_Value for a SQL column. Performs column sanitization and allows for column aliases
+	 * Create a Value for a SQL column. Performs column sanitization and allows for column aliases
 	 *
 	 * @param string $column Column name.
-	 * @return Sql_Value
+	 * @return Value
 	 */
 	public static function column( $column ) {
 		$column = preg_replace( '/[^ A-Za-z0-9_\-\.]/', '', $column );
 
-		return new Sql_Value( $column );
+		return new Value( $column );
 	}
 
 	/**
-	 * Create a Sql_Value for a SQL table name. Performs table name sanitization.
+	 * Create a Value for a SQL table name. Performs table name sanitization.
 	 *
 	 * @param string $table Table name.
-	 * @return Sql_Value
+	 * @return Value
 	 */
 	public static function table( $table ) {
 		$table = preg_replace( '/[^A-Za-z0-9_\-]/', '', $table );
 
-		return new Sql_Value( $table );
+		return new Value( $table );
 	}
 }

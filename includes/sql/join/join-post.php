@@ -1,11 +1,14 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Join;
+
+use SearchRegex\Source;
+use SearchRegex\Sql;
 
 /**
  * Join on the post table
  */
-class Sql_Join_Post extends Sql_Join {
+class Post extends Join {
 	/**
 	 * Join logic
 	 *
@@ -63,16 +66,16 @@ class Sql_Join_Post extends Sql_Join {
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::table( $this->source ), Sql_Value::column( $this->join_column ), null, true );
+		return new Sql\Select\Select( Sql\Value::table( $this->source ), Sql\Value::column( $this->join_column ), null, true );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
-		$source = Sql_Value::table( $this->source );
-		$column = Sql_Value::column( $this->join_column );
+		$source = Sql\Value::table( $this->source );
+		$column = Sql\Value::column( $this->join_column );
 
-		return new Sql_From( Sql_Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->posts} ON {$wpdb->posts}.ID=%s.%s", $source->get_value(), $column->get_value() ) ) );
+		return new Sql\From( Sql\Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->posts} ON {$wpdb->posts}.ID=%s.%s", $source->get_value(), $column->get_value() ) ) );
 	}
 
 	public function get_join_column() {
@@ -82,7 +85,7 @@ class Sql_Join_Post extends Sql_Join {
 	public function get_where() {
 		global $wpdb;
 
-		return new Sql_Where_Null( new Sql_Select( Sql_Value::table( $wpdb->posts ), Sql_Value::column( 'ID' ) ), $this->logic );
+		return new Sql\Where_Null( new Sql\Select\Select( Sql\Value::table( $wpdb->posts ), Sql\Value::column( 'ID' ) ), $this->logic );
 	}
 
 	public function get_join_value( $value ) {

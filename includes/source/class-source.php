@@ -3,14 +3,7 @@
 namespace SearchRegex\Source;
 
 use SearchRegex\Search_Regex;
-use SearchRegex\Sql\Sql_Builder;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_From;
-use SearchRegex\Sql\Sql_Join;
-use SearchRegex\Sql\Sql_Where_Integer;
-use SearchRegex\Sql\Sql_Select_Count_Id;
+use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Search;
 use SearchRegex\Filter;
@@ -115,7 +108,7 @@ abstract class Source {
 	 */
 	public function get_info_columns() {
 		return [
-			new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_title_column() ) ),
+			new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_title_column() ) ),
 		];
 	}
 
@@ -174,11 +167,11 @@ abstract class Source {
 	 */
 	public function get_global_match_total( array $filters ) {
 		$query = Filter\Filter::get_as_query( $filters, $this );
-		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
+		$query->add_from( new Sql\From( Sql\Value::column( $this->get_table_name() ) ) );
 
-		$sql = new Sql_Builder();
+		$sql = new Sql\Builder();
 
-		$result = $sql->get_result( $query, new Sql_Select_Count_Id( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_table_id() ) ) );
+		$result = $sql->get_result( $query, new Sql\Modifier\Select_Count_Id( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ) );
 		if ( $result instanceof \WP_Error ) {
 			return $result;
 		}
@@ -195,11 +188,11 @@ abstract class Source {
 	 * @return Int|\WP_Error The number of rows, or \WP_Error on error
 	 */
 	public function get_total_rows() {
-		$sql = new Sql_Builder();
+		$sql = new Sql\Builder();
 
-		$query = new Sql_Query();
-		$query->add_select( new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::safe_raw( 'COUNT(*)' ) ) );
-		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
+		$query = new Sql\Query();
+		$query->add_select( new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::safe_raw( 'COUNT(*)' ) ) );
+		$query->add_from( new Sql\From( Sql\Value::column( $this->get_table_name() ) ) );
 
 		return $sql->get_count( $query );
 	}
@@ -211,18 +204,18 @@ abstract class Source {
 	 * @return array|\WP_Error The database row, or \WP_Error on error
 	 */
 	public function get_row( $row_id ) {
-		$builder = new Sql_Builder();
+		$builder = new Sql\Builder();
 
 		// Create query
-		$query = new Sql_Query();
+		$query = new Sql\Query();
 		$query->add_selects( $this->get_query_selects() );
-		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
+		$query->add_from( new Sql\From( Sql\Value::column( $this->get_table_name() ) ) );
 
 		// Add the filters except the where
 		$query->add_query_except_where( Filter\Filter::get_as_query( $this->filters, $this ) );
 
 		// Add our row ID
-		$query->add_where( new Sql_Where_Integer( new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_table_id() ) ), 'equals', $row_id ) );
+		$query->add_where( new Sql\Where\Where_Integer( new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ), 'equals', $row_id ) );
 
 		return $builder->get_search( $query );
 	}
@@ -279,12 +272,12 @@ abstract class Source {
 	 * @return Array|\WP_Error The database rows, or \WP_Error on error
 	 */
 	public function get_matched_rows( $offset, $limit ) {
-		$builder = new Sql_Builder();
+		$builder = new Sql\Builder();
 
 		// Create query
-		$query = new Sql_Query();
+		$query = new Sql\Query();
 		$query->add_selects( $this->get_query_selects() );
-		$query->add_from( new Sql_From( Sql_Value::column( $this->get_table_name() ) ) );
+		$query->add_from( new Sql\From( Sql\Value::column( $this->get_table_name() ) ) );
 		$query->set_paging( $offset, $limit );
 		$query->set_order( $this->get_table_name() . '.' . $this->get_table_id() );
 
@@ -351,12 +344,12 @@ abstract class Source {
 	 * Returns database columns in SQL format
 	 *
 	 * @internal
-	 * @return Sql_Select[] SQL string
+	 * @return Sql\Select\Select[] SQL string
 	 */
 	protected function get_query_selects() {
 		return array_merge(
 			// Table ID column
-			[ new Sql_Select( Sql_Value::table( $this->get_table_name() ), Sql_Value::column( $this->get_table_id() ) ) ],
+			[ new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ) ],
 			// Any extra 'info' columns
 			$this->get_info_columns(),
 		);

@@ -2,11 +2,7 @@
 
 namespace SearchRegex\Filter\Type;
 
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Select_Column;
-use SearchRegex\Sql\Sql_Select_Phrases;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_Where_String;
+use SearchRegex\Sql;
 use SearchRegex\Source;
 use SearchRegex\Action;
 use SearchRegex\Schema;
@@ -80,13 +76,13 @@ class Filter_String extends Filter_Type {
 	}
 
 	public function get_query() {
-		$query = new Sql_Query();
-		$select = new Sql_Select_Column( $this->schema );
+		$query = new Sql\Query();
+		$select = new Sql\Select\Select_Column( $this->schema );
 
 		$query->add_select( $select );
 
 		if ( $this->is_valid() ) {
-			$where = new Sql_Where_String( $select, $this->logic, $this->value, $this->flags );
+			$where = new Sql\Where\Where_String( $select, $this->logic, $this->value, $this->flags );
 			$query->add_where( $where );
 		}
 

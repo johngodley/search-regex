@@ -4,8 +4,7 @@ namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
 use SearchRegex\Search;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_Value;
+use SearchRegex\Sql;
 
 /**
  * User source
@@ -108,7 +107,7 @@ class User extends Source\Source {
 		}
 
 		if ( $column['column'] === 'meta' ) {
-			return Autocomplete::get_meta( Sql_Value::table( 'usermeta' ), $value );
+			return Autocomplete::get_meta( Sql\Value::table( 'usermeta' ), $value );
 		}
 
 		return [];

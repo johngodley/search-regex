@@ -2,10 +2,20 @@
 
 namespace SearchRegex\Sql;
 
+require_once __DIR__ . '/class-from.php';
+require_once __DIR__ . '/class-group.php';
+require_once __DIR__ . '/class-query.php';
+require_once __DIR__ . '/class-value.php';
+
+require_once __DIR__ . '/where/class-where.php';
+require_once __DIR__ . '/select/class-select.php';
+require_once __DIR__ . '/modifier/class-modifier.php';
+require_once __DIR__ . '/join/class-join.php';
+
 /**
  * Perform SQL queries on the database.
  */
-class Sql_Builder {
+class Builder {
 	/**
 	 * Get the wpdb error
 	 *
@@ -23,10 +33,10 @@ class Sql_Builder {
 	/**
 	 * Get total number of matching rows from a table using the filters
 	 *
-	 * @param Sql_Query $query Query.
+	 * @param Query $query Query.
 	 * @return Int|\WP_Error The number of rows, or \WP_Error on error
 	 */
-	public function get_count( Sql_Query $query ) {
+	public function get_count( Query $query ) {
 		global $wpdb;
 
 		$sql = $query->get_as_sql();
@@ -46,11 +56,11 @@ class Sql_Builder {
 	/**
 	 * Get single row
 	 *
-	 * @param Sql_Query    $query Query.
-	 * @param Sql_Modifier $modifier Modifier.
+	 * @param Query             $query Query.
+	 * @param Modifier\Modifier $modifier Modifier.
 	 * @return object|\WP_Error
 	 */
-	public function get_result( Sql_Query $query, Sql_Modifier $modifier = null ) {
+	public function get_result( Query $query, Modifier\Modifier $modifier = null ) {
 		global $wpdb;
 
 		$sql = $query->get_as_sql( $modifier );
@@ -70,10 +80,10 @@ class Sql_Builder {
 	/**
 	 * Get multiple rows
 	 *
-	 * @param Sql_Query $query Query.
+	 * @param Query $query Query.
 	 * @return array|\WP_Error
 	 */
-	public function get_search( Sql_Query $query ) {
+	public function get_search( Query $query ) {
 		global $wpdb;
 
 		// phpcs:ignore

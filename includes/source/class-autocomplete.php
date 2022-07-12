@@ -26,11 +26,11 @@ class Autocomplete {
 	 * Autocomplete a post title
 	 *
 	 * @param string        $value Value.
-	 * @param Sql\Sql_Value $id_column ID column.
-	 * @param Sql\Sql_Value $search_column Search column.
+	 * @param Sql\Sql\Value $id_column ID column.
+	 * @param Sql\Sql\Value $search_column Search column.
 	 * @return list<object{id: string, value: string}>
 	 */
-	public static function get_post( $value, Sql\Sql_Value $id_column, Sql\Sql_Value $search_column ) {
+	public static function get_post( $value, Sql\Sql\Value $id_column, Sql\Sql\Value $search_column ) {
 		global $wpdb;
 
 		$type_sql = "AND post_status != 'inherit'";  // Ignore attachments
@@ -97,11 +97,11 @@ class Autocomplete {
 	/**
 	 * Autocomplete meta data
 	 *
-	 * @param Sql\Sql_Value $table Meta table.
+	 * @param Sql\Sql\Value $table Meta table.
 	 * @param string        $value Value.
 	 * @return list<object{id: string, value: string}>
 	 */
-	public static function get_meta( Sql\Sql_Value $table, $value ) {
+	public static function get_meta( Sql\Sql\Value $table, $value ) {
 		global $wpdb;
 
 		$table = $wpdb->prefix . $table->get_value();

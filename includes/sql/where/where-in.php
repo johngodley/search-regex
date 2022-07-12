@@ -1,19 +1,21 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Where;
+
+use SearchRegex\Sql;
 
 /**
  * WHERE for a IN
  */
-class Sql_Where_In extends Sql_Where {
+class Where_In extends Where {
 	/**
 	 * Constructor
 	 *
-	 * @param Sql_Select $column Column.
+	 * @param Sql\Select\Select $column Column.
 	 * @param string     $logic Logic.
 	 * @param array      $value Value.
 	 */
-	public function __construct( Sql_Select $column, $logic, $value ) {
+	public function __construct( Sql\Select\Select $column, $logic, $value ) {
 		$logic_sql = 'IN';
 
 		if ( $logic === 'NOT IN' ) {

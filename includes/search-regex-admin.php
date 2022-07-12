@@ -13,7 +13,7 @@ require_once __DIR__ . '/source/class-source.php';
 require_once __DIR__ . '/schema/class-schema.php';
 require_once __DIR__ . '/context/class-context.php';
 require_once __DIR__ . '/action/class-action.php';
-require_once __DIR__ . '/sql/sql.php';
+require_once __DIR__ . '/sql/class-sql.php';
 
 class Admin {
 	/** @var null|Admin */

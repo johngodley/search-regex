@@ -5,39 +5,39 @@ namespace SearchRegex\Sql;
 /**
  * SQL Query class
  */
-class Sql_Query {
+class Query {
 	/**
-	 * Array of Sql_Where objects
+	 * Array of Where\Where objects
 	 *
 	 * @var array
 	 */
 	private $where = [];
 
 	/**
-	 * Array of Sql_Select objects
+	 * Array of Select\Select objects
 	 *
-	 * @var Sql_Select[]
+	 * @var Select\Select[]
 	 */
 	private $select = [];
 
 	/**
-	 * Array of Sql_From objects
+	 * Array of From objects
 	 *
-	 * @var Sql_From[]
+	 * @var From[]
 	 */
 	private $from = [];
 
 	/**
 	 * Array of group objects
 	 *
-	 * @var Sql_Group[]
+	 * @var Group[]
 	 */
 	private $group = [];
 
 	/**
 	 * Array of joins
 	 *
-	 * @var Sql_Join[]
+	 * @var Join\Join[]
 	 */
 	private $joins = [];
 
@@ -98,17 +98,17 @@ class Sql_Query {
 	}
 
 	/**
-	 * Add Sql_Where to the query
+	 * Add Where\Where to the query
 	 *
-	 * @param Sql_Where $where Where.
+	 * @param Where\Where $where Where\Where.
 	 * @return void
 	 */
-	public function add_where( Sql_Where $where ) {
+	public function add_where( Where\Where $where ) {
 		$this->where[] = $where;
 	}
 
 	/**
-	 * Reset all the Sql_Where objects
+	 * Reset all the Where\Where objects
 	 *
 	 * @return void
 	 */
@@ -117,28 +117,28 @@ class Sql_Query {
 	}
 
 	/**
-	 * Get the Sql_Where objects
+	 * Get the Where\Where objects
 	 *
-	 * @return list<Sql_Where>
+	 * @return list<Where\Where>
 	 */
 	public function get_where() {
 		return $this->where;
 	}
 
 	/**
-	 * Add Sql_Select to query
+	 * Add Select\Select to query
 	 *
-	 * @param Sql_Select $select Select.
+	 * @param Select\Select $select Select.
 	 * @return void
 	 */
-	public function add_select( Sql_Select $select ) {
+	public function add_select( Select\Select $select ) {
 		$this->select[] = $select;
 	}
 
 	/**
-	 * Add array of Sql_Select objects
+	 * Add array of Select\Select objects
 	 *
-	 * @param Sql_Select[] $selects Selects.
+	 * @param Select\Select[] $selects Selects.
 	 * @return void
 	 */
 	public function add_selects( array $selects ) {
@@ -146,52 +146,52 @@ class Sql_Query {
 	}
 
 	/**
-	 * Add Sql_From to query.
+	 * Add From to query.
 	 *
-	 * @param Sql_From $from From.
+	 * @param From $from From.
 	 * @return void
 	 */
-	public function add_from( Sql_From $from ) {
+	public function add_from( From $from ) {
 		$this->from[] = $from;
 	}
 
 	/**
-	 * Add Sql_Join to query.
+	 * Add Join to query.
 	 *
-	 * @param Sql_Join $join Join.
+	 * @param Join\Join $join Join.
 	 * @return void
 	 */
-	public function add_join( Sql_Join $join ) {
+	public function add_join( Join\Join $join ) {
 		$this->joins[] = $join;
 	}
 
 	/**
-	 * Add Sql_Group to query
+	 * Add Group to query
 	 *
-	 * @param Sql_Group $group Group.
+	 * @param Group $group Group.
 	 * @return void
 	 */
-	public function add_group( Sql_Group $group ) {
+	public function add_group( Group $group ) {
 		$this->group[] = $group;
 	}
 
 	/**
 	 * Add the selects from another query
 	 *
-	 * @param Sql_Query $query Query.
+	 * @param Query $query Query.
 	 * @return void
 	 */
-	public function add_select_only( Sql_Query $query ) {
+	public function add_select_only( Query $query ) {
 		$this->select = array_merge( $this->select, $query->select );
 	}
 
 	/**
 	 * Add everything from a query except the WHERE, and return the WHERE
 	 *
-	 * @param Sql_Query $query Query.
-	 * @return Sql_Where[]
+	 * @param Query $query Query.
+	 * @return Where\Where[]
 	 */
-	public function add_query_except_where( Sql_Query $query ) {
+	public function add_query_except_where( Query $query ) {
 		$this->select = array_merge( $this->select, $query->select );
 		$this->from = array_merge( $this->from, $query->from );
 		$this->group = array_merge( $this->group, $query->group );
@@ -202,10 +202,10 @@ class Sql_Query {
 	/**
 	 * Add another query
 	 *
-	 * @param Sql_Query $query Query.
+	 * @param Query $query Query.
 	 * @return void
 	 */
-	public function add_query( Sql_Query $query ) {
+	public function add_query( Query $query ) {
 		$this->where = array_merge( $this->where, $query->where );
 		$this->select = array_merge( $this->select, $query->select );
 		$this->from = array_merge( $this->from, $query->from );
@@ -216,14 +216,14 @@ class Sql_Query {
 	/**
 	 * Get the query as a SQL statement
 	 *
-	 * @param Sql_Modifier $modifier Modifier for the query.
+	 * @param Modifier\Modifier $modifier Modifier for the query.
 	 * @return string
 	 */
-	public function get_as_sql( Sql_Modifier $modifier = null ) {
+	public function get_as_sql( Modifier\Modifier $modifier = null ) {
 		global $wpdb;
 
 		if ( $modifier === null ) {
-			$modifier = new Sql_Modifier();
+			$modifier = new Modifier\Modifier();
 		}
 
 		$select = array_unique( $modifier->get_select( $this->select, $this->joins ) );

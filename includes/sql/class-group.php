@@ -5,7 +5,7 @@ namespace SearchRegex\Sql;
 /**
  * Sql grouping
  */
-class Sql_Group {
+class Group {
 	/**
 	 * Group name
 	 *
@@ -14,7 +14,7 @@ class Sql_Group {
 	 */
 	private $group;
 
-	public function __construct( Sql_Value $group ) {
+	public function __construct( Value $group ) {
 		$this->group = $group->get_value();
 	}
 

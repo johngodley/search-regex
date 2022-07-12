@@ -2,8 +2,7 @@
 
 namespace SearchRegex\Filter\Type;
 
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Schema\Column;
+use SearchRegex\Sql;
 use SearchRegex\Source;
 use SearchRegex\Context;
 use SearchRegex\Action;
@@ -133,7 +132,7 @@ abstract class Filter_Type {
 	/**
 	 * Get this filter as a SQL statement. Each item within the filter is ORed together
 	 *
-	 * @return Sql_Query
+	 * @return Sql\Query
 	 */
 	abstract public function get_query();
 
@@ -206,10 +205,10 @@ abstract class Filter_Type {
 	/**
 	 * Modify the query for this filter.
 	 *
-	 * @param Sql_Query $query Query.
-	 * @return Sql_Query
+	 * @param Sql\Query $query Query.
+	 * @return Sql\Query
 	 */
-	public function modify_query( Sql_Query $query ) {
+	public function modify_query( Sql\Query $query ) {
 		return $query;
 	}
 }

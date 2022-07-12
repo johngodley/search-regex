@@ -1,11 +1,13 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Modifier;
+
+require_once __DIR__ . '/class-count.php';
 
 /**
  * Modifies an SQL query
  */
-class Sql_Modifier {
+class Modifier {
 	/**
 	 * Get the SQL for an array of queries
 	 *
@@ -140,5 +142,3 @@ class Sql_Modifier {
 		return array_merge( $this->get_queries( $group ), $this->get_joins( $joins, 'get_group' ) );
 	}
 }
-
-require_once __DIR__ . '/count.php';

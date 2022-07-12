@@ -1,11 +1,16 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Select;
+
+use SearchRegex\Sql;
+
+require_once __DIR__ . '/class-column.php';
+require_once __DIR__ . '/class-sum.php';
 
 /**
  * SQL SELECT
  */
-class Sql_Select {
+class Select {
 	/**
 	 * Column name
 	 *
@@ -38,12 +43,12 @@ class Sql_Select {
 	/**
 	 * Constructor
 	 *
-	 * @param Sql_Value      $table Table name.
-	 * @param Sql_Value      $column Column name.
-	 * @param Sql_Value|null $alias Table alias.
+	 * @param Sql\Value      $table Table name.
+	 * @param Sql\Value      $column Column name.
+	 * @param Sql\Value|null $alias Table alias.
 	 * @param boolean        $prefix_required Whether we need to prefix the SQL with the table name.
 	 */
-	public function __construct( Sql_Value $table, Sql_Value $column, Sql_Value $alias = null, $prefix_required = false ) {
+	public function __construct( Sql\Value $table, Sql\Value $column, Sql\Value $alias = null, $prefix_required = false ) {
 		$this->table = $table->get_value();
 		$this->column = $column->get_value();
 		$this->alias = $alias ? $alias->get_value() : null;

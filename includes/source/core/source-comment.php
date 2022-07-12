@@ -4,8 +4,7 @@ namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
 use SearchRegex\Search;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_Value;
+use SearchRegex\Sql;
 
 /**
  * Source for comments
@@ -111,7 +110,7 @@ class Comment extends Source\Source {
 		}
 
 		if ( $column['column'] === 'comment_post_ID' ) {
-			return Source\Autocomplete::get_post( $value, Sql_Value::column( 'ID' ), Sql_Value::column( 'post_title' ) );
+			return Source\Autocomplete::get_post( $value, Sql\Value::column( 'ID' ), Sql\Value::column( 'post_title' ) );
 		}
 
 		if ( $column['column'] === 'user_id' ) {
@@ -119,7 +118,7 @@ class Comment extends Source\Source {
 		}
 
 		if ( $column['column'] === 'meta' ) {
-			return Source\Autocomplete::get_meta( Sql_Value::table( 'commentmeta' ), $value );
+			return Source\Autocomplete::get_meta( Sql\Value::table( 'commentmeta' ), $value );
 		}
 
 		if ( $column['column'] === 'comment_parent' ) {

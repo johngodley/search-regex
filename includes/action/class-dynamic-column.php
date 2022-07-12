@@ -202,7 +202,7 @@ class Dynamic_Column {
 
 		if ( $schema->get_column() === 'category' || $schema->get_column() === 'post_tag' ) {
 			$seperator = isset( $attrs['seperator'] ) ? $attrs['seperator'] : ', ';
-			$join = new Sql\Sql_Join_Term( $schema->get_column() );
+			$join = new Sql\Sql\Join\Term( $schema->get_column() );
 
 			return $join->get_value( $row_id, $format, $seperator );
 		}

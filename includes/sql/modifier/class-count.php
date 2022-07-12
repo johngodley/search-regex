@@ -1,11 +1,13 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Modifier;
+
+use SearchRegex\Sql;
 
 /**
  * Perform a COUNT of a query
  */
-class Sql_Select_Count_Id extends Sql_Modifier {
+class Select_Count_Id extends Modifier {
 	/**
 	 * Column to modify
 	 *
@@ -17,11 +19,11 @@ class Sql_Select_Count_Id extends Sql_Modifier {
 	/**
 	 * Constructor
 	 *
-	 * @param Sql_Value $table Table name.
-	 * @param Sql_Value $table_id Table ID.
+	 * @param Sql\Value $table Table name.
+	 * @param Sql\Value $table_id Table ID.
 	 * @param string    $alias Count alias.
 	 */
-	public function __construct( Sql_Value $table, Sql_Value $table_id, $alias = 'match_rows' ) {
+	public function __construct( Sql\Value $table, Sql\Value $table_id, $alias = 'match_rows' ) {
 		$this->column = 'COUNT(' . $table->get_value() . '.' . $table_id->get_value() . ") AS $alias";
 	}
 

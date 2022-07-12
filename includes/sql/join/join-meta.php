@@ -1,13 +1,14 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Join;
 
 use SearchRegex\Source;
+use SearchRegex\Sql;
 
 /**
  * Join on meta table
  */
-class Sql_Join_Meta extends Sql_Join {
+class Meta extends Join {
 	/**
 	 * Source
 	 *
@@ -97,16 +98,16 @@ class Sql_Join_Meta extends Sql_Join {
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::table( $this->meta_table ), Sql_Value::column( '0' ), Sql_Value::column( 'meta_id' ) );
+		return new Sql\Select\Select( Sql\Value::table( $this->meta_table ), Sql\Value::column( '0' ), Sql\Value::column( 'meta_id' ) );
 	}
 
 	public function get_group() {
-		return new Sql_Group( Sql_Value::column( $this->group_id ) );
+		return new Sql\Group( Sql\Value::column( $this->group_id ) );
 	}
 
 	public function get_from() {
 		if ( $this->is_matching ) {
-			return new Sql_From( Sql_Value::safe_raw( sprintf( 'LEFT JOIN %s AS meta ON %s.%s = meta.%s', $this->meta_table, $this->source_table, $this->table_id, $this->join_id ) ) );
+			return new Sql\From( Sql\Value::safe_raw( sprintf( 'LEFT JOIN %s AS meta ON %s.%s = meta.%s', $this->meta_table, $this->source_table, $this->table_id, $this->join_id ) ) );
 		}
 
 		return false;
@@ -137,7 +138,7 @@ class Sql_Join_Meta extends Sql_Join {
 	public function get_values( array $values ) {
 		global $wpdb;
 
-		$in = new Sql_Where_In( new Sql_Select( Sql_Value::table( $this->meta_table ), Sql_Value::column( $this->column ) ), 'IN', $values );
+		$in = new Sql\Where\Where_In( new Sql\Select\Select( Sql\Value::table( $this->meta_table ), Sql\Value::column( $this->column ) ), 'IN', $values );
 
 		// phpcs:ignore
 		return $wpdb->get_results( "SELECT meta_key,meta_value FROM {$this->meta_table} WHERE {$this->meta_id} IN ". $in->get_value() );

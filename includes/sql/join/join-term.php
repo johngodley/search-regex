@@ -1,11 +1,14 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Join;
+
+use SearchRegex\Source;
+use SearchRegex\Sql;
 
 /**
  * Join on terms
  */
-class Sql_Join_Term extends Sql_Join {
+class Term extends Join {
 	/**
 	 * Constructor
 	 *
@@ -17,27 +20,27 @@ class Sql_Join_Term extends Sql_Join {
 
 	public function get_where() {
 		if ( $this->is_matching ) {
-			return new Sql_Where_String( new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::column( 'taxonomy' ) ), '=', $this->column );
+			return new Sql\Where\Where_String( new Sql\Select\Select( Sql\Value::column( 'tt' ), Sql\Value::column( 'taxonomy' ) ), '=', $this->column );
 		}
 
 		return false;
 	}
 
 	public function get_select() {
-		return new Sql_Select( Sql_Value::column( 'tt' ), Sql_Value::column( '0' ), Sql_Value::column( $this->column ) );
+		return new Sql\Select\Select( Sql\Value::column( 'tt' ), Sql\Value::column( '0' ), Sql\Value::column( $this->column ) );
 	}
 
 	public function get_group() {
 		global $wpdb;
 
-		return new Sql_Group( Sql_Value::column( "{$wpdb->posts}.ID" ) );
+		return new Sql\Group( Sql\Value::column( "{$wpdb->posts}.ID" ) );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
 		if ( $this->is_matching ) {
-			return new Sql_From( Sql_Value::safe_raw( sprintf( 'INNER JOIN %sterm_relationships AS tr ON (%s.ID = tr.object_id) INNER JOIN %sterm_taxonomy AS tt ON tt.term_taxonomy_id=tr.term_taxonomy_id', $wpdb->prefix, $wpdb->posts, $wpdb->prefix ) ) );
+			return new Sql\From( Sql\Value::safe_raw( sprintf( 'INNER JOIN %sterm_relationships AS tr ON (%s.ID = tr.object_id) INNER JOIN %sterm_taxonomy AS tt ON tt.term_taxonomy_id=tr.term_taxonomy_id', $wpdb->prefix, $wpdb->posts, $wpdb->prefix ) ) );
 		}
 
 		return false;

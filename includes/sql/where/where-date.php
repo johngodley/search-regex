@@ -1,19 +1,21 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Where;
+
+use SearchRegex\Sql;
 
 /**
  * WHERE for a date
  */
-class Sql_Where_Date extends Sql_Where {
+class Where_Date extends Where {
 	/**
 	 * Constructor
 	 *
-	 * @param Sql_Select $column Column.
+	 * @param Sql\Select\Select $column Column.
 	 * @param string     $logic Logic.
 	 * @param integer    $value Value.
 	 */
-	public function __construct( Sql_Select $column, $logic, $value ) {
+	public function __construct( Sql\Select\Select $column, $logic, $value ) {
 		$map = [
 			'notequals' => '!=',
 			'greater' => '>',

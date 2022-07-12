@@ -2,14 +2,7 @@
 
 namespace SearchRegex\Filter\Type;
 
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Join;
-use SearchRegex\Sql\Sql_Join_Meta;
-use SearchRegex\Sql\Sql_Where_String;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_Where_And;
-use SearchRegex\Sql\Sql_Select_Column;
+use SearchRegex\Sql;
 use SearchRegex\Source;
 use SearchRegex\Action;
 use SearchRegex\Schema;
@@ -70,7 +63,7 @@ class Filter_Keyvalue extends Filter_Type {
 	 * Key join
 	 *
 	 * @readonly
-	 * @var Sql_Join_Meta|null
+	 * @var Sql\Join\Meta|null
 	 */
 	private $join_key = null;
 
@@ -78,7 +71,7 @@ class Filter_Keyvalue extends Filter_Type {
 	 * Value join
 	 *
 	 * @readonly
-	 * @var Sql_Join_Meta|null
+	 * @var Sql\Join\Meta|null
 	 */
 	private $join_value = null;
 
@@ -112,17 +105,17 @@ class Filter_Keyvalue extends Filter_Type {
 		$joiner = $schema->get_join_column();
 		if ( $joiner !== null ) {
 			if ( $this->key || $this->key_logic === 'any' ) {
-				$join = Sql_Join::create( $schema->get_column() . '_key', $joiner );
+				$join = Sql\Join::create( $schema->get_column() . '_key', $joiner );
 
-				if ( $join instanceof Sql_Join_Meta ) {
+				if ( $join instanceof Sql\Join\Meta ) {
 					$this->join_key = $join;
 				}
 			}
 
 			if ( $this->value || $this->value_logic === 'any' ) {
-				$join = Sql_Join::create( $schema->get_column() . '_value', $joiner );
+				$join = Sql\Join::create( $schema->get_column() . '_value', $joiner );
 
-				if ( $join instanceof Sql_Join_Meta ) {
+				if ( $join instanceof Sql\Join\Meta ) {
 					$this->join_value = $join;
 				}
 			}
@@ -173,7 +166,7 @@ class Filter_Keyvalue extends Filter_Type {
 	}
 
 	public function get_query() {
-		$query = new Sql_Query();
+		$query = new Sql\Query();
 
 		if ( $this->join_key ) {
 			$query->add_join( $this->join_key );
@@ -187,15 +180,15 @@ class Filter_Keyvalue extends Filter_Type {
 			$wheres = [];
 
 			if ( $this->key && $this->join_key !== null ) {
-				$wheres[] = new Sql_Where_String( new Sql_Select( Sql_Value::table( $this->join_key->get_table() ), Sql_Value::column( $this->schema->get_column() . '_key' ), Sql_Value::column( 'meta' ) ), $this->key_logic, $this->key, $this->key_flags );
+				$wheres[] = new Sql\Where\Where_String( new Sql\Select\Select( Sql\Value::table( $this->join_key->get_table() ), Sql\Value::column( $this->schema->get_column() . '_key' ), Sql\Value::column( 'meta' ) ), $this->key_logic, $this->key, $this->key_flags );
 			}
 
 			if ( $this->value && $this->join_value !== null ) {
-				$wheres[] = new Sql_Where_String( new Sql_Select( Sql_Value::table( $this->join_value->get_table() ), Sql_Value::column( $this->schema->get_column() . '_value' ), Sql_Value::column( 'meta' ) ), $this->value_logic, $this->value, $this->value_flags );
+				$wheres[] = new Sql\Where\Where_String( new Sql\Select\Select( Sql\Value::table( $this->join_value->get_table() ), Sql\Value::column( $this->schema->get_column() . '_value' ), Sql\Value::column( 'meta' ) ), $this->value_logic, $this->value, $this->value_flags );
 			}
 
-			$query->add_select( new Sql_Select_Column( $this->schema ) );
-			$query->add_where( new Sql_Where_And( $wheres ) );
+			$query->add_select( new Sql\Select\Select_Column( $this->schema ) );
+			$query->add_where( new Sql\Where\Where_And( $wheres ) );
 		}
 
 		return $query;

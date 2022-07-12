@@ -2,7 +2,7 @@
 
 namespace SearchRegex\Action\Type;
 
-use SearchRegex\Sql\Sql_Value;
+use SearchRegex\Sql;
 use SearchRegex\Action\Action;
 use SearchRegex\Schema;
 use SearchRegex\Source;

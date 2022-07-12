@@ -3,9 +3,7 @@
 namespace SearchRegex\Filter;
 
 use SearchRegex\Filter\Type;
-use SearchRegex\Search_Query;
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Where_Or;
+use SearchRegex\Sql;
 use SearchRegex\Action;
 use SearchRegex\Schema;
 use SearchRegex\Source;
@@ -216,13 +214,13 @@ class Filter {
 	}
 
 	/**
-	 * Get an Sql_Query for this filter.
+	 * Get an Sql\Query for this filter.
 	 *
 	 * @param Source\Source $source Source.
-	 * @return Sql_Query
+	 * @return Sql\Query
 	 */
 	public function get_query( Source\Source $source ) {
-		$query = new Sql_Query();
+		$query = new Sql\Query();
 		$wheres = [];
 
 		foreach ( $this->get_items( $source ) as $filter ) {
@@ -237,7 +235,7 @@ class Filter {
 			}
 		}
 
-		$query->add_where( new Sql_Where_Or( $wheres ) );
+		$query->add_where( new Sql\Where\Where_Or( $wheres ) );
 		return $query;
 	}
 
@@ -246,10 +244,10 @@ class Filter {
 	 *
 	 * @param array<Filter> $filters Filters.
 	 * @param Source\Source        $source Source.
-	 * @return Sql_Query
+	 * @return Sql\Query
 	 */
 	public static function get_as_query( array $filters, Source\Source $source ) {
-		$query = new Sql_Query();
+		$query = new Sql\Query();
 
 		foreach ( $filters as $filter ) {
 			$query->add_query( $filter->get_query( $source ) );

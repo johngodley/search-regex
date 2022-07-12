@@ -2,10 +2,7 @@
 
 namespace SearchRegex\Modifier\Value;
 
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Select;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_Where_String;
+use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Search;
 use SearchRegex\Modifier;

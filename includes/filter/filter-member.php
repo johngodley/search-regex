@@ -2,15 +2,7 @@
 
 namespace SearchRegex\Filter\Type;
 
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Join;
-use SearchRegex\Sql\Sql_Join_Meta;
-use SearchRegex\Sql\Sql_Join_Term;
-use SearchRegex\Sql\Sql_Where;
-use SearchRegex\Sql\Sql_Select_Column;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_Where_In;
-use SearchRegex\Sql\Sql_Where_And;
+use SearchRegex\Sql;
 use SearchRegex\Source;
 use SearchRegex\Action;
 use SearchRegex\Context\Type;
@@ -41,7 +33,7 @@ class Filter_Member extends Filter_Type {
 	/**
 	 * Join
 	 *
-	 * @var Sql_Join|null
+	 * @var Sql\Join|null
 	 */
 	private $join = null;
 
@@ -63,7 +55,7 @@ class Filter_Member extends Filter_Type {
 		}
 
 		if ( $this->schema->get_join_column() ) {
-			$this->join = Sql_Join::create( $this->schema->get_column(), $schema->get_source() );
+			$this->join = Sql\Join::create( $this->schema->get_column(), $schema->get_source() );
 		}
 	}
 
@@ -97,15 +89,15 @@ class Filter_Member extends Filter_Type {
 	}
 
 	public function get_query() {
-		$query = new Sql_Query();
-		$select = new Sql_Select_Column( $this->schema );
+		$query = new Sql\Query();
+		$select = new Sql\Select\Select_Column( $this->schema );
 
 		if ( $this->join ) {
 			$query->add_join( $this->join );
 		}
 
 		if ( $this->is_valid() ) {
-			$where = new Sql_Where_In( $select, $this->logic === 'exclude' ? 'NOT IN' : 'IN', $this->values );
+			$where = new Sql\Where\Where_In( $select, $this->logic === 'exclude' ? 'NOT IN' : 'IN', $this->values );
 			$query->add_where( $where );
 		}
 
@@ -116,7 +108,7 @@ class Filter_Member extends Filter_Type {
 	public function get_values_for_row( $row ) {
 		$values = parent::get_values_for_row( $row );
 
-		if ( ! $this->join instanceof Sql_Join_Meta && ! $this->join instanceof Sql_Join_Term ) {
+		if ( ! $this->join instanceof Sql\Join\Meta && ! $this->join instanceof Sql\Join\Term ) {
 			return $values;
 		}
 
@@ -184,12 +176,12 @@ class Filter_Member extends Filter_Type {
 		return $this->get_unmatched_context( $source, (string) $value );
 	}
 
-	public function modify_query( Sql_Query $query ) {
+	public function modify_query( Sql\Query $query ) {
 		if ( $this->join !== null ) {
 			$join_wheres = $this->join->get_where();
 
 			if ( $join_wheres ) {
-				$where = new Sql_Where_And( array_merge( $query->get_where(), [ $join_wheres ] ) );
+				$where = new Sql\Where\Where_And( array_merge( $query->get_where(), [ $join_wheres ] ) );
 				$query->reset_where();
 				$query->add_where( $where );
 			}

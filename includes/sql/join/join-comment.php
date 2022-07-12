@@ -1,13 +1,14 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Join;
 
 use SearchRegex\Source;
+use SearchRegex\Sql;
 
 /**
  * Join on comments table
  */
-class Sql_Join_Comment extends Sql_Join {
+class Comment extends Join {
 	/**
 	 * Join logic
 	 *
@@ -47,16 +48,16 @@ class Sql_Join_Comment extends Sql_Join {
 	public function get_select() {
 		global $wpdb;
 
-		return new Sql_Select( Sql_Value::table( $wpdb->comments ), Sql_Value::column( 'comment_id' ), null, true );
+		return new Sql\Select\Select( Sql\Value::table( $wpdb->comments ), Sql\Value::column( 'comment_id' ), null, true );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
-		$table = Sql_Value::table( $this->join_table );
-		$column = Sql_Value::column( $this->get_join_column() );
+		$table = Sql\Value::table( $this->join_table );
+		$column = Sql\Value::column( $this->get_join_column() );
 
-		return new Sql_From( Sql_Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->comments} ON {$wpdb->comments}.comment_id=%s.%s", $table->get_value(), $column->get_value() ) ) );
+		return new Sql\From( Sql\Value::safe_raw( sprintf( "LEFT JOIN {$wpdb->comments} ON {$wpdb->comments}.comment_id=%s.%s", $table->get_value(), $column->get_value() ) ) );
 	}
 
 	public function get_join_column() {
@@ -67,7 +68,7 @@ class Sql_Join_Comment extends Sql_Join {
 		global $wpdb;
 
 		if ( $this->logic ) {
-			return new Sql_Where_Null( new Sql_Select( Sql_Value::table( $wpdb->comments ), Sql_Value::column( 'comment_id' ) ), $this->logic );
+			return new Sql\Where\Where_Null( new Sql\Select\Select( Sql\Value::table( $wpdb->comments ), Sql\Value::column( 'comment_id' ) ), $this->logic );
 		}
 
 		return false;

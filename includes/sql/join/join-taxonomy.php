@@ -1,11 +1,14 @@
 <?php
 
-namespace SearchRegex\Sql;
+namespace SearchRegex\Sql\Join;
+
+use SearchRegex\Source;
+use SearchRegex\Sql;
 
 /**
  * Joins taxonomy table
  */
-class Sql_Join_Taxonomy extends Sql_Join {
+class Taxonomy extends Join {
 	/**
 	 * Constructor
 	 *
@@ -18,13 +21,13 @@ class Sql_Join_Taxonomy extends Sql_Join {
 	public function get_select() {
 		global $wpdb;
 
-		return new Sql_Select( Sql_Value::table( $wpdb->prefix . 'term_taxonomy' ), Sql_Value::column( 'taxonomy' ) );
+		return new Sql\Select\Select( Sql\Value::table( $wpdb->prefix . 'term_taxonomy' ), Sql\Value::column( 'taxonomy' ) );
 	}
 
 	public function get_from() {
 		global $wpdb;
 
-		return new Sql_From( Sql_Value::safe_raw( sprintf( 'INNER JOIN %sterm_taxonomy AS tt ON (%sterms.term_id = tt.term_id)', $wpdb->prefix, $wpdb->prefix ) ) );
+		return new Sql\From( Sql\Value::safe_raw( sprintf( 'INNER JOIN %sterm_taxonomy AS tt ON (%sterms.term_id = tt.term_id)', $wpdb->prefix, $wpdb->prefix ) ) );
 	}
 
 	public function get_join_column() {

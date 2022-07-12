@@ -2,12 +2,7 @@
 
 namespace SearchRegex\Filter\Type;
 
-use SearchRegex\Sql\Sql_Query;
-use SearchRegex\Sql\Sql_Select_Column;
-use SearchRegex\Sql\Sql_Value;
-use SearchRegex\Sql\Sql_Where_Date;
-use SearchRegex\Sql\Sql_Where_And;
-use SearchRegex\Sql\Sql_Where_Or;
+use SearchRegex\Sql;
 use SearchRegex\Action;
 use SearchRegex\Source;
 use SearchRegex\Schema;
@@ -82,17 +77,17 @@ class Filter_Date extends Filter_Type {
 	}
 
 	public function get_query() {
-		$query = new Sql_Query();
-		$select = new Sql_Select_Column( $this->schema );
+		$query = new Sql\Query();
+		$select = new Sql\Select\Select_Column( $this->schema );
 
 		if ( $this->start_value !== false ) {
 			if ( $this->logic === 'range' && $this->end_value !== false ) {
-				$lower = new Sql_Where_Date( $select, '>', $this->start_value );
-				$upper = new Sql_Where_Date( $select, '<', $this->end_value );
+				$lower = new Sql\Where\Where_Date( $select, '>', $this->start_value );
+				$upper = new Sql\Where\Where_Date( $select, '<', $this->end_value );
 
-				$where = new Sql_Where_And( [ $lower, $upper ] );
+				$where = new Sql\Where\Where_And( [ $lower, $upper ] );
 			} else {
-				$where = new Sql_Where_Date( $select, $this->logic, $this->start_value );
+				$where = new Sql\Where\Where_Date( $select, $this->logic, $this->start_value );
 			}
 
 			$query->add_where( $where );
