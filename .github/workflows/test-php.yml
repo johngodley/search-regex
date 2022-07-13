@@ -1,0 +1,39 @@
+name: Test PHP
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+    paths:
+        - '**/*.php'
+        - '**/composer.lock'
+        - '**/phpcs.xml'
+        - '**/phpunit.xml.dist'
+        - '**/psalm.xml'
+        - '.github/workflows/test-php.yml' # for testing
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+
+            - uses: actions/checkout@v2
+
+            - name: Cache Composer packages
+              id: composer-cache
+              uses: actions/cache@v2
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+
+            - name: Install dependencies
+              if: steps.composer-cache.outputs.cache-hit != 'true'
+              run: composer install --prefer-dist --no-progress --no-suggest
