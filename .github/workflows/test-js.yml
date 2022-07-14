@@ -1,0 +1,31 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Test JS
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+    paths:
+        - '**/*.js'
+        - '**/*.ts'
+        - '**/*.tsx'
+        - 'package.json'
+        - '.github/workflows/test-js.yml' # for testing
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - name: Yarn setup
+      uses: DerYeger/yarn-setup-action@master
+      with:
+        node-version: 16
+    - run: yarn test:js

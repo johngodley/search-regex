@@ -23,7 +23,7 @@ class Global_Replace extends Modify {
 					$converted[] = [
 						'column' => $column->get_column(),
 						'source' => $source->get_type(),
-						'operation' => in_array( 'regex', $options['flags'], true ) ? 'set' : 'replace',
+						'operation' => 'replace',
 						'searchValue' => $options['search'],
 						'replaceValue' => $options['replacement'],
 						'searchFlags' => $options['flags'],
