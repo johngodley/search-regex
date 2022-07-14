@@ -25,9 +25,17 @@ function AdvancedPagination( props ) {
 			{ noTotal && <div>&nbsp;</div> }
 			{ !noTotal && (
 				<div className="displaying-num">
-					{ _n( '%s database row in total', '%s database rows in total', total, 'search-regex' ), new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( total ) } ) }
+					{ sprintf(
+						/* translators: %s: total number of rows searched */
+						_n( '%s database row in total', '%s database rows in total', total, 'search-regex' ),
+						new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( total )
+					) }
+
 					&nbsp;&mdash;&nbsp;
-					{ sprintf( __( 'matched rows = %(searched)s, phrases = %(found)s', 'search-regex' ), {
+
+					{ sprintf(
+						/* translators: %searched: number of rows searched and matched %phrases: number of phrases matched */
+						__( 'matched rows = %(searched)s, phrases = %(found)s', 'search-regex' ), {
 						searched: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( totals.matched_rows ),
 						found: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( totals.matched_phrases ),
 					} ) }
@@ -38,9 +46,12 @@ function AdvancedPagination( props ) {
 				<Nav title={ __( 'Prev page', 'search-regex' ) } button="‹" className="prev-page" enabled={ previous && !isLoading } onClick={ () => onChangePage( previous, SEARCH_BACKWARD ) } />
 
 				<span className="tablenav-paging-text">
-					{ sprintf( __( 'Progress %(current)s%%', 'search-regex' ), {
-						current: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( searchDirection === SEARCH_FORWARD ? forwardPercent( total, next ) : backPercent( total, next == false ? previous : next ) ),
-					} ) }
+					{ sprintf(
+						/* translators: %current: current percent progress */
+						__( 'Progress %(current)s%%', 'search-regex' ), {
+							current: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( searchDirection === SEARCH_FORWARD ? forwardPercent( total, next ) : backPercent( total, next == false ? previous : next ) ),
+						}
+					) }
 				</span>
 
 				<Nav title={ __( 'Next page', 'search-regex' ) } button="›" className="next-page" enabled={ next !== false && !isLoading } onClick={ () => onChangePage( next, SEARCH_FORWARD ) } />
