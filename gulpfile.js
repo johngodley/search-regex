@@ -55,7 +55,7 @@ const SVN_SOURCE_FILES = [
 function downloadLocale( locale, wpName, type ) {
 	const url = LOCALE_URL.replace( '$LOCALE', locale ) + type;
 
-	download( url, 'locale', {
+	download( url, 'languages', {
 		filename: 'search-regex-' + wpName + '.' + type,
 	} )
 		.catch( e => {

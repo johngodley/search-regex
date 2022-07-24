@@ -2,8 +2,8 @@
 Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
-Requires at least: 5.4
-Tested up to: 5.9
+Requires at least: 5.6
+Tested up to: 6.0.1
 Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
@@ -113,7 +113,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.0 - 2022 =
+= 3.0 - July 24th 2022 =
 - Major update with many, many, new features
 - Advanced searches with fully customisable filters that can be combined together with AND and OR logic
 - Search any WordPress table, including posts, comments, users, meta-data, and options
