@@ -21,7 +21,7 @@ function ErrorDetails() {
 			<ol>
 				<li>
 					{ createInterpolateElement(
-						__( '{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches.', 'redirection' ),
+						__( '{{link}}Caching software{{/link}}, in particular Cloudflare, can cache the wrong thing. Try clearing all your caches.', 'search-regex' ),
 						{
 							link: <ExternalLink url="https://searchregex.com/support/problems/cloudflare/" />,
 						}
@@ -29,7 +29,7 @@ function ErrorDetails() {
 				</li>
 				<li>
 					{ createInterpolateElement(
-						__( '{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems.', 'redirection' ),
+						__( '{{link}}Please temporarily disable other plugins!{{/link}} This fixes so many problems.', 'search-regex' ),
 						{
 							link: <ExternalLink url="https://searchregex.com/support/problems/plugins/" />,
 						},
@@ -37,7 +37,7 @@ function ErrorDetails() {
 				</li>
 				<li>
 					{ createInterpolateElement(
-						__( 'If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues.', 'redirection' ),
+						__( 'If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues.', 'search-regex' ),
 						{
 							link: <ExternalLink url="/wp-admin/site-health.php" />,
 						}

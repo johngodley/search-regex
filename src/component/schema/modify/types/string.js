@@ -114,7 +114,7 @@ function ModifyString( props ) {
 				onChange={ setLocalOperation }
 				extraItems={ modifiedFilters.map( ( item ) => ( {
 					value: item.column + '-' + item.value,
-					label: sprintf( __( 'Replace "%1s"', 'redirection' ), item.value.substr( 0, 20 ) )
+					label: sprintf( __( 'Replace "%1s"', 'search-regex' ), item.value.substr( 0, 20 ) )
 				} ) ) }
 			/>
 

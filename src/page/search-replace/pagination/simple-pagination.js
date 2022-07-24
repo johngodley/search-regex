@@ -24,7 +24,7 @@ function SimplePagination( props ) {
 			{ noTotal && <div>&nbsp;</div> }
 			{ !noTotal && (
 				<div className="displaying-num">
-					{ sprintf( __( 'Matched rows: %(matches)s out of %(total)s total.', 'redirection' ), {
+					{ sprintf( __( 'Matched rows: %(matches)s out of %(total)s total.', 'search-regex' ), {
 						matches: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( matchedRows ),
 						total: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( total ),
 					} ) }{ ' ' }
@@ -48,7 +48,7 @@ function SimplePagination( props ) {
 				/>
 
 				<span className="tablenav-paging-text">
-					{ sprintf( __( 'Page %(current)s of %(total)s', 'redirection' ), {
+					{ sprintf( __( 'Page %(current)s of %(total)s', 'search-regex' ), {
 						current: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( currentPage ),
 						total: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( totalPages ),
 					} ) }

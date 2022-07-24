@@ -51,7 +51,7 @@ function FilterInteger( props ) {
 
 			{ logic === 'range' &&
 				createInterpolateElement(
-					__( 'between {{first/}} and {{second/}}', 'redirection' ),
+					__( 'between {{first/}} and {{second/}}', 'search-regex' ),
 					{
 						first: (
 							<IntegerInput

@@ -29,9 +29,9 @@ function UpdateNotice() {
 		<Notice>
 			<p>
 				{ createInterpolateElement(
-					sprintf( __( 'Version %s installed! Please read the {{url}}release notes{{/url}} for details.', 'redirection' ), update_notice ),
+					sprintf( __( 'Version %s installed! Please read the {{url}}release notes{{/url}} for details.', 'search-regex' ), update_notice ),
 					{
-						url: <ExternalLink url={ 'https://searchregex.com/blog/redirection-version-' + update_notice.replace( '.', '-' ) + '/' } />
+						url: <ExternalLink url={ 'https://searchregex.com/blog/searchregex-version-' + update_notice.replace( '.', '-' ) + '/' } />
 					},
 				) }
 				&nbsp;

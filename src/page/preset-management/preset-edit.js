@@ -229,7 +229,7 @@ function PresetEdit( props ) {
 							</p>
 							<p>
 								{ createInterpolateElement(
-									__( 'For example, create tag {{code}}URL{{/code}} and title {{code}}Image URL{{/code}}. Your search could be {{code}}<img src="URL">{{/code}}. When the preset is used it will ask the user for the {{code}}Image URL{{/code}} instead of the full search phrase.', 'redirection' ),
+									__( 'For example, create tag {{code}}URL{{/code}} and title {{code}}Image URL{{/code}}. Your search could be {{code}}<img src="URL">{{/code}}. When the preset is used it will ask the user for the {{code}}Image URL{{/code}} instead of the full search phrase.', 'search-regex' ),
 									{
 										code: <code />,
 									}

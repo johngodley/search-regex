@@ -18,10 +18,12 @@ const MAX_CONTEXT_LENGTH = 500;
 
 function getValue( label, value ) {
 	if ( parseInt( value, 10 ) > 0 ) {
-		return sprintf( __( '%(label)s (ID %(id)d)', 'search-regex' ), {
-			label,
-			id: value,
-		} );
+		return sprintf(
+			__( '%(label)s (ID %(id)d)', 'search-regex' ), {
+				label,
+				id: parseInt( value, 10 ),
+			}
+		);
 	}
 
 	return label;
