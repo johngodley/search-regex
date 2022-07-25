@@ -50,6 +50,11 @@ const SVN_SOURCE_FILES = [
 	'!tsconfig.json',
 	'!search-regex.js.LICENSE.txt',
 	'!jsconfig.json',
+	'!api-footer.md',
+	'!api-header.md',
+	'!*.zip',
+	'!src',
+	'!src/**'
 ];
 
 function downloadLocale( locale, wpName, type ) {
