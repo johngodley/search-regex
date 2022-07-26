@@ -2,6 +2,8 @@
 
 namespace SearchRegex\Source\Plugin;
 
+// phpcs:disable
+
 use SearchRegex\Source;
 use SearchRegex\Search;
 use SearchRegex\Sql;

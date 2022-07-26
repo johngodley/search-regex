@@ -55,10 +55,10 @@ class Column {
 	/**
 	 * Create a Match Column, which contains an array of Context\Type\Text items for a particular database column.
 	 *
-	 * @param string               $column_id Column ID.
-	 * @param string               $column_label Descriptive column label, shown to the user.
+	 * @param string                 $column_id Column ID.
+	 * @param string                 $column_label Descriptive column label, shown to the user.
 	 * @param array<Context\Context> $contexts Contexts.
-	 * @param array                $raw Raw data.
+	 * @param array                  $raw Raw data.
 	 */
 	public function __construct( $column_id, $column_label, array $contexts, array $raw ) {
 		$this->match_count = 0;

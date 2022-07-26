@@ -324,9 +324,9 @@ class Preset_Route extends Api\Route {
 	/**
 	 * Validate that the locked params are valid
 	 *
-	 * @param Array|String    $value The value to validate.
+	 * @param Array|String     $value The value to validate.
 	 * @param \WP_REST_Request $request The request.
-	 * @param Array           $param The array of parameters.
+	 * @param Array            $param The array of parameters.
 	 * @return \WP_Error|Bool true or false
 	 */
 	public function validate_locked( $value, \WP_REST_Request $request, $param ) {
@@ -348,9 +348,9 @@ class Preset_Route extends Api\Route {
 	/**
 	 * Validate that the tag params are valid
 	 *
-	 * @param Array|String    $value The value to validate.
+	 * @param Array|String     $value The value to validate.
 	 * @param \WP_REST_Request $request The request.
-	 * @param Array           $param The array of parameters.
+	 * @param Array            $param The array of parameters.
 	 * @return \WP_Error|Bool true or false
 	 */
 	public function validate_tags( $value, \WP_REST_Request $request, $param ) {

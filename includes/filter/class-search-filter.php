@@ -79,7 +79,7 @@ class Filter {
 	/**
 	 * Create a Filter object
 	 *
-	 * @param array  $json JSON data.
+	 * @param array         $json JSON data.
 	 * @param Schema\Schema $schema Schema for filter.
 	 * @return list<Filter>
 	 */
@@ -177,9 +177,9 @@ class Filter {
 	 * Get array of Search\Column objects that match this filter.
 	 *
 	 * @param array<Search\Column> $existing Existing array.
-	 * @param Source\Source       $source Source.
-	 * @param array               $row Raw data from the row.
-	 * @param Action\Action       $action Action.
+	 * @param Source\Source        $source Source.
+	 * @param array                $row Raw data from the row.
+	 * @param Action\Action        $action Action.
 	 * @return array<Search\Column>
 	 */
 	public function get_matching_filter( array $existing, Source\Source $source, array $row, Action\Action $action ) {
@@ -243,7 +243,7 @@ class Filter {
 	 * Get an array of filters as SQL. Each filter is ANDed with the next
 	 *
 	 * @param array<Filter> $filters Filters.
-	 * @param Source\Source        $source Source.
+	 * @param Source\Source $source Source.
 	 * @return Sql\Query
 	 */
 	public static function get_as_query( array $filters, Source\Source $source ) {

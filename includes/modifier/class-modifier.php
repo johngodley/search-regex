@@ -166,7 +166,7 @@ abstract class Modifier {
 	 * @param integer       $row_id Row ID.
 	 * @param string        $row_value Row value.
 	 * @param Source\Source $source Source.
-	 * @param Search\Column  $column Column.
+	 * @param Search\Column $column Column.
 	 * @param array         $raw Raw database data.
 	 * @param boolean       $save_mode Is the save mode enabled.
 	 * @return Search\Column
