@@ -77,7 +77,9 @@ class Global_Filter extends Filter {
 			$items[] = new Type\Filter_String( $filter, $column );
 		}
 
-		return array_merge( $items, $this->items );
+		return array_merge( $items, array_filter( $this->items, function( $item ) use ( $source ) {
+			return $item->get_schema()->get_type() === $source->get_type();
+		} ) );
 	}
 
 	public function has_column( $column, Schema\Column $schema ) {
