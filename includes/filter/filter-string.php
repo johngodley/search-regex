@@ -97,11 +97,12 @@ class Filter_String extends Filter_Type {
 	 * Match this filter against a string
 	 *
 	 * @param Source\Source $source Source.
-	 * @param Action        $action Action.
+	 * @param Action\Action $action Action.
 	 * @param string        $logic Logic.
 	 * @param string        $original_value Original value.
 	 * @param string        $row_value Current value.
 	 * @param Search\Flags  $flags Flags.
+	 * @param array         $replacements Replacement array.
 	 * @return list<Context\Context>
 	 */
 	public function get_match( Source\Source $source, Action\Action $action, $logic, $original_value, $row_value, Search\Flags $flags, $replacements = [] ) {

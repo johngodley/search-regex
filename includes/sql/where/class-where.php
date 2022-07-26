@@ -43,7 +43,7 @@ class Where {
 	/**
 	 * Constructor
 	 *
-	 * @param Sql\Select\Select           $column Column.
+	 * @param Sql\Select\Select    $column Column.
 	 * @param string               $logic Logic.
 	 * @param string|integer|array $value Value.
 	 */

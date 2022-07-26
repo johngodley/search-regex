@@ -184,7 +184,7 @@ class Search {
 	 * Convert database rows into Result objects
 	 *
 	 * @internal
-	 * @param array  $source_results Array of row data.
+	 * @param array         $source_results Array of row data.
 	 * @param Action\Action $action Action\Action object.
 	 * @return Result[]|\WP_Error Array of results
 	 */

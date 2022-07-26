@@ -305,9 +305,9 @@ class Route {
 	/**
 	 * Validate that the view columns are valid
 	 *
-	 * @param Array|String    $value The value to validate.
+	 * @param Array|String     $value The value to validate.
 	 * @param \WP_REST_Request $request The request.
-	 * @param Array           $param The array of parameters.
+	 * @param Array            $param The array of parameters.
 	 * @return \WP_Error|Bool true or false
 	 */
 	public function validate_view( $value, \WP_REST_Request $request, $param ) {
@@ -328,9 +328,9 @@ class Route {
 	/**
 	 * Validate that the view columns are valid
 	 *
-	 * @param Array|String    $value The value to validate.
+	 * @param Array|String     $value The value to validate.
 	 * @param \WP_REST_Request $request The request.
-	 * @param Array           $param The array of parameters.
+	 * @param Array            $param The array of parameters.
 	 * @return \WP_Error|Bool true or false
 	 */
 	public function validate_action( $value, \WP_REST_Request $request, $param ) {
@@ -344,9 +344,9 @@ class Route {
 	/**
 	 * Validate that the source is valid
 	 *
-	 * @param Array|String    $value The value to validate.
+	 * @param Array|String     $value The value to validate.
 	 * @param \WP_REST_Request $request The request.
-	 * @param Array           $param The array of parameters.
+	 * @param Array            $param The array of parameters.
 	 * @return Bool|WP_Error true or false
 	 */
 	public function validate_source( $value, \WP_REST_Request $request, $param ) {
@@ -373,9 +373,9 @@ class Route {
 	/**
 	 * Validate supplied filters
 	 *
-	 * @param string|array    $value Value.
+	 * @param string|array     $value Value.
 	 * @param \WP_REST_Request $request Request.
-	 * @param array           $param Params.
+	 * @param array            $param Params.
 	 * @return boolean
 	 */
 	public function validate_filters( $value, \WP_REST_Request $request, $param ) {

@@ -1,6 +1,6 @@
 {
 	"name": "search-regex",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support",
 	"main": "search-regex.php",
 	"sideEffects": true,
@@ -9,7 +9,7 @@
 		"check-engines": "wp-scripts check-engines",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
-		"lint:php": "phpcs -s",
+		"lint:php": "composer run-script lint",
 		"lint:psalm": "./vendor/vimeo/psalm/psalm --show-info=true",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"packages-update": "wp-scripts packages-update",
@@ -60,7 +60,7 @@
 		"node-fetch": "2",
 		"path": "^0.12.7",
 		"prettier": "npm:wp-prettier@2.6.2",
-		"release-it": "^15.1.3",
+		"release-it": "^15.2.0",
 		"request": "^2.88.2",
 		"through": "^2.3.8",
 		"through2": "^4.0.2",
@@ -92,7 +92,7 @@
 		"redux-thunk": "^2.4.1",
 		"typescript": "^4.7.4",
 		"url": "^0.11.0",
-		"use-debounce": "^8.0.2"
+		"use-debounce": "^8.0.3"
 	},
 	"apidoc": {
 		"name": "Search Regex REST API",

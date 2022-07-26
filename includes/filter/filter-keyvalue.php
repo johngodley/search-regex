@@ -260,7 +260,7 @@ class Filter_Keyvalue extends Filter_Type {
 	 * Get contexts for a value
 	 *
 	 * @param Source\Source $source Source.
-	 * @param Action        $action Action.
+	 * @param Action\Action $action Action.
 	 * @param string        $column Column.
 	 * @param string        $label Label.
 	 * @return array
@@ -282,7 +282,7 @@ class Filter_Keyvalue extends Filter_Type {
 	 * Get context for a keyvalue match
 	 *
 	 * @param Source\Source $source Source.
-	 * @param Action\Action        $action Action.
+	 * @param Action\Action $action Action.
 	 * @param string        $logic Logic.
 	 * @param string        $match_value Value.
 	 * @param Search\Flags  $flags Flags.

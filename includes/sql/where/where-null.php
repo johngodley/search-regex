@@ -12,7 +12,7 @@ class Where_Null extends Where {
 	 * Constructor
 	 *
 	 * @param Sql\Select\Select $column Column.
-	 * @param string     $logic Logic.
+	 * @param string            $logic Logic.
 	 */
 	public function __construct( Sql\Select\Select $column, $logic ) {
 		$logic_sql = 'IS';

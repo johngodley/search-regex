@@ -12,8 +12,8 @@ class Where_Date extends Where {
 	 * Constructor
 	 *
 	 * @param Sql\Select\Select $column Column.
-	 * @param string     $logic Logic.
-	 * @param integer    $value Value.
+	 * @param string            $logic Logic.
+	 * @param integer           $value Value.
 	 */
 	public function __construct( Sql\Select\Select $column, $logic, $value ) {
 		$map = [

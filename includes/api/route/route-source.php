@@ -168,9 +168,9 @@ class Source_Route extends Api\Route {
 	/**
 	 * Sanitize the source so it's a single source in an array, suitable for use with the search functions
 	 *
-	 * @param string|array    $value Source name.
+	 * @param string|array     $value Source name.
 	 * @param \WP_REST_Request $request Request object.
-	 * @param string          $param Param name.
+	 * @param string           $param Param name.
 	 * @return string[]
 	 */
 	public function sanitize_row_source( $value, \WP_REST_Request $request, $param ) {
@@ -184,9 +184,9 @@ class Source_Route extends Api\Route {
 	/**
 	 * Validate the replacement.
 	 *
-	 * @param string|array    $value Source name.
+	 * @param string|array     $value Source name.
 	 * @param \WP_REST_Request $request Request object.
-	 * @param string          $param Param name.
+	 * @param string           $param Param name.
 	 * @return true|WP_Error
 	 */
 	public function validate_replacement( $value, \WP_REST_Request $request, $param ) {

@@ -12,8 +12,8 @@ class Where_In extends Where {
 	 * Constructor
 	 *
 	 * @param Sql\Select\Select $column Column.
-	 * @param string     $logic Logic.
-	 * @param array      $value Value.
+	 * @param string            $logic Logic.
+	 * @param array             $value Value.
 	 */
 	public function __construct( Sql\Select\Select $column, $logic, $value ) {
 		$logic_sql = 'IN';

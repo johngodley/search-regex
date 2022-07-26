@@ -44,7 +44,7 @@ class Admin {
 		register_uninstall_hook( SEARCHREGEX_FILE, [ '\SearchRegex\Admin\Admin', 'plugin_uninstall' ] );
 	}
 
-	/**
+	/*
 	 * Massage the Search Regex WP translations.
 	 */
 	public function load_script_translation_file( $file, $handle, $domain ) {
