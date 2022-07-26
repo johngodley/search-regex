@@ -147,15 +147,13 @@ class Member_Value extends Modifier\Modifier {
 		}
 
 		// Replace existing contexts with the new ones
-		/** @psalm-suppress all */
 		$contexts = array_merge(
 			$this->get_contexts( $source, $same, '\SearchRegex\Context\Type\Value' ),
 			$this->get_contexts( $source, $add, '\SearchRegex\Context\Type\Add' ),
 			$this->get_contexts( $source, $delete, '\SearchRegex\Context\Type\Delete' ),
-			$updated,
+			$updated
 		);
 
-		/** @psalm-suppress ArgumentTypeCoercion */
 		$column->set_contexts( $contexts );
 		return $column;
 	}
