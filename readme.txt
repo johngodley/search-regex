@@ -113,6 +113,11 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 3.0.1 - July 26th 2022 =
+* Fix issue with PHP < 7.4
+* Fix ID appearing on date values
+* Fix a global search on options with no filter causing a bad query
+
 = 3.0 - July 24th 2022 =
 - Major update with many, many, new features
 - Advanced searches with fully customisable filters that can be combined together with AND and OR logic
