@@ -1,6 +1,6 @@
 {
 	"name": "search-regex",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support",
 	"main": "search-regex.php",
 	"sideEffects": true,
@@ -9,7 +9,7 @@
 		"check-engines": "wp-scripts check-engines",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
-		"lint:php": "phpcs -s",
+		"lint:php": "composer run-script lint",
 		"lint:psalm": "./vendor/vimeo/psalm/psalm --show-info=true",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"packages-update": "wp-scripts packages-update",
