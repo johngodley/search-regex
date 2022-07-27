@@ -4,6 +4,7 @@ namespace SearchRegex\Filter;
 
 use SearchRegex\Schema;
 use SearchRegex\Source;
+use SearchRegex\Filter\Type;
 
 /**
  * A global search filter that performs a string match on any column marked 'global' in the schema
@@ -60,7 +61,7 @@ class Global_Filter extends Filter {
 	 * Get the filter items
 	 *
 	 * @param Source\Source $source Source.
-	 * @return list<Filter\Filter_Item>
+	 * @return list<Type\Filter_Type>
 	 */
 	public function get_items( Source\Source $source ) {
 		$schema = new Schema\Source( $source->get_schema_for_source() );

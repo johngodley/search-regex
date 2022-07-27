@@ -88,7 +88,7 @@ class User extends Source\Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		if ( $column['column'] === 'ID' ) {
@@ -108,7 +108,7 @@ class User extends Source\Source {
 		}
 
 		if ( $column['column'] === 'meta' ) {
-			return Autocomplete::get_meta( Sql\Value::table( 'usermeta' ), $value );
+			return Source\Autocomplete::get_meta( Sql\Value::table( 'usermeta' ), $value );
 		}
 
 		return [];

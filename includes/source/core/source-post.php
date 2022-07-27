@@ -4,9 +4,9 @@ namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
 use SearchRegex\Search;
-use SearchRegex\Filter\Filter_Member;
 use SearchRegex\Sql;
 use SearchRegex\Plugin;
+use SearchRegex\Filter;
 
 /**
  * Source for posts, pages, and other custom post types
@@ -155,7 +155,7 @@ class Post extends Source\Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		if ( $column['column'] === 'post_author' ) {
 			return Source\Autocomplete::get_user( $value );
 		}
@@ -184,9 +184,16 @@ class Post extends Source\Source {
 		return [];
 	}
 
+	/**
+	 * Get any preloadable data for the given filter
+	 *
+	 * @param array         $schema Schema.
+	 * @param Filter\Filter $filter Filter.
+	 * @return array
+	 */
 	public function get_filter_preload( $schema, $filter ) {
 		/** @psalm-suppress DocblockTypeContradiction */
-		if ( $filter instanceof Filter\Filter_Member && ( $schema['column'] === 'category' || $schema['column'] === 'post_tag' ) ) {
+		if ( $filter instanceof Filter\Type\Filter_Member && ( $schema['column'] === 'category' || $schema['column'] === 'post_tag' ) ) {
 			$preload = [];
 
 			foreach ( $filter->get_values() as $value ) {
@@ -201,7 +208,7 @@ class Post extends Source\Source {
 			}
 
 			return $preload;
-		} elseif ( $schema['column'] === 'post_author' && ( $filter instanceof Filter\Filter_Integer || $filter instanceof Filter\Filter_String ) ) {
+		} elseif ( $schema['column'] === 'post_author' && ( $filter instanceof Filter\Type\Filter_Integer || $filter instanceof Filter\Type\Filter_String ) ) {
 			$convert = new Source\Convert_Values();
 
 			return [

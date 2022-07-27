@@ -2,8 +2,6 @@
 
 namespace SearchRegex\Sql\Where;
 
-use SearchRegex\Sql;
-
 /**
  * AND a group of WHERE statements together
  */

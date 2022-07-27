@@ -4,6 +4,7 @@ namespace SearchRegex\Search;
 
 use SearchRegex\Action;
 use SearchRegex\Filter;
+use SearchRegex\Source;
 
 require_once __DIR__ . '/class-match-text.php';
 require_once __DIR__ . '/class-match-column.php';

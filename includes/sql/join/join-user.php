@@ -2,7 +2,6 @@
 
 namespace SearchRegex\Sql\Join;
 
-use SearchRegex\Source;
 use SearchRegex\Sql;
 
 /**

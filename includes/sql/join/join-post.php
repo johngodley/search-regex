@@ -2,7 +2,6 @@
 
 namespace SearchRegex\Sql\Join;
 
-use SearchRegex\Source;
 use SearchRegex\Sql;
 
 /**
@@ -85,7 +84,7 @@ class Post extends Join {
 	public function get_where() {
 		global $wpdb;
 
-		return new Sql\Where_Null( new Sql\Select\Select( Sql\Value::table( $wpdb->posts ), Sql\Value::column( 'ID' ) ), $this->logic );
+		return new Sql\Where\Where_Null( new Sql\Select\Select( Sql\Value::table( $wpdb->posts ), Sql\Value::column( 'ID' ) ), $this->logic );
 	}
 
 	public function get_join_value( $value ) {

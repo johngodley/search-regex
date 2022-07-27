@@ -2,6 +2,8 @@
 
 namespace SearchRegex\Search;
 
+use SearchRegex\Source;
+
 /**
  * Collects totals for a search across multiple sources
  */

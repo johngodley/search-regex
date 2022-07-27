@@ -123,7 +123,7 @@ abstract class Modifier {
 		}
 
 		if ( $column->get_type() === 'keyvalue' ) {
-			return new Value\Keyvalue_Value( $option, $column );
+			return new Value\Key_Value( $option, $column );
 		}
 
 		return null;

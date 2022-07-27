@@ -3,7 +3,6 @@
 namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
-use SearchRegex\Sql;
 use SearchRegex\Plugin;
 
 abstract class Meta extends Source\Source {

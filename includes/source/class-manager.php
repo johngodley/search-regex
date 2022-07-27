@@ -2,9 +2,8 @@
 
 namespace SearchRegex\Source;
 
-use SearchRegex\Source;
 use SearchRegex\Schema;
-use SearchRegex\Filter\Type;
+use SearchRegex\Filter;
 
 /**
  * Create Source objects
@@ -259,7 +258,7 @@ class Manager {
 
 					if ( $preload ) {
 						$schema = new Schema\Source( $source->get_schema() );
-						$filter = Type\Filter_Type::create( $filter, new Schema\Column( $column, $schema ) );
+						$filter = Filter\Type\Filter_Type::create( $filter, new Schema\Column( $column, $schema ) );
 
 						if ( $filter ) {
 							return $source->get_filter_preload( $column, $filter );

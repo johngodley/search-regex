@@ -49,7 +49,7 @@ class Filter_Integer extends Filter_Type {
 	 * Join object
 	 *
 	 * @readonly
-	 * @var Sql\Join|null
+	 * @var Sql\Join\Join|null
 	 */
 	protected $join = null;
 

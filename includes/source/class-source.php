@@ -2,7 +2,6 @@
 
 namespace SearchRegex\Source;
 
-use SearchRegex\Search_Regex;
 use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Search;

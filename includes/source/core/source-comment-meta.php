@@ -23,7 +23,7 @@ class Comment_Meta extends Meta {
 		return __( 'Comment Meta', 'search-regex' );
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		if ( $column['column'] === $this->get_meta_object_id() ) {
 			return Source\Autocomplete::get_comment( $value );
 		}

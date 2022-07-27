@@ -63,7 +63,7 @@ class Admin {
 	public static function plugin_uninstall() {
 		/** @psalm-suppress UndefinedConstant */
 		Plugin\Settings::init()->delete();
-		delete_option( Preset::OPTION_NAME );
+		delete_option( Search\Preset::OPTION_NAME );
 	}
 
 	/**

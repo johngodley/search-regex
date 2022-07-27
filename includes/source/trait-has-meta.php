@@ -5,6 +5,10 @@ namespace SearchRegex\Source;
 use SearchRegex\Context\Type;
 use SearchRegex\Plugin;
 
+// @phan-file-suppress PhanUndeclaredClassMethod
+// @phan-file-suppress PhanUndeclaredClassConstant
+// @phan-file-suppress PhanUndeclaredMethod
+
 /**
  * Provides meta table support to sources
  */
@@ -63,6 +67,8 @@ trait HasMeta {
 
 			// Delete a meta if we are changing the key, or deleting it
 			if ( $key->get_type() === Type\Replace::TYPE_REPLACE || $key->get_type() === Type\Delete::TYPE_DELETE ) {
+				/** @suppress PhanUndeclaredMethod */
+				/** @suppress PhanUndeclaredClassMethod */
 				$this->log_save( $meta_type . ' meta delete', (string) $row_id . ' = ' . $key->get_value() . ' = ' . $value->get_value() );
 
 				/** @psalm-suppress UndefinedFunction */
@@ -76,6 +82,7 @@ trait HasMeta {
 				$key_value = $key->get_type() === Type\Replace::TYPE_REPLACE ? $key->get_replacement() : $key->get_value();
 				$value_value = $value->get_type() === Type\Replace::TYPE_REPLACE ? $value->get_replacement() : $value->get_value();
 
+				/** @suppress PhanUndeclaredMethod */
 				$this->log_save( $meta_type . ' meta update', (string) $row_id . ' = ' . $key_value . ' => ' . $value_value );
 
 				/** @psalm-suppress UndefinedFunction */
@@ -85,6 +92,7 @@ trait HasMeta {
 			}
 
 			if ( $key->get_type() === Type\Add::TYPE_ADD ) {
+				/** @suppress PhanUndeclaredMethod */
 				$this->log_save( $meta_type . ' meta add', (string) $row_id . ' = ' . $key->get_value() . ' => ' . $value->get_value() );
 
 				/** @psalm-suppress UndefinedFunction */

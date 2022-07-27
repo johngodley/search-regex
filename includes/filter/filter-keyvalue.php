@@ -7,6 +7,8 @@ use SearchRegex\Source;
 use SearchRegex\Action;
 use SearchRegex\Schema;
 use SearchRegex\Search;
+use SearchRegex\Filter;
+use SearchRegex\Context;
 
 /**
  * Filter a key/value column (meta data)
@@ -87,11 +89,11 @@ class Filter_Keyvalue extends Filter_Type {
 			$this->value = $item['value'];
 		}
 
-		if ( isset( $item['keyLogic'] ) && in_array( strtolower( $item['keyLogic'] ), Filter\Filter_String::LOGIC, true ) ) {
+		if ( isset( $item['keyLogic'] ) && in_array( strtolower( $item['keyLogic'] ), Filter\Type\Filter_String::LOGIC, true ) ) {
 			$this->key_logic = strtolower( $item['keyLogic'] );
 		}
 
-		if ( isset( $item['valueLogic'] ) && in_array( strtolower( $item['valueLogic'] ), Filter\Filter_String::LOGIC, true ) ) {
+		if ( isset( $item['valueLogic'] ) && in_array( strtolower( $item['valueLogic'] ), Filter\Type\Filter_String::LOGIC, true ) ) {
 			$this->value_logic = strtolower( $item['valueLogic'] );
 		}
 
@@ -154,7 +156,7 @@ class Filter_Keyvalue extends Filter_Type {
 		return $this->key || $this->value;
 	}
 
-	public function get_values_for_row( $row ) {
+	public function get_values_for_row( array $row ) {
 		if ( isset( $row['meta_id'] ) && $this->join_key !== null ) {
 			if ( $row['meta_id'] === '0' ) {
 				return [ 'meta' => implode( ',', $this->join_key->get_all_values( intval( array_values( $row )[0], 10 ) ) ) ];
@@ -304,7 +306,7 @@ class Filter_Keyvalue extends Filter_Type {
 			return $this->get_unmatched_context( $source, $label, $label );
 		}
 
-		$string = new Filter\Filter_String( [], $this->schema );
+		$string = new Filter\Type\Filter_String( [], $this->schema );
 
 		return $string->get_match( $source, $action, $logic, $match_value, $label, $flags );
 	}

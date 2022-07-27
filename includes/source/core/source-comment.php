@@ -103,7 +103,7 @@ class Comment extends Source\Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		if ( ! isset( $column['column'] ) ) {

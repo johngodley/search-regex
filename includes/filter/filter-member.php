@@ -5,7 +5,7 @@ namespace SearchRegex\Filter\Type;
 use SearchRegex\Sql;
 use SearchRegex\Source;
 use SearchRegex\Action;
-use SearchRegex\Context\Type;
+use SearchRegex\Context;
 use SearchRegex\Schema;
 
 /**
@@ -33,7 +33,7 @@ class Filter_Member extends Filter_Type {
 	/**
 	 * Join
 	 *
-	 * @var Sql\Join|null
+	 * @var Sql\Join\Join|null
 	 */
 	private $join = null;
 
@@ -105,7 +105,7 @@ class Filter_Member extends Filter_Type {
 		return $query;
 	}
 
-	public function get_values_for_row( $row ) {
+	public function get_values_for_row( array $row ) {
 		$values = parent::get_values_for_row( $row );
 
 		if ( ! $this->join instanceof Sql\Join\Meta && ! $this->join instanceof Sql\Join\Term ) {
@@ -170,7 +170,7 @@ class Filter_Member extends Filter_Type {
 		}
 
 		if ( $this->join && $value === '' ) {
-			return [ new Type\Empty_Type() ];
+			return [ new Context\Type\Empty_Type() ];
 		}
 
 		return $this->get_unmatched_context( $source, (string) $value );

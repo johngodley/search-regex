@@ -7,6 +7,7 @@ use SearchRegex\Source;
 use SearchRegex\Action;
 use SearchRegex\Schema;
 use SearchRegex\Search;
+use SearchRegex\Context;
 
 /**
  * Filter a string column
@@ -124,6 +125,7 @@ class Filter_String extends Filter_Type {
 				}
 
 				$flag_copy->set_regex();
+				/** @suppress PhanTypeMismatchArgumentInternalProbablyReal */
 				$value = $start . preg_quote( $original_value, null ) . $end;
 			}
 

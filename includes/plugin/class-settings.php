@@ -20,7 +20,7 @@ class Settings extends Plugin_Settings {
 	/**
 	 * Initialize the object
 	 *
-	 * @return Admin
+	 * @return Settings
 	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
@@ -100,7 +100,7 @@ class Settings extends Plugin_Settings {
 	/**
 	 * Get the configured REST API
 	 *
-	 * @param boolean $type Type of API.
+	 * @param integer|boolean $type Type of API.
 	 * @return String API URL
 	 */
 	public function get_rest_api_url( $type = false ) {
