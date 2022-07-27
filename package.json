@@ -12,6 +12,8 @@
 		"lint:php": "composer run-script lint",
 		"lint:psalm": "./vendor/vimeo/psalm/psalm --show-info=true",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"lint:phan": "./vendor/bin/phan",
+		"lint:stan": "./vendor/bin/phpstan analyse -c phpstan.neon",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip && mv search-regex.zip search-regex-$npm_package_version.zip",
 		"release": "release-it",
