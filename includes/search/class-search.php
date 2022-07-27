@@ -207,7 +207,11 @@ class Search {
 
 				if ( $result ) {
 					if ( $action->should_save() ) {
-						$this->save_changes( $result );
+						$saved = $this->save_changes( $result );
+
+						if ( $saved instanceof \WP_Error ) {
+							return $saved;
+						}
 					}
 
 					$results[] = $result;
