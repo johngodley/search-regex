@@ -113,7 +113,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.0.2 =
+= 3.0.2 - July 28th 2022 =
 * Fix more issues with older PHP
 * Fix a failed update not showing an error message
 * Fix post meta not updating
