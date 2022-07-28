@@ -43,7 +43,7 @@ class User extends Source\Source {
 
 		return array_merge(
 			$parent,
-			count( $meta ) > 0 ? [ $meta ] : [],
+			count( $meta ) > 0 ? [ $meta ] : []
 		);
 	}
 

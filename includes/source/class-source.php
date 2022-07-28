@@ -351,7 +351,7 @@ abstract class Source {
 			// Table ID column
 			[ new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ) ],
 			// Any extra 'info' columns
-			$this->get_info_columns(),
+			$this->get_info_columns()
 		);
 	}
 

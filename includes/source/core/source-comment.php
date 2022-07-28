@@ -53,7 +53,7 @@ class Comment extends Source\Source {
 
 		return array_merge(
 			$row_columns,
-			count( $meta ) > 0 ? [ $meta ] : [],
+			count( $meta ) > 0 ? [ $meta ] : []
 		);
 	}
 
