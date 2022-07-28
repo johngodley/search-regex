@@ -56,8 +56,8 @@ class Builder {
 	/**
 	 * Get single row
 	 *
-	 * @param Query             $query Query.
-	 * @param Modifier\Modifier $modifier Modifier.
+	 * @param Query                  $query Query.
+	 * @param Modifier\Modifier|null $modifier Modifier.
 	 * @return object|\WP_Error
 	 */
 	public function get_result( Query $query, Modifier\Modifier $modifier = null ) {

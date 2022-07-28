@@ -125,8 +125,8 @@ class Text {
 	/**
 	 * Encode a search as a regular expression
 	 *
-	 * @param String       $search Search phrase.
-	 * @param Search\Flags $flags Is this regular expression.
+	 * @param String $search Search phrase.
+	 * @param Flags  $flags Is this regular expression.
 	 * @return String Encoded search phrase
 	 */
 	public static function get_pattern( $search, Flags $flags ) {
@@ -149,10 +149,10 @@ class Text {
 	/**
 	 * Get all matches for a search phrase on a column
 	 *
-	 * @param String       $search The search phrase.
-	 * @param Search\Flags $flags Any search flags.
-	 * @param Array        $replacements A matching set of replacements.
-	 * @param String       $column_value The content to match.
+	 * @param String $search The search phrase.
+	 * @param Flags  $flags Any search flags.
+	 * @param Array  $replacements A matching set of replacements.
+	 * @param String $column_value The content to match.
 	 * @return Array Array of Match contexts
 	 */
 	public static function get_all( $search, Flags $flags, array $replacements, $column_value ) {

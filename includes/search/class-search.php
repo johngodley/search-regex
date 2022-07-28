@@ -4,6 +4,7 @@ namespace SearchRegex\Search;
 
 use SearchRegex\Action;
 use SearchRegex\Filter;
+use SearchRegex\Source;
 
 require_once __DIR__ . '/class-match-text.php';
 require_once __DIR__ . '/class-match-column.php';
@@ -206,7 +207,11 @@ class Search {
 
 				if ( $result ) {
 					if ( $action->should_save() ) {
-						$this->save_changes( $result );
+						$saved = $this->save_changes( $result );
+
+						if ( $saved instanceof \WP_Error ) {
+							return $saved;
+						}
 					}
 
 					$results[] = $result;

@@ -53,7 +53,7 @@ class Comment extends Source\Source {
 
 		return array_merge(
 			$row_columns,
-			count( $meta ) > 0 ? [ $meta ] : [],
+			count( $meta ) > 0 ? [ $meta ] : []
 		);
 	}
 
@@ -103,7 +103,7 @@ class Comment extends Source\Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		if ( ! isset( $column['column'] ) ) {

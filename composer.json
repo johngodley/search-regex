@@ -8,7 +8,8 @@
 		"sirbrillig/phpcs-variable-analysis": "^2.11",
 		"sirbrillig/phpcs-no-get-current-user": "^1.1",
 		"phpunit/phpunit": "^9.5",
-		"phpcompatibility/php-compatibility": "*"
+		"phpcompatibility/php-compatibility": "*",
+		"phpstan/phpstan": "^1.8"
 	},
 	"scripts": {
 		"pot": "wp i18n make-pot . languages/search-regex.pot --ignore-domain --exclude=build/search-regex-strings.php --exclude=build/search-regex.js",
@@ -20,5 +21,8 @@
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
 		}
+	},
+	"require": {
+		"phan/phan": "^5.3"
 	}
 }

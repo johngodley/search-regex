@@ -18,7 +18,7 @@ class Text extends Context\Context {
 	/**
 	 * Context
 	 *
-	 * @var Text|null
+	 * @var Text|null|false
 	 **/
 	private $context = null;
 
@@ -161,7 +161,7 @@ class Text extends Context\Context {
 	 * Add a Match to this context
 	 *
 	 * @param Search\Text $match The match to do.
-	 * @param Text        $value The column value.
+	 * @param string      $value The column value.
 	 * @return void
 	 */
 	public function add_match( Search\Text $match, $value ) {

@@ -25,12 +25,12 @@ class Autocomplete {
 	/**
 	 * Autocomplete a post title
 	 *
-	 * @param string        $value Value.
-	 * @param Sql\Sql\Value $id_column ID column.
-	 * @param Sql\Sql\Value $search_column Search column.
+	 * @param string    $value Value.
+	 * @param Sql\Value $id_column ID column.
+	 * @param Sql\Value $search_column Search column.
 	 * @return list<object{id: string, value: string}>
 	 */
-	public static function get_post( $value, Sql\Sql\Value $id_column, Sql\Sql\Value $search_column ) {
+	public static function get_post( $value, Sql\Value $id_column, Sql\Value $search_column ) {
 		global $wpdb;
 
 		$type_sql = "AND post_status != 'inherit'";  // Ignore attachments
@@ -51,7 +51,7 @@ class Autocomplete {
 	 */
 	private static function get_terms( $type, $value ) {
 		$results = [];
-		$terms = get_terms( [
+		$terms = \get_terms( [
 			'taxonomy' => $type,
 			'hide_empty' => false,
 			'number' => Source::AUTOCOMPLETE_LIMIT,
@@ -97,11 +97,11 @@ class Autocomplete {
 	/**
 	 * Autocomplete meta data
 	 *
-	 * @param Sql\Sql\Value $table Meta table.
-	 * @param string        $value Value.
+	 * @param Sql\Value $table Meta table.
+	 * @param string    $value Value.
 	 * @return list<object{id: string, value: string}>
 	 */
-	public static function get_meta( Sql\Sql\Value $table, $value ) {
+	public static function get_meta( Sql\Value $table, $value ) {
 		global $wpdb;
 
 		$table = $wpdb->prefix . $table->get_value();

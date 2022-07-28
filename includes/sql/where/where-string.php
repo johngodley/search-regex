@@ -31,7 +31,7 @@ class Where_String extends Where {
 	 * @param Sql\Select\Select $column Column.
 	 * @param string            $logic  Logic.
 	 * @param string            $value  Value.
-	 * @param Search\Flags      $flags  Search flags.
+	 * @param Search\Flags|null $flags  Search flags.
 	 */
 	public function __construct( Sql\Select\Select $column, $logic, $value, Search\Flags $flags = null ) {
 		if ( $flags === null ) {

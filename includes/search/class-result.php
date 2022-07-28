@@ -3,6 +3,7 @@
 namespace SearchRegex\Search;
 
 use SearchRegex\Source;
+use SearchRegex\Search;
 
 /**
  * Contains all information for a search result - a database row that contains matches

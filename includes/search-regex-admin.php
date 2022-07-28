@@ -63,7 +63,7 @@ class Admin {
 	public static function plugin_uninstall() {
 		/** @psalm-suppress UndefinedConstant */
 		Plugin\Settings::init()->delete();
-		delete_option( Preset::OPTION_NAME );
+		delete_option( Search\Preset::OPTION_NAME );
 	}
 
 	/**
@@ -171,7 +171,7 @@ class Admin {
 			],
 			'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
 			'pluginRoot' => $this->get_plugin_url(),
-			'locale' => str_replace( '_', '-', get_locale() ),
+			'locale' => implode( '-', array_slice( explode( '-', str_replace( '_', '-', get_locale() ) ), 0, 2 ) ),
 			'settings' => $settings->get_as_json(),
 			'preload' => $preload,
 			'versions' => implode( "\n", $versions ),

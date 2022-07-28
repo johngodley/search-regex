@@ -3,7 +3,6 @@
 namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
-use SearchRegex\Sql;
 use SearchRegex\Plugin;
 
 /**
@@ -81,7 +80,7 @@ class Options extends Source\Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		/** @psalm-suppress InvalidArrayOffset */

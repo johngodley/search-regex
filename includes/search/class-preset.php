@@ -269,7 +269,7 @@ class Preset {
 		$schema = new Schema\Schema( Source\Manager::get_schema( $this->source ) );
 
 		// If there is a replacement then default to global replace, for backwards compatability
-		$this->action = new Action\Type\Nothing( [], $schema );
+		$this->action = new Action\Type\Nothing();
 
 		if ( $this->search !== '' ) {
 			$this->action = new Action\Type\Global_Replace( [

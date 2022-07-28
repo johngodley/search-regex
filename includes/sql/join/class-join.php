@@ -94,7 +94,7 @@ abstract class Join {
 	/**
 	 * Get SQL for join WHERE, or false if no WHERE
 	 *
-	 * @return Sql\Where|false
+	 * @return Sql\Where\Where|false
 	 */
 	public function get_where() {
 		return false;

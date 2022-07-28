@@ -7,6 +7,7 @@ use SearchRegex\Source;
 use SearchRegex\Context;
 use SearchRegex\Action;
 use SearchRegex\Schema;
+use SearchRegex\Filter;
 
 /**
  * A column search filter.
@@ -87,7 +88,7 @@ abstract class Filter_Type {
 	 *
 	 * @param array         $item   Filter item data.
 	 * @param Schema\Column $schema Column schema.
-	 * @return Filter\Filter_Item|false
+	 * @return Filter\Type\Filter_Type|false
 	 */
 	public static function create( array $item, Schema\Column $schema ) {
 		if ( $schema->get_type() === 'string' ) {

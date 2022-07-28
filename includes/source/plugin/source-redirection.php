@@ -3,13 +3,15 @@
 namespace SearchRegex\Source\Plugin;
 
 // phpcs:disable
+// @phan-file-suppress PhanUndeclaredClassMethod
+// @phan-file-suppress PhanUndeclaredClassConstant
+// @phan-file-suppress PhanUndeclaredStaticMethod
 
 use SearchRegex\Source;
-use SearchRegex\Search;
-use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Filter;
 use SearchRegex\Plugin;
+use SearchRegex\Search;
 
 /**
  * Source: Redirection items
@@ -102,7 +104,7 @@ class Redirection extends Source\Source {
 		global $wpdb;
 
 		/** @psalm-suppress DocblockTypeContradiction */
-		if ( $schema['column'] === 'group_id' && $filter instanceof Filter\Filter_Member ) {
+		if ( $schema['column'] === 'group_id' && $filter instanceof Filter\Type\Filter_Member ) {
 			$preload = [];
 
 			foreach ( $filter->get_values() as $value ) {
@@ -122,7 +124,7 @@ class Redirection extends Source\Source {
 		return [];
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		if ( $column['column'] === 'url' ) {
@@ -388,7 +390,7 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 		$redirect = $this->get_columns_to_change( $changes );
 
 		if ( count( $redirect ) > 0 ) {
-			$item = $this->get_groupt( $row_id );
+			$item = $this->get_group( $row_id );
 
 			if ( ! is_wp_error( $item ) ) {
 				$this->log_save( 'redirect', array_merge( [ 'id' => $row_id ], $redirect ) );
@@ -429,7 +431,7 @@ class Redirection_Groups_Search_Regex extends Source\Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		if ( isset( $column['column'] ) && $column['column'] === 'name' ) {

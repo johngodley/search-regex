@@ -2,7 +2,6 @@
 
 namespace SearchRegex\Source;
 
-use SearchRegex\Search_Regex;
 use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Search;
@@ -352,7 +351,7 @@ abstract class Source {
 			// Table ID column
 			[ new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ) ],
 			// Any extra 'info' columns
-			$this->get_info_columns(),
+			$this->get_info_columns()
 		);
 	}
 

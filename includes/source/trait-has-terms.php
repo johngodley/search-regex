@@ -5,6 +5,10 @@ namespace SearchRegex\Source;
 use SearchRegex\Context\Type;
 use SearchRegex\Plugin;
 
+// @phan-file-suppress PhanUndeclaredClassMethod
+// @phan-file-suppress PhanUndeclaredClassConstant
+// @phan-file-suppress PhanUndeclaredMethod
+
 /**
  * Trait to add term support to a source
  */

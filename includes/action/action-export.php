@@ -98,7 +98,7 @@ class Export extends Action\Action {
 	 * Convert Result to JSON
 	 *
 	 * @param Search\Result $result Result.
-	 * @return string
+	 * @return array
 	 */
 	private function convert_to_json( Search\Result $result ) {
 		$data = [];

@@ -216,7 +216,7 @@ class Query {
 	/**
 	 * Get the query as a SQL statement
 	 *
-	 * @param Modifier\Modifier $modifier Modifier for the query.
+	 * @param Modifier\Modifier|null $modifier Modifier for the query.
 	 * @return string
 	 */
 	public function get_as_sql( Modifier\Modifier $modifier = null ) {

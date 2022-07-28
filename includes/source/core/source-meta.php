@@ -3,7 +3,6 @@
 namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
-use SearchRegex\Sql;
 use SearchRegex\Plugin;
 
 abstract class Meta extends Source\Source {
@@ -49,8 +48,8 @@ abstract class Meta extends Source\Source {
 
 			/** @psalm-suppress UndefinedFunction */
 			if ( Plugin\Settings::init()->can_save() ) {
-				$result = $wpdb->update( $this->get_meta_table(), $meta, [ $this->get_table_id() => $row_id ] );
-				if ( $result === null ) {
+				$result = $wpdb->update( _get_meta_table( $this->get_meta_table() ), $meta, [ $this->get_table_id() => $row_id ] );
+				if ( $result === false ) {
 					return new \WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
 				}
 

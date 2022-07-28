@@ -2,8 +2,6 @@
 
 namespace SearchRegex\Api\Route;
 
-use SearchRegex\Search;
-use SearchRegex\Saved_Search;
 use SearchRegex\Api;
 
 /**

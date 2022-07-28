@@ -14,14 +14,14 @@ class Modify extends Action\Action {
 	/**
 	 * Columns that are to be modified
 	 *
-	 * @var Modifier[]
+	 * @var Modifier\Modifier[]
 	 */
 	private $columns = [];
 
 	/**
 	 * Dynamic shortcode handler
 	 *
-	 * @var Dynamic_Column|null
+	 * @var Action\Dynamic_Column|null
 	 */
 	private $dynamic_column = null;
 
@@ -70,7 +70,7 @@ class Modify extends Action\Action {
 		add_filter( 'pre_do_shortcode_tag', $remember, 10, 4 );
 
 		$views = array_map( function( $column ) {
-			if ( ! $column instanceof Modifier\Modify_String ) {
+			if ( ! $column instanceof Modifier\Value\String_Value ) {
 				return false;
 			}
 
@@ -92,8 +92,7 @@ class Modify extends Action\Action {
 			return false;
 		}, $this->columns );
 
-		/** @psalm-suppress TooManyArguments */
-		remove_filter( 'pre_do_shortcode_tag', $remember, 10, 4 );
+		remove_filter( 'pre_do_shortcode_tag', $remember, 10 );
 
 		$modify = array_map( function( $column ) {
 			return $column->get_source_name() . '__' . $column->get_column_name();

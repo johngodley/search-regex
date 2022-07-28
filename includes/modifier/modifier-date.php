@@ -2,7 +2,6 @@
 
 namespace SearchRegex\Modifier\Value;
 
-use SearchRegex\Sql;
 use SearchRegex\Schema;
 use SearchRegex\Search;
 use SearchRegex\Modifier;

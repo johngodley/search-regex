@@ -4,7 +4,7 @@ namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
 use SearchRegex\Schema;
-use SearchRegex\Sql\Sql\Value;
+use SearchRegex\Sql;
 
 class Post_Meta extends Meta {
 	public function get_table_name() {
@@ -25,7 +25,7 @@ class Post_Meta extends Meta {
 		return __( 'Post Meta', 'search-regex' );
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		if ( $column['column'] === $this->get_meta_object_id() ) {
 			return Source\Autocomplete::get_post( $value, Sql\Value::column( 'ID' ), Sql\Value::column( 'post_title' ) );
 		}

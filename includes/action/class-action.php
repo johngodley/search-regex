@@ -2,10 +2,10 @@
 
 namespace SearchRegex\Action;
 
-use SearchRegex\Sql;
 use SearchRegex\Action\Type;
 use SearchRegex\Schema;
 use SearchRegex\Source;
+use SearchRegex\Search;
 
 require_once __DIR__ . '/action-nothing.php';
 require_once __DIR__ . '/action-modify.php';
@@ -65,7 +65,7 @@ abstract class Action {
 			return new Type\Run( $action_options, $schema );
 		}
 
-		return new Type\Nothing( $action_options, $schema );
+		return new Type\Nothing();
 	}
 
 	/**

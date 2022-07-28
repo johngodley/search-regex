@@ -3,8 +3,6 @@
 namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
-use SearchRegex\Result;
-use SearchRegex\Sql;
 use SearchRegex\Plugin;
 
 /**
@@ -75,7 +73,7 @@ class Terms extends Source\Source {
 		return true;
 	}
 
-	public function autocomplete( $column, $value ) {
+	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
 		if ( $column['column'] === 'name' ) {

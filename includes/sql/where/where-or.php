@@ -2,8 +2,6 @@
 
 namespace SearchRegex\Sql\Where;
 
-use SearchRegex\Sql;
-
 class Where_Or extends Where {
 	/**
 	 * Array of WHERE objects that will be ORd together
