@@ -171,7 +171,7 @@ class Admin {
 			],
 			'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
 			'pluginRoot' => $this->get_plugin_url(),
-			'locale' => str_replace( '_', '-', get_locale() ),
+			'locale' => implode( '-', array_slice( explode( '-', str_replace( '_', '-', get_locale() ) ), 0, 2 ) ),
 			'settings' => $settings->get_as_json(),
 			'preload' => $preload,
 			'versions' => implode( "\n", $versions ),
