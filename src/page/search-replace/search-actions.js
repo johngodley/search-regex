@@ -14,6 +14,10 @@ import { STATUS_IN_PROGRESS } from '../../state/settings/type';
 import { cancel, perform } from '../../state/search/action';
 
 function isPerformReady( action, actionOption, replacement ) {
+	if ( action === 'replace' && replacement === null ) {
+		return true;
+	}
+
 	if ( action === 'replace' && replacement.length > 0 ) {
 		return true;
 	}
