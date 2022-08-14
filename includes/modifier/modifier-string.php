@@ -100,7 +100,7 @@ class String_Value extends Modifier\Modifier {
 	 * @return Array Array of match positions
 	 */
 	public function get_replace_positions( $value ) {
-		if ( ! $this->search_value || ! $this->replace_value ) {
+		if ( ! $this->search_value || $this->replace_value === null ) {
 			return [];
 		}
 
@@ -114,7 +114,7 @@ class String_Value extends Modifier\Modifier {
 		$result = $this->replace_all( $this->search_value, self::BEFORE . $replace_value . self::AFTER, $value );
 
 		// Split into array
-		$pattern = '@' . self::BEFORE . '(.*?)' . self::AFTER . '@';
+		$pattern = '@' . self::BEFORE . '(.*?)' . self::AFTER . '@s';
 		if ( $this->search_flags->is_case_insensitive() ) {
 			$pattern .= 'i';
 		}
@@ -182,7 +182,7 @@ class String_Value extends Modifier\Modifier {
 		}
 
 		if ( $this->pos_id === null ) {
-			if ( ! $this->replace_value ) {
+			if ( $this->replace_value === null ) {
 				return $column;
 			}
 
