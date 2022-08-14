@@ -171,7 +171,15 @@ export function getSearchValues( values ) {
  * @returns String
  */
 export function getReplacement( replacement ) {
-	return replacement ? replacement : '';
+	if ( replacement === '' ) {
+		return null;
+	}
+
+	if ( replacement === null ) {
+		return '';
+	}
+
+	return replacement;
 }
 
 /**

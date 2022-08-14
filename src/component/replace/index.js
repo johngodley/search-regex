@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import './style.scss';
 import { Select } from '@wp-plugin-components';
 
-/** @typedef {import('../state/preset/type.js').PresetValue} PresetValue */
+/** @typedef {import('../../state/preset/type.js').PresetValue} PresetValue */
 
 /**
  * @callback SaveCallback
@@ -30,18 +30,18 @@ import { Select } from '@wp-plugin-components';
  * @param {boolean} props.disabled - Whether we can replace this
  * @param {string} props.className - Class
  * @param {string|React} props.placeholder - Placeholder string
- * @param {import('../state/search/type').SetReplace} props.setReplacement - Change the replacement
+ * @param {import('../../state/search/type').SetReplace} props.setReplacement - Change the replacement
  * @param {object|null} props.replacement - Row replacement value
  * @param {?PresetValue} [props.preset]
- * @param {import('../state/search/type').SchemaColumn} props.schema
- * @param {import('../state/search/type').ResultColumn} props.column
+ * @param {import('../../state/search/type').SchemaColumn} props.schema
+ * @param {import('../../state/search/type').ResultColumn} props.column
  */
 function Replace( props ) {
 	const { disabled, replacement, setReplace } = props;
 	const [ searchFlags, setFlags ] = useState( 'single' );
 	const value = {
 		id: 'replace',
-		value: replacement,
+		value: replacement ?? '',
 		disabled: disabled || searchFlags === 'remove',
 		placeholder: searchFlags === 'remove' ? __( 'Matched values will be removed', 'search-regex' ) : __( 'Enter replacement value', 'search-regex' ),
 		name: 'replace',

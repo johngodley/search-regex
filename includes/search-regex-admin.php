@@ -158,7 +158,7 @@ class Admin {
 
 		// phpcs:ignore
 		if ( isset( $_GET['page'] ) && $_GET['page'] === 'search-regex.php' && strpos( SEARCHREGEX_VERSION, '-beta' ) === false ) {
-			$is_new = $settings->is_new_version( SEARCHREGEX_VERSION );
+			$is_new = $settings->is_new_version( $major_version );
 		}
 
 		wp_localize_script( 'search-regex', 'SearchRegexi10n', array(
