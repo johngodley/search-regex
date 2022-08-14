@@ -113,6 +113,12 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 3.0.3 - August 14th 2022 =
+* Fix error in error message
+* Fix error when removing text
+* Fix update notice never going away
+* Fix multi-line replace not replacing
+
 = 3.0.2 - July 28th 2022 =
 * Fix more issues with older PHP
 * Fix a failed update not showing an error message

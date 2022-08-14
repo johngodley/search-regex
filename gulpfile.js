@@ -54,7 +54,8 @@ const SVN_SOURCE_FILES = [
 	'!api-header.md',
 	'!*.zip',
 	'!src',
-	'!src/**'
+	'!src/**',
+	'!phpstan.neon'
 ];
 
 function downloadLocale( locale, wpName, type ) {
