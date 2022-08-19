@@ -14,6 +14,7 @@ import { getPluginPage } from '../../lib/plugin';
 import { Snackbar, Menu, ErrorBoundary, Error } from '@wp-plugin-components';
 import { has_page_access } from '../../lib/capabilities';
 import { clearErrors, clearNotices } from '../../state/message/action';
+import { setPreset } from '../../state/preset/action';
 import DebugReport from './debug';
 import ErrorDetails from './error-details';
 import CrashHandler from './crash-handler';
@@ -53,17 +54,22 @@ const getMenu = () =>
 	].filter( ( option ) => has_page_access( option.value ) || ( option.value === '' && has_page_access( 'search' ) ) );
 
 function Home( props ) {
-	const { onClearErrors, errors, onClearNotices, notices } = props;
+	const { onClearErrors, onResetPreset, errors, onClearNotices, notices } = props;
 	const [ page, setPage ] = useState( getPluginPage() );
 
 	if ( SEARCHREGEX_VERSION !== SearchRegexi10n.version ) {
 		return <CacheDetect />;
 	}
 
+	function pageChange() {
+		onClearErrors();
+		onResetPreset();
+	}
+
 	return (
 		<ErrorBoundary renderCrash={ CrashHandler } extra={ { page } }>
 			<div className="wrap searchregex">
-				<PageRouter page={ page } setPage={ setPage } onPageChange={ onClearErrors }>
+				<PageRouter page={ page } setPage={ setPage } onPageChange={ pageChange }>
 					<h1 className="wp-heading-inline">{ getTitles()[ page ] }</h1>
 
 					<UpdateNotice />
@@ -107,6 +113,9 @@ function mapDispatchToProps( dispatch ) {
 		onClearNotices: () => {
 			dispatch( clearNotices() );
 		},
+		onResetPreset: () => {
+			dispatch( setPreset( null ) );
+		}
 	};
 }
 

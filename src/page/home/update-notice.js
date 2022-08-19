@@ -29,6 +29,7 @@ function UpdateNotice() {
 		<Notice>
 			<p>
 				{ createInterpolateElement(
+					/* translators: version installed */
 					sprintf( __( 'Version %s installed! Please read the {{url}}release notes{{/url}} for details.', 'search-regex' ), update_notice ),
 					{
 						url: <ExternalLink url={ 'https://searchregex.com/blog/searchregex-version-' + update_notice.replace( '.', '-' ) + '/' } />

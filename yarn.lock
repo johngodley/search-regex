@@ -2463,12 +2463,12 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@^28.1.6":
-  version "28.1.6"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-28.1.6.tgz#d6a9cdd38967d2d746861fb5be6b120e38284dd4"
-  integrity sha512-0RbGAFMfcBJKOmqRazM8L98uokwuwD5F8rHrv/ZMbrZBwVOWZUyPG6VFNscjYr/vjM3Vu4fRrCPbOs42AfemaQ==
+"@types/jest@^28.1.7":
+  version "28.1.7"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-28.1.7.tgz#a680c5d05b69634c2d54a63cb106d7fb1adaba16"
+  integrity sha512-acDN4VHD40V24tgu0iC44jchXavRNVFXQ/E6Z5XNsswgoSO/4NgsXoEYmPUGookKldlZQyIpmrEXsHI9cA3ZTA==
   dependencies:
-    jest-matcher-utils "^28.0.0"
+    expect "^28.0.0"
     pretty-format "^28.0.0"
 
 "@types/jsdom@^16.2.4":
@@ -3104,10 +3104,10 @@
     "@babel/runtime" "^7.16.0"
     jest-matcher-utils "^27.4.2"
 
-"@wordpress/jest-preset-default@^8.5.1":
-  version "8.5.1"
-  resolved "https://registry.yarnpkg.com/@wordpress/jest-preset-default/-/jest-preset-default-8.5.1.tgz#596c905caca2deac9af2c3e0135dff367b7d92ea"
-  integrity sha512-p84ILJvXxoLr6mAJra3tCtMYNCqcscU+XyuoDy3pro9zVDGFLbWLc6nw0TCQRPvRD5HvK3VGmcLB74ZsiYM0Bg==
+"@wordpress/jest-preset-default@^8.5.2":
+  version "8.5.2"
+  resolved "https://registry.yarnpkg.com/@wordpress/jest-preset-default/-/jest-preset-default-8.5.2.tgz#af1356c7b33c0cb97967382bb621740d8837e00a"
+  integrity sha512-xlo8LNDcjuXbb1OVI9SFDm2u6JeWXu945Jo8LtPtWbRgCfgBZfQh4Y/csMbkiiIRq/Hpi5/VK2WWJJXSe5EsRQ==
   dependencies:
     "@wojtekmaj/enzyme-adapter-react-17" "^0.6.1"
     "@wordpress/jest-console" "^5.4.0"
@@ -3133,10 +3133,10 @@
   resolved "https://registry.yarnpkg.com/@wordpress/prettier-config/-/prettier-config-1.4.0.tgz#8eaeb8daf7253e8b0806da2279017d4f4fef0f62"
   integrity sha512-uvrgUAhRnOvIysXjcXH9VDsrKLqH9r3BfdGoy+WFLSHFnTfdMhW7bdDQXl4F4UIUuefUwGi+ZvT/rChg9zoBkQ==
 
-"@wordpress/scripts@^23.7.1":
-  version "23.7.1"
-  resolved "https://registry.yarnpkg.com/@wordpress/scripts/-/scripts-23.7.1.tgz#ca4b4a744698f94f14f63312ab0f789826f7e531"
-  integrity sha512-KllePk/QAJo0X6Vp5pkXv2CzCRjo1fIJ60mdd28gP0W7iG+ncw+SGSEWbXOjSInQHzq/FnZf2RkkKWsu//2c8A==
+"@wordpress/scripts@^23.7.2":
+  version "23.7.2"
+  resolved "https://registry.yarnpkg.com/@wordpress/scripts/-/scripts-23.7.2.tgz#93f38354d799ed91cc9adc27144927c6935ce413"
+  integrity sha512-/VyDK5IeiJyB3abGsj/NbNgnj6fA9AkITCGQkelZX/IbNbGekR1+ocEr2qD2aigHuXVF10Be7W8yRBAXdHy/VQ==
   dependencies:
     "@babel/core" "^7.16.0"
     "@pmmmwh/react-refresh-webpack-plugin" "^0.5.2"
@@ -3145,7 +3145,7 @@
     "@wordpress/browserslist-config" "^4.1.2"
     "@wordpress/dependency-extraction-webpack-plugin" "^3.7.0"
     "@wordpress/eslint-plugin" "^12.9.0"
-    "@wordpress/jest-preset-default" "^8.5.1"
+    "@wordpress/jest-preset-default" "^8.5.2"
     "@wordpress/npm-package-json-lint-config" "^4.1.2"
     "@wordpress/postcss-plugins-preset" "^3.10.0"
     "@wordpress/prettier-config" "^1.4.0"
@@ -5331,10 +5331,10 @@ date-fns@^2.24.0:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.28.0.tgz#9570d656f5fc13143e50c975a3b6bbeb46cd08b2"
   integrity sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==
 
-date-fns@^2.29.1:
-  version "2.29.1"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.1.tgz#9667c2615525e552b5135a3116b95b1961456e60"
-  integrity sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==
+date-fns@^2.29.2:
+  version "2.29.2"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.2.tgz#0d4b3d0f3dff0f920820a070920f0d9662c51931"
+  integrity sha512-0VNbwmWJDS/G3ySwFSJA3ayhbURMTJLtwM2DTxf9CWondCnh6DTNlO9JgRSq6ibf4eD0lfMJNBxUdEAHHix+bA==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.9:
   version "2.6.9"
@@ -6697,7 +6697,7 @@ expect@^27.5.1:
     jest-matcher-utils "^27.5.1"
     jest-message-util "^27.5.1"
 
-expect@^28.1.3:
+expect@^28.0.0, expect@^28.1.3:
   version "28.1.3"
   resolved "https://registry.yarnpkg.com/expect/-/expect-28.1.3.tgz#90a7c1a124f1824133dd4533cce2d2bdcb6603ec"
   integrity sha512-eEh0xn8HlsuOBxFgIss+2mX85VAS4Qy3OSkjV7rlBWljtA4oWH37glVGyOZSZvErDT/yBywZdPGwCXuTvSG85g==
@@ -9295,16 +9295,6 @@ jest-diff@^27.5.1:
     jest-get-type "^27.5.1"
     pretty-format "^27.5.1"
 
-jest-diff@^28.1.1:
-  version "28.1.1"
-  resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-28.1.1.tgz#1a3eedfd81ae79810931c63a1d0f201b9120106c"
-  integrity sha512-/MUUxeR2fHbqHoMMiffe/Afm+U8U4olFRJ0hiVG2lZatPJcnGxx292ustVu7bULhjV65IYMxRdploAKLbcrsyg==
-  dependencies:
-    chalk "^4.0.0"
-    diff-sequences "^28.1.1"
-    jest-get-type "^28.0.2"
-    pretty-format "^28.1.1"
-
 jest-diff@^28.1.3:
   version "28.1.3"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-28.1.3.tgz#948a192d86f4e7a64c5264ad4da4877133d8792f"
@@ -9499,16 +9489,6 @@ jest-matcher-utils@^27.4.2, jest-matcher-utils@^27.5.1:
     jest-diff "^27.5.1"
     jest-get-type "^27.5.1"
     pretty-format "^27.5.1"
-
-jest-matcher-utils@^28.0.0:
-  version "28.1.1"
-  resolved "https://registry.yarnpkg.com/jest-matcher-utils/-/jest-matcher-utils-28.1.1.tgz#a7c4653c2b782ec96796eb3088060720f1e29304"
-  integrity sha512-NPJPRWrbmR2nAJ+1nmnfcKKzSwgfaciCCrYZzVnNoxVoyusYWIjkBMNvu0RHJe7dNj4hH3uZOPZsQA+xAYWqsw==
-  dependencies:
-    chalk "^4.0.0"
-    jest-diff "^28.1.1"
-    jest-get-type "^28.0.2"
-    pretty-format "^28.1.1"
 
 jest-matcher-utils@^28.1.3:
   version "28.1.3"
@@ -12342,7 +12322,7 @@ pretty-format@^27.5.1:
     ansi-styles "^5.0.0"
     react-is "^17.0.1"
 
-pretty-format@^28.0.0, pretty-format@^28.1.1:
+pretty-format@^28.0.0:
   version "28.1.1"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-28.1.1.tgz#f731530394e0f7fcd95aba6b43c50e02d86b95cb"
   integrity sha512-wwJbVTGFHeucr5Jw2bQ9P+VYHyLdAqedFLEkdQUVaBF/eiidDwH5OpilINq4mEfhbCjLnirt6HTTDhv1HaTIQw==
