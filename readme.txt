@@ -113,6 +113,10 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 3.0.4 - August 19th 2022 =
+* Fix 'update preset' dropdown menu not updating
+* Fix current preset when switching pages
+
 = 3.0.3 - August 14th 2022 =
 * Fix error in error message
 * Fix error when removing text
