@@ -73,7 +73,7 @@ function Presets( props ) {
 	};
 	const updatePreset = ( ev ) => {
 		ev.preventDefault();
-		onUpdatePreset( currentPreset, search );
+		onUpdatePreset( currentPreset, { search } );
 	};
 
 	const presetActions = [];
