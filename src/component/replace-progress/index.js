@@ -23,9 +23,11 @@ function getTotalCount( name, count ) {
 	const formattedCount = new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( count );
 
 	if ( name === 'delete' ) {
+		/** translators: number of rows deleted */
 		return sprintf( _n( '%s row deleted.', '%s rows deleted.', count, 'search-regex' ), formattedCount );
 	}
 
+	/** translators: number of rows deleted */
 	return sprintf( _n( '%s row.', '%s rows.', count, 'search-regex' ), formattedCount );
 }
 

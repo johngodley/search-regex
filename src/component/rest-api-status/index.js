@@ -156,7 +156,10 @@ class RestApiStatus extends React.Component {
 
 					<div className="api-result-progress">
 						<span className={ statusClass }>
-							{ percent < 100 && sprintf( __( 'Testing - %s%%', 'search-regex' ), percent ) }
+							{
+								/* translators: test percent */
+								percent < 100 && sprintf( __( 'Testing - %s%%', 'search-regex' ), percent )
+							}
 							{ percent >= 100 && this.getApiStatusText( status ) }
 						</span>
 

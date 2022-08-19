@@ -93,7 +93,7 @@ function ResultColumn( props ) {
 			{ ! showMore && contexts.length > MORE_CONTEXTS && (
 				<p>
 					<button className="button button-secondary" onClick={ () => setShowMore( true ) } type="button">
-						{ sprintf( _n( 'Show %s more', 'Show %s more', remainingCount, 'search-regex' ),
+						{ /* translators: number of results to show */ sprintf( _n( 'Show %s more', 'Show %s more', remainingCount, 'search-regex' ),
 							new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( remainingCount ),
 						) }
 					</button>
