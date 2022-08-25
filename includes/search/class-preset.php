@@ -389,7 +389,6 @@ class Preset {
 		// Remove replace value if not a global replace
 		if ( $search['action'] !== 'replace' ) {
 			$search['replacement'] = '';
-			$search['searchFlags'] = [];
 		}
 
 		return [
