@@ -113,6 +113,11 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 3.0.5 - August 25th 2022 =
+* Fix empty replacement string when saving a preset
+* Fix preset being saved from search preset dropdown
+* Fix search flags being reset when no replacement
+
 = 3.0.4 - August 19th 2022 =
 * Fix 'update preset' dropdown menu not updating
 * Fix current preset when switching pages

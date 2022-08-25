@@ -389,7 +389,6 @@ class Preset {
 		// Remove replace value if not a global replace
 		if ( $search['action'] !== 'replace' ) {
 			$search['replacement'] = '';
-			$search['searchFlags'] = [];
 		}
 
 		return [
@@ -447,10 +446,6 @@ class Preset {
 	 */
 	public function is_valid() {
 		if ( empty( $this->name ) ) {
-			return false;
-		}
-
-		if ( empty( $this->search ) && empty( $this->replacement ) ) {
 			return false;
 		}
 
