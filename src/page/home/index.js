@@ -54,7 +54,7 @@ const getMenu = () =>
 	].filter( ( option ) => has_page_access( option.value ) || ( option.value === '' && has_page_access( 'search' ) ) );
 
 function Home( props ) {
-	const { onClearErrors, onResetPreset, errors, onClearNotices, notices } = props;
+	const { onClearErrors, onResetPreset, errors, onClearNotices, notices, presets } = props;
 	const [ page, setPage ] = useState( getPluginPage() );
 
 	if ( SEARCHREGEX_VERSION !== SearchRegexi10n.version ) {
@@ -63,7 +63,12 @@ function Home( props ) {
 
 	function pageChange() {
 		onClearErrors();
-		onResetPreset();
+
+		if ( SearchRegexi10n.settings.defaultPreset && presets.find( ( item ) => item.id === SearchRegexi10n.settings.defaultPreset ) ) {
+			onResetPreset( presets.find( ( item ) => item.id === SearchRegexi10n.settings.defaultPreset ) );
+		} else {
+			onResetPreset( null );
+		}
 	}
 
 	return (
@@ -113,8 +118,8 @@ function mapDispatchToProps( dispatch ) {
 		onClearNotices: () => {
 			dispatch( clearNotices() );
 		},
-		onResetPreset: () => {
-			dispatch( setPreset( null ) );
+		onResetPreset: ( preset ) => {
+			dispatch( setPreset( preset ) );
 		}
 	};
 }
@@ -123,10 +128,12 @@ function mapStateToProps( state ) {
 	const {
 		message: { errors, notices },
 	} = state;
+	const { presets } = state.preset;
 
 	return {
 		errors,
 		notices,
+		presets,
 	};
 }
 
