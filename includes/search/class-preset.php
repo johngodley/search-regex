@@ -450,10 +450,6 @@ class Preset {
 			return false;
 		}
 
-		if ( empty( $this->search ) && empty( $this->replacement ) ) {
-			return false;
-		}
-
 		return true;
 	}
 
