@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
 Requires at least: 5.6
-Tested up to: 6.0.1
+Tested up to: 6.0.2
 Stable tag: trunk
 Requires PHP: 5.6
 License: GPLv3
@@ -112,6 +112,11 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Major update adding advanced search filters, modifications to any column, and a variety of actions (including exporting to SQL).
 
 == Changelog ==
+
+= 3.0.6 - September 5th 2022 =
+* Fix incorrect pagination
+* Fix incorrect page reload
+* Fix export missing a page of data
 
 = 3.0.5 - August 25th 2022 =
 * Fix empty replacement string when saving a preset

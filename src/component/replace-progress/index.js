@@ -49,7 +49,7 @@ function Totals( { totals, current } ) {
 function ReplaceProgress( props ) {
 	const { progress, totals, requestCount, onNext, status, onClear, isAdvanced, onError } = props;
 	const total = getTotal( isAdvanced, totals );
-	const { current = 0, next = 0 } = progress;
+	const { current = 0, next = 0, rows = 0 } = progress;
 	const percent = Math.min( 100, status === STATUS_IN_PROGRESS ? getPercent( next === false ? total : next, total ) : 100 );
 	const canLoad = progress.next !== false && status === STATUS_IN_PROGRESS;
 
@@ -68,7 +68,7 @@ function ReplaceProgress( props ) {
 			</div>
 
 			<div className="searchregex-replaceall__stats">
-				<Totals totals={ totals } current={ current } />
+				<Totals totals={ totals } current={ isAdvanced ? current : current + rows } />
 
 				{ status === STATUS_COMPLETE && (
 					<button type="button" className="button button-primary" onClick={ onClear }>

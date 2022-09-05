@@ -3,7 +3,7 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 /**
  * Internal dependencies
@@ -13,18 +13,25 @@ import Nav from './nav-button';
 import { search } from '../../../state/search/action';
 
 function SimplePagination( props ) {
-	const { progress, onChangePage, isLoading, matchedRows, perPage, noTotal = false, total } = props;
+	const dispatch = useDispatch();
+	const { progress, isLoading, matchedRows, perPage, noTotal = false, total } = props;
 	const { current, previous, next } = progress;
 	const totalPages = Math.ceil( matchedRows / perPage );
 	const currentPage = Math.ceil( current / perPage );
 	const hasNext = next && currentPage < totalPages;
+
+	function onChangePage( page ) {
+		dispatch( search( page ) );
+	}
 
 	return (
 		<div className="tablenav-pages">
 			{ noTotal && <div>&nbsp;</div> }
 			{ !noTotal && (
 				<div className="displaying-num">
-					{ sprintf( __( 'Matched rows: %(matches)s out of %(total)s total.', 'search-regex' ), {
+					{
+						/* translators: matches=number of matched rows, total=total number of rows */
+						sprintf( __( 'Matched rows: %(matches)s out of %(total)s total.', 'search-regex' ), {
 						matches: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( matchedRows ),
 						total: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( total ),
 					} ) }{ ' ' }
@@ -48,8 +55,10 @@ function SimplePagination( props ) {
 				/>
 
 				<span className="tablenav-paging-text">
-					{ sprintf( __( 'Page %(current)s of %(total)s', 'search-regex' ), {
-						current: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( currentPage ),
+					{ sprintf(
+						/* translators: current=current page, total=total number of pages */
+						__( 'Page %(current)s of %(total)s', 'search-regex' ), {
+						current: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( currentPage + 1 ),
 						total: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( totalPages ),
 					} ) }
 				</span>
@@ -73,15 +82,4 @@ function SimplePagination( props ) {
 	);
 }
 
-function mapDispatchToProps( dispatch ) {
-	return {
-		onChangePage: ( page ) => {
-			dispatch( search( page ) );
-		},
-	};
-}
-
-export default connect(
-	null,
-	mapDispatchToProps
-)( SimplePagination );
+export default SimplePagination;

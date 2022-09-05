@@ -67,8 +67,7 @@ use SearchRegex\Plugin;
  * @apiSuccess {Object[]} totals The totals for this search
  * @apiSuccess {Integer} totals.current The current search offset
  * @apiSuccess {Integer} totals.rows The total number of rows for the source, including non-matches
- * @apiSuccess {Integer} totals.matched_rows The number of matched rows if known, or `-1` if a regular expression match and unknown
- * @apiSuccess {Integer} totals.matched_phrases The number of matched phraes if known, or `-1` if a regular expression match and unknown
+ * @apiSuccess {Integer} totals.matched_rows The number of matched rows if known, or 0 if a regular expression match and unknown
  * @apiSuccess {Object[]} progress The current search progress, and the previous and next set of results
  * @apiSuccess {Integer} progress.current The current search offset
  * @apiSuccess {Integer} progress.rows The number of rows contained within this result set

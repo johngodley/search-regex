@@ -88,21 +88,12 @@ class Search {
 
 		// Calculate the prev/next pages of results
 		$previous = max( 0, $offset - $per_page );
-		$next = $totals->get_next_page( $offset + $per_page );
-
-		// We always go in $per_page groups, but we need to limit if we only need a few more to fill a result set
-		if ( $limit > 0 && $limit < count( $results ) ) {
-			$next = min( $offset + $limit, $next );
-			$results = array_slice( $results, 0, $limit );
-		}
-
-		if ( $next === $offset ) {
-			$next = false;
-		}
 
 		if ( $previous === $offset ) {
 			$previous = false;
 		}
+
+		list( $next, $results ) = $this->get_next_results( $totals, $offset, $per_page, $limit, $results );
 
 		return [
 			'results' => $action->should_save() ? [] : $results,
@@ -113,6 +104,54 @@ class Search {
 				'previous' => $previous,
 				'next' => $next,
 			],
+		];
+	}
+
+	/**
+	 * Get the results and next position. For advanced searches this may be a smaller set if we have a limit value
+	 *
+	 * @param Totals $totals Totals.
+	 * @param int    $offset Current page offset.
+	 * @param int    $per_page Per page limit.
+	 * @param int    $limit Max number of results.
+	 * @param Array  $results Result array.
+	 * @return Array
+	 */
+	private function get_next_results( $totals, $offset, $per_page, $limit, $results ) {
+		$next = $totals->get_next_page( $offset + $per_page );
+
+		// We always go in $per_page groups, but we need to limit if we only need a few more to fill a result set
+		if ( $limit > 0 && $limit < count( $results ) ) {
+			$new_results = [];
+			$new_offset = $offset;
+
+			foreach ( $results as $result ) {
+				if ( $result ) {
+					$new_results[] = $result;
+				}
+
+				$new_offset++;
+
+				if ( count( $new_results ) === $limit ) {
+					break;
+				}
+			}
+
+			$results = $new_results;
+			$next = min( $new_offset, $next );
+		} else {
+			$results = array_filter( $results, function( $item ) {
+				return $item !== false;
+			} );
+		}
+
+		if ( $next === $offset ) {
+			$next = false;
+		}
+
+		return [
+			$next,
+			$results,
 		];
 	}
 
@@ -213,9 +252,9 @@ class Search {
 							return $saved;
 						}
 					}
-
-					$results[] = $result;
 				}
+
+				$results[] = $result;
 			}
 		}
 

@@ -5,7 +5,6 @@ namespace SearchRegex\Sql\Select;
 use SearchRegex\Sql;
 
 require_once __DIR__ . '/class-column.php';
-require_once __DIR__ . '/class-sum.php';
 
 /**
  * SQL SELECT
