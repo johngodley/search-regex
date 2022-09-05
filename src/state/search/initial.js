@@ -39,7 +39,6 @@ export function getInitialSearch() {
 		requestCount: 0,
 		totals: {
 			matched_rows: 0,
-			matched_phrases: 0,
 			rows: 0,
 		},
 		progress: {},

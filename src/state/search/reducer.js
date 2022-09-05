@@ -60,7 +60,6 @@ function shouldRequestMore( state, action ) {
 
 const resetTotals = () => ( {
 	matched_rows: 0,
-	matched_phrases: 0,
 	rows: 0,
 } );
 
@@ -86,7 +85,7 @@ function getTotals( newTotals, existingTotals, totalRows ) {
 		...existingTotals,
 		...newTotals,
 
-		matched_rows: existingTotals.matched_rows + totalRows,
+		matched_rows: newTotals.matched_rows === 0 ? existingTotals.matched_rows + totalRows : newTotals.matched_rows,
 		custom: newTotals.custom
 			? newTotals.custom.map( ( item, pos ) => ( {
 					name: item.name,
@@ -236,8 +235,6 @@ export default function searches( state = {}, action ) {
 					...state.progress,
 					...action.progress,
 					...getPrevNext( state, action ),
-					current: ( state.progress.current ? state.progress.current : 0 ) + action.progress.rows,
-					rows: ( state.progress.rows ? state.progress.rows : 0 ) + action.progress.rows,
 				},
 				totals: getTotals( action.totals, state.totals, action.results.length ),
 
