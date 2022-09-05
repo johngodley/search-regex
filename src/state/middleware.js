@@ -94,10 +94,10 @@ function saveExport( results, format ) {
 export const urlMiddleware = ( store ) => ( next ) => ( action ) => {
 	switch ( action.type ) {
 		case SEARCH_COMPLETE:
-			const { search } = store.getState().search;
+			const { search, results } = store.getState().search;
 
 			if ( action.isSave && action.progress.next === false && search.action === 'export' ) {
-				saveExport( action.results, search.actionOption.format ? search.actionOption.format : 'json' );
+				saveExport( results.concat( action.results ), search.actionOption.format ? search.actionOption.format : 'json' );
 			}
 
 			break;
