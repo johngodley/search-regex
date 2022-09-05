@@ -277,7 +277,7 @@ class SearchTest extends SearchRegex_Api_Test {
 			'current' => 25,
 			'rows' => 2,
 			'previous' => 0,
-			'next' => 27,
+			'next' => 42,
 		];
 		$results = $search->get_search_results( $action, 25, 25, 2 );
 		$this->assertEquals( $expected, $results['progress'] );
