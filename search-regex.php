@@ -21,7 +21,6 @@ For full license details see license.txt
 */
 
 define( 'SEARCHREGEX_FILE', __FILE__ );
-define( 'SEARCHREGEX_DEV_MODE', false );
 
 // This file must support PHP < 5.6 so as not to crash
 if ( version_compare( phpversion(), '5.6' ) < 0 ) {
