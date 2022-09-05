@@ -20,23 +20,27 @@ function PageRouter( props ) {
 		setPage( page );
 	}
 
-	useEffect(() => {
+	useEffect( () => {
 		window.addEventListener( 'popstate', onPageChanged );
 
 		return () => {
 			window.removeEventListener( 'popstate', onPageChanged );
 		};
-	}, []);
+	}, [] );
 
-	useEffect(() => {
-		onPageChange();
+	useEffect( () => {
+		if ( previousPage.current === undefined ) {
+			previousPage.current = page;
+			return;
+		}
 
-		if ( previousPage.current && previousPage.current !== page) {
+		if ( previousPage.current && previousPage.current !== page ) {
+			onPageChange();
 			history.pushState( {}, '', getWordPressUrl( { sub: page }, { sub: 'search' }, '?page=search-regex.php' ) );
 		}
 
 		previousPage.current = page;
-	}, [ page ]);
+	}, [ page ] );
 
 	return children;
 }
