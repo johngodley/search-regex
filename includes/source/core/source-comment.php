@@ -59,7 +59,7 @@ class Comment extends Source\Source {
 
 	public function save( $row_id, array $changes ) {
 		$comment = $this->get_columns_to_change( $changes );
-		$comment['ID'] = $row_id;
+		$comment['comment_ID'] = $row_id;
 
 		$this->process_meta( $row_id, 'comment', $changes );
 
