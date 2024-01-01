@@ -291,10 +291,7 @@ class Route {
 	public function validate_search_flags( $value, \WP_REST_Request $request, $param ) {
 		if ( is_array( $value ) ) {
 			$source = new Search\Flags( $value );
-
-			if ( count( $source->get_flags() ) === count( $value ) ) {
-				return true;
-			}
+			return true;
 		}
 
 		return new \WP_Error( 'rest_invalid_param', 'Invalid search flag detected', array( 'status' => 400 ) );
