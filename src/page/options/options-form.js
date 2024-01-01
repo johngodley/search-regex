@@ -43,20 +43,6 @@ function OptionsForm( props ) {
 	return (
 		<form onSubmit={ onSubmit }>
 			<Table className="form-table">
-				<TableRow title="">
-					<label>
-						<input
-							type="checkbox"
-							checked={ support }
-							name="support"
-							onChange={ ( ev ) => setSupport( ev.target.checked ) }
-						/>
-						<span className="sub">
-							{ __( "I'm a nice person and I have helped support the author of this plugin" ) }
-						</span>
-					</label>
-				</TableRow>
-
 				<TableRow title={ __( 'Default Preset', 'search-regex' ) }>
 					<label>
 						<Select
