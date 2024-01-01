@@ -2,9 +2,9 @@
 Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database, post, page
-Requires at least: 5.6
-Tested up to: 6.3
-Stable tag: 3.0.7
+Requires at least: 6.0
+Tested up to: 6.4
+Stable tag: 3.0.8
 Requires PHP: 5.6
 License: GPLv3
 
@@ -112,6 +112,9 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Major update adding advanced search filters, modifications to any column, and a variety of actions (including exporting to SQL).
 
 == Changelog ==
+
+= 3.0.8 - January 1st 2024 =
+* Fix multiline error
 
 = 3.0.7 - September 10th 2023 =
 * Fix problem saving comment
