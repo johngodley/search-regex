@@ -117,7 +117,7 @@ function PresetManagement( props ) {
 					renderUnselected={ () => (
 						<>
 							<h3>{ __( 'Import a JSON file', 'search-regex' ) }</h3>
-							<p>{ __( "Click 'Add File' or drag and drop here." ) }</p>
+							<p>{ __( "Click 'Add File' or drag and drop here.", 'search-regex' ) }</p>
 						</>
 					) }
 					renderSelected={ ( file ) => (
@@ -169,7 +169,8 @@ function PresetManagement( props ) {
 						versions={ SearchRegexi10n.versions }
 					>
 						{ __(
-							'Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset.'
+							'Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset.', 
+							'search-regex'
 						) }
 					</Error>
 				) }
