@@ -1,7 +1,7 @@
 === Search Regex ===
 Contributors: johnny5
 Donate link: http://searchregex.com/donation/
-Tags: search, replace, regex, regular expression, database, post, page
+Tags: search, replace, regex, regular expression, database
 Tested up to: 6.6
 Stable tag: 3.1
 License: GPLv3
