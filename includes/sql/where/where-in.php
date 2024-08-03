@@ -32,7 +32,7 @@ class Where_In extends Where {
 			return '';
 		}
 
-		$values = array_map( function( $item ) use ( $wpdb ) {
+		$values = array_map( function ( $item ) use ( $wpdb ) {
 			if ( is_numeric( $item ) ) {
 				return $wpdb->prepare( '%d', $item );
 			}

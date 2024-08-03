@@ -17,10 +17,6 @@ Search Regex is mostly a PHP plugin, but does contain files that need to be buil
 
 `yarn install`
 
-### Language files
-
-`gulp pot` - Updates language files
-
 ### React
 
 Some parts of the UI are React and can be built with:
