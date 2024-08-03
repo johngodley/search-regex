@@ -2,14 +2,26 @@
 <ruleset name="WordPress Coding Standards for Gutenberg Plugin">
 	<description>Coding standard for Search Regex plugin. Based on WordPress coding standards, but without the annoying Yoda and alignment options</description>
 
-	<config name="testVersion" value="5.6-"/>
+	<config name="testVersion" value="7.0-"/>
+
+	<file>includes/</file>
+	<file>search-regex.php</file>
+    <exclude-pattern>bin/</exclude-pattern>
+    <exclude-pattern>images/</exclude-pattern>
+    <exclude-pattern>languages/</exclude-pattern>
+    <exclude-pattern>src/</exclude-pattern>
+    <exclude-pattern>vendor/</exclude-pattern>
+    <exclude-pattern>tests/</exclude-pattern>
+    <exclude-pattern>node_modules/</exclude-pattern>
+    <exclude-pattern>build/</exclude-pattern>
+    <exclude-pattern>.vscode/</exclude-pattern>
+    <exclude-pattern>.github/</exclude-pattern>
 
 	<rule ref="WordPress-Core">
 		<!-- these I dont like -->
 		<exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
 		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned"/>
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/>
-		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
 
 		<!-- documentation warnings -->
@@ -24,13 +36,22 @@
 		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable"/>
 		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/>
 	</rule>
+
+    <rule ref="Generic.Arrays">
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="Generic.Arrays.DisallowLongArraySyntax.Found"/>
+    </rule>
+
+    <rule ref="Universal.Arrays">
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+    </rule>
+
 	<rule ref="WordPress-Docs"/>
 	<rule ref="WordPress-Extra"/>
 	<rule ref="WordPress.WP.I18n"/>
 	<config name="text_domain" value="search-regex,default"/>
 
 	<rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis"/>
-	<rule ref="WordPress.CodeAnalysis.EmptyStatement"/>
 
 	<rule ref="PEAR.Functions.FunctionCallSignature">
 		<properties>
@@ -44,12 +65,6 @@
 	<arg name="extensions" value="php"/>
 	<arg name="colors"/>
     <arg name="tab-width" value="4"/>
-
-
-
-
-
-
 
 	<rule ref="Generic.PHP.DeprecatedFunctions"/>
     <rule ref="Generic.PHP.ForbiddenFunctions"/>
@@ -122,10 +137,6 @@
          https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/26 -->
     <rule ref="WordPress.WP.GlobalVariablesOverride"/>
 
-    <!-- Encourage the use of strict ( === and !== ) comparisons.
-         https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/242 -->
-    <rule ref="WordPress.PHP.StrictComparisons"/>
-
         <!-- Check that in_array() and array_search() use strict comparisons.
          https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/399
          https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/503 -->
@@ -141,23 +152,11 @@
     <!-- Verify that everything in the global namespace is prefixed. -->
     <rule ref="WordPress.NamingConventions.PrefixAllGlobals"/>
 
-    <!-- Check that object instantiations always have braces & are not assigned by reference.
-         https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/919 -->
-    <rule ref="WordPress.Classes.ClassInstantiation"/>
-
     <!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1157 -->
     <rule ref="WordPress.Security.PluginMenuSlug"/>
     <rule ref="WordPress.WP.CronInterval"/>
     <rule ref="WordPress.WP.PostsPerPage"/>
 	<rule ref="WordPress.PHP.PregQuoteDelimiter"/>
-
-    <!-- The Core ruleset respects the whitelist. For `Extra` the sniff is stricter.
-         https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/pull/1450 -->
-    <rule ref="WordPress.PHP.NoSilencedErrors">
-        <properties>
-            <property name="use_default_whitelist" value="false"/>
-        </properties>
-    </rule>
 
     <!-- Commented out code should not be committed.
          https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/pull/1463 -->
@@ -200,15 +199,11 @@
 
     <!-- Covers rule: Use real tabs and not spaces. -->
     <rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
-    <rule ref="WordPress.WhiteSpace.PrecisionAlignment"/>
 
     <!-- Generic array layout check. -->
     <!-- Covers rule: For associative arrays, values should start on a new line.
          Also covers various single-line array whitespace issues. -->
     <rule ref="WordPress.Arrays.ArrayDeclarationSpacing"/>
-
-    <!-- Covers rule: Note the comma after the last array item: this is recommended. -->
-    <rule ref="WordPress.Arrays.CommaAfterArrayItem"/>
 
     <!-- Covers rule: For switch structures case should indent one tab from the
          switch statement and break one tab from the case statement. -->
@@ -220,8 +215,7 @@
     </rule>
 
     <!-- Covers rule: ... while spaces can be used mid-line for alignment. -->
-    <rule ref="WordPress.WhiteSpace.DisallowInlineTabs"/>
-	    <rule ref="Squiz.ControlStructures.ControlSignature"/>
+    <rule ref="Squiz.ControlStructures.ControlSignature"/>
 
     <!-- Covers rule: Braces should always be used, even when they are not required. -->
     <rule ref="Generic.ControlStructures.InlineControlStructure"/>
@@ -403,9 +397,6 @@
          is deprecated in PHP 7.2. Both of these must not be used. -->
     <rule ref="WordPress.PHP.RestrictedPHPFunctions"/>
 
-	<file>./includes</file>
-	<file>./search-regex.php</file>
-
 	<!-- Ignore snake case error in parser -->
 	<rule ref="WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase">
 	</rule>
@@ -417,7 +408,6 @@
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
 	</rule>
 
-    <rule ref="NoGetCurrentUser"/>
 	<rule ref="VariableAnalysis"/>
 	<rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable">
 		<type>error</type>

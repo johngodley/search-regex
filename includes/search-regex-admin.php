@@ -39,20 +39,8 @@ class Admin {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10, 4 );
 		add_filter( 'searchregex_result_actions', [ $this, 'extra_actions' ], 10, 3 );
-		add_filter( 'load_script_translation_file', [ $this, 'load_script_translation_file' ], 10, 3 );
 
 		register_uninstall_hook( SEARCHREGEX_FILE, [ '\SearchRegex\Admin\Admin', 'plugin_uninstall' ] );
-	}
-
-	/*
-	 * Massage the Search Regex WP translations.
-	 */
-	public function load_script_translation_file( $file, $handle, $domain ) {
-		if ( $domain === 'search-regex' ) {
-			return preg_replace( '/-\w*\./', '.', $file );
-		}
-
-		return $file;
 	}
 
 	/**

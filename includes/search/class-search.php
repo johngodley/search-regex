@@ -96,7 +96,7 @@ class Search {
 		list( $next, $results ) = $this->get_next_results( $totals, $offset, $per_page, $limit, $results );
 
 		return [
-			'results' => $action->should_save() ? [] : $results,
+			'results' => $action->should_save() ? [] : array_values( $results ),
 			'totals' => $totals->to_json(),
 			'progress' => [
 				'current' => $offset,
