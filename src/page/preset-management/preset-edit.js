@@ -224,7 +224,8 @@ function PresetEdit( props ) {
 
 							<p>
 								{ __(
-									'A tag creates a custom input field. Insert the tag anywhere in the search, replace, text filter, or text action and when the preset is used it will be replaced with a custom text field with the tag label.'
+									'A tag creates a custom input field. Insert the tag anywhere in the search, replace, text filter, or text action and when the preset is used it will be replaced with a custom text field with the tag label.', 
+									'search-regex'
 								) }
 							</p>
 							<p>
