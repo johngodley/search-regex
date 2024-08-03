@@ -9,7 +9,7 @@
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"lint:php": "composer run-script lint",
-		"plugin-zip": "yarn build && wp-scripts plugin-zip && mv search-regex.zip search-regex-$npm_package_version.zip",
+		"plugin-zip": "yarn build && wp-scripts plugin-zip",
 		"release": "release-it",
 		"start": "wp-scripts start",
 		"test:js": "wp-scripts test-unit-js",
@@ -99,5 +99,14 @@
 	},
 	"wordpress": {
 		"supported": "6.4"
+	},
+	"release-it": {
+		"github": {
+			"release": true,
+			"assets": [
+				"search-regex.zip"
+			]
+		},
+		"npm": false
 	}
 }
