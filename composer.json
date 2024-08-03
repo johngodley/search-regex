@@ -17,9 +17,10 @@
 	"scripts": {
 		"pot": "wp i18n make-pot . languages/search-regex.pot --ignore-domain --exclude=build/search-regex-strings.php --exclude=build/search-regex.js",
 		"json": "wp i18n make-json languages --purge",
-        "analyse": "@php ./vendor/bin/phpstan analyse --no-interaction --configuration=phpstan.neon $*",
-        "checks": "composer lint; composer analyse",
-        "lint": "@php ./vendor/bin/phpcs --standard=phpcs.xml -s -n ./"
+		"test": "@php ./vendor/bin/phpunit",
+		"analyse": "@php ./vendor/bin/phpstan analyse --no-interaction --configuration=phpstan.neon $*",
+		"checks": "composer lint; composer analyse; composer test",
+		"lint": "@php ./vendor/bin/phpcs --standard=phpcs.xml -s -n ./"
 	},
 	"config": {
 		"allow-plugins": {
