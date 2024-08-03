@@ -33,7 +33,7 @@ const Help = () => {
 				<p className="github">
 					<ExternalLink url="https://github.com/johngodley/search-regex/issues">
 						<img
-							src={ SearchRegexi10n.pluginBaseUrl + '/images/GitHub-Mark-64px.png' }
+							src={ SearchRegexi10n.pluginBaseUrl + '/includes/GitHub-Mark-64px.png' }
 							width="32"
 							height="32"
 						/>
