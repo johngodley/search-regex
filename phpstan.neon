@@ -3,6 +3,8 @@ parameters:
     paths:
         - search-regex.php
         - includes/
+    scanFiles:
+        - dev/stubs.php
 
     phpVersion: 70100
 
