@@ -24,6 +24,8 @@ Search filters can be created to match any column of any WordPress table. For ex
 
 Search Regex handles small and large sites.
 
+Search Regex has been tested with PHP from 7.0 to 8.3.
+
 == What can I search? ==
 
 You can search:
@@ -91,6 +93,10 @@ The plugin is simple to install:
 
 You can find full details of installing a plugin on the [plugin installation page](https://searchregex.com/support/installation/).
 
+== Translations ==
+
+Translations are provided by WordPress itself. You can update the translations by going to the Dashboard > Updates section of WP admin.
+
 == Screenshots ==
 
 1. Search options
@@ -110,11 +116,12 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Major update adding advanced search filters, modifications to any column, and a variety of actions (including exporting to SQL).
 
 = 3.1.0 =
-* Set PHP 7.0 and WP 6.4 as the baseline
+* Set PHP 7.0 and WP 6.4 as the baseline. Plugin now uses WP supplied translations
 
 == Changelog ==
 
 = 3.1.0 - August 8th 2024 =
 * Update for latest WP
 * Fix export of regular expression result
+* Switch to WP core translations
 * See changelog.txt for more details
