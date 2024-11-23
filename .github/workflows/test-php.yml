@@ -10,7 +10,7 @@ on:
         - '**/composer.lock'
         - '**/phpcs.xml'
         - '**/phpunit.xml.dist'
-        - '**/psalm.xml'
+        - '**/phpstan.neon'
         - '.github/workflows/test-php.yml' # for testing
 
 jobs:

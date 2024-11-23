@@ -2,10 +2,10 @@ parameters:
     level: 8
     paths:
         - search-regex.php
-    excludePaths:
-        - vendor
-    scanDirectories:
-        - includes
+        - includes/
+    scanFiles:
+        - dev/stubs.php
+
     phpVersion: 70100
 
     parallel:
