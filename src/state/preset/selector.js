@@ -46,7 +46,7 @@ export function hasTags( tags, phrase ) {
 }
 
 export function hasFilterTag( tags, filter ) {
-	return filter.value && hasTags( tags, filter.value );
+	return filter?.value && hasTags( tags, filter.value );
 }
 
 export function hasActionTag( tags, action ) {
