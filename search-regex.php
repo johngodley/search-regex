@@ -3,9 +3,9 @@
 Plugin Name: Search Regex
 Plugin URI: https://searchregex.com/
 Description: Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support
-Version: 3.1.2
+Version: 3.2
 Author: John Godley
-Requires PHP: 7.0
+Requires PHP: 7.2
 Requires at least: 6.4
 Text Domain: search-regex
 ============================================================================================================
@@ -21,10 +21,12 @@ For full license details see license.txt
 ============================================================================================================
 */
 
+// XXX look at report in email
+
 define( 'SEARCHREGEX_FILE', __FILE__ );
 
-// This file must support PHP < 7.0 so as not to crash
-if ( version_compare( phpversion(), '7.0' ) < 0 ) {
+// This file must support PHP < 7.2 so as not to crash
+if ( version_compare( phpversion(), '7.2' ) < 0 ) {
 	// @phpstan-ignore-next-line
 	add_filter( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), 'searchregex_deprecated_php', 10, 4 );
 
@@ -50,7 +52,7 @@ require_once __DIR__ . '/includes/plugin/class-capabilities.php';
 /**
  * Is the request for WP CLI?
  *
- * @return Bool
+ * @return bool
  */
 function searchregex_is_wpcli() {
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -63,7 +65,7 @@ function searchregex_is_wpcli() {
 /**
  * Is the request for Search Regex admin?
  *
- * @return Bool
+ * @return bool
  */
 function searchregex_is_admin() {
 	if ( is_admin() ) {

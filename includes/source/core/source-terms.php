@@ -27,14 +27,28 @@ class Terms extends Source\Source {
 		$term = $this->get_columns_to_change( $changes );
 
 		if ( count( $term ) > 0 ) {
-			$existing = get_term( $row_id );
-			if ( $existing === null || $existing instanceof \WP_Error ) {
-				return new \WP_Error( 'searchregex', 'Failed to update term.' );
+			$update = [];
+			global $wpdb;
+
+			$existing = $wpdb->get_row( $wpdb->prepare(
+				"SELECT t.term_id, t.name, t.slug, tt.taxonomy
+				 FROM {$wpdb->terms} t
+				 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+				 WHERE t.term_id = %d
+				 LIMIT 1",
+				$row_id
+			) );
+
+			if ( $existing === null ) {
+				return new \WP_Error( 'searchregex', 'Term not found.' );
 			}
 
 			if ( isset( $term['name'] ) ) {
-				$term['description'] = $term['name'];
-				unset( $term['name'] );
+				$update['name'] = (string) $term['name'];
+			}
+
+			if ( isset( $term['slug'] ) ) {
+				$update['slug'] = (string) $term['slug'];
 			}
 
 			$this->log_save( 'term', array_merge( [ 'term_id' => $row_id ], $term ) );
@@ -42,9 +56,8 @@ class Terms extends Source\Source {
 			// This does all the sanitization
 			$result = true;
 
-			/** @psalm-suppress UndefinedFunction */
-			if ( Plugin\Settings::init()->can_save() && is_object( $existing ) ) {
-				$result = wp_update_term( $row_id, $existing->taxonomy, $term );
+			if ( Plugin\Settings::init()->can_save() && count( $update ) > 0 ) {
+				$result = wp_update_term( $row_id, $existing->taxonomy, $update );
 			}
 
 			if ( $result ) {
@@ -60,7 +73,6 @@ class Terms extends Source\Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete term', $row_id );
 
-		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\Settings::init()->can_save() ) {
 			$term = get_term( $row_id );
 			if ( $term instanceof \WP_Term && wp_delete_term( $row_id, $term->taxonomy ) ) {
@@ -93,9 +105,10 @@ class Terms extends Source\Source {
 		global $wpdb;
 
 		$taxonomies = [];
-		$taxes = get_taxonomies( [], 'object' );
+		$taxes = get_taxonomies( [], 'objects' );
 
 		foreach ( $taxes as $tax ) {
+			// @phpstan-ignore function.alreadyNarrowedType
 			if ( is_object( $tax ) ) {
 				$taxonomies[] = [
 					'value' => $tax->name,

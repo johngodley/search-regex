@@ -7,6 +7,19 @@ use SearchRegex\Search;
 
 /**
  * Context for a substring(s) in a string
+ *
+ * @phpstan-type TextCrop array{start?: int, end?: int}
+ * @phpstan-type TextContextJson array{
+ *   context_id: int,
+ *   type: string,
+ *   context: mixed,
+ *   crop: TextCrop,
+ *   search: string,
+ *   flags: array<string, mixed>,
+ *   matches: array<int, array<string, mixed>>,
+ *   match_count: int,
+ *   value_type: string
+ * }
  */
 class Text extends Context\Context {
 	const TYPE_STRING = 'string';
@@ -18,14 +31,14 @@ class Text extends Context\Context {
 	/**
 	 * Context
 	 *
-	 * @var Text|null|false
+	 * @var string|null
 	 **/
 	private $context = null;
 
 	/**
 	 * Crop values
 	 *
-	 * @var array
+	 * @var TextCrop
 	 */
 	private $context_crop = [];
 
@@ -69,6 +82,7 @@ class Text extends Context\Context {
 	 *
 	 * @param string       $search Search.
 	 * @param Search\Flags $flags Flags.
+	 * @phpstan-ignore constructor.missingParentCall
 	 */
 	public function __construct( $search, Search\Flags $flags ) {
 		$this->search = '';
@@ -101,16 +115,22 @@ class Text extends Context\Context {
 	/**
 	 * Return the number of matches within this context
 	 *
-	 * @return Int Match count
+	 * @return int Match count
 	 */
 	public function get_match_count() {
 		return $this->match_count;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_matched() {
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function needs_saving() {
 		return true;
 	}
@@ -118,7 +138,7 @@ class Text extends Context\Context {
 	/**
 	 * Convert the Context\Type\Text to to_json
 	 *
-	 * @return array JSON
+	 * @return TextContextJson
 	 */
 	public function to_json() {
 		$matches = [];
@@ -145,7 +165,7 @@ class Text extends Context\Context {
 	 * Determine if the Match object is within this context.
 	 *
 	 * @param Search\Text $match The match to check.
-	 * @return Bool true if within the context, false otherwise
+	 * @return bool true if within the context, false otherwise
 	 */
 	public function is_within_context( Search\Text $match ) {
 		if ( count( $this->matches ) === 0 ) {
@@ -198,7 +218,7 @@ class Text extends Context\Context {
 	 * Find the Match that exists at the given position
 	 *
 	 * @param int $pos_id Position.
-	 * @return Search\Text|Bool Match at position
+	 * @return Search\Text|false Match at position
 	 */
 	public function get_match_at_position( $pos_id ) {
 		foreach ( $this->matches as $match ) {
@@ -210,6 +230,9 @@ class Text extends Context\Context {
 		return false;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_type() {
 		return self::TYPE_STRING;
 	}
@@ -223,6 +246,10 @@ class Text extends Context\Context {
 		return $this->context;
 	}
 
+	/**
+	 * @param Context\Context $context Context to compare.
+	 * @return bool
+	 */
 	public function is_equal( Context\Context $context ) {
 		if ( parent::is_equal( $context ) && $context instanceof Context\Type\Text ) {
 			return $this->context === $context->context;

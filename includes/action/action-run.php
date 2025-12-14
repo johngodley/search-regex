@@ -5,6 +5,7 @@ namespace SearchRegex\Action\Type;
 use SearchRegex\Action\Action;
 use SearchRegex\Schema;
 use SearchRegex\Source;
+use SearchRegex\Search;
 
 class Run extends Action {
 	/**
@@ -17,7 +18,7 @@ class Run extends Action {
 	/**
 	 * Constructor
 	 *
-	 * @param array|string  $options Options.
+	 * @param array<string, mixed>|string $options Options.
 	 * @param Schema\Schema $schema Schema.
 	 */
 	public function __construct( $options, Schema\Schema $schema ) {
@@ -28,6 +29,9 @@ class Run extends Action {
 		parent::__construct( $options, $schema );
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function to_json() {
 		return [
 			'action' => 'action',
@@ -37,10 +41,20 @@ class Run extends Action {
 		];
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function should_save() {
 		return false;
 	}
 
+	/**
+	 * @param int $row_id
+	 * @param array<string, mixed> $row
+	 * @param Source\Source $source
+	 * @param array<Search\Column> $columns
+	 * @return array<Search\Column>
+	 */
 	public function perform( $row_id, array $row, Source\Source $source, array $columns ) {
 		if ( ! $this->hook || ! $this->should_save() ) {
 			return $columns;

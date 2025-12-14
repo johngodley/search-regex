@@ -8,32 +8,50 @@ use SearchRegex\Source;
 use SearchRegex\Filter;
 
 /**
- * A saved search
+ * @phpstan-type PresetTag array{name: string, title: string}
+ * @phpstan-type SearchParams array{
+ *     searchPhrase?: string,
+ *     replacement?: string,
+ *     perPage?: int,
+ *     searchFlags?: array<string, mixed>,
+ *     source?: list<string>,
+ *     action?: string,
+ *     filters?: array<string, mixed>,
+ *     view?: list<string>
+ * }
+ * @phpstan-type PresetParams array{
+ *     id?: string,
+ *     name?: string,
+ *     description?: string,
+ *     tags?: list<PresetTag>,
+ *     locked?: list<string>,
+ *     search?: SearchParams,
+ * }
  */
 class Preset {
 	/**
-	 * @var String
+	 * @var string
 	 */
 	const OPTION_NAME = 'searchregex_presets';
 
 	/**
 	 * Preset name
 	 *
-	 * @var String
+	 * @var string
 	 */
 	private $name = '';
 
 	/**
 	 * Preset ID
 	 *
-	 * @var String
+	 * @var string
 	 */
 	private $id;
 
 	/**
 	 * Preset description
 	 *
-	 * @var String
+	 * @var string
 	 */
 	private $description = '';
 
@@ -47,42 +65,42 @@ class Preset {
 	/**
 	 * Array of source names
 	 *
-	 * @var String[]
+	 * @var string[]
 	 */
 	private $source = [];
 
 	/**
 	 * Search phrase
 	 *
-	 * @var String
+	 * @var string
 	 */
 	private $search = '';
 
 	/**
 	 * Replacement phrase
 	 *
-	 * @var String
+	 * @var string
 	 */
 	private $replacement = '';
 
 	/**
 	 * Per page
 	 *
-	 * @var Int
+	 * @var int
 	 */
 	private $per_page = 25;
 
 	/**
 	 * Array of tag values
 	 *
-	 * @var list<Array{name: string, title: string}>
+	 * @var list<array{name: string, title: string}>
 	 */
 	private $tags = [];
 
 	/**
 	 * Array of locked fields
 	 *
-	 * @var String[]
+	 * @var string[]
 	 */
 	private $locked = [];
 
@@ -110,9 +128,9 @@ class Preset {
 	/**
 	 * Create a preset
 	 *
-	 * @param array $params Array of params.
+	 * @param PresetParams $params Array of params.
 	 */
-	public function __construct( array $params = [] ) {
+	public function __construct( $params = [] ) {
 		$this->id = isset( $params['id'] ) ? $params['id'] : uniqid();
 		$this->search_flags = new Flags();
 
@@ -122,10 +140,10 @@ class Preset {
 	/**
 	 * Set all the values
 	 *
-	 * @param array $params Array of values.
+	 * @param PresetParams $params Array of values.
 	 * @return void
 	 */
-	private function set_values( array $params ) {
+	private function set_values( $params ) {
 		if ( isset( $params['name'] ) ) {
 			$this->name = $this->sanitize( $params['name'] );
 
@@ -138,10 +156,12 @@ class Preset {
 			$this->description = $this->sanitize( $params['description'] );
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $params['tags'] ) && is_array( $params['tags'] ) ) {
 			$this->set_tags( $params['tags'] );
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $params['locked'] ) && is_array( $params['locked'] ) ) {
 			$this->set_locked( $params['locked'] );
 		}
@@ -157,26 +177,30 @@ class Preset {
 	/**
 	 * Set tags
 	 *
-	 * @param array $tags Array of values.
+	 * @param list<PresetTag> $tags Array of tag values.
 	 * @return void
 	 */
-	private function set_tags( array $tags ) {
-		$tags = array_map( function( $tag ) {
-			$title = isset( $tag['title'] ) ? $tag['title'] : '';
-			$name = isset( $tag['name'] ) ? $tag['name'] : '';
+	private function set_tags( $tags ) {
+		$tags = array_map(
+			function ( $tag ) {
+				// @phpstan-ignore isset.offset
+				$title = isset( $tag['title'] ) ? $tag['title'] : '';
+				// @phpstan-ignore isset.offset
+				$name = isset( $tag['name'] ) ? $tag['name'] : '';
 
-			$title = $this->sanitize( $title );
-			$name = $this->sanitize( $name );
+				$title = $this->sanitize( $title );
+				$name = $this->sanitize( $name );
 
-			if ( $title !== '' && $tag !== '' ) {
-				return [
-					'title' => $title,
-					'name' => $name,
-				];
-			}
+				if ( $title !== '' && $name !== '' ) {
+					return [
+						'title' => $title,
+						'name' => $name,
+					];
+				}
 
-			return false;
-		}, $tags );
+				return false;
+			}, $tags
+		);
 
 		// Unique tags
 		$unique_tags = [];
@@ -190,8 +214,8 @@ class Preset {
 	/**
 	 * Sanitize a displayable string
 	 *
-	 * @param String $text Text to sanitize.
-	 * @return String
+	 * @param string $text Text to sanitize.
+	 * @return string
 	 */
 	private function sanitize( $text ) {
 		$text = trim( wp_kses( $text, [] ) );
@@ -202,7 +226,7 @@ class Preset {
 	/**
 	 * Get allowed search fields
 	 *
-	 * @return Array
+	 * @return string[]
 	 */
 	public function get_allowed_fields() {
 		return [
@@ -221,22 +245,24 @@ class Preset {
 	/**
 	 * Set locked
 	 *
-	 * @param array $locked Array of values.
+	 * @param string[] $locked Array of values.
 	 * @return void
 	 */
 	private function set_locked( array $locked ) {
-		$this->locked = array_filter( $locked, function( $lock ) {
-			return in_array( $lock, $this->get_allowed_fields(), true );
-		} );
+		$this->locked = array_filter(
+			$locked, function ( $lock ) {
+				return in_array( $lock, $this->get_allowed_fields(), true );
+			}
+		);
 	}
 
 	/**
 	 * Set search
 	 *
-	 * @param array $search Array of values.
+	 * @param SearchParams $search Array of values.
 	 * @return void
 	 */
-	private function set_search( array $search ) {
+	private function set_search( $search ) {
 		if ( isset( $search['searchPhrase'] ) ) {
 			$this->search = $search['searchPhrase'];
 		}
@@ -249,20 +275,24 @@ class Preset {
 			$this->per_page = min( 5000, max( 25, intval( $search['perPage'], 10 ) ) );
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $search['searchFlags'] ) && is_array( $search['searchFlags'] ) ) {
 			$this->search_flags = new Flags( $search['searchFlags'] );
 		}
 
 		// Sanitize sources and ensure source flags are allowed by those sources
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $search['source'] ) && is_array( $search['source'] ) ) {
-			$sources = array_map( function( $source ) {
-				$sources = Source\Manager::get( [ $source ], [] );
-				if ( $sources ) {
-					return $source;
-				}
+			$sources = array_map(
+				function ( $source ) {
+					$sources = Source\Manager::get( [ $source ], [] );
+					if ( $sources ) {
+						  return $source;
+					}
 
-				return false;
-			}, $search['source'] );
+					return false;
+				}, $search['source']
+			);
 			$this->source = array_values( array_filter( $sources ) );
 		}
 
@@ -272,42 +302,50 @@ class Preset {
 		$this->action = new Action\Type\Nothing();
 
 		if ( $this->search !== '' ) {
-			$this->action = new Action\Type\Global_Replace( [
-				'search' => $this->search,
-				'replacement' => $this->replacement,
-				'flags' => $this->search_flags->to_json(),
-			], $schema );
+			$this->action = new Action\Type\Global_Replace(
+				[
+					'search' => $this->search,
+					'replacement' => $this->replacement,
+					'flags' => $this->search_flags->to_json(),
+				], $schema
+			);
 		}
 
 		if ( isset( $search['action'] ) ) {
 			$this->action = Action\Action::create( $search['action'], Action\Action::get_options( $search ), $schema );
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $search['filters'] ) && is_array( $search['filters'] ) ) {
 			$this->filters = Filter\Filter::create( $search['filters'], $schema );
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $search['view'] ) && is_array( $search['view'] ) ) {
-			$this->view = array_values( array_filter( $search['view'], function( $view ) {
-				$parts = explode( '__', $view );
+			$this->view = array_values(
+				array_filter(
+					$search['view'], function ( $view ) {
+						$parts = explode( '__', $view );
 
-				return count( $parts ) === 2;
-			} ) );
+						return count( $parts ) === 2;
+					}
+				)
+			);
 		}
 	}
 
 	/**
 	 * Update the preset
 	 *
-	 * @param array $params New preset values.
-	 * @return Bool
+	 * @param PresetParams $params New preset values.
+	 * @return bool
 	 */
-	public function update( array $params ) {
+	public function update( $params ) {
 		$this->set_values( $params );
 		$existing = self::get_all();
 
 		foreach ( $existing as $pos => $preset ) {
-			if ( $preset['id'] === $this->id ) {
+			if ( isset( $preset['id'] ) && $preset['id'] === $this->id ) {
 				$existing[ $pos ] = $this->to_json();
 				break;
 			}
@@ -319,13 +357,15 @@ class Preset {
 	/**
 	 * Delete the preset
 	 *
-	 * @return Bool
+	 * @return bool
 	 */
 	public function delete() {
 		$existing = self::get_all();
-		$existing = array_filter( $existing, function( $preset ) {
-			return $preset['id'] !== $this->id;
-		} );
+		$existing = array_filter(
+			$existing, function ( $preset ) {
+				return isset( $preset['id'] ) && $preset['id'] !== $this->id;
+			}
+		);
 
 		return $this->save( $existing );
 	}
@@ -333,7 +373,7 @@ class Preset {
 	/**
 	 * Save and create a new preset. Will generate an ID.
 	 *
-	 * @return Bool
+	 * @return bool
 	 */
 	public function create() {
 		$this->id = uniqid();
@@ -348,8 +388,8 @@ class Preset {
 	/**
 	 * Save the list of presets
 	 *
-	 * @param Array $presets Array of JSON.
-	 * @return Bool
+	 * @param PresetParams[] $presets Array of JSON.
+	 * @return bool
 	 */
 	private function save( array $presets ) {
 		update_option( self::OPTION_NAME, wp_json_encode( $presets ) );
@@ -359,7 +399,7 @@ class Preset {
 	/**
 	 * Get the preset name
 	 *
-	 * @return String
+	 * @return string
 	 */
 	public function get_name() {
 		return $this->name;
@@ -368,7 +408,7 @@ class Preset {
 	/**
 	 * Convert the Preset to JSON
 	 *
-	 * @return Array
+	 * @return PresetParams
 	 */
 	public function to_json() {
 		$search = array_merge(
@@ -378,9 +418,11 @@ class Preset {
 				'perPage' => $this->per_page,
 				'searchFlags' => $this->search_flags->to_json(),
 				'source' => $this->source,
-				'filters' => array_map( function( $filter ) {
-					return $filter->to_json();
-				}, $this->filters ),
+				'filters' => array_map(
+					function ( $filter ) {
+						return $filter->to_json();
+					}, $this->filters
+				),
 				'view' => $this->view,
 			],
 			$this->action === null ? [] : $this->action->to_json()
@@ -404,17 +446,19 @@ class Preset {
 	/**
 	 * Get all presets as JSON
 	 *
-	 * @return array
+	 * @return PresetParams[]
 	 */
 	public static function get_all() {
 		$existing = get_option( self::OPTION_NAME, wp_json_encode( [] ) );
 		$existing = json_decode( $existing, true );
 
-		$existing = \array_map( function( $saved ) {
-			$search = new Preset( $saved );
+		$existing = \array_map(
+			function ( $saved ) {
+				$search = new Preset( $saved );
 
-			return $search->to_json();
-		}, $existing );
+				return $search->to_json();
+			}, $existing
+		);
 
 		sort( $existing );
 		return $existing;
@@ -423,7 +467,7 @@ class Preset {
 	/**
 	 * Get a preset by ID
 	 *
-	 * @param String $id Preset ID.
+	 * @param string $id Preset ID.
 	 * @return Preset|null
 	 */
 	public static function get( $id ) {
@@ -445,7 +489,7 @@ class Preset {
 	 * @return boolean
 	 */
 	public function is_valid() {
-		if ( empty( $this->name ) ) {
+		if ( $this->name === '' ) {
 			return false;
 		}
 
@@ -455,7 +499,7 @@ class Preset {
 	/**
 	 * Import presets from a file
 	 *
-	 * @param String $filename Filename to import.
+	 * @param string $filename Filename to import.
 	 * @return integer Number of presets imported
 	 */
 	public static function import( $filename ) {
@@ -487,7 +531,7 @@ class Preset {
 	/**
 	 * Get the ID of the preset
 	 *
-	 * @return String
+	 * @return string
 	 */
 	public function get_id() {
 		return $this->id;

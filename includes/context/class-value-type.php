@@ -22,11 +22,11 @@ class Value_Type {
 		// Detect type
 		if ( is_serialized( $value ) ) {
 			return self::VALUE_PHP;
-		} elseif ( preg_match( '/^[\[\|\{]/', $value ) ) {
+		} elseif ( preg_match( '/^[\[\|\{]/', $value ) > 0 ) {
 			return self::VALUE_JSON;
 		} elseif ( strpos( $value, '<!-- wp:' ) !== false ) {
 			return self::VALUE_BLOCKS;
-		} elseif ( preg_match( '@</.*?>@', $value ) ) {
+		} elseif ( preg_match( '@</.*?>@', $value ) > 0 ) {
 			return self::VALUE_HTML;
 		}
 

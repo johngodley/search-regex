@@ -2,7 +2,7 @@
 <ruleset name="WordPress Coding Standards for Gutenberg Plugin">
 	<description>Coding standard for Search Regex plugin. Based on WordPress coding standards, but without the annoying Yoda and alignment options</description>
 
-	<config name="testVersion" value="7.0-"/>
+	<config name="testVersion" value="7.2-"/>
 
 	<file>includes/</file>
 	<file>search-regex.php</file>
@@ -14,8 +14,11 @@
     <exclude-pattern>tests/</exclude-pattern>
     <exclude-pattern>node_modules/</exclude-pattern>
     <exclude-pattern>build/</exclude-pattern>
+    <exclude-pattern>release/</exclude-pattern>
     <exclude-pattern>.vscode/</exclude-pattern>
     <exclude-pattern>.github/</exclude-pattern>
+    <exclude-pattern>dev/</exclude-pattern>
+    <exclude-pattern>svn/</exclude-pattern>
 
 	<rule ref="WordPress-Core">
 		<!-- these I dont like -->
@@ -23,6 +26,9 @@
 		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned"/>
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/>
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+
+		<!-- deprecated sniffs -->
+		<exclude name="Generic.Functions.CallTimePassByReference"/>
 
 		<!-- documentation warnings -->
 		<exclude name="Squiz.Commenting.FunctionComment.Missing"/>
@@ -32,6 +38,8 @@
 		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
 		<exclude name="Squiz.Commenting.FileComment.WrongStyle"/>
 		<exclude name="Squiz.Commenting.FunctionComment.WrongStyle"/>
+		<exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType"/>
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
 		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
 		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable"/>
 		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/>
@@ -68,7 +76,6 @@
 
 	<rule ref="Generic.PHP.DeprecatedFunctions"/>
     <rule ref="Generic.PHP.ForbiddenFunctions"/>
-    <rule ref="Generic.Functions.CallTimePassByReference"/>
     <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
     <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
     <rule ref="Generic.CodeAnalysis.ForLoopWithTestFunctionCall"/>
@@ -103,7 +110,7 @@
     <rule ref="PEAR.Files.IncludingFile.UseRequireOnce">
         <type>warning</type>
     </rule>
-    <rule ref="Squiz.WhiteSpace.LanguageConstructSpacing"/>
+    <rule ref="Generic.WhiteSpace.LanguageConstructSpacing"/>
 
     <rule ref="Squiz.Scope.MethodScope"/>
     <rule ref="Squiz.Scope.MemberVarScope"/>
@@ -192,7 +199,11 @@
             <property name="exact" value="false"/>
             <property name="indent" value="4"/>
             <property name="tabIndent" value="true"/>
-            <property name="ignoreIndentationTokens" type="array" value="T_HEREDOC,T_NOWDOC,T_INLINE_HTML"/>
+            <property name="ignoreIndentationTokens" type="array">
+                <element value="T_HEREDOC"/>
+                <element value="T_NOWDOC"/>
+                <element value="T_INLINE_HTML"/>
+            </property>
         </properties>
     </rule>
     <rule ref="WordPress.Arrays.ArrayIndentation"/>
@@ -411,6 +422,24 @@
 	<rule ref="VariableAnalysis"/>
 	<rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable">
 		<type>error</type>
+	</rule>
+	<rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable">
+		<properties>
+			<property name="allowUnusedParametersBeforeUsed" value="true"/>
+			<property name="allowUnusedForeachVariables" value="true"/>
+			<property name="allowUnusedCaughtExceptions" value="true"/>
+			<property name="allowUnusedParametersWithName" value="$_.*"/>
+		</properties>
+	</rule>
+
+	<!-- Allow WP_REST_Request type hints instead of generic array -->
+	<rule ref="WordPress.NamingConventions.ValidFunctionName.InvalidSignature">
+		<exclude-pattern>*/includes/api/*</exclude-pattern>
+	</rule>
+
+	<!-- Disable type hint checks for REST API methods -->
+	<rule ref="Squiz.Commenting.FunctionComment.IncorrectTypeHint">
+		<exclude-pattern>*/includes/api/*</exclude-pattern>
 	</rule>
 
     <rule ref="WordPress.WP.I18n">

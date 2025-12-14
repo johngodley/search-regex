@@ -9,6 +9,13 @@ use SearchRegex\Schema;
 
 /**
  * Filter a date column.
+ *
+ * @phpstan-type DateFilterItem array{
+ *   column?: string,
+ *   startValue?: string,
+ *   endValue?: string,
+ *   logic?: 'equals'|'notequals'|'greater'|'less'|'range'
+ * }
  */
 class Filter_Date extends Filter_Type {
 	const LOGIC = [ 'equals', 'notequals', 'greater', 'less', 'range' ];
@@ -40,10 +47,10 @@ class Filter_Date extends Filter_Type {
 	/**
 	 * Constructor
 	 *
-	 * @param array         $item JSON settings.
+	 * @param DateFilterItem $item JSON settings.
 	 * @param Schema\Column $schema Schema.
 	 */
-	public function __construct( array $item, Schema\Column $schema ) {
+	public function __construct( $item, Schema\Column $schema ) {
 		parent::__construct( $item, $schema );
 
 		if ( isset( $item['startValue'] ) ) {

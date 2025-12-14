@@ -24,14 +24,14 @@ abstract class Meta extends Source\Source {
 	/**
 	 * Return the meta object ID name
 	 *
-	 * @return String
+	 * @return string
 	 */
 	abstract public function get_meta_object_id();
 
 	/**
 	 * Return the meta table name
 	 *
-	 * @return String
+	 * @return string
 	 */
 	abstract public function get_meta_table();
 
@@ -46,7 +46,6 @@ abstract class Meta extends Source\Source {
 			// This does all the sanitization
 			$result = true;
 
-			/** @psalm-suppress UndefinedFunction */
 			if ( Plugin\Settings::init()->can_save() ) {
 				$result = $wpdb->update( _get_meta_table( $this->get_meta_table() ), $meta, [ $this->get_table_id() => $row_id ] );
 				if ( $result === false ) {
@@ -68,7 +67,6 @@ abstract class Meta extends Source\Source {
 
 		$this->log_save( 'delete meta', $row_id );
 
-		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\Settings::init()->can_save() ) {
 			$result = $wpdb->delete( $this->get_table_name(), [ $this->get_table_id() => $row_id ] );
 
@@ -83,13 +81,6 @@ abstract class Meta extends Source\Source {
 		return true;
 	}
 
-	/**
-	 * Perform autocompletion on a column and a value
-	 *
-	 * @param array  $column Column.
-	 * @param string $value  Value.
-	 * @return array
-	 */
 	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 

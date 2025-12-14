@@ -21,10 +21,12 @@ class Comment extends Source\Source {
 		if ( $link && is_object( $comment ) ) {
 			$view = get_comment_link( $comment );
 
-			return array_filter( [
-				'edit' => str_replace( '&amp;', '&', $link ),
-				'view' => $view,
-			] );
+			return array_filter(
+				[
+					'edit' => str_replace( '&amp;', '&', $link ),
+					'view' => $view,
+				]
+			);
 		}
 
 		return [];
@@ -53,7 +55,7 @@ class Comment extends Source\Source {
 
 		return array_merge(
 			$row_columns,
-			count( $meta ) > 0 ? [ $meta ] : []
+			[ $meta ]
 		);
 	}
 
@@ -73,7 +75,6 @@ class Comment extends Source\Source {
 
 			$result = true;
 
-			/** @psalm-suppress UndefinedFunction */
 			if ( Plugin\Settings::init()->can_save() ) {
 				$result = wp_update_comment( $comment );
 			}
@@ -91,7 +92,6 @@ class Comment extends Source\Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete comment', $row_id );
 
-		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\Settings::init()->can_save() ) {
 			if ( wp_delete_comment( $row_id, true ) ) {
 				return true;

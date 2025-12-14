@@ -4,6 +4,8 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Api;
 use SearchRegex\Plugin;
+use WP_REST_Request;
+use WP_Error;
 
 /**
  * @api {get} /search-regex/v1/setting Get settings
@@ -60,22 +62,24 @@ class Settings_Route extends Api\Route {
 	/**
 	 * Create API endpoints with the given namespace
 	 *
-	 * @param String $namespace Namespace.
+	 * @param string $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
-		register_rest_route( $namespace, '/setting', array(
-			$this->get_route( \WP_REST_Server::READABLE, 'route_settings', [ $this, 'permission_callback' ] ),
-			$this->get_route( \WP_REST_Server::EDITABLE, 'route_save_settings', [ $this, 'permission_callback' ] ),
-		) );
+		register_rest_route(
+			$namespace, '/setting', array(
+				$this->get_route( \WP_REST_Server::READABLE, 'route_settings', [ $this, 'permission_callback' ] ),
+				$this->get_route( \WP_REST_Server::EDITABLE, 'route_save_settings', [ $this, 'permission_callback' ] ),
+			)
+		);
 	}
 
 	/**
 	 * Get settings
 	 *
-	 * @param \WP_REST_Request $request Request.
-	 * @return Array Settings
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @return array<string, mixed> Settings
 	 */
-	public function route_settings( \WP_REST_Request $request ) {
+	public function route_settings( WP_REST_Request $request ) {
 		$settings = Plugin\Settings::init();
 
 		return [
@@ -86,10 +90,10 @@ class Settings_Route extends Api\Route {
 	/**
 	 * Set settings
 	 *
-	 * @param \WP_REST_Request $request Request.
-	 * @return Array Settings
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @return array<string, mixed> Settings
 	 */
-	public function route_save_settings( \WP_REST_Request $request ) {
+	public function route_save_settings( WP_REST_Request $request ) {
 		$params = $request->get_params();
 		$settings = Plugin\Settings::init();
 

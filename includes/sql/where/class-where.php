@@ -36,7 +36,7 @@ class Where {
 	 * WHERE value
 	 *
 	 * @readonly
-	 * @var string|integer|array
+	 * @var string|integer|list<string|int>
 	 */
 	protected $value = '';
 
@@ -45,7 +45,7 @@ class Where {
 	 *
 	 * @param Sql\Select\Select    $column Column.
 	 * @param string               $logic Logic.
-	 * @param string|integer|array $value Value.
+	 * @param string|integer|list<string|int> $value Value.
 	 */
 	protected function __construct( Sql\Select\Select $column, $logic, $value = '' ) {
 		$this->column = $column;

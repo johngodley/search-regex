@@ -22,13 +22,14 @@ class Modify extends Action\Action {
 	 * Dynamic shortcode handler
 	 *
 	 * @var Action\Dynamic_Column|null
+	 * @phpstan-ignore property.onlyWritten
 	 */
 	private $dynamic_column = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param array|string  $options Options.
+	 * @param array<int, array<string, mixed>>|array<string, mixed>|string $options Options.
 	 * @param Schema\Schema $schema Schema.
 	 */
 	public function __construct( $options, Schema\Schema $schema ) {
@@ -53,9 +54,11 @@ class Modify extends Action\Action {
 		parent::__construct( $options, $schema );
 	}
 
+	/**
+	 * @return list<string>
+	 */
 	public function get_view_columns() {
-		/** @psalm-suppress UnusedClosureParam */
-		$remember = function( $return, $tag, $attr ) {
+		$remember = function ( $return, $tag, $attr ) {
 			if ( $tag === 'column' ) {
 				if ( isset( $attr['name'] ) ) {
 					return 'column::' . $attr['name'] . ' ';
@@ -67,49 +70,65 @@ class Modify extends Action\Action {
 			return '';
 		};
 
-		add_filter( 'pre_do_shortcode_tag', $remember, 10, 4 );
+		add_filter( 'pre_do_shortcode_tag', $remember, 10, 3 );
 
-		$views = array_map( function( $column ) {
-			if ( ! $column instanceof Modifier\Value\String_Value ) {
-				return false;
-			}
+		$views = array_map(
+			function ( $column ) {
+				if ( ! $column instanceof Modifier\Value\String_Value ) {
+					  return false;
+				}
 
-			$replace = $column->get_replace_value();
-			if ( $replace === null ) {
-				return false;
-			}
+				$replace = $column->get_replace_value();
+				if ( $replace === null ) {
+					return false;
+				}
 
-			if ( has_shortcode( $replace, 'column' ) ) {
-				$result = do_shortcode( $replace );
+				if ( has_shortcode( $replace, 'column' ) ) {
+					$result = do_shortcode( $replace );
 
-				if ( preg_match_all( '/column::(.*?)\s/', $result, $matches ) > 0 ) {
-					foreach ( $matches[1] as $match ) {
-						return $column->get_schema()->get_source() . '__' . $match;
+					if ( preg_match_all( '/column::(.*?)\s/', $result, $matches ) > 0 ) {
+						foreach ( $matches[1] as $match ) {
+							   return $column->get_schema()->get_source() . '__' . $match;
+						}
 					}
 				}
-			}
 
-			return false;
-		}, $this->columns );
+				return false;
+			}, $this->columns
+		);
 
 		remove_filter( 'pre_do_shortcode_tag', $remember, 10 );
 
-		$modify = array_map( function( $column ) {
-			return $column->get_source_name() . '__' . $column->get_column_name();
-		}, $this->columns );
+		$modify = array_map(
+			function ( $column ) {
+				return $column->get_source_name() . '__' . $column->get_column_name();
+			}, $this->columns
+		);
 
 		return array_values( array_filter( array_merge( $views, $modify ) ) );
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function to_json() {
 		return [
 			'action' => 'modify',
-			'actionOption' => array_map( function( $column ) {
-				return $column->to_json();
-			}, $this->columns ),
+			'actionOption' => array_map(
+				function ( $column ) {
+					return $column->to_json();
+				}, $this->columns
+			),
 		];
 	}
 
+	/**
+	 * @param int $row_id
+	 * @param array<string, mixed> $row
+	 * @param Source\Source $source
+	 * @param array<\SearchRegex\Search\Column> $columns
+	 * @return array<\SearchRegex\Search\Column>
+	 */
 	public function perform( $row_id, array $row, Source\Source $source, array $columns ) {
 		foreach ( $columns as $pos => $column ) {
 			foreach ( $this->columns as $action_column ) {

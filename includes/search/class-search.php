@@ -5,6 +5,7 @@ namespace SearchRegex\Search;
 use SearchRegex\Action;
 use SearchRegex\Filter;
 use SearchRegex\Source;
+use WP_Error;
 
 require_once __DIR__ . '/class-match-text.php';
 require_once __DIR__ . '/class-match-column.php';
@@ -15,19 +16,32 @@ require_once __DIR__ . '/class-result.php';
 
 /**
  * Perform a search
+ *
+ * @phpstan-type SearchResultData array{source_pos: int, results: list<array<string, string>>}
+ *
+ * @phpstan-type SearchResults array{
+ *   results: array<int, mixed>,
+ *   totals: mixed,
+ *   progress: array{
+ *     current: int,
+ *     rows: int,
+ *     previous: int|false,
+ *     next: int|false
+ *   }
+ * }
  */
 class Search {
 	/**
 	 * The sources to search across.
 	 *
-	 * @var list<Source\Source>
+	 * @var Source\Source[]
 	 **/
 	private $sources = [];
 
 	/**
 	 * Create a Search object, with a search value, an array of sources, and some search flags
 	 *
-	 * @param Array $sources Array of Source\Source objects. Only one is supported.
+	 * @param Source\Source[] $sources Array of Source\Source objects. Only one is supported.
 	 */
 	public function __construct( array $sources ) {
 		$this->sources = $sources;
@@ -38,7 +52,7 @@ class Search {
 	 *
 	 * @param integer       $row_id Row ID to return.
 	 * @param Action\Action $action Action.
-	 * @return \WP_Error|Array Return a single database row, or \WP_Error on error
+	 * @return array<Result|false>|WP_Error Return a single database row, or WP_Error on error
 	 */
 	public function get_row( $row_id, Action\Action $action ) {
 		$results = $this->sources[0]->get_row( $row_id );
@@ -48,41 +62,44 @@ class Search {
 			return $results;
 		}
 
-		return $this->convert_rows_to_results( [
+		return $this->convert_rows_to_results(
 			[
-				'results' => $results,
-				'source_pos' => 0,
+				[
+					'results' => $results,
+					'source_pos' => 0,
+				],
 			],
-		], $action );
+			$action
+		);
 	}
 
 	/**
 	 * Perform the search, returning a result array that contains the totals, the progress, and an array of Result objects
 	 *
 	 * @param Action\Action $action The action to perform on the search.
-	 * @param int           $offset Current page offset.
-	 * @param int           $per_page Per page limit.
-	 * @param int           $limit Max number of results.
-	 * @return Array|\WP_Error Array containing `totals`, `progress`, and `results`
+	 * @param int $offset Current page offset.
+	 * @param int $per_page Per page limit.
+	 * @param int $limit Max number of results.
+	 * @return SearchResults|WP_Error Array containing `totals`, `progress`, and `results`
 	 */
-	public function get_search_results( Action\Action $action, $offset, $per_page, $limit = 0 ) {
+	public function get_search_results( Action\Action $action, int $offset, int $per_page, int $limit = 0 ) {
 		$totals = new Totals();
 
 		// Get total results
 		$result = $totals->get_totals( $this->sources );
-		if ( $result instanceof \WP_Error ) {
+		if ( $result instanceof WP_Error ) {
 			return $result;
 		}
 
 		// Get the data
 		$rows = $this->get_search_data( $offset, $per_page, $totals );
-		if ( $rows instanceof \WP_Error ) {
+		if ( $rows instanceof WP_Error ) {
 			return $rows;
 		}
 
 		// Convert it to Results, performing any action along the way
 		$results = $this->convert_rows_to_results( $rows, $action );
-		if ( $results instanceof \WP_Error ) {
+		if ( $results instanceof WP_Error ) {
 			return $results;
 		}
 
@@ -114,8 +131,8 @@ class Search {
 	 * @param int    $offset Current page offset.
 	 * @param int    $per_page Per page limit.
 	 * @param int    $limit Max number of results.
-	 * @param Array  $results Result array.
-	 * @return Array
+	 * @param array<Result|false> $results Result array.
+	 * @return array{0: int|false, 1: array<Result>}
 	 */
 	private function get_next_results( $totals, $offset, $per_page, $limit, $results ) {
 		$next = $totals->get_next_page( $offset + $per_page );
@@ -140,9 +157,11 @@ class Search {
 			$results = $new_results;
 			$next = min( $new_offset, $next );
 		} else {
-			$results = array_filter( $results, function( $item ) {
-				return $item !== false;
-			} );
+			$results = array_filter(
+				$results, function ( $item ) {
+					return $item !== false;
+				}
+			);
 		}
 
 		if ( $next === $offset ) {
@@ -169,10 +188,10 @@ class Search {
 	/**
 	 * Get the match data for a search. We merge all result sets for all sources together, and then paginate across them.
 	 *
-	 * @param Int    $absolute_offset Absolute page offset across all sources (assuming they don't change).
-	 * @param Int    $limit Page limit.
+	 * @param int $absolute_offset Absolute page offset across all sources (assuming they don't change).
+	 * @param int $limit Page limit.
 	 * @param Totals $totals Source totals.
-	 * @return \WP_Error|Array Data array
+	 * @return list<SearchResultData>|WP_Error Data array
 	 */
 	public function get_search_data( $absolute_offset, $limit, Totals $totals ) {
 		$results = [];
@@ -194,7 +213,7 @@ class Search {
 				$source_results = $source->get_matched_rows( $source_offset, $source_limit );
 
 				// Check for an error
-				if ( $source_results instanceof \WP_Error ) {
+				if ( $source_results instanceof WP_Error ) {
 					return $source_results;
 				}
 
@@ -224,11 +243,11 @@ class Search {
 	 * Convert database rows into Result objects
 	 *
 	 * @internal
-	 * @param array         $source_results Array of row data.
+	 * @param list<SearchResultData> $source_results Array of row data.
 	 * @param Action\Action $action Action\Action object.
-	 * @return Result[]|\WP_Error Array of results
+	 * @return array<Result|false>|WP_Error Array of results
 	 */
-	public function convert_rows_to_results( array $source_results, Action\Action $action ) {
+	public function convert_rows_to_results( $source_results, Action\Action $action ) {
 		$results = [];
 
 		// Loop over the source results, extracting the source and results for that source
@@ -240,7 +259,7 @@ class Search {
 			foreach ( $rows as $row ) {
 				$result = $this->convert_search_results( $action, $row, $source );
 
-				if ( $result instanceof \WP_Error ) {
+				if ( $result instanceof WP_Error ) {
 					return $result;
 				}
 
@@ -248,7 +267,7 @@ class Search {
 					if ( $action->should_save() ) {
 						$saved = $this->save_changes( $result );
 
-						if ( $saved instanceof \WP_Error ) {
+						if ( $saved instanceof WP_Error ) {
 							return $saved;
 						}
 					}
@@ -265,9 +284,9 @@ class Search {
 	 * Convert a database row into a Result, after performing any action
 	 *
 	 * @param Action\Action $action Action\Action.
-	 * @param array         $row Data.
+	 * @param array<string, string> $row Data.
 	 * @param Source\Source $source Source.
-	 * @return Result|\WP_Error|false
+	 * @return Result|WP_Error|false
 	 */
 	private function convert_search_results( Action\Action $action, $row, $source ) {
 		// Get the matches
@@ -276,7 +295,7 @@ class Search {
 
 		// Perform the actions, if we are saving
 		$matches = $action->perform( $row_id, $row, $source, $matches );
-		if ( $matches instanceof \WP_Error ) {
+		if ( $matches instanceof WP_Error ) {
 			return $matches;
 		}
 
@@ -296,7 +315,7 @@ class Search {
 	 * Save a set of changes on results.
 	 *
 	 * @param Result $result Result.
-	 * @return boolean|\WP_Error
+	 * @return boolean|WP_Error
 	 */
 	public function save_changes( Result $result ) {
 		foreach ( $this->sources as $source ) {

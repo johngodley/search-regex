@@ -4,21 +4,21 @@ namespace SearchRegex\Source;
 
 use SearchRegex\Context\Type;
 use SearchRegex\Plugin;
-
-// @phan-file-suppress PhanUndeclaredClassMethod
-// @phan-file-suppress PhanUndeclaredClassConstant
-// @phan-file-suppress PhanUndeclaredMethod
+use WP_Term;
 
 /**
  * Trait to add term support to a source
+ *
+ * @phpstan-type TermItem array{value: string, label: string}
+ * @phpstan-type TermColumn array{column: string, items: list<TermItem>}
  */
 trait HasTerms {
 	/**
 	 * Look for term changes and process them
 	 *
-	 * @param integer $row_id Row ID.
-	 * @param string  $type Type.
-	 * @param array   $updates Array of updates.
+	 * @param int $row_id Row ID.
+	 * @param string $type Type.
+	 * @param array<string, mixed> $updates Array of updates.
 	 * @return void
 	 */
 	protected function process_terms( $row_id, $type, array $updates ) {
@@ -32,8 +32,8 @@ trait HasTerms {
 	/**
 	 * Get the terms as an array of value/label
 	 *
-	 * @param array $terms Terms.
-	 * @return array
+	 * @param array<WP_Term> $terms Terms.
+	 * @return TermColumn[]
 	 */
 	private function get_terms( array $terms ) {
 		$cats = [];
@@ -74,16 +74,18 @@ trait HasTerms {
 	/**
 	 * Perform term changes on an object
 	 *
-	 * @param integer $row_id Row ID.
-	 * @param string  $column Column to change.
-	 * @param array   $update Changes.
+	 * @param int $row_id Row ID.
+	 * @param string $column Column to change.
+	 * @param array<string, mixed> $update Changes.
 	 * @return void
 	 */
 	private function set_terms( $row_id, $column, array $update ) {
 		// Get all term IDs that haven't changed
-		$term_ids = array_map( function( $item ) {
-			return intval( $item->get_value(), 10 );
-		}, $update['same'] );
+		$term_ids = array_map(
+			function ( $item ) {
+				return intval( $item->get_value(), 10 );
+			}, $update['same']
+		);
 
 		// Get all term IDs that have changed
 		foreach ( $update['change'] as $change ) {
@@ -94,7 +96,6 @@ trait HasTerms {
 
 		$this->log_save( 'term ' . $column, $term_ids );
 
-		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\Settings::init()->can_save() ) {
 			wp_set_object_terms( $row_id, $term_ids, $column, false );
 		}

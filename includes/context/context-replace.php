@@ -58,10 +58,12 @@ class Replace extends Context\Type\Value {
 	}
 
 	public function to_json() {
-		return array_merge( parent::to_json(), [
-			'replacement' => $this->restrict_value( $this->replacement === null ? '' : (string) $this->replacement ),
-			'replacement_label' => $this->restrict_value( $this->replacement_label === null ? '' : $this->replacement_label ),
-		] );
+		return array_merge(
+			parent::to_json(), [
+				'replacement' => $this->restrict_value( $this->replacement === null ? '' : (string) $this->replacement ),
+				'replacement_label' => $this->restrict_value( $this->replacement_label === null ? '' : $this->replacement_label ),
+			]
+		);
 	}
 
 	public function is_equal( Context\Context $context ) {

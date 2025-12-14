@@ -3,6 +3,7 @@
 namespace SearchRegex\Source;
 
 use SearchRegex\Sql;
+use WP_Term;
 
 /**
  * Provides autocomplete functions
@@ -47,28 +48,28 @@ class Autocomplete {
 	 *
 	 * @param string $type Term term (post_tag or category).
 	 * @param string $value Value.
-	 * @return list<object{id: string, value: string}>
+	 * @return list<object{id: int, value: string}>
 	 */
 	private static function get_terms( $type, $value ) {
 		$results = [];
-		$terms = \get_terms( [
-			'taxonomy' => $type,
-			'hide_empty' => false,
-			'number' => Source::AUTOCOMPLETE_LIMIT,
-			'search' => $value,
-		] );
+		$terms = \get_terms(
+			[
+				'taxonomy' => $type,
+				'hide_empty' => false,
+				'number' => Source::AUTOCOMPLETE_LIMIT,
+				'search' => $value,
+			]
+		);
 
 		if ( ! is_array( $terms ) ) {
 			return [];
 		}
 
 		foreach ( $terms as $term ) {
-			if ( is_object( $term ) ) {
-				$results[] = (object) [
-					'id' => $term->term_id,
-					'value' => $term->name,
-				];
-			}
+			$results[] = (object) [
+				'id' => $term->term_id,
+				'value' => $term->name,
+			];
 		}
 
 		return $results;
@@ -78,7 +79,7 @@ class Autocomplete {
 	 * Autocomplete a category
 	 *
 	 * @param string $value Value.
-	 * @return list<object{id: string, value: string}>
+	 * @return list<object{id: int, value: string}>
 	 */
 	public static function get_category( $value ) {
 		return self::get_terms( 'category', $value );
@@ -88,7 +89,7 @@ class Autocomplete {
 	 * Autocomplete a tag
 	 *
 	 * @param string $value Value.
-	 * @return list<object{id: string, value: string}>
+	 * @return list<object{id: int, value: string}>
 	 */
 	public static function get_tag( $value ) {
 		return self::get_terms( 'post_tag', $value );

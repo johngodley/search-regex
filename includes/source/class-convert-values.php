@@ -3,6 +3,9 @@
 namespace SearchRegex\Source;
 
 use SearchRegex\Schema;
+use WP_Error;
+use WP_Term;
+use WP_Post_Type;
 
 /**
  * Convert a value to a label
@@ -19,12 +22,14 @@ class Convert_Values {
 		$func = 'get_' . $column->get_column();
 
 		if ( method_exists( $this, $func ) ) {
+			// @phpstan-ignore method.dynamicName
 			return $this->$func( $column, $value );
 		}
 
 		$func = 'get_' . $column->get_type();
 
 		if ( method_exists( $this, $func ) ) {
+			// @phpstan-ignore method.dynamicName
 			return $this->$func( $column, $value );
 		}
 
@@ -63,7 +68,7 @@ class Convert_Values {
 	public function get_term( $column, $value ) {
 		$term = get_term( $value, $column->get_column() );
 
-		if ( $term && ! $term instanceof \WP_Error && is_object( $term ) ) {
+		if ( $term instanceof WP_Term ) {
 			return $term->name;
 		}
 
@@ -74,16 +79,17 @@ class Convert_Values {
 	 * Get a post type given the name
 	 *
 	 * @param Schema\Column $column Column.
-	 * @param integer       $value Value.
+	 * @param string $value Value.
 	 * @return string
 	 */
 	public function get_post_type( $column, $value ) {
 		$names = get_post_types( [ 'name' => $value ], 'objects' );
 
-		if ( isset( $names[ $value ] ) && is_object( $names[ $value ] ) ) {
+		if ( isset( $names[ $value ] ) ) {
 			return $names[ $value ]->label;
 		}
 
+		// @phpstan-ignore cast.useless
 		return (string) $value;
 	}
 
@@ -140,6 +146,6 @@ class Convert_Values {
 	 * @return string
 	 */
 	public function get_date( $column, $value ) {
-		return date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), intval( mysql2date( 'U', $value ), 10 ) );
+		return gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), intval( mysql2date( 'U', $value ), 10 ) );
 	}
 }

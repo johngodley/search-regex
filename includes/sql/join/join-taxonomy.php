@@ -36,7 +36,7 @@ class Taxonomy extends Join {
 	public function get_join_value( $value ) {
 		$tax = get_taxonomy( $value );
 
-		if ( $tax && ! is_wp_error( $tax ) ) {
+		if ( $tax ) {
 			return $tax->label;
 		}
 

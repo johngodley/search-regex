@@ -29,14 +29,14 @@ abstract class Action {
 	/**
 	 * Should this action save data to the database?
 	 *
-	 * @var boolean
+	 * @var bool
 	 */
 	protected $save = false;
 
 	/**
 	 * Constructor
 	 *
-	 * @param array|string  $options Options.
+	 * @param array<string, mixed>|array<int, array<string, mixed>>|string $options Options.
 	 * @param Schema\Schema $schema Schema.
 	 */
 	public function __construct( $options, Schema\Schema $schema ) {
@@ -47,8 +47,8 @@ abstract class Action {
 	/**
 	 * Create an action
 	 *
-	 * @param string        $action_type Type of action.
-	 * @param array|string  $action_options Array of action options.
+	 * @param string $action_type Type of action.
+	 * @param array<string, mixed>|string $action_options Array of action options.
 	 * @param Schema\Schema $schema Schema for all sources.
 	 * @return Action
 	 */
@@ -71,15 +71,15 @@ abstract class Action {
 	/**
 	 * Convert action to JSON
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	abstract public function to_json();
 
 	/**
 	 * Perform the action
 	 *
-	 * @param integer              $row_id Row ID.
-	 * @param array                $row Data for row.
+	 * @param int              $row_id Row ID.
+	 * @param array<string, mixed>                $row Data for row.
 	 * @param Source\Source        $source Source.
 	 * @param array<Search\Column> $columns Contexts.
 	 * @return array<Search\Column>|\WP_Error
@@ -91,8 +91,8 @@ abstract class Action {
 	/**
 	 * Get the results from the action.
 	 *
-	 * @param array $results Results.
-	 * @return array
+	 * @param array<string, mixed> $results Results.
+	 * @return array<string, mixed>
 	 */
 	public function get_results( array $results ) {
 		$json = [];
@@ -109,7 +109,7 @@ abstract class Action {
 	/**
 	 * Change the save mode
 	 *
-	 * @param boolean $mode Save.
+	 * @param bool $mode Save.
 	 * @return void
 	 */
 	public function set_save_mode( $mode ) {
@@ -128,7 +128,7 @@ abstract class Action {
 	/**
 	 * Should this action save to the database?
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function should_save() {
 		return $this->save;
@@ -142,16 +142,16 @@ abstract class Action {
 	 */
 	protected function log_action( $title ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			// phpcs:ignore
-			error_log( $title );
+			// @phpstan-ignore disallowed.function
+			error_log( $title ); // phpcs:ignore
 		}
 	}
 
 	/**
 	 * Get the action options
 	 *
-	 * @param string|array $options Options.
-	 * @return array
+	 * @param string|array<string, mixed> $options Options.
+	 * @return array<string, mixed>
 	 */
 	public static function get_options( $options ) {
 		if ( ! is_array( $options ) ) {

@@ -126,7 +126,7 @@ class Filter_Integer extends Filter_Type {
 
 			if ( $this->join ) {
 				$query->add_join( $this->join );
-			} elseif ( $where ) {
+			} elseif ( $where !== false ) {
 				$query->add_where( $where );
 			}
 		}

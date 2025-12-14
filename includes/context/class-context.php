@@ -14,6 +14,11 @@ require_once __DIR__ . '/context-text.php';
 
 /**
  * A group of matches within the same area of a column
+ *
+ * @phpstan-type ContextJson array{
+ *   context_id: int,
+ *   type: string
+ * }
  */
 abstract class Context {
 	/**
@@ -82,7 +87,7 @@ abstract class Context {
 	/**
 	 * Convert the Context_String to to_json
 	 *
-	 * @return array JSON
+	 * @return ContextJson
 	 */
 	public function to_json() {
 		return [

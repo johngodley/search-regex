@@ -33,7 +33,7 @@ class Where_String extends Where {
 	 * @param string            $value  Value.
 	 * @param Search\Flags|null $flags  Search flags.
 	 */
-	public function __construct( Sql\Select\Select $column, $logic, $value, Search\Flags $flags = null ) {
+	public function __construct( Sql\Select\Select $column, $logic, $value, $flags = null ) {
 		if ( $flags === null ) {
 			$flags = new Search\Flags( [ 'case' ] );
 		}

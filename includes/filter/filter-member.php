@@ -18,7 +18,7 @@ class Filter_Member extends Filter_Type {
 	 * List of values
 	 *
 	 * @readonly
-	 * @var list<string>
+	 * @var list<string|int>
 	 */
 	private $values = [];
 
@@ -41,13 +41,15 @@ class Filter_Member extends Filter_Type {
 		parent::__construct( $item, $schema );
 
 		if ( isset( $item['values'] ) && is_array( $item['values'] ) && count( $item['values'] ) > 0 ) {
-			$this->values = array_map( function( $item ) {
-				if ( is_numeric( $item ) ) {
-					return intval( $item, 10 );
-				}
+			$this->values = array_map(
+				function ( $item ) {
+					if ( is_numeric( $item ) ) {
+						  return intval( $item, 10 );
+					}
 
-				return $item;
-			}, $item['values'] );
+					return $item;
+				}, $item['values']
+			);
 		}
 
 		if ( isset( $item['logic'] ) && in_array( strtolower( $item['logic'] ), self::LOGIC, true ) ) {
@@ -78,7 +80,7 @@ class Filter_Member extends Filter_Type {
 	/**
 	 * Get all the member values
 	 *
-	 * @return array
+	 * @return list<string|int>
 	 */
 	public function get_values() {
 		return $this->values;
@@ -97,7 +99,15 @@ class Filter_Member extends Filter_Type {
 		}
 
 		if ( $this->is_valid() ) {
-			$where = new Sql\Where\Where_In( $select, $this->logic === 'exclude' ? 'NOT IN' : 'IN', $this->values );
+			if ( $this->logic === 'exclude' ) {
+				// For exclude, match items NOT IN the list OR with no tags (NULL)
+				$where_not_in = new Sql\Where\Where_In( $select, 'NOT IN', $this->values );
+				$where_null = new Sql\Where\Where_Null( $select, 'empty' );
+				$where = new Sql\Where\Where_Or( [ $where_not_in, $where_null ] );
+			} else {
+				$where = new Sql\Where\Where_In( $select, 'IN', $this->values );
+			}
+
 			$query->add_where( $where );
 		}
 
@@ -127,8 +137,8 @@ class Filter_Member extends Filter_Type {
 		}
 
 		$contexts = [];
-		foreach ( $values as $value ) {
-			$contexts = array_merge( $contexts, $this->get_value_context( $value, $source ) );
+		foreach ( $values as $value_item ) {
+			$contexts = array_merge( $contexts, $this->get_value_context( $value_item, $source ) );
 		}
 
 		foreach ( $contexts as $pos => $context ) {

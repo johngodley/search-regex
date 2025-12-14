@@ -12,8 +12,8 @@ class Where_In extends Where {
 	 * Constructor
 	 *
 	 * @param Sql\Select\Select $column Column.
-	 * @param string            $logic Logic.
-	 * @param array             $value Value.
+	 * @param string $logic Logic.
+	 * @param list<string|int> $value Value.
 	 */
 	public function __construct( Sql\Select\Select $column, $logic, $value ) {
 		$logic_sql = 'IN';
@@ -32,13 +32,15 @@ class Where_In extends Where {
 			return '';
 		}
 
-		$values = array_map( function ( $item ) use ( $wpdb ) {
-			if ( is_numeric( $item ) ) {
-				return $wpdb->prepare( '%d', $item );
-			}
+		$values = array_map(
+			function ( $item ) use ( $wpdb ) {
+				if ( is_numeric( $item ) ) {
+					return $wpdb->prepare( '%d', $item );
+				}
 
-			return $wpdb->prepare( '%s', $item );
-		}, $this->value );
+				return $wpdb->prepare( '%s', $item );
+			}, $this->value
+		);
 
 		return '(' . implode( ', ', $values ) . ')';
 	}

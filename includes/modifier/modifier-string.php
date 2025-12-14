@@ -12,6 +12,15 @@ use SearchRegex\Action;
 
 /**
  * Modify a string
+ *
+ * @phpstan-type StringModifierOption array{
+ *   column?: string,
+ *   operation?: 'set'|'replace',
+ *   searchValue?: string,
+ *   replaceValue?: string,
+ *   posId?: int|string,
+ *   searchFlags?: array<'case'|'regex'>|'case'|'regex'
+ * }
  */
 class String_Value extends Modifier\Modifier {
 	const BEFORE = '<SEARCHREGEX>';
@@ -45,13 +54,21 @@ class String_Value extends Modifier\Modifier {
 	 */
 	private $pos_id = null;
 
-	public function __construct( array $option, Schema\Column $schema ) {
+	/**
+	 * Constructor
+	 *
+	 * @param StringModifierOption $option String modification options.
+	 * @param Schema\Column $schema Schema.
+	 */
+	public function __construct( $option, Schema\Column $schema ) {
 		parent::__construct( $option, $schema );
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $option['searchValue'] ) && is_string( $option['searchValue'] ) ) {
 			$this->search_value = $option['searchValue'];
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $option['replaceValue'] ) && is_string( $option['replaceValue'] ) ) {
 			$this->replace_value = $option['replaceValue'];
 		}
@@ -74,7 +91,7 @@ class String_Value extends Modifier\Modifier {
 	}
 
 	public function is_valid() {
-		if ( $this->operation === 'replace' && $this->search_value && strlen( $this->search_value ) === 0 ) {
+		if ( $this->operation === 'replace' && $this->search_value === '' ) {
 			return false;
 		}
 
@@ -97,7 +114,7 @@ class String_Value extends Modifier\Modifier {
 	 * Return all the replace positions - the positions within the content where the search is matched.
 	 *
 	 * @param string $value Value to search and replace within.
-	 * @return Array Array of match positions
+	 * @return array<int, string> Array of match positions
 	 */
 	public function get_replace_positions( $value ) {
 		if ( ! $this->search_value || $this->replace_value === null ) {
@@ -130,10 +147,10 @@ class String_Value extends Modifier\Modifier {
 	 * Perform a global replacement
 	 *
 	 * @internal
-	 * @param String $search Search string.
-	 * @param String $replace Replacement value.
-	 * @param String $value Content to replace.
-	 * @return String
+	 * @param string $search Search string.
+	 * @param string $replace Replacement value.
+	 * @param string $value Content to replace.
+	 * @return string
 	 */
 	private function replace_all( $search, $replace, $value ) {
 		$pattern = Search\Text::get_pattern( $search, $this->search_flags );
@@ -141,19 +158,21 @@ class String_Value extends Modifier\Modifier {
 		if ( ! $this->search_flags->is_regex() && is_serialized( $value ) ) {
 			$serial = '/s:(\d*):"(.*?)";/s';
 
-			return preg_replace_callback( $serial, function( $matches ) use ( $search, $replace ) {
-				if ( strpos( $matches[2], $search ) !== false ) {
-					$replaced = str_replace( $search, $replace, $matches[2] );
+			return (string) preg_replace_callback(
+				$serial, function ( $matches ) use ( $search, $replace ) {
+					if ( strpos( $matches[2], $search ) !== false ) {
+						$replaced = str_replace( $search, $replace, $matches[2] );
 
-					return 's:' . (string) strlen( $replaced ) . ':"' . $replaced . '";';
-				}
+						return 's:' . (string) strlen( $replaced ) . ':"' . $replaced . '";';
+					}
 
-				return $matches[0];
-			}, $value );
+					return $matches[0];
+				}, $value
+			);
 		}
 
 		// Global replace
-		return preg_replace( $pattern, $replace, $value );
+		return (string) preg_replace( $pattern, $replace, $value );
 	}
 
 	public function perform( $row_id, $row_value, Source\Source $source, Search\Column $column, array $raw, $save_mode ) {
@@ -163,9 +182,6 @@ class String_Value extends Modifier\Modifier {
 				return $column;
 			}
 
-			/**
-			 * @psalm-suppress TooManyArguments
-			 */
 			$value = apply_filters( 'searchregex_text', $this->replace_value, $row_id, $row_value, $raw, $source->get_schema_item() );
 
 			if ( $value !== $row_value ) {
@@ -190,9 +206,6 @@ class String_Value extends Modifier\Modifier {
 			if ( $save_mode ) {
 				$global_replace = $this->replace_all( $this->search_value, $this->replace_value, $row_value );
 
-				/**
-				 * @psalm-suppress TooManyArguments
-				 */
 				$value = apply_filters( 'searchregex_text', $global_replace, $row_id, $row_value, $raw, $source->get_schema_item() );
 
 				// Global replace
@@ -207,11 +220,13 @@ class String_Value extends Modifier\Modifier {
 
 			$replacements = $this->get_replace_positions( $row_value );
 
-			$filter = new Filter\Type\Filter_String( [
-				'value' => $this->search_value,
-				'logic' => 'contains',
-				'flags' => $this->search_flags->to_json(),
-			], $this->schema );
+			$filter = new Filter\Type\Filter_String(
+				[
+					'value' => $this->search_value,
+					'logic' => 'contains',
+					'flags' => $this->search_flags->to_json(),
+				], $this->schema
+			);
 			$matches = $filter->get_match( $source, new Action\Type\Nothing(), 'contains', $this->search_value, $row_value, $this->search_flags, $replacements );
 
 			// If we replaced anything then update the context with our new matches, otherwise just return whatever we have
@@ -230,9 +245,6 @@ class String_Value extends Modifier\Modifier {
 			$match = $context->get_match_at_position( $this->pos_id );
 
 			if ( is_object( $match ) ) {
-				/**
-				 * @psalm-suppress TooManyArguments
-				 */
 				$value = apply_filters( 'searchregex_text', $match->replace_at_position( $row_value ), $row_id, $row_value, $raw, $source->get_schema_item() );
 
 				// Need to replace the match with the result in the raw data

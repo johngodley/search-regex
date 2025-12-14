@@ -30,6 +30,9 @@ namespace SearchRegex\Plugin;
  *
  * Note some capabilities may give access to data from others. For example, when viewing a page of redirects via `searchregex_cap_redirect_manage`
  * the client will need to access group data.
+ *
+ * @phpstan-type CapabilityName 'searchregex_cap_manage'|'searchregex_cap_options'|'searchregex_cap_support'|'searchregex_cap_preset'
+ * @phpstan-type PageName 'search'|'options'|'support'|'presets'
  */
 class Capabilities {
 	const FILTER_ALL = 'searchregex_capability_all';
@@ -51,12 +54,11 @@ class Capabilities {
 	/**
 	 * Determine if the current user has access to a named capability.
 	 *
-	 * @param string $cap_name The capability to check for. See Capabilities for constants.
-	 * @return boolean
+	 * @param CapabilityName $cap_name The capability to check for. See Capabilities for constants.
+	 * @return bool
 	 */
 	public static function has_access( $cap_name ) {
 		// Get the capability using the default plugin access as the base. Old sites overriding `searchregex_role` will get access to everything
-		/** @psalm-suppress TooManyArguments */
 		$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $cap_name );
 
 		// Check the capability
@@ -75,7 +77,7 @@ class Capabilities {
 	/**
 	 * Return all the pages the user has access to.
 	 *
-	 * @return array Array of pages
+	 * @return list<PageName> Array of pages
 	 */
 	public static function get_available_pages() {
 		$pages = [
@@ -98,14 +100,16 @@ class Capabilities {
 	/**
 	 * Return all the capabilities the current user has
 	 *
-	 * @return array Array of capabilities
+	 * @return list<CapabilityName> Array of capabilities
 	 */
 	public static function get_all_capabilities() {
 		$caps = self::get_every_capability();
 
-		$caps = array_filter( $caps, function( $cap ) {
-			return self::has_access( $cap );
-		} );
+		$caps = array_filter(
+			$caps, function ( $cap ) {
+				return self::has_access( $cap );
+			}
+		);
 
 		return array_values( apply_filters( self::FILTER_ALL, $caps ) );
 	}
@@ -113,7 +117,7 @@ class Capabilities {
 	/**
 	 * Unfiltered list of all the supported capabilities, without influence from the current user
 	 *
-	 * @return array Array of capabilities
+	 * @return list<CapabilityName> Array of capabilities
 	 */
 	public static function get_every_capability() {
 		return [

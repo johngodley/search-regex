@@ -37,7 +37,7 @@ class Admin {
 	 */
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
-		add_action( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10, 4 );
+		add_filter( 'plugin_action_links_' . basename( dirname( SEARCHREGEX_FILE ) ) . '/' . basename( SEARCHREGEX_FILE ), [ $this, 'plugin_settings' ], 10 );
 		add_filter( 'searchregex_result_actions', [ $this, 'extra_actions' ], 10, 3 );
 
 		register_uninstall_hook( SEARCHREGEX_FILE, [ '\SearchRegex\Admin\Admin', 'plugin_uninstall' ] );
@@ -49,7 +49,6 @@ class Admin {
 	 * @return void
 	 */
 	public static function plugin_uninstall() {
-		/** @psalm-suppress UndefinedConstant */
 		Plugin\Settings::init()->delete();
 		delete_option( Search\Preset::OPTION_NAME );
 	}
@@ -65,8 +64,8 @@ class Admin {
 	/**
 	 * Add plugin settings to plugin page
 	 *
-	 * @param Array $links Links.
-	 * @return Array
+	 * @param array<string> $links Links.
+	 * @return array<string>
 	 */
 	public function plugin_settings( $links ) {
 		array_unshift( $links, '<a href="' . esc_url( $this->get_plugin_url() ) . '&amp;sub=options">' . __( 'Settings', 'search-regex' ) . '</a>' );
@@ -76,7 +75,7 @@ class Admin {
 	/**
 	 * Get plugin URL
 	 *
-	 * @return String
+	 * @return string
 	 */
 	private function get_plugin_url() {
 		return admin_url( 'tools.php?page=' . basename( SEARCHREGEX_FILE ) );
@@ -85,10 +84,9 @@ class Admin {
 	/**
 	 * Get first page the current user is allowed to see
 	 *
-	 * @return String
+	 * @return string
 	 */
 	private function get_first_available_page_url() {
-		/** @psalm-suppress UndefinedClass */
 		$pages = Plugin\Capabilities::get_available_pages();
 
 		if ( count( $pages ) > 0 ) {
@@ -113,7 +111,11 @@ class Admin {
 			die();
 		}
 
-		if ( isset( $_REQUEST['action'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp_rest' ) ) {
+		if (
+				isset( $_REQUEST['action'] ) &&
+				isset( $_REQUEST['_wpnonce'] ) &&
+				(bool) wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp_rest' )
+		) {
 			if ( $_REQUEST['action'] === 'rest_api' ) {
 				$this->set_rest_api( intval( $_REQUEST['rest_api'], 10 ) );
 			}
@@ -135,10 +137,8 @@ class Admin {
 		wp_enqueue_script( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.js', [], $build, true );
 		wp_enqueue_style( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.css', [], $build );
 
-		/** @psalm-suppress UndefinedClass */
 		$pages = Plugin\Capabilities::get_available_pages();
 
-		/** @psalm-suppress UndefinedClass */
 		$caps = Plugin\Capabilities::get_all_capabilities();
 
 		$is_new = false;
@@ -149,27 +149,29 @@ class Admin {
 			$is_new = $settings->is_new_version( $major_version );
 		}
 
-		wp_localize_script( 'search-regex', 'SearchRegexi10n', array(
-			'api' => [
-				'WP_API_root' => esc_url_raw( $settings->get_rest_api_url() ),
-				'WP_API_nonce' => wp_create_nonce( 'wp_rest' ),
-				'site_health' => admin_url( 'site-health.php' ),
-				'current' => $settings->get_rest_api(),
-				'routes' => $settings->get_available_rest_api(),
-			],
-			'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
-			'pluginRoot' => $this->get_plugin_url(),
-			'locale' => implode( '-', array_slice( explode( '-', str_replace( '_', '-', get_locale() ) ), 0, 2 ) ),
-			'settings' => $settings->get_as_json(),
-			'preload' => $preload,
-			'versions' => implode( "\n", $versions ),
-			'version' => SEARCHREGEX_VERSION,
-			'caps' => [
-				'pages' => $pages,
-				'capabilities' => $caps,
-			],
-			'update_notice' => $is_new ? $major_version : false,
-		) );
+		wp_localize_script(
+			'search-regex', 'SearchRegexi10n', array(
+				'api' => [
+					'WP_API_root' => esc_url_raw( $settings->get_rest_api_url() ),
+					'WP_API_nonce' => wp_create_nonce( 'wp_rest' ),
+					'site_health' => admin_url( 'site-health.php' ),
+					'current' => $settings->get_rest_api(),
+					'routes' => $settings->get_available_rest_api(),
+				],
+				'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
+				'pluginRoot' => $this->get_plugin_url(),
+				'locale' => implode( '-', array_slice( explode( '-', str_replace( '_', '-', get_locale() ) ), 0, 2 ) ),
+				'settings' => $settings->get_as_json(),
+				'preload' => $preload,
+				'versions' => implode( "\n", $versions ),
+				'version' => SEARCHREGEX_VERSION,
+				'caps' => [
+					'pages' => $pages,
+					'capabilities' => $caps,
+				],
+				'update_notice' => $is_new ? $major_version : false,
+			)
+		);
 
 		wp_set_script_translations( 'search-regex', 'search-regex', plugin_dir_path( SEARCHREGEX_FILE ) . 'languages/json/' );
 
@@ -179,7 +181,7 @@ class Admin {
 	/**
 	 * Get browser agent
 	 *
-	 * @return String
+	 * @return string
 	 */
 	public function get_user_agent() {
 		$agent = '';
@@ -194,7 +196,7 @@ class Admin {
 	/**
 	 * Set REST API
 	 *
-	 * @param Int $api API.
+	 * @param int $api API.
 	 * @return void
 	 */
 	private function set_rest_api( $api ) {
@@ -204,7 +206,7 @@ class Admin {
 	/**
 	 * Get preloaded data
 	 *
-	 * @return Array
+	 * @return array<string, mixed>
 	 */
 	private function get_preload_data() {
 		$schema = Source\Manager::get_schema();
@@ -221,8 +223,8 @@ class Admin {
 	/**
 	 * Get the preloaded labels.
 	 *
-	 * @param array $presets
-	 * @return array
+	 * @param array<mixed> $presets
+	 * @return array<int, mixed>
 	 */
 	private function get_preload_labels( array $presets ) {
 		$preload = [];
@@ -239,17 +241,21 @@ class Admin {
 			}
 
 			if ( isset( $preset['search']['action'] ) && $preset['search']['action'] === 'modify' && is_array( $preset['search']['actionOption'] ) ) {
-				$filters_to_preload = array_merge( $filters_to_preload, array_map( function( $action ) {
-					return [
-						'type' => $action['source'],
-						'items' => [
-							array_merge(
-								[ 'column' => $action['column'] ],
-								$action
-							),
-						],
-					];
-				}, $preset['search']['actionOption'] ) );
+				$filters_to_preload = array_merge(
+					$filters_to_preload, array_map(
+						function ( $action ) {
+							return [
+								'type' => $action['source'],
+								'items' => [
+									array_merge(
+										[ 'column' => $action['column'] ],
+										$action
+									),
+								],
+							];
+						}, $preset['search']['actionOption']
+					)
+				);
 			}
 		}
 
@@ -268,13 +274,13 @@ class Admin {
 	 * Replace links
 	 *
 	 * @internal
-	 * @param String $text Text to replace.
-	 * @param String $url URL to insert into the link.
-	 * @param String $link Link name.
-	 * @return String
+	 * @param string $text Text to replace.
+	 * @param string $url URL to insert into the link.
+	 * @param string $link Link name.
+	 * @return string
 	 */
 	private function linkify( $text, $url, $link = 'link' ) {
-		return preg_replace( '@{{' . $link . '}}(.*?){{/' . $link . '}}@', '<a target="_blank" rel="noopener noreferrer" href="' . esc_url( $url ) . '">$1</a>', $text );
+		return (string) preg_replace( '@{{' . $link . '}}(.*?){{/' . $link . '}}@', '<a target="_blank" rel="noopener noreferrer" href="' . esc_url( $url ) . '">$1</a>', $text );
 	}
 
 	/**
@@ -307,41 +313,14 @@ class Admin {
 
 		$current_screen = get_current_screen();
 		if ( $current_screen ) {
-			$current_screen->add_help_tab( array(
-				'id'        => 'search-regex',
-				'title'     => 'Search Regex',
-				'content'   => "<h2>$title</h2>" . implode( "\n", $content ),
-			) );
+			$current_screen->add_help_tab(
+				array(
+					'id'        => 'search-regex',
+					'title'     => 'Search Regex',
+					'content'   => "<h2>$title</h2>" . implode( "\n", $content ),
+				)
+			);
 		}
-	}
-
-	/**
-	 * Get i18n data
-	 *
-	 * @internal
-	 * @return Array
-	 */
-	private function get_i18n_data() {
-		$locale = get_locale();
-
-		// WP 4.7
-		if ( function_exists( 'get_user_locale' ) ) {
-			$locale = get_user_locale();
-		}
-
-		$i18n_json = dirname( SEARCHREGEX_FILE ) . '/locale/json/search-regex-' . $locale . '.json';
-
-		if ( is_file( $i18n_json ) && is_readable( $i18n_json ) ) {
-			// phpcs:ignore
-			$locale_data = @file_get_contents( $i18n_json );
-
-			if ( $locale_data ) {
-				return json_decode( $locale_data, true );
-			}
-		}
-
-		// Return empty if we have nothing to return so it doesn't fail when parsed in JS
-		return array();
 	}
 
 	/**
@@ -350,7 +329,6 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_menu() {
-		/** @psalm-suppress UndefinedClass */
 		$access = Plugin\Capabilities::get_plugin_access();
 		$hook = add_management_page( 'Search Regex', 'Search Regex', $access, basename( SEARCHREGEX_FILE ), [ $this, 'admin_screen' ] );
 		if ( $hook ) {
@@ -361,7 +339,7 @@ class Admin {
 	/**
 	 * Check if we meet minimum WP requirements
 	 *
-	 * @return Bool
+	 * @return bool
 	 */
 	private function check_minimum_wp() {
 		$wp_version = get_bloginfo( 'version' );
@@ -379,7 +357,6 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_screen() {
-		/** @psalm-suppress UndefinedClass */
 		if ( count( Plugin\Capabilities::get_all_capabilities() ) === 0 ) {
 			die( 'You do not have sufficient permissions to access this page.' );
 		}
@@ -423,12 +400,12 @@ class Admin {
 		<h1><?php esc_html_e( 'Unable to load Search Regex ☹️', 'search-regex' ); ?> v<?php echo esc_html( SEARCHREGEX_VERSION ); ?></h1>
 		<p><?php esc_html_e( "This may be caused by another plugin - look at your browser's error console for more details.", 'search-regex' ); ?></p>
 		<p><?php esc_html_e( 'If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.', 'search-regex' ); ?></p>
-		<p><?php _e( 'Also check if your browser is able to load <code>search-regex.js</code>:', 'search-regex' ); ?></p>
+		<p><?php echo wp_kses( __( 'Also check if your browser is able to load <code>search-regex.js</code>:', 'search-regex' ), array( 'code' => array() ) ); ?></p>
 		<p><code><?php echo esc_html( plugin_dir_url( SEARCHREGEX_FILE ) . 'search-regex.js?ver=' . rawurlencode( SEARCHREGEX_VERSION ) . '-' . rawurlencode( SEARCHREGEX_BUILD ) ); ?></code></p>
 		<p><?php esc_html_e( 'Please note that Search Regex requires the WordPress REST API to be enabled. If you have disabled this then you won\'t be able to use Search Regex', 'search-regex' ); ?></p>
-		<p><?php _e( 'Please see the <a href="https://searchregex.com/support/problems/">list of common problems</a>.', 'search-regex' ); ?></p>
+		<p><?php echo wp_kses( __( 'Please see the <a href="https://searchregex.com/support/problems/">list of common problems</a>.', 'search-regex' ), array( 'a' => array( 'href' => array() ) ) ); ?></p>
 		<p><?php esc_html_e( 'If you think Search Regex is at fault then create an issue.', 'search-regex' ); ?></p>
-		<p class="versions"><?php _e( '<code>SearchRegexi10n</code> is not defined. This usually means another plugin is blocking Search Regex from loading. Please disable all plugins and try again.', 'search-regex' ); ?></p>
+		<p class="versions"><?php echo wp_kses( __( '<code>SearchRegexi10n</code> is not defined. This usually means another plugin is blocking Search Regex from loading. Please disable all plugins and try again.', 'search-regex' ), array( 'code' => array() ) ); ?></p>
 		<p>
 			<a class="button-primary" target="_blank" href="https://github.com/johngodley/search-regex/issues/new?title=Problem%20starting%20Search%20Regex%20<?php echo esc_attr( SEARCHREGEX_VERSION ); ?>">
 				<?php esc_html_e( 'Create Issue', 'search-regex' ); ?>
@@ -507,7 +484,7 @@ class Admin {
 	 * Get the current plugin page.
 	 * Uses $_GET['sub'] to determine the current page unless a page is supplied.
 	 *
-	 * @param String|Bool $page Current page.
+	 * @param string|bool $page Current page.
 	 *
 	 * @return string|boolean Current page, or false.
 	 */
@@ -520,7 +497,6 @@ class Admin {
 		}
 
 		// Are we allowed to access this page?
-		/** @psalm-suppress UndefinedClass */
 		if ( in_array( $page, Plugin\Capabilities::get_available_pages(), true ) ) {
 			// phpcs:ignore
 			return $page;
@@ -532,16 +508,16 @@ class Admin {
 	/**
 	 * Get any extra actions that might be needed.
 	 *
-	 * @param array  $actions Actions.
+	 * @param array<string, mixed> $actions Actions.
 	 * @param string $type Type.
-	 * @param object $result Result.
-	 * @return array
+	 * @param Search\Result $result Result.
+	 * @return array<string, mixed>
 	 */
 	public function extra_actions( array $actions, $type, $result ) {
 		if ( $type === 'tablepress_table' ) {
 			$tables = json_decode( get_option( 'tablepress_tables' ), true );
 
-			if ( is_array( $tables ) ) {
+			if ( is_array( $tables ) && isset( $tables['table_post'] ) && is_array( $tables['table_post'] ) ) {
 				foreach ( $tables['table_post'] as $id => $post_id ) {
 					if ( $post_id === $result->get_row_id() ) {
 						$actions['edit'] = 'admin.php?page=tablepress&action=edit&table_id=' . rawurlencode( $id );
@@ -555,5 +531,5 @@ class Admin {
 	}
 }
 
-register_activation_hook( SEARCHREGEX_FILE, array( '\SearchRegex\Admin\Admin', 'plugin_activated' ) );
-add_action( 'init', array( '\SearchRegex\Admin\Admin', 'init' ) );
+register_activation_hook( SEARCHREGEX_FILE, [ Admin::class, 'plugin_activated' ] );
+add_action( 'init', [ Admin::class, 'init' ] ); // @phpstan-ignore return.void

@@ -10,6 +10,12 @@ use SearchRegex\Context;
 
 /**
  * Modifier for member columns
+ *
+ * @phpstan-type MemberModifierOption array{
+ *   column?: string,
+ *   operation?: 'replace'|'include'|'exclude',
+ *   values?: array<int, mixed>
+ * }
  */
 class Member_Value extends Modifier\Modifier {
 	/**
@@ -19,7 +25,13 @@ class Member_Value extends Modifier\Modifier {
 	 */
 	private $values = [];
 
-	public function __construct( array $option, Schema\Column $schema ) {
+	/**
+	 * Constructor
+	 *
+	 * @param MemberModifierOption $option Member modification options.
+	 * @param Schema\Column $schema Schema.
+	 */
+	public function __construct( $option, Schema\Column $schema ) {
 		parent::__construct( $option, $schema );
 
 		$this->operation = 'replace';
@@ -31,6 +43,7 @@ class Member_Value extends Modifier\Modifier {
 			$this->values = [ $schema->get_options()[0]['value'] ];
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $option['values'] ) && is_array( $option['values'] ) ) {
 			$this->values = array_map( [ $this, 'get_value' ], $option['values'] );
 		}
@@ -64,16 +77,15 @@ class Member_Value extends Modifier\Modifier {
 	 * Get the Match_Contexs for the values
 	 *
 	 * @param Source\Source $source Source.
-	 * @param array         $values Values.
-	 * @param callable      $cb Functionc allback.
-	 * @return list<object>
+	 * @param array<int, string|int> $values Values.
+	 * @param class-string<Context\Context> $cb Function callback.
+	 * @return list<Context\Context>
 	 */
 	private function get_contexts( Source\Source $source, array $values, $cb ) {
 		$contexts = [];
 
 		foreach ( $values as $row_value ) {
-			/** @psalm-suppress UndefinedClass */
-			$contexts[] = new $cb( $row_value, $source->convert_result_value( $this->schema, $row_value ) );
+			$contexts[] = new $cb( $row_value, $source->convert_result_value( $this->schema, (string) $row_value ) );
 		}
 
 		return $contexts;
@@ -82,9 +94,9 @@ class Member_Value extends Modifier\Modifier {
 	/**
 	 * Get all values that we are not matching
 	 *
-	 * @param array<string|integer> $action_values Values to check for.
-	 * @param array<string|integer> $column_values Values to check against.
-	 * @return array
+	 * @param array<string|int> $action_values Values to check for.
+	 * @param array<string|int> $column_values Values to check against.
+	 * @return array{array<string|int>, array<string|int>}
 	 */
 	private function get_exclude( $action_values, $column_values ) {
 		// Remove any that we're excluding
@@ -108,7 +120,7 @@ class Member_Value extends Modifier\Modifier {
 	public function perform( $row_id, $row_value, Source\Source $source, Search\Column $column, array $raw, $save_mode ) {
 		$action_values = $this->values;
 		$column_values = array_map(
-			function( $context ) {
+			function ( $context ) {
 				return $this->get_value( $context instanceof Context\Type\Value ? $context->get_value() : '' );
 			},
 			$column->get_contexts()

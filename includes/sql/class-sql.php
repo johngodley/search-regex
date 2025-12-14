@@ -34,7 +34,7 @@ class Builder {
 	 * Get total number of matching rows from a table using the filters
 	 *
 	 * @param Query $query Query.
-	 * @return Int|\WP_Error The number of rows, or \WP_Error on error
+	 * @return int|\WP_Error The number of rows, or \WP_Error on error
 	 */
 	public function get_count( Query $query ) {
 		global $wpdb;
@@ -60,7 +60,7 @@ class Builder {
 	 * @param Modifier\Modifier|null $modifier Modifier.
 	 * @return object|\WP_Error
 	 */
-	public function get_result( Query $query, Modifier\Modifier $modifier = null ) {
+	public function get_result( Query $query, $modifier = null ) {
 		global $wpdb;
 
 		$sql = $query->get_as_sql( $modifier );
@@ -81,7 +81,7 @@ class Builder {
 	 * Get multiple rows
 	 *
 	 * @param Query $query Query.
-	 * @return array|\WP_Error
+	 * @return list<array<string, string>>|\WP_Error
 	 */
 	public function get_search( Query $query ) {
 		global $wpdb;
@@ -109,8 +109,8 @@ class Builder {
 	 */
 	private function log_sql( $title, $query ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! defined( 'SEARCHREGEX_TESTS' ) ) {
-			// phpcs:ignore
-			error_log( $title . ': ' . preg_replace( '/\{.*?\}/', '%', $query ) );
+			// @phpstan-ignore disallowed.function
+			error_log( $title . ': ' . preg_replace( '/\{.*?\}/', '%', $query ) ); // phpcs:ignore
 		}
 	}
 }

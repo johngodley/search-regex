@@ -3,6 +3,7 @@
 namespace SearchRegex\Sql\Join;
 
 use SearchRegex\Sql;
+use WP_Error;
 
 /**
  * Join on terms
@@ -51,7 +52,7 @@ class Term extends Join {
 
 	public function get_join_value( $value ) {
 		$term = get_term( intval( $value, 10 ) );
-		if ( $term instanceof \WP_Error ) {
+		if ( $term instanceof WP_Error ) {
 			return "$value";
 		}
 
@@ -59,7 +60,8 @@ class Term extends Join {
 			return $term->name;
 		}
 
-		return "$value";
+		// @phpstan-ignore cast.useless
+		return (string) $value;
 	}
 
 	/**
@@ -69,7 +71,13 @@ class Term extends Join {
 	 * @return integer[]
 	 */
 	public function get_all_values( $row_id ) {
-		return wp_get_post_terms( $row_id, $this->column, [ 'fields' => 'ids' ] );
+		$terms = wp_get_post_terms( $row_id, $this->column, [ 'fields' => 'ids' ] );
+
+		if ( is_wp_error( $terms ) ) {
+			return [];
+		}
+
+		return $terms;
 	}
 
 	public function get_table() {
@@ -86,34 +94,40 @@ class Term extends Join {
 	 */
 	public function get_value( $row_id, $type, $seperator ) {
 		$terms = wp_get_post_terms( $row_id, $this->column, [ 'fields' => 'all' ] );
-		if ( $terms instanceof \WP_Error ) {
+		if ( $terms instanceof WP_Error ) {
 			return '';
 		}
 
-		$group = array_map( function( $term ) use ( $type ) {
-			if ( $type === 'slug' ) {
-				return $term->slug;
-			}
-
-			if ( $type === 'url' ) {
-				return get_term_link( $term );
-			}
-
-			if ( $type === 'link' ) {
-				$link = get_term_link( $term );
-				if ( $link instanceof \WP_Error ) {
-					return '';
+		$group = array_map(
+			function ( $term ) use ( $type ) {
+				if ( $type === 'slug' ) {
+					  return $term->slug;
 				}
 
-				return '<a href="' . esc_url( $link ) . '">' . $term->name . '</a>';
-			}
+				if ( $type === 'url' ) {
+					$link = get_term_link( $term );
+					if ( is_wp_error( $link ) ) {
+						return '';
+					}
+					return $link;
+				}
 
-			if ( $type === 'description' ) {
-				return $term->description;
-			}
+				if ( $type === 'link' ) {
+					$link = get_term_link( $term );
+					if ( $link instanceof WP_Error ) {
+						return '';
+					}
 
-			return $term->name;
-		}, $terms );
+					return '<a href="' . esc_url( $link ) . '">' . $term->name . '</a>';
+				}
+
+				if ( $type === 'description' ) {
+					return $term->description;
+				}
+
+				return $term->name;
+			}, $terms
+		);
 
 		return implode( $seperator, $group );
 	}

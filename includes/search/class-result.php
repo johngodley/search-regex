@@ -7,33 +7,48 @@ use SearchRegex\Search;
 
 /**
  * Contains all information for a search result - a database row that contains matches
+ *
+ * @phpstan-type ResultJson array{
+ *   row_id: int,
+ *   source_type: string,
+ *   source_name: string,
+ *   columns: array<int, mixed>,
+ *   actions: string[],
+ *   title: string,
+ *   match_count: int
+ * }
+ *
+ * @phpstan-type ResultUpdates array<string, array{
+ *   change: mixed,
+ *   same: mixed
+ * }>
  */
 class Result {
 	/**
 	 * Row ID
 	 *
-	 * @var Int
+	 * @var int
 	 **/
 	private $row_id;
 
 	/**
 	 * Source type
 	 *
-	 * @var String
+	 * @var string
 	 **/
 	private $source_type;
 
 	/**
 	 * Source name
 	 *
-	 * @var String
+	 * @var string
 	 **/
 	private $source_name;
 
 	/**
 	 * A title for the result. e.g. post title
 	 *
-	 * @var String
+	 * @var string
 	 **/
 	private $result_title;
 
@@ -47,54 +62,55 @@ class Result {
 	/**
 	 * Raw data for this result
 	 *
-	 * @var String[]
+	 * @var string[]
 	 **/
 	private $raw;
 
 	/**
 	 * Array of actions that can be performed on this result
 	 *
-	 * @var String[]
+	 * @var string[]
 	 **/
 	private $actions = [];
 
 	/**
 	 * Create the result given a row ID, the Source\Source, a set of columns, and the raw database data.
 	 *
-	 * @param Int           $row_id Database row ID.
+	 * @param int $row_id Database row ID.
 	 * @param Source\Source $source The search source.
-	 * @param Array         $columns Array of Search\Column objects.
-	 * @param Array         $raw Raw row data.
+	 * @param Search\Column[] $columns Array of Search\Column objects.
+	 * @param array<string, mixed> $raw Raw row data.
 	 */
-	public function __construct( $row_id, Source\Source $source, array $columns, $raw ) {
+	public function __construct( $row_id, Source\Source $source, array $columns, array $raw ) {
 		$this->row_id = $row_id;
 		$this->columns = $columns;
 		$this->raw = $raw;
 		$this->source_type = $source->get_type( $raw );
 		$this->source_name = $source->get_name( $raw );
 		$this->result_title = isset( $raw[ $source->get_title_column() ] ) ? $raw[ $source->get_title_column() ] : false;
-		/** @psalm-suppress TooManyArguments */
 		$this->actions = \apply_filters( 'searchregex_result_actions', $source->get_actions( $this ), $this->source_type, $this );
 
 		// Get columns as positional values
 		$schema = $source->get_schema_order();
 
-		usort( $this->columns, function( $a, $b ) use ( $schema ) {
-			$a = $schema[ $a->get_column_id() ];
-			$b = $schema[ $b->get_column_id() ];
+		usort(
+			$this->columns, function ( $a, $b ) use ( $schema ) {
+				$a = $schema[ $a->get_column_id() ];
+				$b = $schema[ $b->get_column_id() ];
 
-			if ( $a === $b ) {
-				return 0;
+				if ( $a === $b ) {
+					return 0;
+				}
+
+				return $a < $b ? -1 : 1;
 			}
-
-			return $a < $b ? -1 : 1;
-		} );
+		);
 	}
 
 	/**
 	 * Convert the Result to JSON
 	 *
-	 * @return Array JSON
+	 * @return ResultJson JSON
 	 */
 	public function to_json() {
 		$columns = [];
@@ -113,16 +129,18 @@ class Result {
 			'actions' => $this->actions,
 			'title' => html_entity_decode( $this->result_title ),
 
-			'match_count' => \array_reduce( $columns, function( $carry, $column ) {
-				return $carry + $column['match_count'];
-			}, 0 ),
+			'match_count' => \array_reduce(
+				$columns, function ( $carry, $column ) {
+					return $carry + $column['match_count'];
+				}, 0
+			),
 		];
 	}
 
 	/**
 	 * Get the Search\Column array
 	 *
-	 * @return Array Search\Column array
+	 * @return Search\Column[] Array of Search\Column objects
 	 */
 	public function get_columns() {
 		return $this->columns;
@@ -131,7 +149,7 @@ class Result {
 	/**
 	 * Get the raw data
 	 *
-	 * @return String[] Raw data
+	 * @return string[] Raw data
 	 */
 	public function get_raw() {
 		return $this->raw;
@@ -140,7 +158,7 @@ class Result {
 	/**
 	 * Get the row ID
 	 *
-	 * @return Int Row ID
+	 * @return int Row ID
 	 */
 	public function get_row_id() {
 		return $this->row_id;
@@ -149,7 +167,7 @@ class Result {
 	/**
 	 * Get the result source type
 	 *
-	 * @return String
+	 * @return string
 	 */
 	public function get_source_type() {
 		return $this->source_type;
@@ -158,7 +176,7 @@ class Result {
 	/**
 	 * Get array of changes for this result
 	 *
-	 * @return array
+	 * @return ResultUpdates
 	 */
 	public function get_updates() {
 		$updates = [];

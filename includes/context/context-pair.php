@@ -26,6 +26,7 @@ class Pair extends Context\Context {
 	 */
 	private $value;
 
+	// @phpstan-ignore constructor.missingParentCall
 	public function __construct( Context\Context $key, Context\Context $value ) {
 		$this->key = $key;
 		$this->value = $value;
@@ -60,10 +61,12 @@ class Pair extends Context\Context {
 		unset( $key['context_id'] );
 		unset( $value['context_id'] );
 
-		return array_merge( parent::to_json(), [
-			'key' => $key,
-			'value' => $value,
-		] );
+		return array_merge(
+			parent::to_json(), [
+				'key' => $key,
+				'value' => $value,
+			]
+		);
 	}
 
 	public function is_equal( Context\Context $context ) {

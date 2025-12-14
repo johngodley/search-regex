@@ -4,6 +4,12 @@ namespace SearchRegex\Schema;
 
 /**
  * Helper to represent the schema for a source
+ *
+ * @phpstan-type SourceSchemaJson array{
+ *   type?: string,
+ *   table?: string,
+ *   columns?: list<array<string, mixed>>
+ * }
  */
 class Source {
 	/**
@@ -12,13 +18,6 @@ class Source {
 	 * @var string
 	 */
 	private $type = '';
-
-	/**
-	 * Source label
-	 *
-	 * @var string
-	 */
-	private $name = '';
 
 	/**
 	 * Source table
@@ -37,21 +36,18 @@ class Source {
 	/**
 	 * Constructor
 	 *
-	 * @param array $schema_json JSON.
+	 * @param SourceSchemaJson $schema_json JSON.
 	 */
-	public function __construct( array $schema_json ) {
+	public function __construct( $schema_json ) {
 		if ( isset( $schema_json['type'] ) ) {
 			$this->type = $schema_json['type'];
-		}
-
-		if ( isset( $schema_json['name'] ) ) {
-			$this->name = $schema_json['name'];
 		}
 
 		if ( isset( $schema_json['table'] ) ) {
 			$this->table = $schema_json['table'];
 		}
 
+		// @phpstan-ignore booleanAnd.rightAlwaysTrue
 		if ( isset( $schema_json['columns'] ) && is_array( $schema_json['columns'] ) ) {
 			foreach ( $schema_json['columns'] as $column ) {
 				if ( isset( $column['column'] ) ) {
@@ -90,22 +86,9 @@ class Source {
 	 * @return array<Column>
 	 */
 	public function get_global_columns() {
-		return array_filter( $this->columns, function( $column ) {
-			return $column->is_global();
-		} );
-	}
-
-	/**
-	 * Get all joined columns
-	 *
-	 * @return array<Column>
-	 */
-	public function get_join_columns() {
 		return array_filter(
-			$this->columns,
-			/** @psalm-suppress all */
-			function( Column $column ) {
-				return $column->get_join_column();
+			$this->columns, function ( $column ) {
+				return $column->is_global();
 			}
 		);
 	}

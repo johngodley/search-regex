@@ -3,6 +3,8 @@
 namespace SearchRegex\Api\Route;
 
 use SearchRegex\Api;
+use WP_REST_Request;
+use WP_Error;
 
 /**
  * @api {post} /search-regex/v1/search Search
@@ -56,7 +58,7 @@ class Search_Route extends Api\Route {
 	 * Return API paging args
 	 *
 	 * @internal
-	 * @return Array<String, Array>
+	 * @return array<string, array<string, mixed>>
 	 */
 	private function get_paging_params() {
 		return [
@@ -93,31 +95,37 @@ class Search_Route extends Api\Route {
 	/**
 	 * Search API endpoint constructor
 	 *
-	 * @param String $namespace Namespace.
+	 * @param string $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
-		register_rest_route( $namespace, '/search', [
-			'args' => array_merge(
-				$this->get_search_params(),
-				$this->get_paging_params()
-			),
-			$this->get_route( \WP_REST_Server::EDITABLE, 'route_search', [ $this, 'permission_callback' ] ),
-		] );
+		register_rest_route(
+			$namespace,
+			'/search',
+			array_merge(
+				[
+					'args' => array_merge(
+						$this->get_search_params(),
+						$this->get_paging_params()
+					),
+				],
+				$this->get_route( \WP_REST_Server::EDITABLE, 'route_search', [ $this, 'permission_callback' ] ),
+			)
+		);
 	}
 
 	/**
 	 * Search for matches
 	 *
-	 * @param \WP_REST_Request $request The request.
-	 * @return \WP_Error|array Return an array of results, or a \WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request The request.
+	 * @return WP_Error|array<string, mixed> Return an array of results, or a WP_Error
 	 */
-	public function route_search( \WP_REST_Request $request ) {
+	public function route_search( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
-		list( $search, $action ) = $this->get_search_replace( $params );
+		[ $search, $action ] = $this->get_search_replace( $params );
 
 		$results = $search->get_search_results( $action, $params['page'], $params['perPage'], $params['limit'] );
-		if ( $results instanceof \WP_Error ) {
+		if ( $results instanceof WP_Error ) {
 			return $results;
 		}
 

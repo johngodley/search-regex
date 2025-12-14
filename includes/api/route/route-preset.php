@@ -4,6 +4,8 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Search;
 use SearchRegex\Api;
+use WP_REST_Request;
+use WP_Error;
 
 /**
  * @api {get} /search-regex/v1/preset Get presets
@@ -123,7 +125,7 @@ class Preset_Route extends Api\Route {
 	/**
 	 * Get preset API params
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	private function get_preset_params() {
 		$search = $this->get_search_params();
@@ -175,39 +177,63 @@ class Preset_Route extends Api\Route {
 	/**
 	 * Search API endpoint constructor
 	 *
-	 * @param String $namespace Namespace.
+	 * @param string $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
-		register_rest_route( $namespace, '/preset', [
-			$this->get_route( \WP_REST_Server::READABLE, 'route_list', [ $this, 'permission_callback' ] ),
-		] );
+		register_rest_route(
+			$namespace,
+			'/preset',
+			[
+				$this->get_route( \WP_REST_Server::READABLE, 'route_list', [ $this, 'permission_callback' ] ),
+			]
+		);
 
-		register_rest_route( $namespace, '/preset', [
-			'args' => $this->get_preset_params(),
-			$this->get_route( \WP_REST_Server::EDITABLE, 'route_create', [ $this, 'permission_callback' ] ),
-		] );
+		register_rest_route(
+			$namespace,
+			'/preset',
+			array_merge(
+				[
+					'args' => $this->get_preset_params(),
+				],
+				$this->get_route( \WP_REST_Server::EDITABLE, 'route_create', [ $this, 'permission_callback' ] ),
+			)
+		);
 
-		register_rest_route( $namespace, '/preset/import', [
-			$this->get_route( \WP_REST_Server::EDITABLE, 'route_import', [ $this, 'permission_callback' ] ),
-		] );
+		register_rest_route(
+			$namespace,
+			'/preset/import',
+			[
+				$this->get_route( \WP_REST_Server::EDITABLE, 'route_import', [ $this, 'permission_callback' ] ),
+			]
+		);
 
-		register_rest_route( $namespace, '/preset/id/(?P<id>[A-Za-z0-9]+)', [
-			'args' => $this->get_preset_params(),
-			$this->get_route( \WP_REST_Server::EDITABLE, 'route_update', [ $this, 'permission_callback' ] ),
-		] );
+		register_rest_route(
+			$namespace,
+			'/preset/id/(?P<id>[A-Za-z0-9]+)',
+			array_merge(
+				[
+					'args' => $this->get_preset_params(),
+				],
+				$this->get_route( \WP_REST_Server::EDITABLE, 'route_update', [ $this, 'permission_callback' ] ),
+			)
+		);
 
-		register_rest_route( $namespace, '/preset/id/(?P<id>[A-Za-z0-9]+)/delete', [
-			$this->get_route( \WP_REST_Server::EDITABLE, 'route_delete', [ $this, 'permission_callback' ] ),
-		] );
+		register_rest_route(
+			$namespace,
+			'/preset/id/(?P<id>[A-Za-z0-9]+)/delete',
+			[
+				$this->get_route( \WP_REST_Server::EDITABLE, 'route_delete', [ $this, 'permission_callback' ] ),
+			]
+		);
 	}
 
 	/**
 	 * Create a new preset
 	 *
-	 * @param \WP_REST_Request $request API request.
-	 * @return array|\WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request API request.
+	 * @return array<string, mixed>|WP_Error
 	 */
-	public function route_create( \WP_REST_Request $request ) {
+	public function route_create( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
 		$preset = new Search\Preset( $params );
@@ -222,10 +248,10 @@ class Preset_Route extends Api\Route {
 	/**
 	 * Import presets from an upload
 	 *
-	 * @param \WP_REST_Request $request API request.
-	 * @return array|\WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request API request.
+	 * @return array<string, mixed>|WP_Error
 	 */
-	public function route_import( \WP_REST_Request $request ) {
+	public function route_import( WP_REST_Request $request ) {
 		$upload = $request->get_file_params();
 		$upload = isset( $upload['file'] ) ? $upload['file'] : false;
 
@@ -240,16 +266,16 @@ class Preset_Route extends Api\Route {
 			}
 		}
 
-		return new \WP_Error( 'searchregex_import_preset', 'Invalid import file' );
+		return new WP_Error( 'searchregex_import_preset', 'Invalid import file' );
 	}
 
 	/**
 	 * Update an existing preset
 	 *
-	 * @param \WP_REST_Request $request API request.
-	 * @return array|\WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request API request.
+	 * @return array<string, mixed>|WP_Error
 	 */
-	public function route_update( \WP_REST_Request $request ) {
+	public function route_update( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
 		$preset = Search\Preset::get( $params['id'] );
@@ -262,16 +288,16 @@ class Preset_Route extends Api\Route {
 			];
 		}
 
-		return new \WP_Error( 'searchregex', 'No preset of that ID' );
+		return new WP_Error( 'searchregex', 'No preset of that ID' );
 	}
 
 	/**
 	 * Delete an existing preset
 	 *
-	 * @param \WP_REST_Request $request API request.
-	 * @return array|\WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request API request.
+	 * @return array<string, mixed>|WP_Error
 	 */
-	public function route_delete( \WP_REST_Request $request ) {
+	public function route_delete( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
 		$preset = Search\Preset::get( $params['id'] );
@@ -284,16 +310,16 @@ class Preset_Route extends Api\Route {
 			];
 		}
 
-		return new \WP_Error( 'searchregex', 'No preset of that ID' );
+		return new WP_Error( 'searchregex', 'No preset of that ID' );
 	}
 
 	/**
 	 * Return a list of presets
 	 *
-	 * @param \WP_REST_Request $request API request.
-	 * @return array
+	 * @param WP_REST_Request<array<string, mixed>> $request API request.
+	 * @return array<string, mixed>
 	 */
-	public function route_list( \WP_REST_Request $request ) {
+	public function route_list( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
 		if ( isset( $params['force'] ) ) {
@@ -301,19 +327,21 @@ class Preset_Route extends Api\Route {
 			header( 'Content-Transfer-Encoding: Binary' );
 			header( 'Content-disposition: attachment; filename="presets.json"' );
 
-			return array_map( function( $preset ) {
-				unset( $preset['id'] );
+			return array_map(
+				function ( $preset ) {
+					unset( $preset['id'] );
 
-				if ( empty( $preset['tags'] ) ) {
-					unset( $preset['tags'] );
-				}
+					if ( isset( $preset['tags'] ) && $preset['tags'] === [] ) {
+						unset( $preset['tags'] );
+					}
 
-				if ( empty( $preset['locked'] ) ) {
-					unset( $preset['locked'] );
-				}
+					if ( isset( $preset['locked'] ) && $preset['locked'] === [] ) {
+						unset( $preset['locked'] );
+					}
 
-				return $preset;
-			}, Search\Preset::get_all() );
+					return $preset;
+				}, Search\Preset::get_all()
+			);
 		}
 
 		return [
@@ -324,46 +352,50 @@ class Preset_Route extends Api\Route {
 	/**
 	 * Validate that the locked params are valid
 	 *
-	 * @param Array|String     $value The value to validate.
-	 * @param \WP_REST_Request $request The request.
-	 * @param Array            $param The array of parameters.
-	 * @return \WP_Error|Bool true or false
+	 * @param array<string, mixed>|string $value The value to validate.
+	 * @param WP_REST_Request<array<string, mixed>> $_request The request.
+	 * @param array<string, mixed> $_param The array of parameters.
+	 * @return WP_Error|bool true or false
 	 */
-	public function validate_locked( $value, \WP_REST_Request $request, $param ) {
+	public function validate_locked( $value, WP_REST_Request $_request, $_param ) {
 		$preset = new Search\Preset();
 
 		if ( is_array( $value ) ) {
-			$filtered = array_filter( $value, function( $item ) use ( $preset ) {
-				return in_array( $item, $preset->get_allowed_fields(), true );
-			} );
+			$filtered = array_filter(
+				$value, function ( $item ) use ( $preset ) {
+					return in_array( $item, $preset->get_allowed_fields(), true );
+				}
+			);
 
 			if ( count( $value ) === count( $filtered ) ) {
 				return true;
 			}
 		}
 
-		return new \WP_Error( 'rest_invalid_param', 'Invalid locked params', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid locked params', array( 'status' => 400 ) );
 	}
 
 	/**
 	 * Validate that the tag params are valid
 	 *
-	 * @param Array|String     $value The value to validate.
-	 * @param \WP_REST_Request $request The request.
-	 * @param Array            $param The array of parameters.
-	 * @return \WP_Error|Bool true or false
+	 * @param array<string, mixed>|string $value The value to validate.
+	 * @param WP_REST_Request<array<string, mixed>> $_request The request.
+	 * @param array<string, mixed> $_param The array of parameters.
+	 * @return WP_Error|bool true or false
 	 */
-	public function validate_tags( $value, \WP_REST_Request $request, $param ) {
+	public function validate_tags( $value, WP_REST_Request $_request, $_param ) {
 		if ( is_array( $value ) ) {
-			$filtered = array_filter( $value, function( $item ) {
-				return isset( $item['name'] ) && isset( $item['title'] );
-			} );
+			$filtered = array_filter(
+				$value, function ( $item ) {
+					return isset( $item['name'] ) && isset( $item['title'] );
+				}
+			);
 
 			if ( count( $value ) === count( $filtered ) ) {
 				return true;
 			}
 		}
 
-		return new \WP_Error( 'rest_invalid_param', 'Invalid tag params', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid tag params', array( 'status' => 400 ) );
 	}
 }

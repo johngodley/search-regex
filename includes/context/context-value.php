@@ -6,6 +6,8 @@ use SearchRegex\Context;
 
 /**
  * Context that contains a value.
+ *
+ * @phpstan-type ValueContextJson array{context_id: int, type: string, value: string, value_type: string, value_label: string, value_length: int}
  */
 class Value extends Context\Context {
 	const TYPE_VALUE = 'value';
@@ -98,14 +100,16 @@ class Value extends Context\Context {
 	/**
 	 * Convert the Context\Type\Text to to_json
 	 *
-	 * @return array JSON
+	 * @return ValueContextJson JSON
 	 */
 	public function to_json() {
-		return array_merge( parent::to_json(), [
-			'value' => $this->restrict_value( (string) $this->value ),
-			'value_type' => $this->value_type,
-			'value_label' => $this->restrict_value( $this->value_label ),
-			'value_length' => $this->value_length,
-		] );
+		return array_merge(
+			parent::to_json(), [
+				'value' => $this->restrict_value( (string) $this->value ),
+				'value_type' => $this->value_type,
+				'value_label' => $this->restrict_value( $this->value_label ),
+				'value_length' => $this->value_length,
+			]
+		);
 	}
 }

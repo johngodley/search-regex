@@ -7,6 +7,8 @@ require_once __DIR__ . '/class-column.php';
 
 /**
  * Helper object to load a source schema and provide access functions
+ *
+ * @phpstan-import-type SourceSchemaJson from Source
  */
 class Schema {
 	/**
@@ -19,9 +21,9 @@ class Schema {
 	/**
 	 * Constructor
 	 *
-	 * @param array $source_schema JSON schema.
+	 * @param list<SourceSchemaJson> $source_schema JSON schema.
 	 */
-	public function __construct( array $source_schema ) {
+	public function __construct( $source_schema ) {
 		foreach ( $source_schema as $schema ) {
 			$schema = new Source( $schema );
 

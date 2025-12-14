@@ -15,6 +15,7 @@ class Where_Or extends Where {
 	 * Constructor
 	 *
 	 * @param array<Where> $wheres Wheres.
+	 * @phpstan-ignore constructor.missingParentCall
 	 */
 	public function __construct( array $wheres ) {
 		$this->wheres = $wheres;
@@ -35,9 +36,11 @@ class Where_Or extends Where {
 			$end = ')';
 		}
 
-		$sql = array_map( function( $where ) {
-			return $where->get_as_sql();
-		}, $this->wheres );
+		$sql = array_map(
+			function ( $where ) {
+				return $where->get_as_sql();
+			}, $this->wheres
+		);
 
 		return $start . implode( ' ' . $logic . ' ', $sql ) . $end;
 	}
