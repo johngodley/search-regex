@@ -65,7 +65,7 @@ class Filter_Member_Test extends SearchRegex_Api_Test {
 		$filter = $this->get_filter( $options );
 		$query = $this->get_query_for_filter( $filter );
 
-		$this->assertEquals( "SELECT term_id FROM posts WHERE term_id NOT IN ('cat', 'dog\'s')", $query->get_as_sql() );
+		$this->assertEquals( "SELECT term_id FROM posts WHERE (term_id NOT IN ('cat', 'dog\'s') OR term_id IS NULL)", $query->get_as_sql() );
 	}
 
 	public function testGetDataInvalid() {
