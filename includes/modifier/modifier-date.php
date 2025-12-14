@@ -10,6 +10,13 @@ use SearchRegex\Context;
 
 /**
  * Modify a date column
+ *
+ * @phpstan-type DateModifierOption array{
+ *   column?: string,
+ *   operation?: 'set'|'increment'|'decrement',
+ *   value?: string|int,
+ *   unit?: 'second'|'minute'|'hour'|'day'|'week'|'month'|'year'
+ * }
  */
 class Date_Value extends Modifier\Modifier {
 	const UNITS = [ 'second', 'minute', 'hour', 'day', 'week', 'month', 'year' ];
@@ -17,7 +24,7 @@ class Date_Value extends Modifier\Modifier {
 	/**
 	 * Date value
 	 *
-	 * @var integer|null
+	 * @var int|null
 	 */
 	private $value = null;
 
@@ -28,7 +35,13 @@ class Date_Value extends Modifier\Modifier {
 	 */
 	private $unit = 'hour';
 
-	public function __construct( array $option, Schema\Column $schema ) {
+	/**
+	 * Constructor
+	 *
+	 * @param DateModifierOption $option Date modification options.
+	 * @param Schema\Column $schema Schema.
+	 */
+	public function __construct( $option, Schema\Column $schema ) {
 		parent::__construct( $option, $schema );
 
 		$this->operation = 'set';
@@ -37,7 +50,12 @@ class Date_Value extends Modifier\Modifier {
 		}
 
 		if ( isset( $option['value'] ) ) {
-			$this->value = $this->operation === 'set' ? strtotime( $option['value'] ) : intval( $option['value'], 10 );
+			if ( $this->operation === 'set' ) {
+				$timestamp = strtotime( (string) $option['value'] );
+				$this->value = $timestamp !== false ? $timestamp : 0;
+			} else {
+				$this->value = intval( $option['value'], 10 );
+			}
 		}
 
 		if ( isset( $option['unit'] ) && in_array( $option['unit'], self::UNITS, true ) && $this->operation !== 'set' ) {
@@ -59,8 +77,8 @@ class Date_Value extends Modifier\Modifier {
 	/**
 	 * Perform a date operation - add or subtract
 	 *
-	 * @param integer $value1 Value 1.
-	 * @param integer $value2 Value 2.
+	 * @param int $value1 Value 1.
+	 * @param int $value2 Value 2.
 	 * @return integer
 	 */
 	private function perform_operation( $value1, $value2 ) {
@@ -79,12 +97,12 @@ class Date_Value extends Modifier\Modifier {
 	 * @return integer
 	 */
 	private function get_changed_date( $unit, $date ) {
-		$hour = intval( date( 'G', $date ), 10 );
-		$minute = intval( date( 'i', $date ), 10 );
-		$second = intval( date( 's', $date ), 10 );
-		$month = intval( date( 'n', $date ), 10 );
-		$day = intval( date( 'j', $date ), 10 );
-		$year = intval( date( 'Y', $date ), 10 );
+		$hour = intval( gmdate( 'G', $date ), 10 );
+		$minute = intval( gmdate( 'i', $date ), 10 );
+		$second = intval( gmdate( 's', $date ), 10 );
+		$month = intval( gmdate( 'n', $date ), 10 );
+		$day = intval( gmdate( 'j', $date ), 10 );
+		$year = intval( gmdate( 'Y', $date ), 10 );
 
 		if ( $this->value === null ) {
 			return 0;
@@ -127,7 +145,7 @@ class Date_Value extends Modifier\Modifier {
 
 			if ( $date !== $value && $date !== null ) {
 				$context = new Context\Type\Replace( $value );
-				$date = date( 'Y-m-d H:i:s', $date );
+				$date = gmdate( 'Y-m-d H:i:s', $date );
 				$context->set_replacement( $date, $source->convert_result_value( $this->schema, $date ) );
 				$column->set_contexts( [ $context ] );
 			}

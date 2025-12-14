@@ -47,7 +47,7 @@ class Select {
 	 * @param Sql\Value|null $alias Table alias.
 	 * @param boolean        $prefix_required Whether we need to prefix the SQL with the table name.
 	 */
-	public function __construct( Sql\Value $table, Sql\Value $column, Sql\Value $alias = null, $prefix_required = false ) {
+	public function __construct( Sql\Value $table, Sql\Value $column, $alias = null, $prefix_required = false ) {
 		$this->table = $table->get_value();
 		$this->column = $column->get_value();
 		$this->alias = $alias ? $alias->get_value() : null;

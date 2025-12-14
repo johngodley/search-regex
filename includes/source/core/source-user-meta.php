@@ -30,13 +30,6 @@ class User_Meta extends Meta {
 		return __( 'User Meta', 'search-regex' );
 	}
 
-	/**
-	 * Perform autocompletion on a column and a value
-	 *
-	 * @param array  $column Column.
-	 * @param string $value  Value.
-	 * @return array
-	 */
 	public function autocomplete( array $column, $value ) {
 		if ( isset( $column['column'] ) && $column['column'] === $this->get_meta_object_id() ) {
 			return Source\Autocomplete::get_user( $value );

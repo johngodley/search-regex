@@ -25,6 +25,11 @@ require_once __DIR__ . '/core/source-options.php';
 
 /**
  * Represents a source of data that can be searched. Typically maps directly to a database table
+ *
+ * @phpstan-import-type MetaItem from HasMeta
+ * @phpstan-import-type TermItem from HasTerms
+ * @phpstan-type PostActions array{edit?: string, view?: string}
+ * @phpstan-type RowColumn array{column: string, value?: mixed, items?: list<MetaItem|TermItem>}
  */
 abstract class Source {
 	const AUTOCOMPLETE_LIMIT = 50;
@@ -39,21 +44,21 @@ abstract class Source {
 	/**
 	 * The source type
 	 *
-	 * @var String
+	 * @var string
 	 **/
 	protected $source_type;
 
 	/**
 	 * The source type name
 	 *
-	 * @var String
+	 * @var string
 	 **/
 	protected $source_name;
 
 	/**
 	 * Create a Source\Source object
 	 *
-	 * @param Array                $handler Source handler information - an array of `name`, `class`, `label`, and `type`.
+	 * @param array<string, mixed> $handler Source handler information - an array of `name`, `class`, `label`, and `type`.
 	 * @param array<Filter\Filter> $filters Array of Filter\Filter objects for this source.
 	 */
 	public function __construct( array $handler, array $filters ) {
@@ -65,8 +70,8 @@ abstract class Source {
 	/**
 	 * Return the source type
 	 *
-	 * @param Array $row Database row, used in some sources to determine the type.
-	 * @return String Source type
+	 * @param array<string, mixed> $row Database row, used in some sources to determine the type.
+	 * @return string Source type
 	 */
 	public function get_type( array $row = [] ) {
 		return $this->source_type;
@@ -75,8 +80,8 @@ abstract class Source {
 	/**
 	 * Return true if the source matches the type, false otherwise
 	 *
-	 * @param String $type Source type.
-	 * @return boolean
+	 * @param string $type Source type.
+	 * @return bool
 	 */
 	public function is_type( $type ) {
 		return $this->source_type === $type;
@@ -85,8 +90,8 @@ abstract class Source {
 	/**
 	 * Return the source name
 	 *
-	 * @param Array $row Database row, used in some sources to determine the type.
-	 * @return String A user viewable source name
+	 * @param array<string, mixed> $row Database row, used in some sources to determine the type.
+	 * @return string A user viewable source name
 	 */
 	public function get_name( array $row = [] ) {
 		return $this->source_name;
@@ -104,7 +109,7 @@ abstract class Source {
 	/**
 	 * Return an array of additional columns to return in a search. These aren't searched, and can be used by the source.
 	 *
-	 * @return Array The array of column names
+	 * @return list<Sql\Select\Select> The array of column names
 	 */
 	public function get_info_columns() {
 		return [
@@ -115,29 +120,29 @@ abstract class Source {
 	/**
 	 * Return an the table's ID column name
 	 *
-	 * @return String The table's ID column name
+	 * @return string The table's ID column name
 	 */
 	abstract public function get_table_id();
 
 	/**
 	 * Return the column name used as a visible title for the source. For example, a post would have `post_title`
 	 *
-	 * @return String Column used for the title
+	 * @return string Column used for the title
 	 */
 	abstract public function get_title_column();
 
 	/**
 	 * Return the table name
 	 *
-	 * @return String The table name for the source
+	 * @return string The table name for the source
 	 */
 	abstract public function get_table_name();
 
 	/**
 	 * Return a visible label for the column. This is shown to the user and should be more descriptive than the column name itself
 	 *
-	 * @param String $column Column name.
-	 * @return String Column label
+	 * @param string $column Column name.
+	 * @return string Column label
 	 */
 	public function get_column_label( $column ) {
 		foreach ( $this->get_schema()['columns'] as $schema_column ) {
@@ -153,7 +158,7 @@ abstract class Source {
 	 * Get an array of actions for a given row
 	 *
 	 * @param Search\Result $result The Search\Result object containing the row from the source.
-	 * @return Array An array of action type => action URL
+	 * @return PostActions
 	 */
 	public function get_actions( Search\Result $result ) {
 		return [];
@@ -162,15 +167,16 @@ abstract class Source {
 	/**
 	 * Get the total number of matches for this search
 	 *
-	 * @param Filter\Filter[] $filters Search string.
-	 * @return Array{matches: int, rows: int}|\WP_Error The number of matches as an array of 'matches' and 'rows', or \WP_Error on error
+	 * @param list<Filter\Filter> $filters Search string.
+	 * @return array{matches: int, rows: int}|\WP_Error The number of matches as an array of 'matches' and 'rows', or \WP_Error on error
 	 */
-	public function get_global_match_total( array $filters ) {
+	public function get_global_match_total( $filters ) {
 		$query = Filter\Filter::get_as_query( $filters, $this );
 		$query->add_from( new Sql\From( Sql\Value::column( $this->get_table_name() ) ) );
 
 		$sql = new Sql\Builder();
 
+		/** @var \WP_Error|object{match_total: string, match_rows: string} $result */
 		$result = $sql->get_result( $query, new Sql\Modifier\Select_Count_Id( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ) );
 		if ( $result instanceof \WP_Error ) {
 			return $result;
@@ -185,7 +191,7 @@ abstract class Source {
 	/**
 	 * Get total number of rows for this source
 	 *
-	 * @return Int|\WP_Error The number of rows, or \WP_Error on error
+	 * @return int|\WP_Error The number of rows, or \WP_Error on error
 	 */
 	public function get_total_rows() {
 		$sql = new Sql\Builder();
@@ -201,7 +207,7 @@ abstract class Source {
 	 * Get a single row from the source
 	 *
 	 * @param int $row_id The row ID.
-	 * @return array|\WP_Error The database row, or \WP_Error on error
+	 * @return list<array<string, mixed>>|\WP_Error The database row, or \WP_Error on error
 	 */
 	public function get_row( $row_id ) {
 		$builder = new Sql\Builder();
@@ -224,26 +230,30 @@ abstract class Source {
 	 * Get columns for a single row
 	 *
 	 * @param int $row_id The row ID.
-	 * @return array|\WP_Error
+	 * @return list<RowColumn>|\WP_Error
 	 */
 	public function get_row_columns( $row_id ) {
 		global $wpdb;
 
-		$columns = array_filter( $this->get_schema()['columns'], function( $column ) {
-			if ( isset( $column['join'] ) ) {
-				return false;
+		$columns = array_filter(
+			$this->get_schema()['columns'], function ( $column ) {
+				if ( isset( $column['join'] ) ) {
+					return false;
+				}
+
+				if ( isset( $column['modify'] ) && $column['modify'] === false ) {
+					return false;
+				}
+
+				return true;
 			}
+		);
 
-			if ( isset( $column['modify'] ) && $column['modify'] === false ) {
-				return false;
-			}
-
-			return true;
-		} );
-
-		$columns = array_map( function( $column ) {
-			return $column['column'];
-		}, $columns );
+		$columns = array_map(
+			function ( $column ) {
+				return $column['column'];
+			}, $columns
+		);
 
 		// Known query
 		// phpcs:ignore
@@ -269,7 +279,7 @@ abstract class Source {
 	 *
 	 * @param int $offset The row offset.
 	 * @param int $limit The number of rows to return.
-	 * @return Array|\WP_Error The database rows, or \WP_Error on error
+	 * @return list<array<string, string>>|\WP_Error The database rows, or \WP_Error on error
 	 */
 	public function get_matched_rows( $offset, $limit ) {
 		$builder = new Sql\Builder();
@@ -291,7 +301,7 @@ abstract class Source {
 	 * Can we replace this column?
 	 *
 	 * @param string $column Column name.
-	 * @return boolean
+	 * @return bool
 	 */
 	private function can_replace_column( $column ) {
 		foreach ( $this->get_schema()['columns'] as $column_schema ) {
@@ -306,8 +316,8 @@ abstract class Source {
 	/**
 	 * Get array of columns to change
 	 *
-	 * @param array $updates Array of updates.
-	 * @return array Array of column name => replacement
+	 * @param array<string, array{change: list<Context\Type\Replace>}> $updates Array of updates.
+	 * @return array<string, string|null|integer> Array of column name => replacement
 	 */
 	protected function get_columns_to_change( array $updates ) {
 		$columns = [];
@@ -326,9 +336,9 @@ abstract class Source {
 	/**
 	 * Save a replacement to the database
 	 *
-	 * @param int   $row_id The row ID to save.
-	 * @param array $changes The value to save to the column in the row.
-	 * @return Bool|\WP_Error True on success, or \WP_Error on error
+	 * @param int $row_id The row ID to save.
+	 * @param array<string, mixed> $changes The value to save to the column in the row.
+	 * @return bool|\WP_Error True on success, or \WP_Error on error
 	 */
 	abstract public function save( $row_id, array $changes );
 
@@ -336,7 +346,7 @@ abstract class Source {
 	 * Delete a row from the source
 	 *
 	 * @param int $row_id The row ID.
-	 * @return Bool|\WP_Error true on success, or \WP_Error on error
+	 * @return bool|\WP_Error true on success, or \WP_Error on error
 	 */
 	abstract public function delete_row( $row_id );
 
@@ -358,7 +368,7 @@ abstract class Source {
 	/**
 	 * Get source filters
 	 *
-	 * @return Filter\Filter[]
+	 * @return list<Filter\Filter>
 	 */
 	public function get_filters() {
 		return $this->filters;
@@ -367,7 +377,7 @@ abstract class Source {
 	/**
 	 * Get schema for a source
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function get_schema_for_source() {
 		return apply_filters( 'searchregex_schema_item', $this->get_schema() );
@@ -376,24 +386,31 @@ abstract class Source {
 	/**
 	 * Get the columns in the order they are defined in the schema, suitable for ordering results
 	 *
-	 * @return array
+	 * @return array<string, int>
 	 */
 	public function get_schema_order() {
 		$schema = $this->get_schema_for_source();
 		$values = range( 0, count( $schema['columns'] ) - 1 );
-		$keys = array_map( function( $column ) {
-			return $column['column'];
-		}, $schema['columns'] );
+		$keys = array_map(
+			function ( $column ) {
+				return $column['column'];
+			}, $schema['columns']
+		);
 
-		return array_combine( $keys, $values );
+		$result = array_combine( $keys, $values );
+		if ( $result === false ) {
+			return [];
+		}
+
+		return $result;
 	}
 
 	/**
 	 * Internal function to get schema, which is then filtered by `get_schema_for_source`
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
-	abstract protected function get_schema();
+	abstract public function get_schema();
 
 	/**
 	 * Get the schema as a Schema\Source object
@@ -407,9 +424,9 @@ abstract class Source {
 	/**
 	 * Get any preloadable data for the given filter
 	 *
-	 * @param array         $schema Schema.
-	 * @param Filter\Filter $filter Filter.
-	 * @return array
+	 * @param array<string, mixed> $schema Schema.
+	 * @param Filter\Type\Filter_Type $filter Filter.
+	 * @return list<array{label: string, value: string}>
 	 */
 	public function get_filter_preload( $schema, $filter ) {
 		return [];
@@ -418,16 +435,16 @@ abstract class Source {
 	/**
 	 * Perform autocompletion on a column and a value
 	 *
-	 * @param array  $column Column.
-	 * @param string $value  Value.
-	 * @return array
+	 * @param array<string, mixed> $column Column.
+	 * @param string $value Value.
+	 * @return list<object{id: string|int, value: string}>
 	 */
 	abstract public function autocomplete( array $column, $value );
 
 	/**
 	 * Does this source have any advanced filters?
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function has_advanced_filter() {
 		foreach ( $this->filters as $filter ) {
@@ -449,7 +466,7 @@ abstract class Source {
 	public function convert_result_value( Schema\Column $schema, $value ) {
 		if ( $schema->get_options() ) {
 			foreach ( $schema->get_options() as $option ) {
-				/** @psalm-suppress DocblockTypeContradiction */
+				// @phpstan-ignore identical.alwaysFalse
 				if ( $option['value'] === $value || intval( $option['value'], 10 ) === $value ) {
 					return $option['label'];
 				}
@@ -468,14 +485,14 @@ abstract class Source {
 	/**
 	 * Helper function to log actions if WP_DEBUG is enabled
 	 *
-	 * @param string               $title Log title.
-	 * @param array|string|integer $update Log data.
+	 * @param string $title Log title.
+	 * @param mixed $update Log data.
 	 * @return void
 	 */
 	protected function log_save( $title, $update ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			// phpcs:ignore
-			error_log( $title . ': ' . print_r( $update, true ) );
+			// @phpstan-ignore disallowed.function, disallowed.function
+			error_log( $title . ': ' . print_r( $update, true ) ); // phpcs:ignore
 		}
 	}
 }

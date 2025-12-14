@@ -8,6 +8,8 @@ use SearchRegex\Filter;
 use SearchRegex\Action;
 use SearchRegex\Schema;
 use SearchRegex\Plugin;
+use WP_REST_Request;
+use WP_Error;
 
 /**
  * @apiDefine SearchQueryParams Search parameters
@@ -152,26 +154,28 @@ use SearchRegex\Plugin;
 
 /**
  * Base class for Search Regex API endpoints
+ *
+ * @phpstan-type FilterItem array{type: string, items: mixed}
+ * @phpstan-type FilterValidation string|list<FilterItem>
  */
 class Route {
 	/**
 	 * Checks a capability
 	 *
-	 * @param \WP_REST_Request $request Request.
-	 * @return Bool
+	 * @param WP_REST_Request<array<string, mixed>> $_request Request.
+	 * @return bool
 	 */
-	public function permission_callback( \WP_REST_Request $request ) {
-		/** @psalm-suppress UndefinedClass */
+	public function permission_callback( WP_REST_Request $_request ) {
 		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH );
 	}
 
 	/**
 	 * Get route details
 	 *
-	 * @param String        $method Method name.
-	 * @param String        $callback Function name.
-	 * @param callable|Bool $permissions Permissions callback.
-	 * @return Array{methods: string, callback: callable, permission_callback: callable|bool} Route detials
+	 * @param string        $method Method name.
+	 * @param string        $callback Function name.
+	 * @param callable|bool $permissions Permissions callback.
+	 * @return array<string, mixed>{methods: string, callback: callable, permission_callback: callable|bool} Route detials
 	 */
 	public function get_route( $method, $callback, $permissions = false ) {
 		return [
@@ -184,7 +188,7 @@ class Route {
 	/**
 	 * Return API search args
 	 *
-	 * @return Array<String, Array>
+	 * @return array<string, mixed><string, array>
 	 */
 	protected function get_search_params() {
 		return [
@@ -243,8 +247,8 @@ class Route {
 	/**
 	 * Helper to return a search and replace object
 	 *
-	 * @param Array $params Array of params.
-	 * @return Array{Search\Search,Action\Action} Search and Replace objects
+	 * @param array<string, mixed> $params Array of params.
+	 * @return array{Search\Search, Action\Action} Search and Replace objects
 	 */
 	protected function get_search_replace( $params ) {
 		$schema = new Schema\Schema( Source\Manager::get_schema( $params['source'] ) );
@@ -283,68 +287,68 @@ class Route {
 	/**
 	 * Validate that the search flags are correct
 	 *
-	 * @param Array|String     $value The value to validate.
-	 * @param \WP_REST_Request $request The request.
-	 * @param Array            $param The array of parameters.
-	 * @return \WP_Error|Bool true or false
+	 * @param array<string, mixed>|string     $value The value to validate.
+	 * @param WP_REST_Request<array<string, mixed>> $_request The request.
+	 * @param array<string, mixed>            $_param The array of parameters.
+	 * @return WP_Error|bool true or false
 	 */
-	public function validate_search_flags( $value, \WP_REST_Request $request, $param ) {
+	public function validate_search_flags( $value, WP_REST_Request $_request, $_param ) {
 		if ( is_array( $value ) ) {
-			$source = new Search\Flags( $value );
+			$_flags = new Search\Flags( $value );
 			return true;
 		}
 
-		return new \WP_Error( 'rest_invalid_param', 'Invalid search flag detected', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid search flag detected', array( 'status' => 400 ) );
 	}
 
 	/**
 	 * Validate that the view columns are valid
 	 *
-	 * @param Array|String     $value The value to validate.
-	 * @param \WP_REST_Request $request The request.
-	 * @param Array            $param The array of parameters.
-	 * @return \WP_Error|Bool true or false
+	 * @param array<string, mixed>|string     $value The value to validate.
+	 * @param WP_REST_Request<array<string, mixed>> $_request The request.
+	 * @param array<string, mixed>            $_param The array of parameters.
+	 * @return WP_Error|bool true or false
 	 */
-	public function validate_view( $value, \WP_REST_Request $request, $param ) {
+	public function validate_view( $value, WP_REST_Request $_request, $_param ) {
 		if ( is_array( $value ) ) {
 			foreach ( $value as $view ) {
 				$parts = explode( '__', $view );
 				if ( count( $parts ) !== 2 ) {
-					return new \WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
+					return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
 				}
 			}
 
 			return true;
 		}
 
-		return new \WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
 	}
 
 	/**
 	 * Validate that the view columns are valid
 	 *
-	 * @param Array|String     $value The value to validate.
-	 * @param \WP_REST_Request $request The request.
-	 * @param Array            $param The array of parameters.
-	 * @return \WP_Error|Bool true or false
+	 * @param array<string, mixed>|string     $value The value to validate.
+	 * @param WP_REST_Request<array<string, mixed>> $_request The request.
+	 * @param array<string, mixed>            $_param The array of parameters.
+	 * @return WP_Error|bool true or false
 	 */
-	public function validate_action( $value, \WP_REST_Request $request, $param ) {
+	public function validate_action( $value, WP_REST_Request $_request, $_param ) {
 		if ( in_array( $value, [ 'modify', 'replace', 'delete', 'export', 'nothing', 'action', '' ], true ) ) {
 			return true;
 		}
 
-		return new \WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
 	}
 
 	/**
 	 * Validate that the source is valid
 	 *
-	 * @param Array|String     $value The value to validate.
-	 * @param \WP_REST_Request $request The request.
-	 * @param Array            $param The array of parameters.
-	 * @return Bool|\WP_Error true or false
+	 * @param array<string, mixed>|string     $value The value to validate.
+	 * @param WP_REST_Request<array<string, mixed>> $_request The request.
+	 * @param array<string, mixed>            $_param The array of parameters.
+	 * @return bool|WP_Error true or false
 	 */
-	public function validate_source( $value, \WP_REST_Request $request, $param ) {
+	public function validate_source( $value, WP_REST_Request $_request, $_param ) {
 		$allowed = Source\Manager::get_all_source_names();
 
 		add_filter( 'wp_revisions_to_keep', [ $this, 'disable_post_revisions' ] );
@@ -354,36 +358,40 @@ class Route {
 			$value = [ $value ];
 		}
 
-		$valid = array_filter( $value, function( $item ) use ( $allowed ) {
-			return array_search( $item, $allowed, true ) !== false;
-		} );
+		$valid = array_filter(
+			$value, function ( $item ) use ( $allowed ) {
+				return array_search( $item, $allowed, true ) !== false;
+			}
+		);
 
 		if ( count( $valid ) === count( $value ) ) {
 			return true;
 		}
 
-		return new \WP_Error( 'rest_invalid_param', 'Invalid source detected', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid source detected', array( 'status' => 400 ) );
 	}
 
 	/**
 	 * Validate supplied filters
 	 *
-	 * @param string|array     $value Value.
-	 * @param \WP_REST_Request $request Request.
-	 * @param array            $param Params.
+	 * @param FilterValidation $value Value.
+	 * @param WP_REST_Request<array<string, mixed>> $_request Request.
+	 * @param array<string, mixed>            $_param Params.
 	 * @return boolean
 	 */
-	public function validate_filters( $value, \WP_REST_Request $request, $param ) {
+	public function validate_filters( $value, WP_REST_Request $_request, $_param ) {
 		if ( ! is_array( $value ) ) {
 			return false;
 		}
 
 		foreach ( $value as $filter ) {
+			// @phpstan-ignore function.alreadyNarrowedType
 			if ( ! is_array( $filter ) ) {
 				return false;
 			}
 
 			// Check type and items are present
+			// @phpstan-ignore isset.offset
 			if ( ! isset( $filter['type'] ) || ! isset( $filter['items'] ) ) {
 				return false;
 			}
@@ -396,7 +404,7 @@ class Route {
 	 * Used to disable post revisions when updating a post
 	 *
 	 * @internal
-	 * @return Int
+	 * @return int
 	 */
 	public function disable_post_revisions() {
 		return 0;
@@ -406,8 +414,8 @@ class Route {
 	 * Stops wp_update_post from changing the post_modified date
 	 *
 	 * @internal
-	 * @param Array $data Array of post data.
-	 * @return Array
+	 * @param array<string, mixed> $data Array of post data.
+	 * @return array<string, mixed>
 	 */
 	public function wp_insert_post_data( $data ) {
 		if ( isset( $data['post_modified'] ) ) {
@@ -421,18 +429,18 @@ class Route {
 	/**
 	 * Does the array contain the supplied keys?
 	 *
-	 * @param array        $keys Keys.
-	 * @param array|string $item Item.
-	 * @return true|\WP_Error
+	 * @param string[] $keys Keys.
+	 * @param array<string, mixed>|string $item Item.
+	 * @return true|WP_Error
 	 */
 	protected function contains_keys( array $keys, $item ) {
 		if ( ! is_array( $item ) ) {
-			return new \WP_Error( 'rest_invalid_param', 'Item is not an array', [ 'status' => 400 ] );
+			return new WP_Error( 'rest_invalid_param', 'Item is not an array', [ 'status' => 400 ] );
 		}
 
 		foreach ( $keys as $key ) {
 			if ( ! isset( $item[ $key ] ) ) {
-				return new \WP_Error( 'rest_invalid_param', 'Item does not contain key ' . $key, [ 'status' => 400 ] );
+				return new WP_Error( 'rest_invalid_param', 'Item does not contain key ' . $key, [ 'status' => 400 ] );
 			}
 		}
 

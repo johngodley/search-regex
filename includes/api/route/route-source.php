@@ -4,6 +4,8 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Source;
 use SearchRegex\Api;
+use WP_REST_Request;
+use WP_Error;
 
 /**
  * @apiDefine ColumnData Data for a column
@@ -85,13 +87,15 @@ use SearchRegex\Api;
  * @apiParam (Search Query) {Integer} perPage Number of results per page
  * @apiParam (Search Query) {String="forward","backward"} [searchDirection=forward] Direction to search. Only needed for regular expression searches
  *
- * @apiSuccess {Bool} result `true` if deleted, `false` otherwise
+ * @apiSuccess {bool} result `true` if deleted, `false` otherwise
  * @apiUse 401Error
  * @apiUse 404Error
  */
 
 /**
  * Search API endpoint
+ *
+ * @phpstan-type SourceInfo array{name: string, label: string, type: string}
  */
 class Source_Route extends Api\Route {
 	const AUTOCOMPLETE_MAX = 50;
@@ -100,7 +104,7 @@ class Source_Route extends Api\Route {
 	/**
 	 * API schema for source validation.
 	 *
-	 * @return array
+	 * @return array<string, array<string, mixed>>
 	 */
 	private function get_source_params() {
 		return [
@@ -114,63 +118,91 @@ class Source_Route extends Api\Route {
 	/**
 	 * Search API endpoint constructor
 	 *
-	 * @param String $namespace Namespace.
+	 * @param string $route_namespace Namespace.
 	 */
-	public function __construct( $namespace ) {
-		register_rest_route( $namespace, '/source', [
-			$this->get_route( \WP_REST_Server::READABLE, 'getSources', [ $this, 'permission_callback' ] ),
-		] );
+	public function __construct( $route_namespace ) {
+		register_rest_route(
+			$route_namespace,
+			'/source',
+			[
+				$this->get_route( \WP_REST_Server::READABLE, 'getSources', [ $this, 'permission_callback' ] ),
+			]
+		);
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/complete/(?P<column>[a-z\-\_]+)', [
-			'args' => array_merge(
-				$this->get_source_params(),
+		register_rest_route(
+			$route_namespace,
+			'/source/(?P<source>[a-z\-\_]+)/complete/(?P<column>[a-z\-\_]+)',
+			array_merge(
 				[
-					'value' => [
-						'description' => 'Auto complete value',
-						'type' => 'string',
-						'required' => true,
-					],
-				]
-			),
-			$this->get_route( \WP_REST_Server::READABLE, 'autoComplete', [ $this, 'permission_callback' ] ),
-		] );
-
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)', [
-			'args' => $this->get_source_params(),
-			$this->get_route( \WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
-		] );
-
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)', [
-			'args' => array_merge(
-				[
-					'replacement' => [
-						'description' => 'Row replacement. A single action.',
-						'type' => 'object',
-						'validate_callback' => [ $this, 'validate_replacement' ],
-						'required' => true,
-					],
+					'args' => array_merge(
+						$this->get_source_params(),
+						[
+							'value' => [
+								'description' => 'Auto complete value',
+								'type' => 'string',
+								'required' => true,
+							],
+						]
+					),
 				],
-				$this->get_source_params(),
-				$this->get_search_params()
-			),
-			$this->get_route( \WP_REST_Server::EDITABLE, 'saveRow', [ $this, 'permission_callback' ] ),
-		] );
+				$this->get_route( \WP_REST_Server::READABLE, 'autoComplete', [ $this, 'permission_callback' ] )
+			)
+		);
 
-		register_rest_route( $namespace, '/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)/delete', [
-			'args' => $this->get_source_params(),
-			$this->get_route( \WP_REST_Server::EDITABLE, 'deleteRow', [ $this, 'permission_callback' ] ),
-		] );
+		register_rest_route(
+			$route_namespace,
+			'/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)',
+			array_merge(
+				[
+					'args' => $this->get_source_params(),
+				],
+				$this->get_route( \WP_REST_Server::READABLE, 'loadRow', [ $this, 'permission_callback' ] ),
+			)
+		);
+
+		register_rest_route(
+			$route_namespace,
+			'/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)',
+			array_merge(
+				[
+					'args' => array_merge(
+						[
+							'replacement' => [
+								'description' => 'Row replacement. A single action.',
+								'type' => 'object',
+								'validate_callback' => [ $this, 'validate_replacement' ],
+								'required' => true,
+							],
+						],
+						$this->get_source_params(),
+						$this->get_search_params()
+					),
+				],
+				$this->get_route( \WP_REST_Server::EDITABLE, 'saveRow', [ $this, 'permission_callback' ] ),
+			)
+		);
+
+		register_rest_route(
+			$route_namespace,
+			'/source/(?P<source>[a-z\-\_]+)/row/(?P<rowId>[\d]+)/delete',
+			array_merge(
+				[
+					'args' => $this->get_source_params(),
+				],
+				$this->get_route( \WP_REST_Server::EDITABLE, 'deleteRow', [ $this, 'permission_callback' ] ),
+			)
+		);
 	}
 
 	/**
 	 * Sanitize the source so it's a single source in an array, suitable for use with the search functions
 	 *
-	 * @param string|array     $value Source name.
-	 * @param \WP_REST_Request $request Request object.
+	 * @param string|array<string, mixed> $value Source name.
+	 * @param WP_REST_Request<array<string, mixed>> $request Request object.
 	 * @param string           $param Param name.
 	 * @return string[]
 	 */
-	public function sanitize_row_source( $value, \WP_REST_Request $request, $param ) {
+	public function sanitize_row_source( $value, WP_REST_Request $request, $param ) {
 		if ( is_array( $value ) ) {
 			return array_slice( $value, 0, 1 );
 		}
@@ -181,12 +213,12 @@ class Source_Route extends Api\Route {
 	/**
 	 * Validate the replacement.
 	 *
-	 * @param string|array     $value Source name.
-	 * @param \WP_REST_Request $request Request object.
-	 * @param string           $param Param name.
-	 * @return true|\WP_Error
+	 * @param string|array<string, mixed> $value Source name.
+	 * @param WP_REST_Request<array<string, mixed>> $request Request object.
+	 * @param string $param Param name.
+	 * @return true|WP_Error
 	 */
-	public function validate_replacement( $value, \WP_REST_Request $request, $param ) {
+	public function validate_replacement( $value, WP_REST_Request $request, $param ) {
 		$result = $this->contains_keys( [ 'column' ], $value );
 		if ( is_wp_error( $result ) ) {
 			return $result;
@@ -203,7 +235,7 @@ class Source_Route extends Api\Route {
 		}
 
 		if ( isset( $value['values'] ) && ! is_array( $value['values'] ) ) {
-			return new \WP_Error( 'rest_invalid_param', 'Item is not an array', [ 'status' => 400 ] );
+			return new WP_Error( 'rest_invalid_param', 'Item is not an array', [ 'status' => 400 ] );
 		}
 
 		return true;
@@ -212,29 +244,30 @@ class Source_Route extends Api\Route {
 	/**
 	 * Get list of all sources
 	 *
-	 * @param \WP_REST_Request $request The request.
-	 * @return \WP_Error|array Return an array of sources, or a \WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request The request.
+	 * @return WP_Error|list<SourceInfo> Return an array of sources, or a WP_Error
 	 */
-	public function getSources( \WP_REST_Request $request ) {
+	public function getSources( WP_REST_Request $request ) {
 		$sources = Source\Manager::get_all_sources();
 
-		return array_map( function( $source ) {
-			return [
-				'name' => $source['name'],
-				'label' => $source['label'],
-				'description' => $source['description'],
-				'type' => $source['type'],
-			];
-		}, $sources );
+		return array_map(
+			function ( $source ) {
+				return [
+					'name' => $source['name'],
+					'label' => $source['label'],
+					'type' => $source['type'],
+				];
+			}, $sources
+		);
 	}
 
 	/**
 	 * Perform a replacement on a row
 	 *
-	 * @param \WP_REST_Request $request The request.
-	 * @return \WP_Error|array Return an array of results, or a \WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request The request.
+	 * @return WP_Error|array<string, mixed> Return an array of results, or a WP_Error
 	 */
-	public function saveRow( \WP_REST_Request $request ) {
+	public function saveRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
 		$replace = [
 			'action' => 'modify',
@@ -247,24 +280,24 @@ class Source_Route extends Api\Route {
 
 		// Get the results for the search/replace
 		$results = $search->get_row( $params['rowId'], $action );
-		if ( $results instanceof \WP_Error ) {
+		if ( $results instanceof WP_Error ) {
 			return $results;
 		}
 
-		if ( count( $results ) === 0 ) {
-			return new \WP_Error( 'rest_invalid_param', 'No matching row', [ 'status' => 400 ] );
+		if ( count( $results ) === 0 || $results[0] === false ) {
+			return new WP_Error( 'rest_invalid_param', 'No matching row', [ 'status' => 400 ] );
 		}
 
 		// Save the changes
 		$results = $search->save_changes( $results[0] );
-		if ( $results instanceof \WP_Error ) {
+		if ( $results instanceof WP_Error ) {
 			return $results;
 		}
 
 		// Get the row again, with the original search conditions
 		list( $search, $action ) = $this->get_search_replace( $params );
 		$results = $search->get_row( $params['rowId'], $action );
-		if ( $results instanceof \WP_Error ) {
+		if ( $results instanceof WP_Error ) {
 			return $results;
 		}
 
@@ -276,10 +309,10 @@ class Source_Route extends Api\Route {
 	/**
 	 * Load all relevant data from a source's row
 	 *
-	 * @param \WP_REST_Request $request The request.
-	 * @return \WP_Error|array Return an array of results, or a \WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request The request.
+	 * @return WP_Error|array<string, mixed> Return an array of results, or a WP_Error
 	 */
-	public function loadRow( \WP_REST_Request $request ) {
+	public function loadRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
 		$sources = Source\Manager::get( $params['source'], [] );
 		$row = $sources[0]->get_row_columns( $params['rowId'] );
@@ -296,10 +329,10 @@ class Source_Route extends Api\Route {
 	/**
 	 * Delete a row of data
 	 *
-	 * @param \WP_REST_Request $request The request.
-	 * @return \WP_Error|array Return an array of results, or a \WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request The request.
+	 * @return WP_Error|bool
 	 */
-	public function deleteRow( \WP_REST_Request $request ) {
+	public function deleteRow( WP_REST_Request $request ) {
 		$params = $request->get_params();
 		$sources = Source\Manager::get( $params['source'], [] );
 
@@ -309,10 +342,10 @@ class Source_Route extends Api\Route {
 	/**
 	 * Autocomplete some value and return suggestions appropriate to the source and column
 	 *
-	 * @param \WP_REST_Request $request The request.
-	 * @return \WP_Error|array Return an array of results, or a \WP_Error
+	 * @param WP_REST_Request<array<string, mixed>> $request The request.
+	 * @return WP_Error|array<string, mixed> Return an array of results, or a WP_Error
 	 */
-	public function autoComplete( \WP_REST_Request $request ) {
+	public function autoComplete( WP_REST_Request $request ) {
 		$params = $request->get_params();
 		$sources = Source\Manager::get( $params['source'], [] );
 
@@ -349,6 +382,6 @@ class Source_Route extends Api\Route {
 		}
 
 		// Invalid column
-		return new \WP_Error( 'rest_invalid_param', 'Unknown column ' . $params['column'], [ 'status' => 400 ] );
+		return new WP_Error( 'rest_invalid_param', 'Unknown column ' . $params['column'], [ 'status' => 400 ] );
 	}
 }

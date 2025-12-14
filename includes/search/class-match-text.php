@@ -6,13 +6,21 @@ use SearchRegex\Context;
 
 /**
  * Represents a single match
+ *
+ * @phpstan-type MatchTextJson array{
+ *   pos_id: int,
+ *   context_offset: int,
+ *   match: string,
+ *   replacement: string|null,
+ *   captures: string[]
+ * }
  */
 class Text {
 	/**
 	 * Position ID
 	 *
 	 * @readonly
-	 * @var Int
+	 * @var int
 	 **/
 	private $pos_id;
 
@@ -20,37 +28,37 @@ class Text {
 	 * Matched string
 	 *
 	 * @readonly
-	 * @var String
+	 * @var string
 	 **/
 	private $match;
 
 	/**
 	 * Context offset
 	 *
-	 * @var Int
+	 * @var int
 	 **/
 	private $context_offset = 0;
 
 	/**
 	 * Replacement
 	 *
-	 * @var String|null
+	 * @var string|null
 	 **/
 	private $replacement = null;
 
 	/**
 	 * Array of captured data
 	 *
-	 * @var String[]
+	 * @var string[]
 	 **/
 	private $captures;
 
 	/**
 	 * Create a Match given the matched phrase, the match offset, and what the match is replaced with
 	 *
-	 * @param String $match The matched phrased. Typical the search phrase unless a regular expression search.
+	 * @param string $match The matched phrased. Typical the search phrase unless a regular expression search.
 	 * @param int    $match_offset The offset within the column.
-	 * @param String $replacement The replaced value, if one is supplied.
+	 * @param string $replacement The replaced value, if one is supplied.
 	 */
 	public function __construct( $match, $match_offset = 0, $replacement = null ) {
 		$this->pos_id = intval( $match_offset, 10 );
@@ -72,7 +80,7 @@ class Text {
 	/**
 	 * Add a regular expression capture value
 	 *
-	 * @param String $capture Captured value.
+	 * @param string $capture Captured value.
 	 * @return void
 	 */
 	public function add_capture( $capture ) {
@@ -82,7 +90,7 @@ class Text {
 	/**
 	 * Get match position
 	 *
-	 * @return Int Position
+	 * @return int Position
 	 */
 	public function get_position() {
 		return $this->pos_id;
@@ -91,7 +99,7 @@ class Text {
 	/**
 	 * Get matched text
 	 *
-	 * @return String Matched text
+	 * @return string Matched text
 	 */
 	public function get_matched_text() {
 		return $this->match;
@@ -100,7 +108,7 @@ class Text {
 	/**
 	 * Set the context offset - the offset within the context that this match belongs to
 	 *
-	 * @param Int $context_offset The context offset.
+	 * @param int $context_offset The context offset.
 	 * @return void
 	 */
 	public function set_context( $context_offset ) {
@@ -110,7 +118,7 @@ class Text {
 	/**
 	 * Convert this match to JSON
 	 *
-	 * @return Array JSON
+	 * @return MatchTextJson JSON
 	 */
 	public function to_json() {
 		return [
@@ -125,9 +133,9 @@ class Text {
 	/**
 	 * Encode a search as a regular expression
 	 *
-	 * @param String $search Search phrase.
+	 * @param string $search Search phrase.
 	 * @param Flags  $flags Is this regular expression.
-	 * @return String Encoded search phrase
+	 * @return string Encoded search phrase
 	 */
 	public static function get_pattern( $search, Flags $flags ) {
 		$pattern = \preg_quote( $search, '@' );
@@ -149,11 +157,11 @@ class Text {
 	/**
 	 * Get all matches for a search phrase on a column
 	 *
-	 * @param String $search The search phrase.
-	 * @param Flags  $flags Any search flags.
-	 * @param Array  $replacements A matching set of replacements.
-	 * @param String $column_value The content to match.
-	 * @return Array Array of Match contexts
+	 * @param string $search The search phrase.
+	 * @param Flags $flags Any search flags.
+	 * @param array<int, string|null> $replacements A matching set of replacements.
+	 * @param string $column_value The content to match.
+	 * @return array<int, Context\Type\Text> Array of Match contexts
 	 */
 	public static function get_all( $search, Flags $flags, array $replacements, $column_value ) {
 		$pattern = self::get_pattern( $search, $flags );
@@ -197,8 +205,8 @@ class Text {
 	/**
 	 * Return the replacement at the matches position of the given text.
 	 *
-	 * @param String $text Text value.
-	 * @return String The $text value, with the replacement inserted at the Match position
+	 * @param string $text Text value.
+	 * @return string The $text value, with the replacement inserted at the Match position
 	 */
 	public function replace_at_position( $text ) {
 		if ( $this->replacement !== null ) {

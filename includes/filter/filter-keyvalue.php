@@ -81,11 +81,11 @@ class Filter_Keyvalue extends Filter_Type {
 	public function __construct( array $item, Schema\Column $schema ) {
 		parent::__construct( $item, $schema );
 
-		if ( ! empty( $item['key'] ) ) {
+		if ( isset( $item['key'] ) && $item['key'] !== '' ) {
 			$this->key = $item['key'];
 		}
 
-		if ( ! empty( $item['value'] ) ) {
+		if ( isset( $item['value'] ) && $item['value'] !== '' ) {
 			$this->value = $item['value'];
 		}
 
@@ -107,7 +107,7 @@ class Filter_Keyvalue extends Filter_Type {
 
 		$joiner = $schema->get_join_column();
 		if ( $joiner !== null ) {
-			if ( $this->key || $this->key_logic === 'any' ) {
+			if ( $this->key !== null || $this->key_logic === 'any' ) {
 				$join = Sql\Join\Join::create( $schema->get_column() . '_key', $joiner );
 
 				if ( $join instanceof Sql\Join\Meta ) {
@@ -115,7 +115,7 @@ class Filter_Keyvalue extends Filter_Type {
 				}
 			}
 
-			if ( $this->value || $this->value_logic === 'any' ) {
+			if ( $this->value !== null || $this->value_logic === 'any' ) {
 				$join = Sql\Join\Join::create( $schema->get_column() . '_value', $joiner );
 
 				if ( $join instanceof Sql\Join\Meta ) {
@@ -153,7 +153,7 @@ class Filter_Keyvalue extends Filter_Type {
 	}
 
 	public function is_valid() {
-		return $this->key || $this->value;
+		return $this->key !== null || $this->value !== null;
 	}
 
 	public function get_values_for_row( array $row ) {
@@ -206,14 +206,14 @@ class Filter_Keyvalue extends Filter_Type {
 
 		$raw_values = array_map( 'intval', $raw_values );
 		$meta_values = [];
-		if ( $this->join_key ) {
+		if ( $this->join_key !== null ) {
 			$meta_values = $this->join_key->get_values( $raw_values );
-		} elseif ( $this->join_value ) {
+		} elseif ( $this->join_value !== null ) {
 			$meta_values = $this->join_value->get_values( $raw_values );
 		}
 
-		foreach ( $raw_values as $pos => $value ) {
-			$meta_contexts[ $value ] = [
+		foreach ( $raw_values as $pos => $raw_value ) {
+			$meta_contexts[ $raw_value ] = [
 				'key' => [],
 				'value' => [],
 			];
@@ -223,7 +223,7 @@ class Filter_Keyvalue extends Filter_Type {
 				$context = $this->get_value_context( $source, $action, $this->schema->get_column() . '_key', $meta_values[ $pos ]->meta_key );
 
 				if ( count( $context ) > 0 ) {
-					$meta_contexts[ $value ]['key'] = $context[0];
+					$meta_contexts[ $raw_value ]['key'] = $context[0];
 				}
 			}
 
@@ -232,7 +232,7 @@ class Filter_Keyvalue extends Filter_Type {
 				$context = $this->get_value_context( $source, $action, $this->schema->get_column() . '_value', $meta_values[ $pos ]->meta_value );
 
 				if ( count( $context ) > 0 ) {
-					$meta_contexts[ $value ]['value'] = $context[0];
+					$meta_contexts[ $raw_value ]['value'] = $context[0];
 				}
 			}
 		}
@@ -242,9 +242,9 @@ class Filter_Keyvalue extends Filter_Type {
 		foreach ( $meta_contexts as $context ) {
 			if ( $this->join_key && $this->join_value && $context['key'] instanceof Context\Type\Value && $context['value'] instanceof Context\Type\Value ) {
 				$contexts[] = new Context\Type\Pair( $context['key'], $context['value'] );
-			} elseif ( $this->join_key ) {
+			} elseif ( $this->join_key !== null ) {
 				$contexts[] = $context['key'];
-			} elseif ( $this->join_value ) {
+			} elseif ( $this->join_value !== null ) {
 				$contexts[] = $context['value'];
 			}
 		}
@@ -263,9 +263,9 @@ class Filter_Keyvalue extends Filter_Type {
 	 *
 	 * @param Source\Source $source Source.
 	 * @param Action\Action $action Action.
-	 * @param string        $column Column.
-	 * @param string        $label Label.
-	 * @return array
+	 * @param string $column Column.
+	 * @param string $label Label.
+	 * @return Context\Context[]
 	 */
 	private function get_value_context( Source\Source $source, Action\Action $action, $column, $label ) {
 		// We can shortcut equals or notequals

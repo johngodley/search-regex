@@ -28,13 +28,14 @@ class Post extends Source\Source {
 	/**
 	 * Get the custom post type from the source
 	 *
-	 * @param String $post_type Source post type.
-	 * @return null|Array
+	 * @param string $post_type Source post type.
+	 * @return array{value: string, label: string}|null
 	 */
 	private function get_post_type( $post_type ) {
 		$post_types = get_post_types( [], 'objects' );
 
 		foreach ( $post_types as $type ) {
+			// @phpstan-ignore function.alreadyNarrowedType
 			if ( is_object( $type ) && $type->name === $post_type ) {
 				return [
 					'value' => $type->name,
@@ -50,7 +51,7 @@ class Post extends Source\Source {
 		$edit = get_edit_post_link( $result->get_row_id(), '' );
 		$view = get_permalink( $result->get_row_id() );
 
-		if ( $edit ) {
+		if ( $edit && $view ) {
 			return [
 				'edit' => $edit,
 				'view' => $view,
@@ -82,11 +83,9 @@ class Post extends Source\Source {
 	}
 
 	public function get_row_columns( $row_id ) {
-		$extra = [];
-		$meta = $this->get_meta( get_post_meta( $row_id ) );
-		if ( count( $meta ) > 0 ) {
-			$extra = [ $meta ];
-		}
+		$extra = [
+			$this->get_meta( get_post_meta( $row_id ) ),
+		];
 
 		$object_terms = wp_get_object_terms( $row_id, [ 'post_tag', 'category' ] );
 		if ( $object_terms instanceof \WP_Error ) {
@@ -120,12 +119,12 @@ class Post extends Source\Source {
 				$post['post_excerpt'] = wp_slash( $post['post_excerpt'] );
 			}
 
+			/** @var array<mixed> $post */
 			$this->log_save( 'post', $post );
 
 			// This does all the sanitization
 			$result = true;
 
-			/** @psalm-suppress UndefinedFunction */
 			if ( Plugin\Settings::init()->can_save() ) {
 				$result = wp_update_post( $post );
 			}
@@ -143,7 +142,6 @@ class Post extends Source\Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete post', $row_id );
 
-		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\Settings::init()->can_save() ) {
 			if ( wp_delete_post( $row_id, true ) ) {
 				return true;
@@ -187,12 +185,11 @@ class Post extends Source\Source {
 	/**
 	 * Get any preloadable data for the given filter
 	 *
-	 * @param array         $schema Schema.
-	 * @param Filter\Filter $filter Filter.
-	 * @return array
+	 * @param array<string, mixed> $schema Schema.
+	 * @param Filter\Type\Filter_Type $filter Filter.
+	 * @return list<array{label: string, value: string}>
 	 */
 	public function get_filter_preload( $schema, $filter ) {
-		/** @psalm-suppress DocblockTypeContradiction */
 		if ( $filter instanceof Filter\Type\Filter_Member && ( $schema['column'] === 'category' || $schema['column'] === 'post_tag' ) ) {
 			$preload = [];
 
@@ -208,7 +205,13 @@ class Post extends Source\Source {
 			}
 
 			return $preload;
-		} elseif ( $schema['column'] === 'post_author' && ( $filter instanceof Filter\Type\Filter_Integer || $filter instanceof Filter\Type\Filter_String ) ) {
+		} elseif (
+			$schema['column'] === 'post_author' &&
+			(
+				$filter instanceof Filter\Type\Filter_Integer ||
+				$filter instanceof Filter\Type\Filter_String
+			)
+		) {
 			$convert = new Source\Convert_Values();
 
 			return [
@@ -428,13 +431,14 @@ class Post extends Source\Source {
 	/**
 	 * Get list of all custom post types that have a label
 	 *
-	 * @return array
+	 * @return list<array{value: string, label: string}>
 	 */
 	private function get_all_custom_post_types() {
 		$post_types = get_post_types( [], 'objects' );
 		$post_sources = [];
 
 		foreach ( $post_types as $type ) {
+			// @phpstan-ignore function.alreadyNarrowedType
 			if ( is_object( $type ) && strlen( $type->label ) > 0 ) {
 				$post_sources[] = [
 					'value' => $type->name,

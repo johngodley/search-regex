@@ -6,15 +6,13 @@ use SearchRegex\Sql;
 
 /**
  * Join on meta table
+ *
+ * @phpstan-type MetaRow object{
+ *   meta_key: string,
+ *   meta_value: string
+ * }
  */
 class Meta extends Join {
-	/**
-	 * Source
-	 *
-	 * @var string
-	 */
-	private $source;
-
 	/**
 	 * Meta table name
 	 *
@@ -67,7 +65,6 @@ class Meta extends Join {
 		global $wpdb;
 
 		$this->column = $meta_type;
-		$this->source = $source;
 		$this->source_table = '';
 		$this->meta_id = 'meta_id';
 		$this->group_id = '';
@@ -131,10 +128,10 @@ class Meta extends Join {
 	/**
 	 * Get meta values
 	 *
-	 * @param array $values Meta ID values.
-	 * @return array
+	 * @param list<int> $values Meta ID values.
+	 * @return list<MetaRow>
 	 */
-	public function get_values( array $values ) {
+	public function get_values( $values ) {
 		global $wpdb;
 
 		$in = new Sql\Where\Where_In( new Sql\Select\Select( Sql\Value::table( $this->meta_table ), Sql\Value::column( $this->column ) ), 'IN', $values );
@@ -150,8 +147,8 @@ class Meta extends Join {
 	/**
 	 * Get all the values for this join
 	 *
-	 * @param integer $row_id Row ID.
-	 * @return array
+	 * @param int $row_id Row ID.
+	 * @return list<string>
 	 */
 	public function get_all_values( $row_id ) {
 		global $wpdb;

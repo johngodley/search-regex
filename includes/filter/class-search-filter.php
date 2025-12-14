@@ -8,6 +8,7 @@ use SearchRegex\Action;
 use SearchRegex\Schema;
 use SearchRegex\Source;
 use SearchRegex\Search;
+use SearchRegex\Modifier;
 
 require_once __DIR__ . '/filter-base.php';
 require_once __DIR__ . '/filter-integer.php';
@@ -19,6 +20,15 @@ require_once __DIR__ . '/class-global-filter.php';
 
 /**
  * Filters a search
+ *
+ * @phpstan-type SearchFilterData array{
+ *   type?: string,
+ *   items?: array<int, array<string, mixed>>
+ * }
+ * @phpstan-type SearchFilterJson array{
+ *   type: string,
+ *   items: array<int, array<string, mixed>>
+ * }
  */
 class Filter {
 	const MAX_OR_FILTERS = 10;  // Matches MAX_OR_FILTERS in client
@@ -42,11 +52,10 @@ class Filter {
 	/**
 	 * Create the filter
 	 *
-	 * @param array         $data Filter data.
+	 * @param SearchFilterData $data Filter data.
 	 * @param Schema\Schema $schema Schema data.
-	 * @return void
 	 */
-	public function __construct( array $data, Schema\Schema $schema ) {
+	public function __construct( $data, Schema\Schema $schema ) {
 		if ( isset( $data['type'] ) ) {
 			$this->schema = $schema->get_for_source( $data['type'] );
 		}
@@ -79,21 +88,23 @@ class Filter {
 	/**
 	 * Create a Filter object
 	 *
-	 * @param array         $json JSON data.
+	 * @param SearchFilterJson[] $json JSON data.
 	 * @param Schema\Schema $schema Schema for filter.
 	 * @return list<Filter>
 	 */
-	public static function create( array $json, Schema\Schema $schema ) {
+	public static function create( $json, Schema\Schema $schema ) {
 		// Get basics
-		$filters = array_map( function( $filter ) use ( $schema ) {
-			$new_filter = new Filter( $filter, $schema );
+		$filters = array_map(
+			function ( $filter ) use ( $schema ) {
+				$new_filter = new Filter( $filter, $schema );
 
-			if ( $new_filter->is_valid() ) {
-				return $new_filter;
-			}
+				if ( $new_filter->is_valid() ) {
+					  return $new_filter;
+				}
 
-			return false;
-		}, array_slice( $json, 0, self::MAX_AND_FILTERS ) );
+				return false;
+			}, array_slice( $json, 0, self::MAX_AND_FILTERS )
+		);
 
 		return array_values( array_filter( $filters ) );
 	}
@@ -142,7 +153,7 @@ class Filter {
 	/**
 	 * Does this filter have the given column?
 	 *
-	 * @param string|object $column Column.
+	 * @param string|Modifier\Modifier $column Column.
 	 * @param Schema\Column $schema Schema.
 	 * @return boolean
 	 */
@@ -178,7 +189,7 @@ class Filter {
 	 *
 	 * @param array<Search\Column> $existing Existing array.
 	 * @param Source\Source        $source Source.
-	 * @param array                $row Raw data from the row.
+	 * @param array<string, mixed> $row Raw data from the row.
 	 * @param Action\Action        $action Action.
 	 * @return array<Search\Column>
 	 */
@@ -200,9 +211,13 @@ class Filter {
 					$existing[ $column ] = new Search\Column( $column, $source->get_column_label( $column ), $contexts, $column_values );
 				}
 
-				$matched_count += count( array_filter( $contexts, function( $item ) {
-					return $item->is_matched();
-				} ) );
+				$matched_count += count(
+					array_filter(
+						$contexts, function ( $item ) {
+							return $item->is_matched();
+						}
+					)
+				);
 			}
 		}
 
@@ -260,11 +275,11 @@ class Filter {
 	 * Get the results as Search\Text
 	 *
 	 * @param Source\Source $source Source.
-	 * @param array         $row Row data.
+	 * @param array<string, mixed> $row Row data.
 	 * @param Action\Action $action Action.
 	 * @return Search\Column[]
 	 */
-	public static function get_result_matches( Source\Source $source, $row, Action\Action $action ) {
+	public static function get_result_matches( Source\Source $source, array $row, Action\Action $action ) {
 		$filters = $source->get_filters();
 		$matched = [];
 
@@ -377,7 +392,7 @@ class Filter {
 	/**
 	 * Convert to a JSON object
 	 *
-	 * @return array
+	 * @return SearchFilterJson|array{}
 	 */
 	public function to_json() {
 		if ( ! $this->schema ) {
@@ -386,9 +401,11 @@ class Filter {
 
 		return [
 			'type' => $this->schema->get_type(),
-			'items' => array_map( function( $item ) {
-				return $item->to_json();
-			}, $this->items ),
+			'items' => array_map(
+				function ( $item ) {
+					return $item->to_json();
+				}, $this->items
+			),
 		];
 	}
 }

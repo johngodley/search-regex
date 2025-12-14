@@ -4,15 +4,17 @@ namespace SearchRegex\Search;
 
 /**
  * Represents flags for a particular search
+ *
+ * @phpstan-type SearchFlag 'regex'|'case'
  */
 class Flags {
-	/** @var String[] */
+	/** @var SearchFlag[] */
 	private $flags = [];
 
 	/**
 	 * Create a Flags object with an array of flag strings
 	 *
-	 * @param Array $flags Array of flag values.
+	 * @param SearchFlag[] $flags Array of flag values.
 	 */
 	public function __construct( array $flags = [] ) {
 		$allowed = [
@@ -20,9 +22,11 @@ class Flags {
 			'case',
 		];
 
-		$this->flags = array_filter( $flags, function( $flag ) use ( $allowed ) {
-			return array_search( $flag, $allowed, true ) !== false;
-		} );
+		$this->flags = array_filter(
+			$flags, function ( $flag ) use ( $allowed ) {
+				return array_search( $flag, $allowed, true ) !== false;
+			}
+		);
 	}
 
 	/**
@@ -38,7 +42,7 @@ class Flags {
 	/**
 	 * Is the flag set?
 	 *
-	 * @param String $flag Flag to check.
+	 * @param string $flag Flag to check.
 	 * @return boolean true if set, false otherwise
 	 */
 	public function has_flag( $flag ) {
@@ -77,7 +81,7 @@ class Flags {
 	/**
 	 * Get all the flags
 	 *
-	 * @return Array Array of flags
+	 * @return SearchFlag[] Array of flags
 	 */
 	public function get_flags() {
 		return $this->flags;
@@ -86,7 +90,7 @@ class Flags {
 	/**
 	 * Convert the flags to JSON
 	 *
-	 * @return array
+	 * @return SearchFlag[]
 	 */
 	public function to_json() {
 		return $this->flags;

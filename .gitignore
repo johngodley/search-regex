@@ -8,3 +8,7 @@ build
 search-regex.zip
 release
 svn
+/.stignore
+/.stfolder
+/CLAUDE.md
+/.claude

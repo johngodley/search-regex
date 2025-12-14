@@ -31,7 +31,7 @@ class Where_Date extends Where {
 			$logic_sql = $logic;
 		}
 
-		$value = date( 'Y-m-d H:i:s', intval( $value, 10 ) );
+		$value = gmdate( 'Y-m-d H:i:s', intval( $value, 10 ) );
 
 		parent::__construct( $column, $logic_sql, $value );
 	}

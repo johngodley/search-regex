@@ -1,26 +1,44 @@
 parameters:
-    level: 8
-    paths:
-        - search-regex.php
-    excludePaths:
-        - vendor
-    scanDirectories:
-        - includes
-    phpVersion: 70100
+	level: 8
+	paths:
+		- search-regex.php
+		- includes
+	scanFiles:
+		- dev/stubs.php
+	excludePaths:
+		- vendor
+	phpVersion: 70200
 
-    parallel:
-        maximumNumberOfProcesses: 4
+	parallel:
+		maximumNumberOfProcesses: 4
 
-    disallowedFunctionCalls:
-        -
-            function: 'var_dump()'
-            message: 'forgot about it? if needed just add a phpstan ignore line'
-        -
-            function: 'print_r()'
-            message: 'forgot about it? if needed just add a phpstan ignore line'
-        -
-            function: 'error_log()'
-            message: 'forgot about it? if needed just add a phpstan ignore line'
-        -
-            function: 'debug_print_var()'
-            message: 'forgot about it? if needed just add a phpstan ignore line'
+	disallowedFunctionCalls:
+		-
+			function: 'var_dump()'
+			message: 'forgot about it? if needed just add a phpstan ignore line'
+		-
+			function: 'print_r()'
+			message: 'forgot about it? if needed just add a phpstan ignore line'
+		-
+			function: 'error_log()'
+			message: 'forgot about it? if needed just add a phpstan ignore line'
+		-
+			function: 'debug_print_var()'
+			message: 'forgot about it? if needed just add a phpstan ignore line'
+
+	ignoreErrors:
+		-
+			message: '#Constructor of class .* has an unused parameter#'
+			path: '*'
+		-
+			identifier: booleanNot.exprNotBoolean
+		-
+			identifier: if.condNotBoolean
+		-
+			identifier: ternary.condNotBoolean
+		-
+			identifier: booleanOr.rightNotBoolean
+		-
+			identifier: booleanAnd.rightNotBoolean
+		-
+			identifier: booleanAnd.leftNotBoolean

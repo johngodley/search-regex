@@ -39,7 +39,6 @@ class Options extends Source\Source {
 			$this->log_save( 'option', $option );
 
 			// This does all the sanitization
-			/** @psalm-suppress UndefinedFunction */
 			if ( Plugin\Settings::init()->can_save() ) {
 				if ( isset( $option['option_name'] ) ) {
 					// Changing the option name. Delete the current option and then recreate with the new option. This ensures it is correctly sanitized
@@ -47,7 +46,7 @@ class Options extends Source\Source {
 				}
 
 				// This handles all sanitization
-				if ( update_option( $row->option_name, $option['option_value'], isset( $option['autoload'] ) ? $option['autoload'] : null ) ) {
+				if ( update_option( (string) $row->option_name, $option['option_value'] ?? '', isset( $option['autoload'] ) ? (bool) $option['autoload'] : null ) ) {
 					return true;
 				}
 			}
@@ -63,7 +62,6 @@ class Options extends Source\Source {
 
 		$this->log_save( 'delete option', $row_id );
 
-		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\Settings::init()->can_save() ) {
 			// Get the option name for the row. This is so we can use the WP delete_option and have the cache cleared
 			// phpcs:ignore
@@ -83,7 +81,6 @@ class Options extends Source\Source {
 	public function autocomplete( array $column, $value ) {
 		global $wpdb;
 
-		/** @psalm-suppress InvalidArrayOffset */
 		if ( in_array( $column['column'], [ 'option_name', 'option_value' ], true ) ) {
 			// phpcs:ignore
 			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT " . $column['column'] . " as id," . $column['column'] . " as value FROM {$wpdb->options} WHERE " . $column['column'] . " LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );

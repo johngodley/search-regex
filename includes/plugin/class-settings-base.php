@@ -3,17 +3,20 @@
 namespace SearchRegex\Plugin;
 
 abstract class Plugin_Settings {
-	/** @var null|Plugin_Settings */
+	/** @var static|null */
 	protected static $instance = null;
 
 	/**
 	 * Settings
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $settings = [];
 
 	// Don't allow this to be created directly
+	/**
+	 * @return void
+	 */
 	public function __construct() {
 		$this->settings = $this->load();
 
@@ -33,12 +36,15 @@ abstract class Plugin_Settings {
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	abstract protected function get_setting_name();
 
 	/**
 	 * Get default Search Regex options
 	 *
-	 * @return Array
+	 * @return array<string, mixed>
 	 */
 	protected function get_defaults() {
 		return [];
@@ -47,44 +53,60 @@ abstract class Plugin_Settings {
 	/**
 	 * Return Search Regex options
 	 *
-	 * @param String $name    Name of setting.
-	 * @param mixed  $default Default value.
+	 * @param string $name Name of setting.
+	 * @param mixed $default_value Default value.
 	 * @return mixed Data to return
 	 */
-	protected function get( $name, $default = false ) {
+	protected function get( $name, $default_value = false ) {
 		if ( isset( $this->settings[ $name ] ) ) {
 			return $this->settings[ $name ];
 		}
 
-		return $default;
+		return $default_value;
 	}
 
 	/**
 	 * Set Search Regex options. Can be passed as many options as necessary and the rest will be unchanged
 	 *
-	 * @param Array $settings Array of name => value.
+	 * @param array<string, mixed> $settings Array of name => value.
 	 * @return void
 	 */
 	protected function set( array $settings ) {
 		$this->settings = array_merge( $this->settings, $settings );
 	}
 
+	/**
+	 * @param array<string, mixed> $settings Settings array.
+	 * @return array<string, mixed>
+	 */
 	protected function get_save_data( array $settings ) {
 		return $settings;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function save() {
 		\update_option( $this->get_setting_name(), $this->get_save_data( $this->settings ) );
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	protected function load() {
-		return \get_option( $this->get_setting_name() );
+		return \get_option( $this->get_setting_name(), [] );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function delete() {
-		\delete_option( $this->get_setting_name() );
+		return \delete_option( $this->get_setting_name() );
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function get_as_json() {
 		return $this->settings;
 	}

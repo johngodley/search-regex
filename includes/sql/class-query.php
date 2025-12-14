@@ -9,7 +9,7 @@ class Query {
 	/**
 	 * Array of Where\Where objects
 	 *
-	 * @var array
+	 * @var Where\Where[]
 	 */
 	private $where = [];
 
@@ -65,14 +65,14 @@ class Query {
 	/**
 	 * Query order direction
 	 *
-	 * @var String
+	 * @var string
 	 */
 	private $order_direction = 'ASC';
 
 	/**
 	 * Set the query order
 	 *
-	 * @param String       $order Column to order on.
+	 * @param string       $order Column to order on.
 	 * @param 'ASC'|'DESC' $order_direction Direction of ordering.
 	 * @return void
 	 */
@@ -219,7 +219,7 @@ class Query {
 	 * @param Modifier\Modifier|null $modifier Modifier for the query.
 	 * @return string
 	 */
-	public function get_as_sql( Modifier\Modifier $modifier = null ) {
+	public function get_as_sql( $modifier = null ) {
 		global $wpdb;
 
 		if ( $modifier === null ) {
@@ -259,7 +259,7 @@ class Query {
 	 * Get a group of SQL statements with a space between them
 	 *
 	 * @param string $label SQL label.
-	 * @param array  $values Group of statements.
+	 * @param string[] $values Group of statements.
 	 * @param string $separator Seperator for statements.
 	 * @return array<string>
 	 */

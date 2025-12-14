@@ -8,6 +8,13 @@ use SearchRegex\Source;
 use SearchRegex\Modifier;
 use SearchRegex\Context;
 
+/**
+ * @phpstan-type IntegerModifierOption array{
+ *   column?: string,
+ *   operation?: 'set'|'increment'|'decrement',
+ *   value?: mixed
+ * }
+ */
 class Integer_Value extends Modifier\Modifier {
 	/**
 	 * Modification Value
@@ -16,7 +23,13 @@ class Integer_Value extends Modifier\Modifier {
 	 */
 	private $value = null;
 
-	public function __construct( array $option, Schema\Column $schema ) {
+	/**
+	 * Constructor
+	 *
+	 * @param IntegerModifierOption $option Integer modification options.
+	 * @param Schema\Column $schema Schema.
+	 */
+	public function __construct( $option, Schema\Column $schema ) {
 		parent::__construct( $option, $schema );
 
 		if ( isset( $option['value'] ) ) {

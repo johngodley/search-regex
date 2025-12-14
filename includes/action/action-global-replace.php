@@ -11,10 +11,11 @@ class Global_Replace extends Modify {
 	/**
 	 * Constructor
 	 *
-	 * @param array|string  $options Options.
+	 * @param array<string, mixed>|string  $options Options.
 	 * @param Schema\Schema $schema Schema.
 	 */
 	public function __construct( $options, Schema\Schema $schema ) {
+		/** @var array<int, array<string, mixed>> $converted */
 		$converted = [];
 
 		if ( is_array( $options ) ) {
@@ -35,6 +36,9 @@ class Global_Replace extends Modify {
 		parent::__construct( $converted, $schema );
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function to_json() {
 		return [
 			'action' => 'replace',

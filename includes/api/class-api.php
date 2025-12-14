@@ -22,9 +22,10 @@ class Api {
 	/**
 	 * Array of endpoint routes
 	 *
-	 * @var Array
+	 * @var Route[]
+	 * @phpstan-ignore property.onlyWritten
 	 **/
-	private $routes = array();
+	private $routes = [];
 
 	/**
 	 * Create API

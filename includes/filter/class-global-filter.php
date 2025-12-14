@@ -31,6 +31,7 @@ class Global_Filter extends Filter {
 	 *
 	 * @param string   $search_phrase Search.
 	 * @param string[] $search_flags Search flags.
+	 * @phpstan-ignore constructor.missingParentCall
 	 */
 	public function __construct( $search_phrase, $search_flags ) {
 		$this->search_phrase = $search_phrase;
@@ -78,9 +79,13 @@ class Global_Filter extends Filter {
 			$items[] = new Type\Filter_String( $filter, $column );
 		}
 
-		return array_merge( $items, array_filter( $this->items, function( $item ) use ( $source ) {
-			return $item->get_schema()->get_type() === $source->get_type();
-		} ) );
+		return array_merge(
+			$items, array_filter(
+				$this->items, function ( $item ) use ( $source ) {
+					return $item->get_schema()->get_type() === $source->get_type();
+				}
+			)
+		);
 	}
 
 	public function has_column( $column, Schema\Column $schema ) {

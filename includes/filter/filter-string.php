@@ -99,11 +99,11 @@ class Filter_String extends Filter_Type {
 	 *
 	 * @param Source\Source $source Source.
 	 * @param Action\Action $action Action.
-	 * @param string        $logic Logic.
-	 * @param string        $original_value Original value.
-	 * @param string        $row_value Current value.
-	 * @param Search\Flags  $flags Flags.
-	 * @param array         $replacements Replacement array.
+	 * @param string $logic Logic.
+	 * @param string $original_value Original value.
+	 * @param string $row_value Current value.
+	 * @param Search\Flags $flags Flags.
+	 * @param array<int, string|null> $replacements Replacement array.
 	 * @return list<Context\Context>
 	 */
 	public function get_match( Source\Source $source, Action\Action $action, $logic, $original_value, $row_value, Search\Flags $flags, $replacements = [] ) {
@@ -125,8 +125,7 @@ class Filter_String extends Filter_Type {
 				}
 
 				$flag_copy->set_regex();
-				/** @suppress PhanTypeMismatchArgumentInternalProbablyReal */
-				$value = $start . preg_quote( $original_value, null ) . $end;
+				$value = $start . preg_quote( $original_value ) . $end; // phpcs:ignore
 			}
 
 			// Do we have a match?
@@ -138,10 +137,12 @@ class Filter_String extends Filter_Type {
 
 				if ( $row_value !== '' ) {
 					// Set the original flags and search terms
-					return array_map( function( $context ) use ( $flags, $original_value ) {
-						$context->set_search( $original_value, $flags );
-						return $context;
-					}, $contexts );
+					return array_map(
+						function ( $context ) use ( $flags, $original_value ) {
+							$context->set_search( $original_value, $flags );
+							return $context;
+						}, $contexts
+					);
 				}
 			}
 

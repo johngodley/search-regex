@@ -41,10 +41,7 @@ class User extends Source\Source {
 			return $parent;
 		}
 
-		return array_merge(
-			$parent,
-			count( $meta ) > 0 ? [ $meta ] : []
-		);
+		return array_merge( $parent, [ $meta ] );
 	}
 
 	public function save( $row_id, array $changes ) {
@@ -58,7 +55,6 @@ class User extends Source\Source {
 
 			$result = true;
 
-			/** @psalm-suppress UndefinedFunction */
 			if ( Plugin\Settings::init()->can_save() ) {
 				$result = wp_update_user( $user );
 			}
@@ -76,7 +72,6 @@ class User extends Source\Source {
 	public function delete_row( $row_id ) {
 		$this->log_save( 'delete comment', $row_id );
 
-		/** @psalm-suppress UndefinedFunction */
 		if ( Plugin\Settings::init()->can_save() ) {
 			if ( wp_delete_user( $row_id ) ) {
 				return true;

@@ -31,7 +31,7 @@ abstract class Filter_Type {
 	/**
 	 * Constructor
 	 *
-	 * @param array         $item   Filter item data.
+	 * @param array<string, mixed> $item Filter item data.
 	 * @param Schema\Column $schema Column schema.
 	 */
 	public function __construct( array $item, Schema\Column $schema ) {
@@ -86,7 +86,7 @@ abstract class Filter_Type {
 	/**
 	 * Create an appropriate Filter\Filter_Item object
 	 *
-	 * @param array         $item   Filter item data.
+	 * @param array<string, mixed> $item Filter item data.
 	 * @param Schema\Column $schema Column schema.
 	 * @return Filter\Type\Filter_Type|false
 	 */
@@ -107,10 +107,12 @@ abstract class Filter_Type {
 			return new Filter_Date( $item, $schema );
 		}
 
+		// @phpstan-ignore identical.alwaysTrue
 		if ( $schema->get_type() === 'keyvalue' ) {
 			return new Filter_Keyvalue( $item, $schema );
 		}
 
+		// @phpstan-ignore deadCode.unreachable
 		return false;
 	}
 
@@ -126,7 +128,7 @@ abstract class Filter_Type {
 	/**
 	 * Convert the filter to JSON
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	abstract public function to_json();
 
@@ -188,7 +190,7 @@ abstract class Filter_Type {
 	/**
 	 * Get the columns this filter uses from a row of data
 	 *
-	 * @param array $row Row of data from database.
+	 * @param array<string, mixed> $row Row of data from database.
 	 * @return array<string,string>
 	 */
 	public function get_values_for_row( array $row ) {

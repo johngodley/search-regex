@@ -8,15 +8,39 @@ use SearchRegex\Modifier;
 use SearchRegex\Source;
 use SearchRegex\Context;
 
+/**
+ * @phpstan-type KeyValueItem array{
+ *   key: string,
+ *   value: mixed,
+ *   type: string,
+ *   value_type: string
+ * }
+ *
+ * @phpstan-type KeyValueModifierOption array{
+ *   column?: string,
+ *   operation?: 'add'|'remove',
+ *   items?: array<int, KeyValueItem>,
+ *   key?: string,
+ *   value?: mixed,
+ *   type?: string,
+ *   value_type?: string
+ * }
+ */
 class Key_Value extends Modifier\Modifier {
 	/**
 	 * Array of key/value pairs
 	 *
-	 * @var array
+	 * @var array<int, KeyValueItem>
 	 */
 	private $items = [];
 
-	public function __construct( array $option, Schema\Column $schema ) {
+	/**
+	 * Constructor
+	 *
+	 * @param KeyValueModifierOption $option Key-value modification options.
+	 * @param Schema\Column $schema Schema.
+	 */
+	public function __construct( $option, Schema\Column $schema ) {
 		parent::__construct( $option, $schema );
 
 		$this->operation = 'add';
@@ -29,7 +53,7 @@ class Key_Value extends Modifier\Modifier {
 		}
 
 		if ( isset( $option['key'] ) ) {
-			$this->items = [ $this->add_item( $option ) ];
+			$this->items = array_filter( [ $this->add_item( $option ) ] );
 		}
 	}
 
@@ -54,8 +78,8 @@ class Key_Value extends Modifier\Modifier {
 	/**
 	 * Add an item to the list of items if it is valid, otherwise return null
 	 *
-	 * @param array|string $item Item.
-	 * @return array|null
+	 * @param array<string, string>|string $item Item.
+	 * @return KeyValueItem|null
 	 */
 	public function add_item( $item ) {
 		if ( ! is_array( $item ) ) {
@@ -63,15 +87,12 @@ class Key_Value extends Modifier\Modifier {
 		}
 
 		$new_item = [];
-		if ( isset( $item['key'] ) && isset( $item['value'] ) ) {
+		if ( isset( $item['key'] ) && isset( $item['value'] ) && isset( $item['type'] ) ) {
 			$new_item['key'] = $item['key'];
 			$new_item['value'] = $item['value'];
-
-			if ( isset( $item['type'] ) ) {
-				$new_item['type'] = $item['type'];
-			}
-
+			$new_item['type'] = $item['type'];
 			$new_item['value_type'] = 'value';
+
 			if ( isset( $item['value_type'] ) ) {
 				$new_item['value_type'] = $item['value_type'];
 			}

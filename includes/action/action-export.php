@@ -18,23 +18,16 @@ class Export extends Action\Action {
 	private $format = 'json';
 
 	/**
-	 * Table being exported
-	 *
-	 * @var string
-	 */
-	private $table = 'table';
-
-	/**
 	 * Export only the selected columns
 	 *
-	 * @var boolean
+	 * @var bool
 	 */
 	private $selected_only = false;
 
 	/**
 	 * Constructor
 	 *
-	 * @param array|string  $options Options.
+	 * @param array<string, mixed>|string  $options Options.
 	 * @param Schema\Schema $schema Schema.
 	 */
 	public function __construct( $options, Schema\Schema $schema ) {
@@ -49,6 +42,9 @@ class Export extends Action\Action {
 		parent::__construct( $options, $schema );
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function to_json() {
 		return [
 			'action' => 'export',
@@ -59,37 +55,51 @@ class Export extends Action\Action {
 		];
 	}
 
+	/**
+	 * @return list<string>
+	 */
 	public function get_view_columns() {
 		if ( ! $this->selected_only ) {
-			return array_map( function( $column ) {
-				return $this->schema->get_type() . '__' . $column->get_column();
-			}, $this->schema->get_columns() );
+			return array_map(
+				function ( $column ) {
+					return $this->schema->get_type() . '__' . $column->get_column();
+				}, $this->schema->get_columns()
+			);
 		}
 
 		return [];
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function should_save() {
 		return false;
 	}
 
+	/**
+	 * @param array<string, mixed> $results
+	 * @return array<string, mixed>
+	 */
 	public function get_results( array $results ) {
 		if ( ! $this->save ) {
 			return parent::get_results( $results );
 		}
 
 		// Convert to whatever the chosen format is
-		$results['results'] = array_map( function( $item ) {
-			if ( $this->format === 'json' ) {
-				return $this->convert_to_json( $item );
-			} elseif ( $this->format === 'csv' ) {
-				return $this->convert_to_csv( $item );
-			} elseif ( $this->format === 'sql' ) {
-				return $this->convert_to_sql( $item );
-			}
+		$results['results'] = array_map(
+			function ( $item ) {
+				if ( $this->format === 'json' ) {
+					return $this->convert_to_json( $item );
+				} elseif ( $this->format === 'csv' ) {
+					return $this->convert_to_csv( $item );
+				} elseif ( $this->format === 'sql' ) {
+					return $this->convert_to_sql( $item );
+				}
 
-			return $item;
-		}, $results['results'] );
+				return $item;
+			}, $results['results']
+		);
 
 		return $results;
 	}
@@ -98,7 +108,7 @@ class Export extends Action\Action {
 	 * Convert Result to JSON
 	 *
 	 * @param Search\Result $result Result.
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	private function convert_to_json( Search\Result $result ) {
 		$data = [];
@@ -117,21 +127,25 @@ class Export extends Action\Action {
 	 * @return string
 	 */
 	private function convert_to_sql( Search\Result $result ) {
-		$values = array_map( function( $column ) {
-			global $wpdb;
+		$values = array_map(
+			function ( $column ) {
+				global $wpdb;
 
-			$column_schema = $this->schema->get_column( $column->get_column_id() );
+				$column_schema = $this->schema->get_column( $column->get_column_id() );
 
-			if ( $column_schema && $column_schema->get_type() === 'integer' ) {
-				return $wpdb->prepare( '%d', $column->get_value() );
-			}
+				if ( $column_schema !== null && $column_schema->get_type() === 'integer' ) {
+					return $wpdb->prepare( '%d', $column->get_value() );
+				}
 
-			return $wpdb->prepare( '%s', $column->get_value() );
-		}, $result->get_columns() );
+				return $wpdb->prepare( '%s', $column->get_value() );
+			}, $result->get_columns()
+		);
 
-		$names = array_map( function( $column ) {
-			return Sql\Value::column( $column->get_column_id() )->get_value();
-		}, $result->get_columns() );
+		$names = array_map(
+			function ( $column ) {
+				return Sql\Value::column( $column->get_column_id() )->get_value();
+			}, $result->get_columns()
+		);
 
 		return "INSERT INTO {$this->schema->get_table()} (" . implode( ', ', $names ) . ') VALUES(' . implode( ', ', $values ) . ');';
 	}
@@ -143,20 +157,35 @@ class Export extends Action\Action {
 	 * @return string
 	 */
 	private function convert_to_csv( Search\Result $result ) {
-		$csv = array_map( function( $column ) {
-			return $column->get_value();
-		}, $result->get_columns() );
+		$csv = array_map(
+			function ( $column ) {
+				return $column->get_value();
+			}, $result->get_columns()
+		);
 
 		// phpcs:ignore
 		$handle = fopen( 'php://memory', 'r+' );
 
-		fputcsv( $handle, $csv );
+		if ( false === $handle ) {
+			return '';
+		}
+
+		if ( false === fputcsv( $handle, $csv ) ) {
+			// phpcs:ignore
+			fclose( $handle );
+			return '';
+		}
+
 		rewind( $handle );
 
 		$result = stream_get_contents( $handle );
 
 		// phpcs:ignore
 		fclose( $handle );
+
+		if ( false === $result ) {
+			return '';
+		}
 
 		return trim( $result );
 	}

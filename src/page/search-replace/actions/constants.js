@@ -50,9 +50,9 @@ export function getActions( hasGlobalSearch, hasSingleSource ) {
 			disabled: ! hasSingleSource,
 		},
 		{
-			label: __( 'Delete Matches', 'search-regex' ),
+			label: __( 'Delete Matching Rows', 'search-regex' ),
 			value: 'delete',
-			desc: __( 'Delete matching results.', 'search-regex' ),
+			desc: __( 'Delete matching rows.', 'search-regex' ),
 		},
 		{
 			label: __( 'Run Action', 'search-regex' ),

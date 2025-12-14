@@ -5,16 +5,16 @@ namespace SearchRegex\Plugin;
 require_once __DIR__ . '/class-settings-base.php';
 
 class Settings extends Plugin_Settings {
-	/** @var String */
+	/** @var string */
 	const OPTION_NAME = 'searchregex_options';
 
-	/** @var String */
+	/** @var int */
 	const API_JSON = 0;
 
-	/** @var String */
+	/** @var int */
 	const API_JSON_INDEX = 1;
 
-	/** @var String */
+	/** @var int */
 	const API_JSON_RELATIVE = 3;
 
 	/**
@@ -24,20 +24,31 @@ class Settings extends Plugin_Settings {
 	 */
 	public static function init() {
 		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
+			// @phpstan-ignore new.static
+			self::$instance = new static();
 		}
 
 		return self::$instance;
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function get_setting_name() {
 		return self::OPTION_NAME;
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	protected function load() {
 		return \apply_filters( 'searchregex_load_options', parent::load() );
 	}
 
+	/**
+	 * @param array<string, mixed> $settings
+	 * @return array<string, mixed>
+	 */
 	protected function get_save_data( array $settings ) {
 		return \apply_filters( 'searchregex_save_options', $settings );
 	}
@@ -45,7 +56,7 @@ class Settings extends Plugin_Settings {
 	/**
 	 * Get default Search Regex options
 	 *
-	 * @return Array
+	 * @return array<string, mixed>
 	 */
 	protected function get_defaults() {
 		$defaults = [
@@ -58,6 +69,10 @@ class Settings extends Plugin_Settings {
 		return \apply_filters( 'searchregex_default_options', $defaults );
 	}
 
+	/**
+	 * @param int $rest_api
+	 * @return void
+	 */
 	public function set_rest_api( $rest_api ) {
 		$rest_api = intval( $rest_api, 10 );
 
@@ -66,10 +81,17 @@ class Settings extends Plugin_Settings {
 		}
 	}
 
+	/**
+	 * @param bool $is_supported
+	 * @return void
+	 */
 	public function set_is_supported( $is_supported ) {
 		$this->settings['support'] = $is_supported ? true : false;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function set_latest_version() {
 		$major_version = explode( '-', SEARCHREGEX_VERSION )[0];   // Remove any beta suffix
 		$major_version = implode( '.', array_slice( explode( '.', SEARCHREGEX_VERSION ), 0, 2 ) );
@@ -77,18 +99,33 @@ class Settings extends Plugin_Settings {
 		$this->settings['update_notice'] = $major_version;
 	}
 
+	/**
+	 * @param string $preset_id
+	 * @return void
+	 */
 	public function set_default_preset( $preset_id ) {
 		$this->settings['defaultPreset'] = preg_replace( '/[^A-Fa-f0-9]*/', '', $preset_id );
 	}
 
+	/**
+	 * @param string $major_version
+	 * @return bool
+	 */
 	public function is_new_version( $major_version ) {
 		return version_compare( $this->get( 'update_notice', '0' ), $major_version ) < 0;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_supported() {
 		return $this->get( 'support' ) ? true : false;
 	}
 
+	/**
+	 * @param int|false $type
+	 * @return int
+	 */
 	public function get_rest_api( $type = false ) {
 		if ( $type === false ) {
 			$type = $this->get( 'rest_api' );
@@ -100,8 +137,8 @@ class Settings extends Plugin_Settings {
 	/**
 	 * Get the configured REST API
 	 *
-	 * @param integer|boolean $type Type of API.
-	 * @return String API URL
+	 * @param int|false $type Type of API.
+	 * @return string API URL
 	 */
 	public function get_rest_api_url( $type = false ) {
 		$type = $this->get_rest_api( $type );
@@ -120,6 +157,9 @@ class Settings extends Plugin_Settings {
 		return $url;
 	}
 
+	/**
+	 * @return array<int, string>
+	 */
 	public function get_available_rest_api() {
 		return [
 			self::API_JSON => $this->get_rest_api_url( self::API_JSON ),
@@ -128,6 +168,9 @@ class Settings extends Plugin_Settings {
 		];
 	}
 
+	/**
+	 * @return string|null
+	 */
 	public function get_default_preset() {
 		return $this->get( 'defaultPreset' );
 	}

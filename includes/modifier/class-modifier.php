@@ -15,6 +15,15 @@ require_once __DIR__ . '/modifier-keyvalue.php';
 
 /**
  * Modify a column
+ *
+ * @phpstan-type ModifierOption array{
+ *   column?: string,
+ *   operation?: string,
+ *   searchValue?: string,
+ *   replaceValue?: string,
+ *   posId?: mixed,
+ *   items?: array<int, mixed>
+ * }
  */
 abstract class Modifier {
 	/**
@@ -34,10 +43,10 @@ abstract class Modifier {
 	/**
 	 * Constructor
 	 *
-	 * @param array         $option Modification options.
-	 * @param Schema\Column $schema Schema.
+	 * @param ModifierOption $_option Modification options.
+	 * @param Schema\Column  $schema Schema.
 	 */
-	public function __construct( array $option, Schema\Column $schema ) {
+	public function __construct( $_option, Schema\Column $schema ) {
 		$this->schema = $schema;
 		$this->operation = '';
 	}
@@ -82,7 +91,7 @@ abstract class Modifier {
 	/**
 	 * Get the data for this column
 	 *
-	 * @param array $row Array of database columns.
+	 * @param array<string, mixed> $row Array of database columns.
 	 * @return string|false
 	 */
 	public function get_row_data( array $row ) {
@@ -96,7 +105,7 @@ abstract class Modifier {
 	/**
 	 * Create a column modifier
 	 *
-	 * @param array         $option Options.
+	 * @param array<string, mixed> $option Options.
 	 * @param Schema\Source $schema Schema.
 	 * @return Modifier|null
 	 */
@@ -122,10 +131,12 @@ abstract class Modifier {
 			return new Value\Member_Value( $option, $column );
 		}
 
+		// @phpstan-ignore identical.alwaysTrue
 		if ( $column->get_type() === 'keyvalue' ) {
 			return new Value\Key_Value( $option, $column );
 		}
 
+		// @phpstan-ignore deadCode.unreachable
 		return null;
 	}
 
@@ -142,7 +153,7 @@ abstract class Modifier {
 	 * Get changes for this modifier and value
 	 *
 	 * @param string $value Value.
-	 * @return array|null
+	 * @return array<string, mixed>|null
 	 */
 	public function get_change( $value ) {
 		return null;
@@ -151,7 +162,7 @@ abstract class Modifier {
 	/**
 	 * Convert the modifier to JSON
 	 *
-	 * @return array
+	 * @return array{column: string, source: string}
 	 */
 	public function to_json() {
 		return [
@@ -163,12 +174,12 @@ abstract class Modifier {
 	/**
 	 * Perform the modifier on a column
 	 *
-	 * @param integer       $row_id Row ID.
-	 * @param string        $row_value Row value.
+	 * @param int $row_id Row ID.
+	 * @param string $row_value Row value.
 	 * @param Source\Source $source Source.
 	 * @param Search\Column $column Column.
-	 * @param array         $raw Raw database data.
-	 * @param boolean       $save_mode Is the save mode enabled.
+	 * @param array<string, mixed> $raw Raw database data.
+	 * @param bool $save_mode Is the save mode enabled.
 	 * @return Search\Column
 	 */
 	abstract public function perform( $row_id, $row_value, Source\Source $source, Search\Column $column, array $raw, $save_mode );

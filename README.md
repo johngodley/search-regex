@@ -13,25 +13,19 @@ https://wordpress.org/plugins/search-regex/
 
 ## Building
 
-Search Regex is mostly a PHP plugin, but does contain files that need to be built. For this you'll need Gulp, Node, and Yarn installed. Install required modules with:
+Search Regex is mostly a PHP plugin, but does contain files that need to be built. For this you'll need Node and pnpm installed. Install required modules with:
 
-`yarn install`
+`pnpm install`
 
 ### React
 
 Some parts of the UI are React and can be built with:
 
-`yarn build`
+`pnpm build`
 
 To use in development mode run:
 
-`yarn start`
-
-### Releasing
-
-Finally, to produce a release copy:
-
-`gulp plugin`
+`pnpm start`
 
 ## Support
 
