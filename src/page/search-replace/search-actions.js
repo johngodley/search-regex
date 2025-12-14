@@ -43,7 +43,7 @@ function isPerformReady( action, actionOption, replacement ) {
 
 function getPerformButton( action ) {
 	if ( action === 'delete' ) {
-		return __( 'Delete Matches', 'search-regex' );
+		return __( 'Delete Matching Rows', 'search-regex' );
 	}
 
 	if ( action === 'export' ) {
