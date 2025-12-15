@@ -37,19 +37,25 @@ importers:
         version: 6.14.0
       rc-progress:
         specifier: ^4.0.0
-        version: 4.0.0(react@18.3.1)
+        version: 4.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-util:
         specifier: ^5.44.4
-        version: 5.44.4(react@18.3.1)
+        version: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
       react-copy-to-clipboard:
         specifier: ^5.1.0
         version: 5.1.0(react@18.3.1)
       react-datepicker:
         specifier: ^8.10.0
-        version: 8.10.0(react@18.3.1)
+        version: 8.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-delta:
         specifier: ^1.1.2
-        version: 1.1.2(react@18.3.1)
+        version: 1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
       react-dropzone:
         specifier: ^14.3.8
         version: 14.3.8(react@18.3.1)
@@ -110,7 +116,7 @@ importers:
         version: 4.36.0(wp-prettier@3.0.3)
       '@wordpress/scripts':
         specifier: ^30.27.0
-        version: 30.27.0(@playwright/test@1.57.0)(@types/eslint@9.6.1)(@types/node@25.0.2)(@wordpress/env@10.36.0(@types/node@25.0.2))(babel-plugin-macros@3.1.0)(react@18.3.1)(stylelint-scss@6.13.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)
+        version: 30.27.0(@playwright/test@1.57.0)(@types/eslint@9.6.1)(@types/node@25.0.2)(@wordpress/env@10.36.0(@types/node@25.0.2))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.13.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)
       apidoc:
         specifier: ^1.2.0
         version: 1.2.0(webpack-dev-server@4.15.2(webpack-cli@5.1.4)(webpack@5.103.0))
@@ -10057,16 +10063,18 @@ snapshots:
       '@floating-ui/core': 1.7.3
       '@floating-ui/utils': 0.2.10
 
-  '@floating-ui/react-dom@2.1.6(react@18.3.1)':
+  '@floating-ui/react-dom@2.1.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@floating-ui/dom': 1.7.4
       react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
-  '@floating-ui/react@0.27.16(react@18.3.1)':
+  '@floating-ui/react@0.27.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@floating-ui/react-dom': 2.1.6(react@18.3.1)
+      '@floating-ui/react-dom': 2.1.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@floating-ui/utils': 0.2.10
       react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
       tabbable: 6.3.0
 
   '@floating-ui/utils@0.2.10': {}
@@ -12096,7 +12104,7 @@ snapshots:
     dependencies:
       prettier: wp-prettier@3.0.3
 
-  '@wordpress/scripts@30.27.0(@playwright/test@1.57.0)(@types/eslint@9.6.1)(@types/node@25.0.2)(@wordpress/env@10.36.0(@types/node@25.0.2))(babel-plugin-macros@3.1.0)(react@18.3.1)(stylelint-scss@6.13.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)':
+  '@wordpress/scripts@30.27.0(@playwright/test@1.57.0)(@types/eslint@9.6.1)(@types/node@25.0.2)(@wordpress/env@10.36.0(@types/node@25.0.2))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.13.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)':
     dependencies:
       '@babel/core': 7.25.7
       '@playwright/test': 1.57.0
@@ -12144,6 +12152,7 @@ snapshots:
       prettier: wp-prettier@3.0.3
       puppeteer-core: 23.11.1
       react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
       react-refresh: 0.14.2
       read-pkg-up: 7.0.1
       resolve-bin: 0.4.3
@@ -17433,17 +17442,19 @@ snapshots:
       iconv-lite: 0.4.24
       unpipe: 1.0.0
 
-  rc-progress@4.0.0(react@18.3.1):
+  rc-progress@4.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.28.4
       classnames: 2.5.1
-      rc-util: 5.44.4(react@18.3.1)
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
-  rc-util@5.44.4(react@18.3.1):
+  rc-util@5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.28.4
       react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
       react-is: 18.3.1
 
   rc9@2.1.2:
@@ -17462,17 +17473,19 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
 
-  react-datepicker@8.10.0(react@18.3.1):
+  react-datepicker@8.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@floating-ui/react': 0.27.16(react@18.3.1)
+      '@floating-ui/react': 0.27.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
       date-fns: 4.1.0
       react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
-  react-delta@1.1.2(react@18.3.1):
+  react-delta@1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       lodash.isequal: 4.5.0
       react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:

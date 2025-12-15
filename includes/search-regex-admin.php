@@ -401,7 +401,7 @@ class Admin {
 		<p><?php esc_html_e( "This may be caused by another plugin - look at your browser's error console for more details.", 'search-regex' ); ?></p>
 		<p><?php esc_html_e( 'If you are using a page caching plugin or service (CloudFlare, OVH, etc) then you can also try clearing that cache.', 'search-regex' ); ?></p>
 		<p><?php echo wp_kses( __( 'Also check if your browser is able to load <code>search-regex.js</code>:', 'search-regex' ), array( 'code' => array() ) ); ?></p>
-		<p><code><?php echo esc_html( plugin_dir_url( SEARCHREGEX_FILE ) . 'search-regex.js?ver=' . rawurlencode( SEARCHREGEX_VERSION ) . '-' . rawurlencode( SEARCHREGEX_BUILD ) ); ?></code></p>
+		<p><code><?php echo esc_html( plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.js?ver=' . rawurlencode( SEARCHREGEX_VERSION ) . '-' . rawurlencode( SEARCHREGEX_BUILD ) ); ?></code></p>
 		<p><?php esc_html_e( 'Please note that Search Regex requires the WordPress REST API to be enabled. If you have disabled this then you won\'t be able to use Search Regex', 'search-regex' ); ?></p>
 		<p><?php echo wp_kses( __( 'Please see the <a href="https://searchregex.com/support/problems/">list of common problems</a>.', 'search-regex' ), array( 'a' => array( 'href' => array() ) ) ); ?></p>
 		<p><?php esc_html_e( 'If you think Search Regex is at fault then create an issue.', 'search-regex' ); ?></p>
