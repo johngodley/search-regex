@@ -60,6 +60,7 @@
 	},
 	"dependencies": {
 		"@emotion/react": "^11.14.0",
+		"@headlessui/react": "^2.2.9",
 		"@redux-devtools/extension": "^3.3.0",
 		"@wordpress/element": "^6.36.0",
 		"@wordpress/i18n": "^6.9.0",
@@ -78,6 +79,7 @@
 		"react-dropzone": "^14.3.8",
 		"react-focus-lock": "^2.13.7",
 		"react-highlight-words": "^0.21.0",
+		"react-popper": "^2.3.0",
 		"react-redux": "^9.2.0",
 		"react-textarea-autosize": "^8.5.9",
 		"redux": "^5.0.1",
