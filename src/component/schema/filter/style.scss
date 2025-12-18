@@ -46,7 +46,7 @@
 
 .searchregex-filter__item {
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	margin-left: 20px;
 
 	p {
@@ -136,4 +136,37 @@
 .dashicons__disabled {
 	opacity: 0.5;
 	cursor: inherit !important;
+}
+
+.searchregex-presets,
+.searchregex-search {
+	button.dashicons {
+		background: none;
+		border: none;
+		padding: 0;
+		margin: 0;
+		cursor: pointer;
+		color: inherit;
+		font-size: inherit;
+		width: 20px;
+		height: 20px;
+	}
+
+	button.dashicons:before {
+		font-size: 20px;
+	}
+
+	button.dashicons:hover:not(:disabled) {
+		color: #d63638; /* WordPress red for delete actions */
+	}
+
+	button.dashicons:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	button.dashicons:focus {
+		outline: 1px dotted;
+		outline: 5px auto -webkit-focus-ring-color;
+	}
 }

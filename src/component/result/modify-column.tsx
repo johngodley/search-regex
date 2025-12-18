@@ -1,0 +1,353 @@
+import type { ResultColumn, SchemaColumn, Match } from '../../types/search';
+
+interface IntegerReplacement {
+	label?: string;
+	value: string;
+}
+
+interface KeyValueReplacement {
+	type: string;
+	type_value: string;
+	key: string;
+	value: string;
+}
+
+interface StringReplacement {
+	replaceValue?: string;
+	originalValue?: string;
+	matchesOnly?: boolean;
+}
+
+interface MemberReplacement {
+	values?: string[];
+	label?: string[];
+}
+
+interface DateReplacement {
+	value?: Date;
+}
+
+interface KeyValueItems {
+	items?: KeyValueReplacement[];
+}
+
+type Replacement = IntegerReplacement &
+	StringReplacement &
+	MemberReplacement &
+	DateReplacement &
+	KeyValueItems & {
+		column?: string;
+	};
+
+interface ContextValue {
+	type?: string;
+	context?: string;
+	value: string;
+	value_label?: string;
+	value_type?: string;
+	value_length?: number;
+	matches?: Match[];
+}
+
+interface KeyValueContext {
+	key: ContextValue;
+	value: ContextValue;
+	context_id?: number;
+	type?: string;
+}
+
+interface ReplacedValue {
+	type?: string;
+	value?: string;
+	value_label?: string;
+	replacement?: string;
+	replacement_value?: string | number;
+	replacement_label?: string | number;
+	matches?: Match[];
+}
+
+function getIntegerReplacement( _context: ContextValue, replacement: IntegerReplacement ): string | number {
+	if ( replacement.label ) {
+		return replacement.label;
+	}
+
+	return parseInt( replacement.value, 10 );
+}
+
+function getReplaceValue( type: string, existing: ContextValue, replacement: string ): ReplacedValue {
+	if ( type === 'delete' ) {
+		return {
+			...existing,
+			type: 'delete',
+		};
+	}
+
+	if ( type === 'replace' ) {
+		return {
+			type: 'replace',
+			value: existing.context || existing.value,
+			value_label: existing.context || existing.value,
+			replacement,
+			replacement_label: replacement,
+		};
+	}
+
+	return existing;
+}
+
+function getReplacedKeyvalue( context: KeyValueContext, replacement: KeyValueReplacement ): KeyValueContext {
+	return {
+		key: getReplaceValue( replacement.type, context.key, replacement.key ) as ContextValue,
+		value: getReplaceValue( replacement.type_value, context.value, replacement.value ) as ContextValue,
+	};
+}
+
+function replaceListColumn( context: ContextValue, replacement: Replacement, schema: SchemaColumn ): ReplacedValue {
+	if (
+		schema.type === 'integer' &&
+		! isNaN( parseInt( replacement.value || '', 10 ) ) &&
+		parseInt( context.value, 10 ) !== parseInt( replacement.value || '', 10 )
+	) {
+		return {
+			type: 'replace',
+			replacement_value: parseInt( replacement.value || '', 10 ),
+			replacement_label: getIntegerReplacement( context, replacement as IntegerReplacement ),
+		};
+	}
+
+	if (
+		schema.type === 'member' &&
+		replacement.values &&
+		replacement.values[ 0 ] !== context.value &&
+		schema.api !== 'api'
+	) {
+		const options = Array.isArray( schema.api ) ? schema.api : [];
+		const option = options.find( ( item ) => item.value === replacement.values?.[ 0 ] );
+
+		return {
+			type: 'replace',
+			replacement_value: replacement.values[ 0 ],
+			replacement_label: option ? option.label : replacement.values[ 0 ],
+		};
+	}
+
+	if ( schema.type === 'date' && replacement.value ) {
+		return {
+			type: 'replace',
+			replacement_value: replacement.value.toDateString() + ' ' + replacement.value.toLocaleTimeString(),
+			replacement_label: replacement.value.toDateString() + ' ' + replacement.value.toLocaleTimeString(),
+		};
+	}
+
+	if ( schema.type === 'string' && replacement.replaceValue !== undefined ) {
+		if ( context.type === 'string' && ! replacement.matchesOnly ) {
+			return {};
+		}
+
+		if (
+			replacement.originalValue &&
+			replacement.originalValue.replace( /\r\n/g, '\n' ).trim() ===
+				replacement.replaceValue.replace( /\r\n/g, '\n' ).trim()
+		) {
+			return {};
+		}
+
+		if ( context.value === replacement.replaceValue ) {
+			return {};
+		}
+
+		if ( replacement.matchesOnly ) {
+			return {
+				...context,
+				matches: context.matches?.map( ( match ) => ( {
+					...match,
+					replacement: replacement.replaceValue || '',
+				} ) ),
+			};
+		}
+
+		if ( replacement.replaceValue === '' ) {
+			return {
+				type: 'delete',
+			};
+		}
+
+		return {
+			...context,
+			type: 'replace',
+			replacement: replacement.replaceValue,
+			replacement_label: replacement.replaceValue,
+		};
+	}
+
+	return {};
+}
+
+function replaceListContext( contexts: any[], replacement: Replacement, schema: SchemaColumn ): any[] {
+	if ( schema.type === 'member' && schema.api === 'api' ) {
+		const removed = contexts
+			.filter( ( item ) => item.type !== 'empty' )
+			.filter( ( context ) => replacement.values?.indexOf( context.value ) === -1 );
+		const existing = contexts
+			.filter( ( context ) => replacement.values?.indexOf( context.value ) !== -1 )
+			.filter( ( item ) => item.type !== 'empty' );
+		const added = ( replacement.values || [] )
+			.map( ( item, pos ) => {
+				const found = existing.find( ( context ) => context.value === item );
+				if ( ! found ) {
+					return {
+						type: 'add',
+						value: item,
+						value_label: ( replacement.label && replacement.label[ pos ] ) || item,
+					};
+				}
+
+				return false;
+			} )
+			.filter( Boolean );
+
+		return [
+			...existing,
+			...removed.map( ( item ) => ( {
+				type: 'delete',
+				value: item.value,
+				value_label: item.value_label,
+			} ) ),
+			...added,
+		].map( ( context, pos ) => ( {
+			...context,
+			context_id: pos,
+		} ) );
+	}
+
+	if ( schema.type === 'keyvalue' && replacement.items ) {
+		const items = replacement.items || [];
+
+		const value = contexts
+			.map( ( context, pos ) => ( {
+				...context,
+				...( items.length === 0 ? {} : getReplacedKeyvalue( context, items[ pos ] ) ),
+			} ) )
+			.concat(
+				items.slice( contexts.length ).map( ( item, pos ) => ( {
+					type: 'keyvalue',
+					context_id: contexts.length + pos,
+					key: {
+						type: 'add',
+						value: item.key,
+						value_label: item.key,
+					},
+					value: {
+						type: 'add',
+						value: item.value,
+						value_label: item.value,
+					},
+				} ) )
+			);
+
+		return value;
+	}
+
+	if (
+		schema.type === 'string' &&
+		! replacement.matchesOnly &&
+		contexts.length > 0 &&
+		contexts[ 0 ].type === 'string'
+	) {
+		const value = replacement.originalValue ? replacement.originalValue : contexts[ 0 ].context;
+		const newContext = {
+			type: 'value',
+			value,
+			value_label: value,
+			context_id: contexts.length,
+			hasMultiple: true,
+			value_type: contexts[ 0 ].value_type,
+			value_length: value.length + 1,
+		};
+
+		return [
+			{
+				...newContext,
+				...replaceListColumn( newContext, replacement, schema ),
+			},
+		];
+	}
+
+	return contexts;
+}
+
+export function getReplacedColumn(
+	column: ResultColumn,
+	replacement: Replacement | null,
+	columnSchema: SchemaColumn
+): ResultColumn {
+	if ( ! replacement ) {
+		return column;
+	}
+
+	const newContexts = replaceListContext(
+		( column.contexts as any[] ).map( ( context ) => ( {
+			...context,
+			...replaceListColumn( context, replacement, columnSchema ),
+		} ) ),
+		replacement,
+		columnSchema
+	);
+
+	return {
+		...column,
+		context_count: newContexts.length,
+		contexts: newContexts,
+	};
+}
+
+function isReplaceKeyvalue( item: KeyValueReplacement ): boolean {
+	if ( item.type !== 'value' || item.type_value !== 'value' ) {
+		return true;
+	}
+
+	return false;
+}
+
+export function hasValue( replacement: Replacement | null, column: ResultColumn, columnSchema: SchemaColumn ): boolean {
+	if ( replacement === null || replacement.column !== column.column_id ) {
+		return false;
+	}
+
+	if ( columnSchema.type === 'integer' ) {
+		return (
+			! isNaN( parseInt( replacement.value || '', 10 ) ) &&
+			parseInt( ( column.contexts[ 0 ] as any ).value, 10 ) !== parseInt( replacement.value || '', 10 )
+		);
+	}
+
+	if ( columnSchema.type === 'member' ) {
+		return !! ( replacement.values && replacement.values[ 0 ] !== ( column.contexts[ 0 ] as any ).value );
+	}
+
+	if ( columnSchema.type === 'keyvalue' && replacement.items ) {
+		return !! replacement.items.find( ( item ) => isReplaceKeyvalue( item ) );
+	}
+
+	if ( columnSchema.type === 'string' ) {
+		if ( column.contexts.length === 0 ) {
+			return replacement.replaceValue !== undefined && replacement.replaceValue !== '';
+		}
+
+		if ( replacement.originalValue && replacement.originalValue === replacement.replaceValue ) {
+			return false;
+		}
+
+		return (
+			replacement.replaceValue !== undefined &&
+			replacement.replaceValue !==
+				( ( column.contexts[ 0 ] as any ).value || ( column.contexts[ 0 ] as any ).search )
+		);
+	}
+
+	if ( columnSchema.type === 'date' ) {
+		return replacement.value !== undefined;
+	}
+
+	return false;
+}

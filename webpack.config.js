@@ -13,7 +13,7 @@ const MiniCSSExtractPlugin = require( 'mini-css-extract-plugin' );
 const WebpackShellPluginNext = require( 'webpack-shell-plugin-next' );
 const crypto = require( 'crypto' );
 
-const versionHeader = md5 => `<?php
+const versionHeader = ( md5 ) => `<?php
 
 define( 'SEARCHREGEX_VERSION', '${ pkg.version }' );
 define( 'SEARCHREGEX_BUILD', '${ md5 }' );
@@ -22,10 +22,7 @@ define( 'SEARCHREGEX_MIN_WP', '${ pkg.wordpress.supported }' );
 
 function generateVersion() {
 	fs.readFile( path.resolve( __dirname, 'build/search-regex.js' ), ( error, data ) => {
-		const md5 = crypto
-			.createHash( 'md5' )
-			.update( data, 'utf8' )
-			.digest( 'hex' );
+		const md5 = crypto.createHash( 'md5' ).update( data, 'utf8' ).digest( 'hex' );
 
 		fs.writeFileSync( path.resolve( __dirname, 'build/search-regex-version.php' ), versionHeader( md5 ) );
 	} );
@@ -40,11 +37,15 @@ const modified = {
 		filename: 'search-regex.js',
 	},
 	externals: {
-		'@wordpress/i18n': 'wp.i18n'
+		'@wordpress/i18n': 'wp.i18n',
 	},
 	plugins: [
 		// Replace the default MiniCSSExtractPlugin with a custom one that doesn't externalise React
-		...defaultConfig.plugins.filter( ( plugin ) => !( plugin instanceof MiniCSSExtractPlugin ) && !( plugin instanceof DependencyExtractionWebpackPlugin ) ),
+		...defaultConfig.plugins.filter(
+			( plugin ) =>
+				! ( plugin instanceof MiniCSSExtractPlugin ) &&
+				! ( plugin instanceof DependencyExtractionWebpackPlugin )
+		),
 		new MiniCSSExtractPlugin( { filename: 'search-regex.css' } ),
 
 		new webpack.DefinePlugin( {
@@ -56,17 +57,17 @@ const modified = {
 			onBuildEnd: {
 				scripts: [ generateVersion ],
 				blocking: true,
-				parallel: false
+				parallel: false,
 			},
-		} )
+		} ),
 	],
 	resolve: {
 		...defaultConfig.resolve,
 		alias: {
 			...defaultConfig.resolve.alias,
 			'@wp-plugin-components': path.resolve( __dirname, 'src/wp-plugin-components' ),
-			'@wp-plugin-lib': path.resolve( __dirname, 'src/wp-plugin-lib/' )
-		}
+			'@wp-plugin-lib': path.resolve( __dirname, 'src/wp-plugin-lib/' ),
+		},
 	},
 	optimization: {
 		...defaultConfig.optimization,
@@ -87,12 +88,14 @@ const modified = {
 				extractComments: {
 					condition: true,
 					banner: () => {
-						return 'Search Regex v' + pkg.version + ' - please refer to license.txt for license information';
+						return (
+							'Search Regex v' + pkg.version + ' - please refer to license.txt for license information'
+						);
 					},
 				},
 			} ),
-		]
-	}
+		],
+	},
 };
 
 module.exports = modified;

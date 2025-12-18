@@ -12,3 +12,4 @@ svn
 /.stfolder
 /CLAUDE.md
 /.claude
+/tsconfig.tsbuildinfo
