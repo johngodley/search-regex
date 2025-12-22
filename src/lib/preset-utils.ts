@@ -1,4 +1,4 @@
-import type { PresetValue, PresetTag } from '../../types/preset';
+import type { PresetValue, PresetTag } from '../types/preset';
 
 const HEADER_SHORT = 12;
 const HEADER_MEDIUM = 30;
@@ -14,7 +14,8 @@ export function isLocked( locked: string[], field: string ): boolean {
 export function hasTags( tags: PresetTag[], phrase: string ): boolean {
 	if ( phrase ) {
 		for ( let index = 0; index < tags.length; index++ ) {
-			if ( phrase.indexOf( tags[ index ].name ) !== -1 ) {
+			const tag = tags[ index ];
+			if ( tag && phrase.indexOf( tag.name ) !== -1 ) {
 				return true;
 			}
 		}
@@ -45,7 +46,10 @@ function getLongestTag( tags: PresetTag[] ): number {
 	let longest = 0;
 
 	for ( let index = 0; index < tags.length; index++ ) {
-		longest = Math.max( longest, tags[ index ].label.length );
+		const tag = tags[ index ];
+		if ( tag ) {
+			longest = Math.max( longest, tag.label.length );
+		}
 	}
 
 	return longest;

@@ -1,16 +1,4 @@
-type SearchRegexApiInfo = {
-	WP_API_root: string;
-	site_health: string;
-};
-
-type SearchRegexContext = {
-	api: SearchRegexApiInfo;
-	versions: string;
-	version: string;
-};
-
-declare const SearchRegexi10n: SearchRegexContext;
-declare const SEARCHREGEX_VERSION: string;
+// SEARCHREGEX_VERSION is declared globally in types/search-regex-i18n.ts
 
 export function getErrorLinks() {
 	return {

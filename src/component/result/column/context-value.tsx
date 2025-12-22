@@ -43,7 +43,7 @@ function ContextValue( { context, rowId, column, schema, setReplacement, classNa
 				column={ column }
 				schema={ schema }
 				setReplacement={ setReplacement }
-				className={ className }
+				{ ...( className !== undefined ? { className } : {} ) }
 			/>
 		</>
 	);

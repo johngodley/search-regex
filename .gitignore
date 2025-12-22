@@ -13,3 +13,7 @@ svn
 /CLAUDE.md
 /.claude
 /tsconfig.tsbuildinfo
+
+# TypeScript declaration files (not needed for WordPress plugin)
+*.d.ts
+*.d.ts.map

@@ -2,8 +2,7 @@ import React, { useEffect, useState, type ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Select } from '@wp-plugin-components';
 import type { PresetValue } from '../../types/preset';
-import type { ResultColumn, SchemaColumn } from '../../types/search';
-import type { SetReplace } from '../../state/search/type';
+import type { ResultColumn, SchemaColumn, SetReplace } from '../../types/search';
 
 interface ReplaceProps {
 	disabled: boolean;

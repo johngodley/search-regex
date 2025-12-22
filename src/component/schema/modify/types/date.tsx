@@ -1,6 +1,6 @@
 import { type ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
-import DatePicker from 'react-datepicker';
+import DatePicker from '../../../../wp-plugin-components/date-picker';
 import Operation from '../operation';
 import { Select } from '@wp-plugin-components';
 import type { SchemaColumn, ModifyDateColumn } from '../../../../types/search';

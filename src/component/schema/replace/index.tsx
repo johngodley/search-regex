@@ -31,12 +31,16 @@ export default function ReplaceColumn( {
 		[ source, column.column_id ]
 	);
 
-	const loadColumn = useCallback( (): Promise< unknown > => {
-		return apiFetch( SearchRegexApi.source.loadRow( source, rowId ) ).then(
-			( data: { result: Array< { column: string } > } ) =>
-				data.result.find( ( item ) => item.column === column.column_id )
-		);
+	const loadColumn = useCallback( async (): Promise< unknown > => {
+		const data = ( await apiFetch( SearchRegexApi.source.loadRow( source, rowId ) ) ) as {
+			result: Array< { column: string } >;
+		};
+		return data.result.find( ( item ) => item.column === column.column_id );
 	}, [ source, rowId, column.column_id ] );
+
+	// setReplacement from parent already handles merging, so we can pass it through directly
+	// No need to wrap it since the parent's save function already merges state
+	const mergedSetReplacement = setReplacement;
 
 	return (
 		<>
@@ -48,7 +52,7 @@ export default function ReplaceColumn( {
 					column={ column }
 					fetchData={ fetchData }
 					context={ context }
-					setReplacement={ setReplacement }
+					setReplacement={ mergedSetReplacement }
 					replacement={ replacement }
 					loadColumn={ loadColumn }
 				/>

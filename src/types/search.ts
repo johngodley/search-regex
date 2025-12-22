@@ -219,3 +219,8 @@ export interface SelectOption {
 	value: string | SelectOption[];
 	disabled?: boolean;
 }
+
+/**
+ * SetReplace callback type
+ */
+export type SetReplace = ( value: unknown ) => void;

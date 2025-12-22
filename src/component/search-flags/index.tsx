@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { MultiOptionDropdown } from '@wp-plugin-components';
-import { getAvailableSearchFlags } from '../../state/search/selector';
+import { getAvailableSearchFlags } from '../../lib/search-utils';
 
 interface SearchFlagsProps {
 	flags: string[];
@@ -31,7 +31,7 @@ function SearchFlags( props: SearchFlagsProps ): JSX.Element {
 				onChange( flagsArray );
 			} }
 			title={ __( 'Flags', 'search-regex' ) }
-			disabled={ disabled }
+			{ ...( disabled !== undefined ? { disabled } : {} ) }
 			multiple
 			badges
 		/>

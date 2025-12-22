@@ -1,15 +1,12 @@
 import type { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
-import { useDispatch } from 'react-redux';
-import type { ThunkDispatch } from 'redux-thunk';
 import { hasValue } from '../modify-column';
 import ColumnLabel from '../column-label';
 import { Dropdown } from '@wp-plugin-components';
 import ReplaceForm from '../../replace-form';
-import { saveRow } from '../../../state/search/action';
 import getValueType from '../../value-type';
 import type { ResultColumn, SchemaColumn, Schema } from '../../../types/search';
-import type { RootState } from '../../../state/reducers';
+import { useSaveRow } from '../../../hooks/use-search';
 
 interface ContextItemProps {
 	column: ResultColumn;
@@ -26,12 +23,12 @@ interface ContextItemProps {
 function ContextItem( props: ContextItemProps ): JSX.Element {
 	const { column, schema, replacement, save, disabled, source, rowId, children, context } = props;
 	const canReplace = hasValue( replacement, column, schema );
-	const dispatch = useDispatch< ThunkDispatch< RootState, unknown, any > >();
+	const saveRowMutation = useSaveRow();
 
 	function onSave( toggle: () => void ): void {
 		toggle();
 		save( null );
-		void dispatch( saveRow( replacement, String( rowId ) ) );
+		saveRowMutation.mutate( { replacement, rowId: String( rowId ) } );
 	}
 
 	return (

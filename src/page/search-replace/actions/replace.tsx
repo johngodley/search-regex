@@ -1,17 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import classnames from 'classnames';
-import { useSelector, useDispatch } from 'react-redux';
-import { isLocked, hasTags, getDefaultPresetValues } from '../../../state/preset/selector';
-import { setSearch } from '../../../state/search/action';
+import clsx from 'clsx';
+import { isLocked, hasTags, getDefaultPresetValues } from '../../../lib/preset-utils';
+import { useSearchStore } from '../../../stores/search-store';
 import type { PresetValue, PresetTag } from '../../../types/preset';
-
-interface RootState {
-	search: {
-		search: {
-			replacement: string | null;
-		};
-	};
-}
 
 interface ReplaceFieldProps {
 	locked: string[];
@@ -23,39 +14,31 @@ interface ReplaceFieldProps {
 
 function ReplaceField( props: ReplaceFieldProps ) {
 	const { locked, tags, preset, disabled, headerClass } = props;
-	const dispatch = useDispatch();
-	const {
-		search: { replacement },
-	} = useSelector( ( state: RootState ) => state.search );
+
+	const search = useSearchStore( ( state ) => state.search );
+	const setSearch = useSearchStore( ( state ) => state.setSearch );
+	const { replacement = null } = search;
 
 	function setTaggedReplace( replacementValue: string | null ) {
 		const defaults = getDefaultPresetValues( preset );
 
-		/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
 		// If the replace is the default non-tagged replace then reset it to an empty string
-		dispatch(
-			setSearch( {
-				replacement: replacementValue === ( defaults?.replacement ?? null ) ? '' : replacementValue ?? '',
-			} ) as any
-		);
-		/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
+		setSearch( {
+			replacement: replacementValue === ( defaults?.replacement ?? null ) ? '' : replacementValue ?? '',
+		} );
 	}
 
 	return (
 		<>
 			{ ! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
-				<tr className={ classnames( 'searchregex-search__replace', headerClass ) }>
+				<tr className={ clsx( 'searchregex-search__replace', headerClass ) }>
 					<th>{ __( 'Replace', 'search-regex' ) }</th>
 					<td>
 						<input
 							type="text"
 							disabled={ disabled }
 							value={ replacement ?? '' }
-							onChange={ ( ev ) => {
-								/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-								dispatch( setSearch( { replacement: ev.target.value } ) as any );
-								/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-							} }
+							onChange={ ( ev ) => setSearch( { replacement: ev.target.value } ) }
 							placeholder={ __( 'Enter global replacement text', 'search-regex' ) }
 						/>
 					</td>
@@ -63,7 +46,7 @@ function ReplaceField( props: ReplaceFieldProps ) {
 			) }
 
 			{ ! isLocked( locked, 'replacement' ) && hasTags( tags, preset?.search?.replacement ?? '' ) && (
-				<tr className={ classnames( 'searchregex-search__replace', headerClass ) }>
+				<tr className={ clsx( 'searchregex-search__replace', headerClass ) }>
 					<th>{ __( 'Replace', 'search-regex' ) }</th>
 					<td>
 						<input

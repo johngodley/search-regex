@@ -1,11 +1,13 @@
+import { useState, useEffect } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Line } from 'rc-progress';
-import { connect } from 'react-redux';
-import type { ThunkDispatch } from 'redux-thunk';
-import { clear, performMore, setError } from '../../state/search/action';
-import { isAdvancedSearch } from '../../state/search/selector';
-import { STATUS_IN_PROGRESS, STATUS_COMPLETE } from '../../state/settings/type';
+import { isAdvancedSearch } from '../../lib/search-utils';
+import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from '../../lib/constants';
 import { useSlidingActionWindow } from '../../lib/result-window';
+import { useSearchStore, convertToResults } from '../../stores/search-store';
+import { useSearch } from '../../hooks/use-search';
+import { useMessageStore } from '../../stores/message-store';
+import { saveExport } from '../../lib/export';
 import './style.scss';
 
 interface CustomTotal {
@@ -19,44 +21,12 @@ interface Totals {
 	custom?: CustomTotal[];
 }
 
-interface Progress {
-	current?: number;
-	next: number | false;
-	rows?: number;
-}
-
-interface ReplaceProgressOwnProps {
-	progress: Progress;
-	totals: Totals;
-	requestCount: number;
-	status: string;
-	isAdvanced: boolean;
-}
-
-interface ReplaceProgressDispatchProps {
-	onNext: ( page: number | false, perPage: number ) => void;
-	onClear: () => void;
-	onError: () => void;
-}
-
-type ReplaceProgressProps = ReplaceProgressOwnProps & ReplaceProgressDispatchProps;
-
-interface RootState {
-	search: {
-		progress: Progress;
-		totals: Totals;
-		requestCount: number;
-		status: string;
-		search: unknown;
-	};
-}
-
 const getTotal = ( isAdvanced: boolean, totals: Totals ): number => ( isAdvanced ? totals.rows : totals.matched_rows );
 const getPercent = ( current: number, total: number ): number =>
 	total > 0 ? Math.round( ( current / total ) * 100 ) : 0;
 
 function getTotalCount( name: string, count: number ): string {
-	const formattedCount = new Intl.NumberFormat( ( window as any ).SearchRegexi10n.locale as string ).format( count );
+	const formattedCount = new Intl.NumberFormat( SearchRegexi10n.locale ).format( count );
 
 	if ( name === 'delete' ) {
 		/* translators: %s: number of rows deleted */
@@ -87,17 +57,98 @@ function Totals( { totals, current }: { totals: Totals; current: number } ): JSX
 	return <p>{ getTotalCount( 'rows', current ) }</p>;
 }
 
-function ReplaceProgress( props: ReplaceProgressProps ): JSX.Element {
-	const { progress, totals, requestCount, onNext, status, onClear, isAdvanced, onError } = props;
+function ReplaceProgress(): JSX.Element {
+	const progress = useSearchStore( ( state ) => state.progress );
+	const totals = useSearchStore( ( state ) => state.totals );
+	const status = useSearchStore( ( state ) => state.status );
+	const search = useSearchStore( ( state ) => state.search );
+	const results = useSearchStore( ( state ) => state.results );
+	const setResults = useSearchStore( ( state ) => state.setResults );
+	const setTotals = useSearchStore( ( state ) => state.setTotals );
+	const setProgress = useSearchStore( ( state ) => state.setProgress );
+	const setStatus = useSearchStore( ( state ) => state.setStatus );
+	const clearResults = useSearchStore( ( state ) => state.clearResults );
+	const addError = useMessageStore( ( state ) => state.addError );
+
+	const [ requestCount, setRequestCount ] = useState( 0 );
+	const performMutation = useSearch();
+	// ✨ Search is already validated - no need for type assertion
+	const isAdvanced = isAdvancedSearch( search );
 	const total = getTotal( isAdvanced, totals );
 	const { current = 0, next = 0, rows = 0 } = progress;
 	const percent = Math.min(
 		100,
-		status === STATUS_IN_PROGRESS ? getPercent( next === false ? total : next, total ) : 100
+		status === STATUS_IN_PROGRESS ? getPercent( next === false ? total : ( next as number ), total ) : 100
 	);
 	const canLoad = progress.next !== false && status === STATUS_IN_PROGRESS;
 
-	useSlidingActionWindow( canLoad, requestCount, ( size: number ) => onNext( progress.next, size ), onError );
+	const onNext = ( page: number | false, perPage: number ) => {
+		if ( page === false ) {
+			return;
+		}
+
+		setRequestCount( ( prev ) => prev + 1 );
+		setStatus( STATUS_IN_PROGRESS );
+
+		performMutation.mutate(
+			{
+				...search,
+				page,
+				perPage,
+				save: true,
+			},
+			{
+				onSuccess: ( data ) => {
+					// ✨ Data is already validated by Zod in useSearch hook
+					// Convert API results (number row_id) to Result[] (string row_id)
+					setResults( [ ...results, ...convertToResults( data.results ) ] );
+					setTotals( {
+						matched_rows: data.totals.matched_rows,
+						rows: data.totals.rows,
+						...( data.totals.custom ? { custom: data.totals.custom } : {} ),
+					} );
+					setProgress( {
+						next: data.progress.next,
+						...( data.progress.current !== undefined ? { current: data.progress.current } : {} ),
+						...( data.progress.rows !== undefined ? { rows: data.progress.rows } : {} ),
+						...( data.progress.previous !== undefined ? { previous: data.progress.previous } : {} ),
+					} );
+					setStatus( data.status ?? STATUS_COMPLETE );
+				},
+				onError: () => {
+					setStatus( STATUS_FAILED );
+				},
+			}
+		);
+	};
+
+	const onError = () => {
+		addError( __( 'Your search resulted in too many requests. Please narrow your search terms.', 'search-regex' ) );
+	};
+
+	const onClear = () => {
+		clearResults();
+	};
+
+	// Handle export when operation completes
+	useEffect( () => {
+		if (
+			status === STATUS_COMPLETE &&
+			progress.next === false &&
+			search.action === 'export' &&
+			results.length > 0
+		) {
+			const format = search.actionOption?.format || 'json';
+			saveExport( results, format );
+		}
+	}, [ status, progress.next, search.action, search.actionOption, results ] );
+
+	useSlidingActionWindow(
+		canLoad,
+		requestCount,
+		( size: number ) => onNext( progress.next as number, size ),
+		onError
+	);
 
 	return (
 		<div className="searchregex-replaceall">
@@ -124,39 +175,4 @@ function ReplaceProgress( props: ReplaceProgressProps ): JSX.Element {
 	);
 }
 
-function mapStateToProps( state: RootState ): ReplaceProgressOwnProps {
-	const { progress, totals, requestCount, status, search } = state.search;
-
-	return {
-		status,
-		progress,
-		totals,
-		requestCount,
-		isAdvanced: isAdvancedSearch( search as any ),
-	};
-}
-
-function mapDispatchToProps( dispatch: ThunkDispatch< RootState, unknown, any > ): ReplaceProgressDispatchProps {
-	return {
-		onClear: () => {
-			dispatch( clear() );
-		},
-		onNext: ( page: number | false, perPage: number ) => {
-			if ( page !== false ) {
-				void dispatch( performMore( page, perPage ) );
-			}
-		},
-		onError: () => {
-			dispatch(
-				setError(
-					__( 'Your search resulted in too many requests. Please narrow your search terms.', 'search-regex' )
-				)
-			);
-		},
-	};
-}
-
-export default connect< ReplaceProgressOwnProps, ReplaceProgressDispatchProps, Record< string, never >, RootState >(
-	mapStateToProps,
-	mapDispatchToProps
-)( ReplaceProgress );
+export default ReplaceProgress;

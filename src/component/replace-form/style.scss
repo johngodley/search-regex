@@ -1,4 +1,4 @@
-@import "../../global.scss";
+@use "../../global" as *;
 
 .searchregex-replace__modal .wpl-table {
 	width: 100%;
@@ -21,8 +21,6 @@
 		margin: 0;
 	}
 }
-
-// XXX this is not working
 
 .searchregex-replace__modal {
 	padding: 13px;

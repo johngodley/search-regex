@@ -1,16 +1,13 @@
 import { useState, MouseEvent } from 'react';
 import { __ } from '@wordpress/i18n';
-import { connect } from 'react-redux';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { deletePreset, updatePreset } from '../../state/preset/action';
+import { useDeletePreset, useUpdatePreset } from '../../hooks/use-presets';
 import PresetEdit from './preset-edit';
 import PresetEntry from './preset-entry';
 import type { PresetValue } from '../../types/preset';
 
 interface PresetProps {
 	preset: PresetValue;
-	onDelete: ( id: string ) => void;
-	onUpdatePreset: ( id: string, preset: PresetValue ) => void;
 }
 
 function cleanPreset( preset: PresetValue ): Partial< PresetValue > {
@@ -29,10 +26,13 @@ function cleanPreset( preset: PresetValue ): Partial< PresetValue > {
 }
 
 function Preset( props: PresetProps ) {
-	const [ isSaving, setSaving ] = useState( false );
-	const [ isEditing, setEditing ] = useState( false );
-	const { preset, onDelete, onUpdatePreset } = props;
+	const { preset } = props;
 	const { id } = preset;
+	const [ isEditing, setEditing ] = useState( false );
+	const deleteMutation = useDeletePreset();
+	const updateMutation = useUpdatePreset();
+
+	const isSaving = deleteMutation.isPending || updateMutation.isPending;
 
 	function deleteIt( ev: MouseEvent< HTMLAnchorElement > ) {
 		ev.preventDefault();
@@ -40,8 +40,7 @@ function Preset( props: PresetProps ) {
 		/* eslint-disable no-alert */
 		if ( confirm( __( 'Are you sure you want to delete this preset?', 'search-regex' ) ) ) {
 			/* eslint-enable no-alert */
-			setSaving( true );
-			onDelete( id );
+			deleteMutation.mutate( id );
 		}
 	}
 
@@ -51,7 +50,7 @@ function Preset( props: PresetProps ) {
 	}
 
 	function updateIt( updatedPreset: PresetValue ) {
-		onUpdatePreset( id, updatedPreset );
+		updateMutation.mutate( updatedPreset );
 		setEditing( false );
 	}
 
@@ -90,18 +89,4 @@ function Preset( props: PresetProps ) {
 	);
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-function mapDispatchToProps( dispatch: any ) {
-	return {
-		onDelete: ( id: string ) => {
-			dispatch( deletePreset( id ) );
-		},
-
-		onUpdatePreset: ( id: string, preset: PresetValue ) => {
-			dispatch( updatePreset( id, preset ) );
-		},
-	};
-}
-/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-
-export default connect( null, mapDispatchToProps )( Preset );
+export default Preset;

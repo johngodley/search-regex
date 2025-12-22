@@ -1,6 +1,6 @@
 import { type ChangeEvent, Fragment } from 'react';
 import { __ } from '@wordpress/i18n';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { apiFetch } from '@wp-plugin-lib';
 import { Select, Button, Badge } from '@wp-plugin-components';
 import SearchRegexApi from '../../../lib/api-request';
@@ -40,7 +40,7 @@ function FilterItem( {
 	}
 
 	return (
-		<div className={ classnames( 'searchregex-filter__item', `searchregex-filter__type__${ schema.type }` ) }>
+		<div className={ clsx( 'searchregex-filter__item', `searchregex-filter__type__${ schema.type }` ) }>
 			<Select
 				name="filter_type"
 				items={ getOptionsForColumn( columns ) }
@@ -54,7 +54,7 @@ function FilterItem( {
 				aria-label={ __( 'Remove filter', 'search-regex' ) }
 				onClick={ onRemove }
 				disabled={ disabled }
-				className={ classnames( 'dashicons', 'dashicons-trash', disabled && 'dashicons__disabled' ) }
+				className={ clsx( 'dashicons', 'dashicons-trash', disabled && 'dashicons__disabled' ) }
 			/>
 
 			<FilterType
@@ -83,7 +83,10 @@ function Filter( { schema, items, disabled, onChange, onRemove, source }: Filter
 	}
 
 	function addFilter(): void {
-		onChange( [ ...items, { column: items[ items.length - 1 ].column } ] );
+		const lastItem = items[ items.length - 1 ];
+		if ( lastItem ) {
+			onChange( [ ...items, { column: lastItem.column } ] );
+		}
 	}
 
 	function removeItem( pos: number ): void {
@@ -108,11 +111,11 @@ function Filter( { schema, items, disabled, onChange, onRemove, source }: Filter
 					aria-label={ __( 'Remove filter group', 'search-regex' ) }
 					onClick={ onRemove }
 					disabled={ disabled }
-					className={ classnames( 'dashicons', 'dashicons-trash', disabled && 'dashicons__disabled' ) }
+					className={ clsx( 'dashicons', 'dashicons-trash', disabled && 'dashicons__disabled' ) }
 				/>
 			</div>
 			<div
-				className={ classnames(
+				className={ clsx(
 					'searchregex-filter__content',
 					items.length > 1 && 'searchregex-filter__content__multiple'
 				) }

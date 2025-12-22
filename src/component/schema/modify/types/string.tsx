@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, type ChangeEvent } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { useSelector } from 'react-redux';
 import Operation from '../operation';
 import { DropdownText } from '@wp-plugin-components';
 import SearchFlags from '../../../search-flags';
+import { useSearchStore } from '../../../../stores/search-store';
 import type { SchemaColumn, ModifyStringColumn, FilterItem, Filter } from '../../../../types/search';
 
 interface ModifyStringProps {
@@ -31,13 +31,13 @@ function getFilterForAction(
 	}
 
 	for ( let index = 0; index < filters.length; index++ ) {
-		if ( filters[ index ].type === column.source ) {
-			for ( let itemIndex = 0; itemIndex < filters[ index ].items.length; itemIndex++ ) {
-				if ( filters[ index ].items[ itemIndex ].column === column.column ) {
-					const filter = filters[ index ].items[ itemIndex ];
-
-					if ( filter.logic !== 'notcontains' && filter.logic !== 'notequals' && filter.value ) {
-						columns.push( filters[ index ].items[ itemIndex ] );
+		const filter = filters[ index ];
+		if ( filter && filter.type === column.source ) {
+			for ( let itemIndex = 0; itemIndex < filter.items.length; itemIndex++ ) {
+				const item = filter.items[ itemIndex ];
+				if ( item && item.column === column.column ) {
+					if ( item.logic !== 'notcontains' && item.logic !== 'notequals' && item.value ) {
+						columns.push( item );
 					}
 				}
 			}
@@ -95,14 +95,9 @@ export default function ModifyString( {
 	const { operation = 'set', searchValue = '', replaceValue = '', searchFlags = [ 'case' ] } = item;
 	const [ localOperation, setLocalOperation ] = useState( 'set' );
 	const remote = schema.options === 'api' && canRemote( searchFlags ) ? fetchData : false;
-	const {
-		filters,
-		searchPhrase,
-		searchFlags: globalFlags,
-	} = useSelector(
-		( state: { search: { search: { filters: Filter[]; searchPhrase: string; searchFlags: string[] } } } ) =>
-			state.search.search
-	);
+
+	const search = useSearchStore( ( state ) => state.search );
+	const { filters = [], searchPhrase = '', searchFlags: globalFlags = [] } = search;
 	const modifiedFilters = useMemo(
 		() => getFilterForAction( filters, item, searchPhrase, globalFlags ),
 		[ filters, item, searchPhrase, globalFlags ]
@@ -124,12 +119,10 @@ export default function ModifyString( {
 	}, [ localOperation, modifiedFilters, onChange ] );
 
 	const searchPropsWithFetch =
-		searchFlags.indexOf( 'multi' ) === -1
-			? { ...searchProps, fetchData: remote !== false ? remote : undefined }
-			: searchProps;
+		searchFlags.indexOf( 'multi' ) === -1 && remote !== false ? { ...searchProps, fetchData: remote } : searchProps;
 	const replacePropsWithFetch =
-		searchFlags.indexOf( 'multi' ) === -1
-			? { ...replaceProps, fetchData: remote !== false ? remote : undefined }
+		searchFlags.indexOf( 'multi' ) === -1 && remote !== false
+			? { ...replaceProps, fetchData: remote }
 			: replaceProps;
 
 	return (

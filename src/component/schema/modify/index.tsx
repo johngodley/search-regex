@@ -1,4 +1,4 @@
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wp-plugin-lib';
 import SearchRegexApi from '../../../lib/api-request';
@@ -30,7 +30,7 @@ export default function Modify( { disabled, schema, column, onRemove, onChange }
 						aria-label={ __( 'Remove modification', 'search-regex' ) }
 						onClick={ onRemove }
 						disabled={ disabled }
-						className={ classnames( 'dashicons', 'dashicons-trash', disabled && 'dashicons__disabled' ) }
+						className={ clsx( 'dashicons', 'dashicons-trash', disabled && 'dashicons__disabled' ) }
 					/>
 				) }
 			</div>

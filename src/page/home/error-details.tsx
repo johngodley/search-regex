@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { ExternalLink, createInterpolateElement } from '@wp-plugin-components';
 import RestApiStatus from '../../component/rest-api-status';
 
-function ErrorDetails() {
+export default function ErrorDetails() {
 	return (
 		<>
 			<RestApiStatus />
@@ -34,10 +34,7 @@ function ErrorDetails() {
 				</li>
 				<li>
 					{ createInterpolateElement(
-						__(
-							'If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues.',
-							'search-regex'
-						),
+						__( 'Look at your {{link}}Site Health{{/link}} and resolve any issues.', 'search-regex' ),
 						{
 							link: <ExternalLink url="/wp-admin/site-health.php" />,
 						}
@@ -47,5 +44,3 @@ function ErrorDetails() {
 		</>
 	);
 }
-
-export default ErrorDetails;

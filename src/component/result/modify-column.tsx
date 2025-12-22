@@ -122,12 +122,13 @@ function replaceListColumn( context: ContextValue, replacement: Replacement, sch
 		schema.api !== 'api'
 	) {
 		const options = Array.isArray( schema.api ) ? schema.api : [];
-		const option = options.find( ( item ) => item.value === replacement.values?.[ 0 ] );
+		const replacementValue = replacement.values?.[ 0 ];
+		const option = replacementValue ? options.find( ( item ) => item.value === replacementValue ) : undefined;
 
 		return {
 			type: 'replace',
-			replacement_value: replacement.values[ 0 ],
-			replacement_label: option ? option.label : replacement.values[ 0 ],
+			replacement_value: replacementValue || '',
+			replacement_label: option?.label || replacementValue || '',
 		};
 	}
 
@@ -157,13 +158,23 @@ function replaceListColumn( context: ContextValue, replacement: Replacement, sch
 		}
 
 		if ( replacement.matchesOnly ) {
-			return {
-				...context,
-				matches: context.matches?.map( ( match ) => ( {
-					...match,
-					replacement: replacement.replaceValue || '',
-				} ) ),
+			const matches = context.matches?.map( ( match ) => ( {
+				...match,
+				replacement: replacement.replaceValue || '',
+			} ) );
+			const result: ReplacedValue = {
+				value: context.value,
 			};
+			if ( context.type !== undefined ) {
+				result.type = context.type;
+			}
+			if ( context.value_label !== undefined ) {
+				result.value_label = context.value_label;
+			}
+			if ( matches !== undefined ) {
+				result.matches = matches;
+			}
+			return result;
 		}
 
 		if ( replacement.replaceValue === '' ) {
@@ -224,10 +235,13 @@ function replaceListContext( contexts: any[], replacement: Replacement, schema: 
 		const items = replacement.items || [];
 
 		const value = contexts
-			.map( ( context, pos ) => ( {
-				...context,
-				...( items.length === 0 ? {} : getReplacedKeyvalue( context, items[ pos ] ) ),
-			} ) )
+			.map( ( context, pos ) => {
+				const item = items[ pos ];
+				return {
+					...context,
+					...( items.length === 0 || ! item ? {} : getReplacedKeyvalue( context, item ) ),
+				};
+			} )
 			.concat(
 				items.slice( contexts.length ).map( ( item, pos ) => ( {
 					type: 'keyvalue',
@@ -254,15 +268,25 @@ function replaceListContext( contexts: any[], replacement: Replacement, schema: 
 		contexts.length > 0 &&
 		contexts[ 0 ].type === 'string'
 	) {
-		const value = replacement.originalValue ? replacement.originalValue : contexts[ 0 ].context;
+		const originalContext = contexts[ 0 ];
+		const value = replacement.originalValue ? replacement.originalValue : originalContext.context;
+
+		// Preserve the original 'string' type and match information
+		// Only convert to 'value' if we're replacing the entire value (not just matches)
 		const newContext = {
-			type: 'value',
+			type: 'string', // Keep as 'string' type to preserve match information
+			context: value,
 			value,
 			value_label: value,
-			context_id: contexts.length,
+			context_id: originalContext.context_id ?? contexts.length,
 			hasMultiple: true,
-			value_type: contexts[ 0 ].value_type,
+			value_type: originalContext.value_type,
 			value_length: value.length + 1,
+			// Preserve match information if it exists
+			...( originalContext.matches ? { matches: originalContext.matches } : {} ),
+			...( originalContext.match_count !== undefined ? { match_count: originalContext.match_count } : {} ),
+			...( originalContext.crop ? { crop: originalContext.crop } : {} ),
+			...( originalContext.search ? { search: originalContext.search } : {} ),
 		};
 
 		return [

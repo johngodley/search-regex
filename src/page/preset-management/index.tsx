@@ -1,19 +1,12 @@
-import classnames from 'classnames';
-import { connect } from 'react-redux';
+import clsx from 'clsx';
 import { __, sprintf, _n } from '@wordpress/i18n';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
+import { z } from 'zod';
 import Preset from './preset';
-import {
-	exportPresets,
-	uploadPreset,
-	importClipboard,
-	setClipboard,
-	clearPresetError,
-} from '../../state/preset/action';
+import { usePresets, useUploadPreset, useExportPresets } from '../../hooks/use-presets';
+import { presetImportSchema } from '../../lib/api-schemas';
 import './style.scss';
-import { Uploader, Placeholder, Spinner, Error, ExternalLink } from '@wp-plugin-components';
-import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from '../../state/settings/type';
-import type { PresetValue } from '../../types/preset';
+import { Uploader, Placeholder, Spinner, Error as ErrorComponent, ExternalLink } from '@wp-plugin-components';
 
 function PresetDebug( debug: string ) {
 	return (
@@ -41,67 +34,89 @@ function PresetDebug( debug: string ) {
 	);
 }
 
-interface RootState {
-	preset: {
-		presets: PresetValue[];
-		clipboardStatus: string | null;
-		uploadStatus: string | false;
-		clipboard: string;
-		isUploading: boolean;
-		error: unknown;
-		errorContext: string | null;
-		imported: number;
-	};
-	search: {
-		sources: unknown[];
-	};
-}
+function PresetManagement() {
+	const { data: presets = [] } = usePresets();
+	const uploadMutation = useUploadPreset();
+	const { exportPresets } = useExportPresets();
+	const [ clipboardText, setClipboardText ] = useState( '' );
+	const [ clipboardError, setClipboardError ] = useState< { error: unknown; context: string } | null >( null );
 
-interface PresetManagementProps {
-	presets: PresetValue[];
-	onExport: () => void;
-	clipboardStatus: string | null;
-	uploadStatus: string | false;
-	onUploadFile: ( file: File ) => void;
-	onImportClipboard: ( clipboard: string ) => void;
-	clipboard: string;
-	onSetClipboard: ( clipboard: string ) => void;
-	isUploading: boolean;
-	onClearError: () => void;
-	error: unknown;
-	errorContext: string | null;
-	imported: number;
-}
+	const handleUploadFile = ( file: File ) => {
+		uploadMutation.mutate( file );
+	};
 
-function PresetManagement( props: PresetManagementProps ) {
-	const {
-		presets,
-		onExport,
-		clipboardStatus,
-		uploadStatus,
-		onUploadFile,
-		onImportClipboard,
-		clipboard,
-		onSetClipboard,
-		isUploading,
-		onClearError,
-		error,
-		errorContext,
-		imported,
-	} = props;
+	const handleImportClipboard = ( text: string ) => {
+		try {
+			// Parse JSON first
+			const json = JSON.parse( text );
+
+			// ✨ Validate preset structure with Zod
+			const validationResult = presetImportSchema.safeParse( json );
+
+			if ( ! validationResult.success ) {
+				// Zod validation failed - provide detailed error
+				const errorMessage = validationResult.error.issues
+					.map( ( err: z.ZodIssue ) => {
+						const path = err.path.join( '.' );
+						return `${ path ? `${ path }: ` : '' }${ err.message }`;
+					} )
+					.join( '; ' );
+
+				setClipboardError( {
+					error: new globalThis.Error( `Invalid preset structure: ${ errorMessage }` ),
+					context: text,
+				} );
+				return;
+			}
+
+			// Validation passed - use validated data
+			const validatedPresets = validationResult.data;
+			const blob = new Blob( [ JSON.stringify( validatedPresets ) ], { type: 'application/json' } );
+			const file = new File( [ blob ], 'preset.json', { type: 'application/json' } );
+
+			setClipboardError( null );
+			uploadMutation.mutate( file );
+		} catch ( error ) {
+			// JSON parse error or other error
+			if ( error instanceof SyntaxError ) {
+				setClipboardError( {
+					error: new globalThis.Error( `Invalid JSON: ${ error.message }` ),
+					context: text,
+				} );
+			} else if ( error instanceof z.ZodError ) {
+				// This shouldn't happen since we use safeParse, but handle it anyway
+				const errorMessage = error.issues
+					.map( ( err: z.ZodIssue ) => {
+						const path = err.path.join( '.' );
+						return `${ path ? `${ path }: ` : '' }${ err.message }`;
+					} )
+					.join( '; ' );
+				setClipboardError( {
+					error: new globalThis.Error( `Invalid preset structure: ${ errorMessage }` ),
+					context: text,
+				} );
+			} else {
+				setClipboardError( {
+					error: error instanceof globalThis.Error ? error : new globalThis.Error( String( error ) ),
+					context: text,
+				} );
+			}
+		}
+	};
+
+	const handleClearError = () => {
+		setClipboardError( null );
+		uploadMutation.reset();
+	};
+
+	const isFileUploading = uploadMutation.isPending && ! clipboardText;
+	const isClipboardUploading = uploadMutation.isPending && clipboardText.length > 0;
+	const uploadComplete = uploadMutation.isSuccess;
+	const uploadFailed = clipboardError !== null;
 
 	return (
 		<>
-			<table
-				className={ classnames(
-					'wp-list-table',
-					'widefat',
-					'fixed',
-					'striped',
-					'items',
-					'searchregex-presets'
-				) }
-			>
+			<table className={ clsx( 'wp-list-table', 'widefat', 'fixed', 'striped', 'items', 'searchregex-presets' ) }>
 				<thead>
 					<tr>
 						<th className="searchregex-preset__name">{ __( 'Name', 'search-regex' ) }</th>
@@ -131,7 +146,7 @@ function PresetManagement( props: PresetManagementProps ) {
 
 			<div className="searchregex-presetactions">
 				{ presets.length > 0 && (
-					<button className="button button-secondary" onClick={ onExport }>
+					<button className="button button-secondary" onClick={ exportPresets }>
 						{ __( 'Export JSON', 'search-regex' ) }
 					</button>
 				) }
@@ -144,9 +159,9 @@ function PresetManagement( props: PresetManagementProps ) {
 					addFileText={ __( 'Add file', 'search-regex' ) }
 					uploadText={ __( 'Upload', 'search-regex' ) }
 					cancelText={ __( 'Cancel', 'search-regex' ) }
-					isUploading={ isUploading }
-					isUploaded={ uploadStatus === STATUS_COMPLETE }
-					disabled={ clipboardStatus === STATUS_IN_PROGRESS || uploadStatus === STATUS_IN_PROGRESS }
+					isUploading={ isFileUploading }
+					isUploaded={ uploadComplete }
+					disabled={ isClipboardUploading || isFileUploading }
 					renderUnselected={ () => (
 						<>
 							<h3>{ __( 'Import a JSON file', 'search-regex' ) }</h3>
@@ -180,11 +195,11 @@ function PresetManagement( props: PresetManagementProps ) {
 									_n(
 										'Uploaded %(total)d preset',
 										'Uploaded %(total)d presets',
-										imported,
+										uploadMutation.data?.imported ?? 0,
 										'search-regex'
 									),
 									{
-										total: imported,
+										total: uploadMutation.data?.imported ?? 0,
 									}
 								) }
 							</h3>
@@ -193,19 +208,19 @@ function PresetManagement( props: PresetManagementProps ) {
 							</button>
 						</>
 					) }
-					onUpload={ onUploadFile }
+					onUpload={ handleUploadFile }
 				/>
 
 				<h4>{ __( 'Import preset from clipboard', 'search-regex' ) }</h4>
 
-				{ clipboardStatus === STATUS_FAILED && (
-					<Error
+				{ uploadFailed && (
+					<ErrorComponent
 						mini
-						errors={ [ error ] }
+						errors={ clipboardError?.error ? [ clipboardError.error ] : [] }
 						title={ __( 'Unable to import preset', 'search-regex' ) }
 						type="error"
-						onClear={ onClearError }
-						context={ errorContext }
+						onClear={ handleClearError }
+						context={ clipboardError?.context ?? null }
 						renderDebug={ PresetDebug }
 						versions={ SearchRegexi10n.versions }
 						locale={ SearchRegexi10n.locale }
@@ -214,67 +229,29 @@ function PresetManagement( props: PresetManagementProps ) {
 							'Please check your JSON data is a valid preset. You may have copied it incorrectly, or pasted something that is not a preset.',
 							'search-regex'
 						) }
-					</Error>
+					</ErrorComponent>
 				) }
 
 				<textarea
 					placeholder={ __( 'Paste preset JSON.', 'search-regex' ) }
 					rows={ 3 }
-					value={ clipboard }
-					onChange={ ( ev: ChangeEvent< HTMLTextAreaElement > ) => onSetClipboard( ev.target.value ) }
-					disabled={ uploadStatus === STATUS_IN_PROGRESS }
+					value={ clipboardText }
+					onChange={ ( ev: ChangeEvent< HTMLTextAreaElement > ) => setClipboardText( ev.target.value ) }
+					disabled={ isFileUploading }
 				/>
 				<p>
 					<button
-						disabled={ uploadStatus === STATUS_IN_PROGRESS || clipboard.length === 0 }
+						disabled={ isFileUploading || clipboardText.length === 0 }
 						className="button button-secondary"
-						onClick={ () => onImportClipboard( clipboard ) }
+						onClick={ () => handleImportClipboard( clipboardText ) }
 					>
 						{ __( 'Import', 'search-regex' ) }
 					</button>
 				</p>
-				{ uploadStatus === STATUS_IN_PROGRESS && clipboard && <Spinner /> }
+				{ isClipboardUploading && <Spinner /> }
 			</div>
 		</>
 	);
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-function mapDispatchToProps( dispatch: any ) {
-	return {
-		onExport: () => {
-			dispatch( exportPresets() );
-		},
-		onUploadFile: ( file: File ) => {
-			dispatch( uploadPreset( file ) );
-		},
-		onImportClipboard: ( clipboard: string ) => {
-			dispatch( importClipboard( clipboard ) );
-		},
-		onSetClipboard: ( clipboard: string ) => {
-			dispatch( setClipboard( clipboard ) );
-		},
-		onClearError: () => {
-			dispatch( clearPresetError() );
-		},
-	};
-}
-/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-
-function mapStateToProps( state: RootState ) {
-	const { presets, clipboardStatus, uploadStatus, clipboard, isUploading, error, errorContext, imported } =
-		state.preset;
-
-	return {
-		error,
-		errorContext,
-		presets,
-		clipboardStatus,
-		uploadStatus,
-		clipboard,
-		isUploading,
-		imported,
-	};
-}
-
-export default connect( mapStateToProps, mapDispatchToProps )( PresetManagement );
+export default PresetManagement;

@@ -57,8 +57,8 @@ export default function ModifyKeyValue( {
 						value={ key }
 						disabled={ disabled }
 						onChange={ ( newValue ) => onChange( { key: newValue } ) }
-						fetchData={ remote && operation !== 'replace_key' ? remote : undefined }
-						loadOnFocus={ schema.preload }
+						{ ...( remote && operation !== 'replace_key' && { fetchData: remote } ) }
+						{ ...( schema.preload !== undefined && { loadOnFocus: schema.preload } ) }
 					/>
 				</div>
 

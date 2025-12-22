@@ -32,7 +32,8 @@ export function regexReplace( phrase: string, captures: string[] ): string {
 					}
 
 					const captureIndex = parseInt( number, 10 );
-					return captures[ captureIndex - 1 ] !== undefined ? captures[ captureIndex - 1 ] : match;
+					const capture = captures[ captureIndex - 1 ];
+					return capture !== undefined ? capture : match;
 				} )
 		);
 	}

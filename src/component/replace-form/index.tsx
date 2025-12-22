@@ -1,19 +1,15 @@
 import React, { useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
 import { __ } from '@wordpress/i18n';
 import { Form } from '@wp-plugin-components';
-import { getPreset } from '../../state/preset/selector';
 import ReplaceColumn from '../schema/replace';
-import type { PresetValue } from '../../types/preset';
-import type { ResultColumn, SchemaColumn } from '../../types/search';
-import type { SetReplace } from '../../state/search/type';
+import type { ResultColumn, SchemaColumn, SetReplace } from '../../types/search';
 import './style.scss';
 
 interface ContextValue {
 	[ key: string ]: unknown;
 }
 
-interface ReplaceFormOwnProps {
+interface ReplaceFormProps {
 	description?: string | React.ReactElement;
 	canReplace: boolean;
 	schema: SchemaColumn;
@@ -26,19 +22,6 @@ interface ReplaceFormOwnProps {
 	source: string;
 	onCancel: () => void;
 	rowId: string;
-}
-
-interface ReplaceFormStateProps {
-	preset?: PresetValue | null;
-}
-
-type ReplaceFormProps = ReplaceFormOwnProps & ReplaceFormStateProps;
-
-interface RootState {
-	preset: {
-		presets: PresetValue[];
-		currentPreset: string;
-	};
 }
 
 function ReplaceForm( props: ReplaceFormProps ): JSX.Element {
@@ -76,7 +59,7 @@ function ReplaceForm( props: ReplaceFormProps ): JSX.Element {
 
 	return (
 		<div className="searchregex-replace__form" ref={ ref }>
-			<Form onSubmit={ () => onSave( replacement ) } className={ className }>
+			<Form onSubmit={ () => onSave( replacement ) } { ...( className ? { className } : {} ) }>
 				<ReplaceColumn
 					schema={ schema }
 					column={ column }
@@ -111,16 +94,4 @@ function ReplaceForm( props: ReplaceFormProps ): JSX.Element {
 	);
 }
 
-function mapStateToProps( state: RootState ): ReplaceFormStateProps {
-	const { presets, currentPreset } = state.preset;
-	const preset = getPreset( presets, currentPreset );
-
-	return {
-		preset,
-	};
-}
-
-export default connect< ReplaceFormStateProps, Record< string, never >, ReplaceFormOwnProps, RootState >(
-	mapStateToProps,
-	null
-)( ReplaceForm );
+export default ReplaceForm;

@@ -266,7 +266,7 @@ class Preset_Route extends Api\Route {
 			}
 		}
 
-		return new WP_Error( 'searchregex_import_preset', 'Invalid import file' );
+		return new WP_Error( 'searchregex_import_preset', 'Invalid import file', [ 'status' => 400 ] );
 	}
 
 	/**
@@ -288,7 +288,7 @@ class Preset_Route extends Api\Route {
 			];
 		}
 
-		return new WP_Error( 'searchregex', 'No preset of that ID' );
+		return new WP_Error( 'searchregex', 'No preset of that ID', [ 'status' => 404 ] );
 	}
 
 	/**

@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import classnames from 'classnames';
-import { getNewActionFromResult } from '../../state/search/selector';
+import clsx from 'clsx';
+import { getNewActionFromResult } from '../../lib/search-utils';
 import getValueType from '../value-type';
 import type { ResultColumn, Schema, ModifyColumn } from '../../types/search';
 
@@ -54,7 +54,7 @@ function ColumnLabel( props: ColumnLabelProps ): JSX.Element {
 	return (
 		<button
 			type="button"
-			className={ classnames(
+			className={ clsx(
 				'searchregex-match__column',
 				'searchregex-match__column__' + context.type,
 				disabled || ! canEdit ? 'searchregex-match__column__disabled' : null

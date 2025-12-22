@@ -7,10 +7,7 @@
 		"target": "esnext",
 		"module": "esnext",
 		"lib": ["dom", "esnext"],
-		"declaration": true,
-		"declarationMap": true,
-		"composite": true,
-		"emitDeclarationOnly": true,
+		"noEmit": true,
 		"isolatedModules": true,
 		/* Strict Type-Checking Options */
 		"strict": true,
@@ -21,6 +18,8 @@
 		"noUnusedParameters": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
 		"skipLibCheck": true,
 		/* Module Resolution Options */
 		"moduleResolution": "node",

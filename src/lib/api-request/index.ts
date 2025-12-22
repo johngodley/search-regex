@@ -1,5 +1,5 @@
 import { postApiRequest, getApiRequest, uploadApiRequest } from '@wp-plugin-lib';
-import type { PresetValue } from '../../state/preset/type';
+import type { PresetValue } from '../../types/preset';
 import type { SearchValues } from '../../types/search';
 type ApiRequest = ReturnType< typeof getApiRequest >;
 
@@ -17,7 +17,7 @@ const SearchRegexApi = {
 		save: ( search: SearchValues, name: string ): ApiRequest =>
 			postApiRequest( 'search-regex/v1/preset', { ...search, name } ),
 		update: ( preset: PresetValue ): ApiRequest =>
-			postApiRequest( `search-regex/v1/preset/id/${ preset.id }`, preset ),
+			postApiRequest( `search-regex/v1/preset/id/${ preset.id }`, preset as unknown as ApiParams ),
 		delete: ( id: string ): ApiRequest => postApiRequest( `search-regex/v1/preset/id/${ id }/delete` ),
 		export: (): ApiRequest => getApiRequest( 'search-regex/v1/preset', { force: true } ),
 		upload: ( file: File | Blob ): ApiRequest => uploadApiRequest( 'search-regex/v1/preset/import', {}, file ),

@@ -1,14 +1,3 @@
-type CapabilityContext = {
-	capabilities: string[];
-	pages: string[];
-};
-
-type SearchRegexContext = {
-	caps: CapabilityContext;
-};
-
-declare const SearchRegexi10n: SearchRegexContext;
-
 // eslint-disable-next-line camelcase
 export function has_capability( cap: string ): boolean {
 	return SearchRegexi10n.caps.capabilities.indexOf( cap ) !== -1;

@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { Badge } from '@wp-plugin-components';
 import HighlightMatches from '../../highlight-matches';
 import type { ResultColumn, SchemaColumn, Schema, Match } from '../../../types/search';
@@ -39,13 +39,12 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 	const { type } = context;
 	const value = getValue( context.value_label || context.context || '' );
 	const replacement = getValue( context.replacement_label || '' );
-
 	if ( type === 'replace' ) {
 		const isTooLong = value.length > 100 || replacement.length > 100;
 
 		return (
 			<div
-				className={ classnames(
+				className={ clsx(
 					'searchregex-list-replace',
 					isTooLong && 'searchregex-list-replace__vertical',
 					className
@@ -57,7 +56,7 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 				</Badge>
 
 				<span
-					className={ classnames( 'dashicons', {
+					className={ clsx( 'dashicons', {
 						'dashicons-arrow-right-alt': ! isTooLong,
 						'dashicons-arrow-down-alt': isTooLong,
 						'searchregex-list-replace__break': isTooLong,
@@ -65,7 +64,7 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 				/>
 
 				{ replacement.length === 0 ? (
-					<span className={ classnames( 'searchregex-list__value', 'searchregex-list__novalue', className ) }>
+					<span className={ clsx( 'searchregex-list__value', 'searchregex-list__novalue', className ) }>
 						{ __( 'Empty value', 'search-regex' ) }
 					</span>
 				) : (
@@ -80,7 +79,7 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 
 	if ( type === 'empty' || ( type === 'value' && value.length === 0 ) ) {
 		return (
-			<span className={ classnames( 'searchregex-list__value', 'searchregex-list__novalue', className ) }>
+			<span className={ clsx( 'searchregex-list__value', 'searchregex-list__novalue', className ) }>
 				{ __( 'No value', 'search-regex' ) }
 			</span>
 		);
@@ -88,7 +87,7 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 
 	if ( type === 'value' ) {
 		return (
-			<div className={ classnames( className ) }>
+			<div className={ clsx( className ) }>
 				{ value.substring( 0, MAX_CONTEXT_LENGTH ) }
 				{ value.length > MAX_CONTEXT_LENGTH && <span>...</span> }
 			</div>
@@ -105,12 +104,12 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 				rowId={ Number( rowId ) }
 				column={ column.column_id }
 				schema={ { name: '', type: '', columns: [ schema ] } as Schema }
-				className={ className }
+				{ ...( className !== undefined ? { className } : {} ) }
 			/>
 		);
 	}
 
-	return <Badge className={ classnames( 'searchregex-list__' + type, className ) }>{ value }</Badge>;
+	return <Badge className={ clsx( 'searchregex-list__' + type, className ) }>{ value }</Badge>;
 }
 
 export default ContextType;

@@ -1,9 +1,8 @@
 import { type ChangeEvent } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import Operation from '../operation';
 import { DropdownText, Select } from '@wp-plugin-components';
-import { setLabel } from '../../../../state/search/action';
-import { getLabel } from '../../../../state/search/selector';
+import { getLabel } from '../../../../lib/search-utils';
+import { useSearchStore } from '../../../../stores/search-store';
 import type { SchemaColumn, ModifyMemberColumn } from '../../../../types/search';
 
 interface ModifyMemberProps {
@@ -27,8 +26,9 @@ export default function ModifyMember( {
 }: ModifyMemberProps ): JSX.Element {
 	const { operation = 'include', values = [] } = item;
 	const remote = schema.options === 'api' ? fetchData : false;
-	const { labels } = useSelector( ( state: { search: { labels: unknown } } ) => state.search );
-	const dispatch = useDispatch();
+
+	const labels = useSearchStore( ( state ) => state.labels );
+	const setLabels = useSearchStore( ( state ) => state.setLabels );
 	const isJoin = schema.join !== undefined;
 
 	if ( ! remote ) {
@@ -37,7 +37,7 @@ export default function ModifyMember( {
 			<Select
 				name="member"
 				items={ options }
-				value={ values.length > 0 ? values[ 0 ] : ( options[ 0 ]?.value as string ) || '' }
+				value={ ( values[ 0 ] ?? ( options[ 0 ]?.value as string ) ) || '' }
 				disabled={ disabled }
 				onChange={ ( ev: ChangeEvent< HTMLSelectElement > ) => onChange( { values: [ ev.target.value ] } ) }
 			/>
@@ -65,12 +65,28 @@ export default function ModifyMember( {
 					onChange( { values: valueArray }, newLabel );
 				} }
 				fetchData={ remote }
-				loadOnFocus={ schema.preload }
+				{ ...( schema.preload !== undefined && { loadOnFocus: schema.preload } ) }
 				maxChoices={ isJoin ? 20 : 1 }
 				onlyChoices
-				setLabel={ ( labelId: string, labelValue: string | null ) =>
-					dispatch( setLabel( schema.column + '_' + labelId, labelValue || '' ) )
-				}
+				setLabel={ ( labelId: string, labelValue: string | null ) => {
+					const existingIndex = ( labels as Array< { value: string; label: string } > ).findIndex(
+						( l ) => l.value === schema.column + '_' + labelId
+					);
+
+					if ( existingIndex >= 0 ) {
+						const updatedLabels = [ ...( labels as Array< { value: string; label: string } > ) ];
+						updatedLabels[ existingIndex ] = {
+							value: schema.column + '_' + labelId,
+							label: labelValue || '',
+						};
+						setLabels( updatedLabels );
+					} else {
+						setLabels( [
+							...( labels as Array< { value: string; label: string } > ),
+							{ value: schema.column + '_' + labelId, label: labelValue || '' },
+						] );
+					}
+				} }
 				getLabel={ ( labelId: string ) =>
 					getLabel(
 						Array.isArray( labels )

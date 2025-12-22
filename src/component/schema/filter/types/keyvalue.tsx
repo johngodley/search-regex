@@ -47,10 +47,10 @@ export default function FilterKeyValue( {
 					value={ key }
 					disabled={ disabled || keyLogic === 'any' }
 					onChange={ ( newValue ) =>
-						onChange( { key: Array.isArray( newValue ) ? newValue[ 0 ] : newValue } )
+						onChange( { key: Array.isArray( newValue ) ? newValue[ 0 ] ?? '' : newValue } )
 					}
-					fetchData={ remote }
-					loadOnFocus={ schema.preload }
+					{ ...( remote !== undefined && { fetchData: remote } ) }
+					{ ...( schema.preload !== undefined && { loadOnFocus: schema.preload } ) }
 				/>
 
 				<SearchFlags
@@ -78,7 +78,7 @@ export default function FilterKeyValue( {
 						value={ value }
 						disabled={ disabled || valueLogic === 'any' }
 						onChange={ ( newValue ) =>
-							onChange( { value: Array.isArray( newValue ) ? newValue[ 0 ] : newValue } )
+							onChange( { value: Array.isArray( newValue ) ? newValue[ 0 ] ?? '' : newValue } )
 						}
 					/>
 				) : (

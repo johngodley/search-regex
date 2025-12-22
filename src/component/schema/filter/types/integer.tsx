@@ -50,7 +50,7 @@ export default function FilterInteger( {
 					value={ startValue }
 					onChange={ onChange }
 					disabled={ disabled }
-					remote={ canRemote && remote !== false ? ( remote as unknown as string ) : undefined }
+					{ ...( canRemote && remote !== false && { remote: remote as unknown as string } ) }
 				/>
 			) }
 
@@ -62,7 +62,6 @@ export default function FilterInteger( {
 							value={ startValue }
 							onChange={ onChange }
 							disabled={ disabled }
-							remote={ undefined }
 							column={ item.column }
 						/>
 					),
@@ -72,7 +71,6 @@ export default function FilterInteger( {
 							value={ endValue }
 							onChange={ onChange }
 							disabled={ disabled }
-							remote={ undefined }
 							column={ item.column }
 						/>
 					),

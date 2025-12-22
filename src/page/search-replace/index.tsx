@@ -1,32 +1,75 @@
 import { __ } from '@wordpress/i18n';
-import { useSelector, useDispatch } from 'react-redux';
 import { FormEvent } from 'react';
 import SearchForm from './search-form';
 import SearchResults from './search-results';
 import SearchActions from './search-actions';
 import ReplaceProgress from '../../component/replace-progress';
 import { Notice } from '@wp-plugin-components';
-import { search } from '../../state/search/action';
-import { STATUS_FAILED } from '../../state/settings/type';
+import {
+	useSearchStore,
+	convertToSearchTotals,
+	convertToSearchProgress,
+	convertToResults,
+} from '../../stores/search-store';
+import { useSearch } from '../../hooks/use-search';
+import { STATUS_FAILED, STATUS_COMPLETE, STATUS_IN_PROGRESS, SEARCH_FORWARD } from '../../lib/constants';
 import './style.scss';
 
-interface RootState {
-	search: {
-		status: string | null;
-		isSaving: boolean;
-	};
-}
-
 function SearchReplace() {
-	const { status, isSaving } = useSelector( ( state: RootState ) => state.search );
-	const dispatch = useDispatch();
+	const status = useSearchStore( ( state ) => state.status );
+	const isSaving = useSearchStore( ( state ) => state.isSaving );
+	const searchValues = useSearchStore( ( state ) => state.search );
+	const searchDirection = useSearchStore( ( state ) => state.searchDirection );
+	const setStatus = useSearchStore( ( state ) => state.setStatus );
+	const setResults = useSearchStore( ( state ) => state.setResults );
+	const setTotals = useSearchStore( ( state ) => state.setTotals );
+	const setProgress = useSearchStore( ( state ) => state.setProgress );
+	const setShowLoading = useSearchStore( ( state ) => state.setShowLoading );
+	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
+	const setResultsDirty = useSearchStore( ( state ) => state.setResultsDirty );
+	const updateSearchUrl = useSearchStore( ( state ) => state.updateSearchUrl );
+
+	const searchMutation = useSearch();
 
 	function submit( ev: FormEvent< HTMLFormElement > ) {
 		ev.preventDefault();
 
-		/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-		dispatch( search( 0 ) as any );
-		/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
+		// Clear previous results
+		setResults( [] );
+		setResultsDirty( false );
+		setShowLoading( true );
+		setCanCancel( true );
+
+		// Update URL with search parameters
+		updateSearchUrl();
+
+		setStatus( STATUS_IN_PROGRESS );
+
+		// Perform search
+		searchMutation.mutate(
+			{
+				...searchValues,
+				page: 0,
+				searchDirection: searchDirection || SEARCH_FORWARD,
+			},
+			{
+				onSuccess: ( data ) => {
+					// ✨ Data is already validated by Zod in useSearch hook
+					// Convert API results (number row_id) to Result[] (string row_id)
+					setResults( convertToResults( data.results ) );
+					setTotals( convertToSearchTotals( data.totals ) );
+					setProgress( convertToSearchProgress( data.progress ) );
+					setStatus( data.status ?? STATUS_COMPLETE );
+					setShowLoading( false );
+					setCanCancel( false );
+				},
+				onError: () => {
+					setStatus( STATUS_FAILED );
+					setShowLoading( false );
+					setCanCancel( false );
+				},
+			}
+		);
 	}
 
 	return (

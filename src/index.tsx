@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import { setDefaultLocale } from 'react-datepicker';
 import App from './app';
 import './style.scss';
 
@@ -18,8 +17,9 @@ if ( document.querySelector( '#react-ui' ) ) {
 		migrate.remove();
 	}
 
-	setDefaultLocale( ( window as any ).SearchRegexi10n.locale.replace( '_', '' ) );
+	// ✨ Locale handling moved to DatePicker component
+	// No need for react-datepicker locale setup
 	show( 'react-ui' );
 }
 
-( window as any ).searchregex = ( window as any ).SearchRegexi10n.version;
+( window as any ).searchregex = SearchRegexi10n.version;

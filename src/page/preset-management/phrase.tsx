@@ -25,18 +25,20 @@ function getPhraseWithTags( phrase: string, tags: PresetTag[] ): ReactNode[] {
 	let phraseParts: ReactNode[] = [ `${ phrase }` ];
 
 	for ( let index = 0; index < tags.length; index++ ) {
+		const tag = tags[ index ];
+		if ( ! tag ) {
+			continue;
+		}
+
 		const newPhraseParts: ReactNode[] = [];
 
 		for ( let subIndex = 0; subIndex < phraseParts.length; subIndex++ ) {
-			if ( typeof phraseParts[ subIndex ] === 'string' ) {
-				const replacedTags = replaceTag(
-					phraseParts[ subIndex ] as string,
-					tags[ index ].name,
-					tags[ index ].label
-				);
+			const part = phraseParts[ subIndex ];
+			if ( typeof part === 'string' ) {
+				const replacedTags = replaceTag( part, tag.name, tag.label );
 				newPhraseParts.push( ...replacedTags );
 			} else {
-				newPhraseParts.push( phraseParts[ subIndex ] );
+				newPhraseParts.push( part );
 			}
 		}
 

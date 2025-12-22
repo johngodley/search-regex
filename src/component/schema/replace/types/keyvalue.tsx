@@ -172,12 +172,17 @@ export default function ReplaceKeyValue( {
 		loadColumn().then( ( columnData ) => {
 			if ( columnData ) {
 				setReplacement( {
-					items: columnData.items.map( ( item ) => ( {
-						type: 'value',
-						key: item.key,
-						value: item.value,
-						value_type: item.value_type,
-					} ) ),
+					items: columnData.items.map( ( item ) => {
+						const metaItem: MetaItem = {
+							type: 'value',
+							key: item.key,
+							value: item.value,
+						};
+						if ( item.value_type !== undefined ) {
+							metaItem.value_type = item.value_type;
+						}
+						return metaItem;
+					} ),
 				} );
 				setItem( getNewItem() );
 			} else {
@@ -196,31 +201,54 @@ export default function ReplaceKeyValue( {
 	}
 
 	function changeValue( pos: number, value: Partial< MetaItem > ): void {
+		const existingItem = replacement.items[ pos ];
+		if ( ! existingItem ) {
+			return;
+		}
+
+		const updatedItem: MetaItem = { ...existingItem };
+		if ( value.type !== undefined ) {
+			updatedItem.type = value.type;
+		}
+		if ( value.key !== undefined ) {
+			updatedItem.key = value.key;
+		}
+		if ( value.value !== undefined ) {
+			updatedItem.value = value.value;
+		}
+		if ( value.value_type !== undefined ) {
+			updatedItem.value_type = value.value_type;
+		}
+		if ( value.type_value !== undefined ) {
+			updatedItem.type_value = value.type_value;
+		}
+
 		setReplacement( {
-			items: [
-				...replacement.items.slice( 0, pos ),
-				{
-					...replacement.items[ pos ],
-					...value,
-				},
-				...replacement.items.slice( pos + 1 ),
-			],
+			items: [ ...replacement.items.slice( 0, pos ), updatedItem, ...replacement.items.slice( pos + 1 ) ],
 		} );
 	}
 
 	function deleteValue( pos: number, onoff?: boolean ): void {
-		if ( replacement.items[ pos ].type === 'add' ) {
+		const item = replacement.items[ pos ];
+		if ( ! item ) {
+			return;
+		}
+
+		if ( item.type === 'add' ) {
 			setReplacement( {
 				items: [ ...replacement.items.slice( 0, pos ), ...replacement.items.slice( pos + 1 ) ],
 			} );
 		} else {
 			const contexts = column.contexts as ContextList[];
-			changeValue( pos, {
-				key: ( contexts[ pos ].key as { value: string } ).value,
-				value: ( contexts[ pos ].value as unknown as { value: string } ).value,
-				type: onoff ? 'value' : 'delete',
-				type_value: onoff ? 'value' : 'delete',
-			} );
+			const context = contexts[ pos ];
+			if ( context ) {
+				changeValue( pos, {
+					key: ( context.key as { value: string } ).value,
+					value: ( context.value as unknown as { value: string } ).value,
+					type: onoff ? 'value' : 'delete',
+					type_value: onoff ? 'value' : 'delete',
+				} );
+			}
 		}
 	}
 
@@ -236,17 +264,20 @@ export default function ReplaceKeyValue( {
 
 	return (
 		<>
-			{ replacement.items.map( ( item, pos ) => (
-				<MetaValue
-					key={ pos }
-					disabled={ disabled }
-					item={ item }
-					onChange={ ( newValue ) => changeValue( pos, newValue ) }
-					type={ item.type === 'add' ? 'add' : 'replace' }
-					onDelete={ ( onOff ) => deleteValue( pos, onOff ) }
-					original={ ( column.contexts as ContextList[] )[ pos ] }
-				/>
-			) ) }
+			{ replacement.items.map( ( item, pos ) => {
+				const original = ( column.contexts as ContextList[] )[ pos ];
+				return (
+					<MetaValue
+						key={ pos }
+						disabled={ disabled }
+						item={ item }
+						onChange={ ( newValue ) => changeValue( pos, newValue ) }
+						type={ item.type === 'add' ? 'add' : 'replace' }
+						onDelete={ ( onOff ) => deleteValue( pos, onOff ) }
+						{ ...( original !== undefined && { original } ) }
+					/>
+				);
+			} ) }
 
 			{ newItem && (
 				<MetaValue

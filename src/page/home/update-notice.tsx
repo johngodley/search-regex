@@ -1,22 +1,22 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { useDispatch } from 'react-redux';
-import type { ThunkDispatch } from 'redux-thunk';
 import { ExternalLink, Notice, Button, createInterpolateElement } from '@wp-plugin-components';
-import { saveSettings } from '../../state/settings/action';
+import { useSaveSettings } from '../../hooks/use-settings';
 /* eslint-disable camelcase */
 import { CAP_SEARCHREGEX_OPTIONS, has_capability } from '../../lib/capabilities';
 /* eslint-enable camelcase */
-import type { RootState } from '../../state/reducers';
 
 function UpdateNotice() {
 	/* eslint-disable camelcase */
 	const { update_notice = false } = SearchRegexi10n;
 	/* eslint-enable camelcase */
-	const dispatch = useDispatch< ThunkDispatch< RootState, unknown, any > >();
+	const saveSettingsMutation = useSaveSettings();
 
 	function dismiss() {
 		/* eslint-disable camelcase */
-		dispatch( saveSettings( { update_notice: SearchRegexi10n.update_notice } ) );
+		const updateNotice = SearchRegexi10n.update_notice;
+		if ( updateNotice !== undefined ) {
+			saveSettingsMutation.mutate( { update_notice: updateNotice } );
+		}
 		SearchRegexi10n.update_notice = false;
 		/* eslint-enable camelcase */
 	}

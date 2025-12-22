@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { __ } from '@wordpress/i18n';
 import { Dropdown } from '@wp-plugin-components';
 import ReplaceForm from '../replace-form';
 import ReplacementPhrase from './replacement-phrase';
 import { regexReplace, getMatchReplacement, getTypeOfReplacement } from './highlight-tools';
-import { getNewActionFromResult } from '../../state/search/selector';
+import { getNewActionFromResult } from '../../lib/search-utils';
 import type { Schema } from '../../types/search';
 
 interface SpecificReplacement {
@@ -66,7 +66,7 @@ function Replacement( props: ReplacementProps ): JSX.Element {
 				<button
 					onClick={ () => toggleIt( toggle ) }
 					title={ __( 'Click to replace match', 'search-regex' ) }
-					className={ classnames( {
+					className={ clsx( {
 						'searchregex-result__replaced': typeOfReplacement === 'replace',
 						'searchregex-result__highlight': typeOfReplacement === 'match',
 						'searchregex-result__deleted': typeOfReplacement === 'delete',

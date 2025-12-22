@@ -1,10 +1,8 @@
 import { type MouseEvent } from 'react';
 import { __ } from '@wordpress/i18n';
-import { useDispatch } from 'react-redux';
-import type { ThunkDispatch } from 'redux-thunk';
 import { ExternalLink } from '@wp-plugin-components';
-import { deleteRow } from '../../state/search/action';
-import type { RootState } from '../../state/reducers';
+import { useDeleteRow } from '../../hooks/use-search';
+import { useSearchStore } from '../../stores/search-store';
 import type { Result } from '../../types/search';
 
 interface ActionsProps {
@@ -14,8 +12,11 @@ interface ActionsProps {
 
 function Actions( props: ActionsProps ): JSX.Element {
 	const { result, disabled } = props;
-	const dispatch = useDispatch< ThunkDispatch< RootState, unknown, any > >();
 	const { actions, source_type: sourceType, row_id: rowId } = result;
+	const deleteRowMutation = useDeleteRow();
+
+	const results = useSearchStore( ( state ) => state.results );
+	const setResults = useSearchStore( ( state ) => state.setResults );
 	const actionList: JSX.Element[] = [];
 	const actionMap: Record< string, string > = {
 		edit: __( 'Edit', 'search-regex' ),
@@ -24,15 +25,30 @@ function Actions( props: ActionsProps ): JSX.Element {
 
 	function onDelete( ev: MouseEvent< HTMLButtonElement > ): void {
 		ev.preventDefault();
-		void dispatch( deleteRow( sourceType, rowId ) );
+
+		deleteRowMutation.mutate(
+			{ source: sourceType, rowId },
+			{
+				onSuccess: () => {
+					// Remove the deleted row from results
+					setResults( results.filter( ( r: any ) => r.row_id !== rowId ) );
+				},
+			}
+		);
 	}
 
 	const actionKeys = Object.keys( actions );
 	for ( let index = 0; index < actionKeys.length; index++ ) {
-		if ( actionMap[ actionKeys[ index ] ] && actions[ actionKeys[ index ] ] ) {
+		const key = actionKeys[ index ];
+		if ( ! key ) {
+			continue;
+		}
+		const actionUrl = actions[ key ];
+		const actionLabel = actionMap[ key ];
+		if ( actionLabel && actionUrl ) {
 			actionList.push(
-				<ExternalLink url={ actions[ actionKeys[ index ] ] as string } key={ actionKeys[ index ] }>
-					{ actionMap[ actionKeys[ index ] ] }
+				<ExternalLink url={ actionUrl as string } key={ key }>
+					{ actionLabel }
 				</ExternalLink>
 			);
 		}

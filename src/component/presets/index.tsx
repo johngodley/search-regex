@@ -1,51 +1,42 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
-import { connect } from 'react-redux';
-import type { ThunkDispatch } from 'redux-thunk';
 import './style.scss';
 import { Select, DropdownMenu, Modal } from '@wp-plugin-components';
-import {
-	setPreset,
-	savePreset as savePresetAction,
-	updatePreset as updatePresetAction,
-} from '../../state/preset/action';
-import { STATUS_IN_PROGRESS } from '../../state/settings/type';
+import { STATUS_IN_PROGRESS } from '../../lib/constants';
+import { usePresets, useSavePreset, useUpdatePreset } from '../../hooks/use-presets';
+import { usePresetStore } from '../../stores/preset-store';
+import { useSearchStore } from '../../stores/search-store';
 import type { PresetValue } from '../../types/preset';
 import type { SearchValues } from '../../types/search';
 
-interface PresetsOwnProps {
-	presets: PresetValue[];
-	currentPreset: string;
-	search: SearchValues;
-	status: string;
-	searchStatus: string;
-}
+function Presets(): JSX.Element {
+	const { data: presets = [], isLoading: presetsLoading } = usePresets();
 
-interface PresetsDispatchProps {
-	onChangePreset: ( preset: PresetValue | undefined ) => void;
-	onSavePreset: ( name: string, searchValues: SearchValues ) => void;
-	onUpdatePreset: ( id: string, searchValues: { search: SearchValues } ) => void;
-}
-
-type PresetsProps = PresetsOwnProps & PresetsDispatchProps;
-
-interface RootState {
-	preset: {
-		presets: PresetValue[];
-		currentPreset: string;
-		status: string;
-	};
-	search: {
-		search: SearchValues;
-		status: string;
-	};
-}
-
-function Presets( props: PresetsProps ): JSX.Element {
-	const { presets, currentPreset, onChangePreset, onSavePreset, search, status, onUpdatePreset, searchStatus } =
-		props;
+	const currentPreset = usePresetStore( ( state ) => state.currentPreset );
+	const setCurrentPreset = usePresetStore( ( state ) => state.setCurrentPreset );
+	const search = useSearchStore( ( state ) => state.search );
+	const searchStatus = useSearchStore( ( state ) => state.status );
+	const savePresetMutation = useSavePreset();
+	const updatePresetMutation = useUpdatePreset();
 	const [ askName, showName ] = useState( false );
 	const [ presetName, setPresetName ] = useState( '' );
+	const status = presetsLoading ? STATUS_IN_PROGRESS : '';
+
+	const onChangePreset = ( preset: PresetValue | undefined ) => {
+		setCurrentPreset( preset ?? null );
+	};
+
+	const onSavePreset = ( name: string, searchValues: SearchValues ) => {
+		savePresetMutation.mutate( { name, searchValues } );
+	};
+
+	const onUpdatePreset = ( id: string, searchValues: { search: SearchValues } ) => {
+		const presetToUpdate = presets.find( ( p ) => p.id === id );
+		if ( presetToUpdate ) {
+			updatePresetMutation.mutate( { ...presetToUpdate, ...searchValues } );
+		}
+	};
+
 	const savingItem = [
 		{
 			label: __( 'Saving preset', 'search-regex' ),
@@ -78,12 +69,14 @@ function Presets( props: PresetsProps ): JSX.Element {
 	};
 	const updatePresetHandler = ( ev: FormEvent ): void => {
 		ev.preventDefault();
-		onUpdatePreset( currentPreset, { search } );
+		if ( currentPreset && currentPreset.id ) {
+			onUpdatePreset( currentPreset.id, { search } );
+		}
 	};
 
 	const presetActions: JSX.Element[] = [];
 
-	if ( ! currentPreset || currentPreset === '0' ) {
+	if ( ! currentPreset || ! currentPreset.id ) {
 		presetActions.push(
 			<button type="button" onClick={ askPresetName } key="save-new">
 				{ __( 'Save search as new preset', 'search-regex' ) }
@@ -91,7 +84,7 @@ function Presets( props: PresetsProps ): JSX.Element {
 		);
 	}
 
-	if ( currentPreset && currentPreset !== '0' ) {
+	if ( currentPreset && currentPreset.id ) {
 		presetActions.push(
 			<button type="button" onClick={ updatePresetHandler } key="update">
 				{ __( 'Update current preset', 'search-regex' ) }
@@ -125,7 +118,7 @@ function Presets( props: PresetsProps ): JSX.Element {
 			) }
 			<Select
 				name="saved-search"
-				value={ currentPreset }
+				value={ currentPreset?.id ?? '0' }
 				disabled={ status === STATUS_IN_PROGRESS || searchStatus === STATUS_IN_PROGRESS }
 				items={ status === STATUS_IN_PROGRESS ? savingItem : items }
 				onChange={ changePreset }
@@ -136,36 +129,4 @@ function Presets( props: PresetsProps ): JSX.Element {
 	);
 }
 
-function mapDispatchToProps( dispatch: ThunkDispatch< RootState, unknown, any > ): PresetsDispatchProps {
-	return {
-		onChangePreset: ( preset: PresetValue | undefined | null ) => {
-			dispatch( setPreset( preset ?? null ) );
-		},
-
-		onSavePreset: ( name: string, searchValues: SearchValues ) => {
-			void dispatch( savePresetAction( name, searchValues ) );
-		},
-
-		onUpdatePreset: ( id: string, searchValues: { search: SearchValues } ) => {
-			void dispatch( updatePresetAction( id, searchValues ) );
-		},
-	};
-}
-
-function mapStateToProps( state: RootState ): PresetsOwnProps {
-	const { presets, currentPreset, status } = state.preset;
-	const { search } = state.search;
-
-	return {
-		presets,
-		currentPreset,
-		search,
-		status,
-		searchStatus: state.search.status,
-	};
-}
-
-export default connect< PresetsOwnProps, PresetsDispatchProps, Record< string, never >, RootState >(
-	mapStateToProps,
-	mapDispatchToProps
-)( Presets );
+export default Presets;

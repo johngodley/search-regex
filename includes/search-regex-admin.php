@@ -134,11 +134,23 @@ class Admin {
 			'REST API: ' . $settings->get_rest_api_url(),
 		);
 
-		wp_enqueue_script( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.js', [], $build, true );
-		wp_enqueue_style( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.css', [], $build );
+		$vendor_file = plugin_dir_path( SEARCHREGEX_FILE ) . 'build/vendor.asset.php';
+		if ( file_exists( $vendor_file ) ) {
+			$vendor_assets = include $vendor_file;
+			wp_enqueue_script( 'search-regex-vendor', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/vendor.js', $vendor_assets['dependencies'], $vendor_assets['version'], true );
+		}
+
+		$assets = include plugin_dir_path( SEARCHREGEX_FILE ) . 'build/search-regex.asset.php';
+		$dependencies = $assets['dependencies'];
+		if ( file_exists( $vendor_file ) ) {
+			$dependencies[] = 'search-regex-vendor';
+		}
+		$version = $assets['version'];
+
+		wp_enqueue_script( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.js', $dependencies, $version, true );
+		wp_enqueue_style( 'search-regex', plugin_dir_url( SEARCHREGEX_FILE ) . 'build/search-regex.css', [], $version );
 
 		$pages = Plugin\Capabilities::get_available_pages();
-
 		$caps = Plugin\Capabilities::get_all_capabilities();
 
 		$is_new = false;

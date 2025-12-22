@@ -46,9 +46,16 @@ function ResultColumn( props: ResultColumnProps ): JSX.Element {
 	const remainingCount = contexts.length - visibleContexts.length;
 
 	function save( newValue: any, newLabel?: string ): void {
-		setReplacement(
-			newValue === null ? newValue : { ...replacement, ...newValue, ...( newLabel ? { label: newLabel } : {} ) }
-		);
+		if ( newValue === null ) {
+			setReplacement( null );
+		} else {
+			// Use functional update to avoid stale closure issues
+			setReplacement( ( current: any ) => ( {
+				...( current || {} ),
+				...newValue,
+				...( newLabel ? { label: newLabel } : {} ),
+			} ) );
+		}
 	}
 
 	if ( visibleContexts.length === 1 ) {
@@ -92,9 +99,7 @@ function ResultColumn( props: ResultColumnProps ): JSX.Element {
 						{
 							/* translators: %s: number of results to show */ sprintf(
 								_n( 'Show %s more', 'Show %s more', remainingCount, 'search-regex' ),
-								new Intl.NumberFormat( ( window as any ).SearchRegexi10n.locale as string ).format(
-									remainingCount
-								)
+								new Intl.NumberFormat( SearchRegexi10n.locale ).format( remainingCount )
 							)
 						}
 					</button>

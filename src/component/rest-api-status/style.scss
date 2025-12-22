@@ -1,4 +1,4 @@
-@import "../../global";
+@use "../../global" as *;
 
 .api-result-retry {
 	float: right;
@@ -66,9 +66,6 @@ button.api-result-hide:focus {
 	pre {
 		background-color: #ccc;
 		padding: 10px 15px;
-	}
-
-	pre {
 		font-family: 'Courier New', Courier, monospace;
 	}
 

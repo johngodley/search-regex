@@ -1,4 +1,4 @@
-@import "../../global.scss";
+@use "../../global" as *;
 
 .searchregex-result__more {
 	font-style: italic;

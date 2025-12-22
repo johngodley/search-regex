@@ -1,4 +1,4 @@
-@import "../../global.scss";
+@use "../../global" as *;
 
 .searchregex-replaceall {
 	max-width: 600px;

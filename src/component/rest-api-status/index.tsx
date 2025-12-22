@@ -1,12 +1,13 @@
-import { Component, type MouseEvent } from 'react';
-import { connect } from 'react-redux';
+import { useState, useEffect, type MouseEvent } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import classnames from 'classnames';
-import type { ThunkDispatch } from 'redux-thunk';
+import clsx from 'clsx';
+import { apiFetch } from '@wp-plugin-lib';
 import ApiResultComponent from './api-result';
 import { Spinner } from '@wp-plugin-components';
-import { getRestApi } from '../../page/options/options-form';
-import { checkApi } from '../../state/settings/action';
+import { getRestApi } from '../../page/options';
+import SearchRegexApi from '../../lib/api-request';
+import { useSettings } from '../../hooks/use-settings';
+import type { SettingsValues } from '../../lib/api-schemas';
 import './style.scss';
 
 const STATUS_OK = 'ok';
@@ -28,31 +29,8 @@ interface ApiTestResults {
 	[ key: string ]: ApiResult;
 }
 
-interface RestApiStatusOwnProps {
-	apiTest: ApiTestResults;
-	routes: Record< string, string >;
-	current: string;
+interface RestApiStatusProps {
 	allowChange?: boolean;
-}
-
-interface RestApiStatusDispatchProps {
-	onCheckApi: ( api: Array< { id: string; url: string } > ) => void;
-}
-
-type RestApiStatusProps = RestApiStatusOwnProps & RestApiStatusDispatchProps;
-
-interface RestApiStatusState {
-	showing: boolean;
-}
-
-interface RootState {
-	settings: {
-		api: {
-			routes: Record< string, string >;
-			current: string;
-		};
-		apiTest: ApiTestResults;
-	};
 }
 
 const getApiResult = ( results: ApiTestResults, name: string ): ApiResult =>
@@ -64,66 +42,137 @@ const isError = ( result: ApiResult ): boolean =>
 const isWorking = ( result: ApiResult ): boolean =>
 	result.GET && result.POST && result.GET.status === STATUS_OK && result.POST.status === STATUS_OK ? true : false;
 
-class RestApiStatus extends Component< RestApiStatusProps, RestApiStatusState > {
-	constructor( props: RestApiStatusProps ) {
-		super( props );
+function RestApiStatus( { allowChange = false }: RestApiStatusProps ) {
+	const { data: settings } = useSettings() as { data: SettingsValues | undefined };
+	const [ apiTest, setApiTest ] = useState< ApiTestResults >( {} );
+	const [ showing, setShowing ] = useState( false );
 
-		this.state = { showing: false };
-	}
+	const routes = SearchRegexi10n.api.routes;
+	const restApi = settings?.rest_api;
+	const current = String( restApi !== undefined ? restApi : 0 );
 
-	componentDidMount(): void {
-		this.onTry();
-	}
+	const checkApi = ( apiEndpoints: Array< { id: string; url: string } > ) => {
+		for ( let index = 0; index < apiEndpoints.length; index++ ) {
+			const endpoint = apiEndpoints[ index ];
+			if ( ! endpoint ) {
+				continue;
+			}
+			const { id, url } = endpoint;
 
-	onTry(): void {
-		const { routes } = this.props;
-		const untested = Object.keys( routes ).map( ( id ) => ( { id, url: routes[ id ] } ) );
+			// Set loading state
+			setApiTest( ( prev ) => ( {
+				...prev,
+				[ id ]: {
+					GET: { status: STATUS_LOADING },
+					POST: { status: STATUS_LOADING },
+				},
+			} ) );
 
-		this.props.onCheckApi( untested.filter( ( item ) => item ) );
-	}
+			// Test GET
+			setTimeout( () => {
+				apiFetch( SearchRegexApi.plugin.checkApi( url ) )
+					.then( () => {
+						setApiTest( ( prev ) => ( {
+							...prev,
+							[ id ]: {
+								...prev[ id ],
+								GET: { status: STATUS_OK },
+							},
+						} ) );
+					} )
+					.catch( () => {
+						setApiTest( ( prev ) => ( {
+							...prev,
+							[ id ]: {
+								...prev[ id ],
+								GET: { status: STATUS_FAIL },
+							},
+						} ) );
+					} );
 
-	onRetry = ( ev: MouseEvent< HTMLButtonElement > ): void => {
-		ev.preventDefault();
-		this.setState( { showing: false } );
-		this.onTry();
+				// Test POST
+				apiFetch( SearchRegexApi.plugin.checkApi( url, true ) )
+					.then( () => {
+						setApiTest( ( prev ) => ( {
+							...prev,
+							[ id ]: {
+								...prev[ id ],
+								POST: { status: STATUS_OK },
+							},
+						} ) );
+					} )
+					.catch( () => {
+						setApiTest( ( prev ) => ( {
+							...prev,
+							[ id ]: {
+								...prev[ id ],
+								POST: { status: STATUS_FAIL },
+							},
+						} ) );
+					} );
+			}, 1000 );
+		}
 	};
 
-	getPercent( apiTest: ApiTestResults, routes: any[] ): number {
-		if ( Object.keys( apiTest ).length === 0 ) {
+	const onTry = () => {
+		const untested = Object.keys( routes )
+			.map( ( id ) => {
+				const url = routes[ id ];
+				return url ? { id, url } : null;
+			} )
+			.filter( ( item ): item is { id: string; url: string } => item !== null );
+		checkApi( untested );
+	};
+
+	const onRetry = ( ev: MouseEvent< HTMLButtonElement > ) => {
+		ev.preventDefault();
+		setShowing( false );
+		setApiTest( {} );
+		onTry();
+	};
+
+	const getPercent = ( results: ApiTestResults, routeList: any[] ): number => {
+		if ( Object.keys( results ).length === 0 ) {
 			return 0;
 		}
 
-		const total = routes.length * 2;
+		const total = routeList.length * 2;
 		let finished = 0;
 
-		for ( let index = 0; index < Object.keys( apiTest ).length; index++ ) {
-			const key = Object.keys( apiTest )[ index ];
-
-			if ( apiTest[ key ] && apiTest[ key ].GET && apiTest[ key ].GET.status !== STATUS_LOADING ) {
+		for ( const key in results ) {
+			if ( ! results[ key ] ) {
+				continue;
+			}
+			const result = results[ key ];
+			if ( result.GET && result.GET.status !== STATUS_LOADING ) {
 				finished++;
 			}
 
-			if ( apiTest[ key ] && apiTest[ key ].POST && apiTest[ key ].POST.status !== STATUS_LOADING ) {
+			if ( result.POST && result.POST.status !== STATUS_LOADING ) {
 				finished++;
 			}
 		}
 
 		return Math.round( ( finished / total ) * 100 );
-	}
+	};
 
-	getApiStatus( results: ApiTestResults, routes: any[], current: string ): string {
-		const failed = Object.keys( results ).filter( ( key ) => isError( results[ key ] ) ).length;
+	const getApiStatus = ( results: ApiTestResults, routeList: any[], currentRoute: string ): string => {
+		const failed = Object.keys( results ).filter( ( key ) => {
+			const result = results[ key ];
+			return result ? isError( result ) : false;
+		} ).length;
 
 		if ( failed === 0 ) {
 			return 'ok';
-		} else if ( failed < routes.length ) {
-			return isWorking( results[ current ] ) ? STATUS_WARNING_CURRENT : STATUS_WARNING;
+		} else if ( failed < routeList.length ) {
+			const currentResult = results[ currentRoute ];
+			return currentResult && isWorking( currentResult ) ? STATUS_WARNING_CURRENT : STATUS_WARNING;
 		}
 
 		return 'fail';
-	}
+	};
 
-	getApiStatusText( status: string ): string {
+	const getApiStatusText = ( status: string ): string => {
 		if ( status === STATUS_OK ) {
 			return __( 'Good', 'search-regex' );
 		} else if ( status === STATUS_WARNING_CURRENT ) {
@@ -133,20 +182,18 @@ class RestApiStatus extends Component< RestApiStatusProps, RestApiStatusState > 
 		}
 
 		return __( 'Unavailable', 'search-regex' );
-	}
-
-	onShow = (): void => {
-		this.setState( { showing: true } );
 	};
 
-	canShowProblem( status: string ): boolean {
-		const { showing } = this.state;
+	const onShow = () => {
+		setShowing( true );
+	};
 
+	const canShowProblem = ( status: string ): boolean => {
 		return showing || status === STATUS_FAIL || status === STATUS_WARNING;
-	}
+	};
 
-	renderError( status: string ): JSX.Element {
-		const showing = this.canShowProblem( status );
+	const renderError = ( status: string ) => {
+		const showingProblems = canShowProblem( status );
 		let message: string = __(
 			'There are some problems connecting to your REST API. It is not necessary to fix these problems and the plugin is able to work.',
 			'search-regex'
@@ -170,102 +217,80 @@ class RestApiStatus extends Component< RestApiStatusProps, RestApiStatusState > 
 					<strong>{ __( 'Summary', 'search-regex' ) }</strong>: { message }
 				</p>
 
-				{ ! showing && (
+				{ ! showingProblems && (
 					<p>
-						<button className="button-secondary" type="button" onClick={ this.onShow }>
+						<button className="button-secondary" type="button" onClick={ onShow }>
 							{ __( 'Show Problems', 'search-regex' ) }
 						</button>
 					</p>
 				) }
 			</div>
 		);
-	}
+	};
 
-	render(): JSX.Element {
-		const routeNames = getRestApi();
-		const { apiTest, routes, current, allowChange } = this.props;
-		const { showing } = this.state;
-		const percent = this.getPercent( apiTest, routeNames );
-		const status = this.getApiStatus( apiTest, routeNames, current );
-		const showProblem = ( percent >= 100 && this.canShowProblem( status ) ) || showing;
-		const statusClass = classnames( {
-			'api-result-status': true,
-			'api-result-status_good': status === STATUS_OK && percent >= 100,
-			'api-result-status_problem': status === STATUS_WARNING_CURRENT && percent >= 100,
-			'api-result-status_failed': ( status === STATUS_FAIL || status === STATUS_WARNING ) && percent >= 100,
-		} );
+	// Run tests on mount
+	useEffect( () => {
+		onTry();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [] );
 
-		return (
-			<div className="api-result-wrapper">
-				<div className="api-result-header">
-					<strong>REST API:</strong>
+	const routeNames = getRestApi();
+	const percent = getPercent( apiTest, routeNames );
+	const status = getApiStatus( apiTest, routeNames, current );
+	const showProblem = ( percent >= 100 && canShowProblem( status ) ) || showing;
+	const statusClass = clsx( {
+		'api-result-status': true,
+		'api-result-status_good': status === STATUS_OK && percent >= 100,
+		'api-result-status_problem': status === STATUS_WARNING_CURRENT && percent >= 100,
+		'api-result-status_failed': ( status === STATUS_FAIL || status === STATUS_WARNING ) && percent >= 100,
+	} );
 
-					<div className="api-result-progress">
-						<span className={ statusClass }>
-							{
-								/* translators: %s: test percent */
-								percent < 100 && sprintf( __( 'Testing - %s%%', 'search-regex' ), String( percent ) )
-							}
-							{ percent >= 100 && this.getApiStatusText( status ) }
-						</span>
+	return (
+		<div className="api-result-wrapper">
+			<div className="api-result-header">
+				<strong>REST API:</strong>
 
-						{ percent < 100 && <Spinner /> }
-					</div>
+				<div className="api-result-progress">
+					<span className={ statusClass }>
+						{
+							/* translators: %s: test percent */
+							percent < 100 && sprintf( __( 'Testing - %s%%', 'search-regex' ), String( percent ) )
+						}
+						{ percent >= 100 && getApiStatusText( status ) }
+					</span>
 
-					{ percent >= 100 && status !== STATUS_OK && (
-						<button className="button button-secondary api-result-retry" onClick={ this.onRetry }>
-							{ __( 'Check Again', 'search-regex' ) }
-						</button>
-					) }
+					{ percent < 100 && <Spinner /> }
 				</div>
 
-				{ percent >= 100 && status !== STATUS_OK && this.renderError( status ) }
-
-				{ showProblem &&
-					routeNames.map( ( item, pos ) => {
-						const apiItem = { value: String( item.value ), text: item.label };
-						const result = getApiResult( apiTest, String( item.value ) );
-						if ( ! result.GET || ! result.POST ) {
-							return null;
-						}
-						return (
-							<ApiResultComponent
-								item={ apiItem }
-								result={ result as any }
-								routes={ routes }
-								key={ pos }
-								isCurrent={ current === String( item.value ) }
-								allowChange={ allowChange || false }
-							/>
-						);
-					} ) }
+				{ percent >= 100 && status !== STATUS_OK && (
+					<button className="button button-secondary api-result-retry" onClick={ onRetry }>
+						{ __( 'Check Again', 'search-regex' ) }
+					</button>
+				) }
 			</div>
-		);
-	}
+
+			{ percent >= 100 && status !== STATUS_OK && renderError( status ) }
+
+			{ showProblem &&
+				routeNames.map( ( item, pos ) => {
+					const apiItem = { value: String( item.value ), text: item.label };
+					const result = getApiResult( apiTest, String( item.value ) );
+					if ( ! result.GET || ! result.POST ) {
+						return null;
+					}
+					return (
+						<ApiResultComponent
+							item={ apiItem }
+							result={ { GET: result.GET, POST: result.POST } }
+							routes={ routes }
+							key={ pos }
+							isCurrent={ current === String( item.value ) }
+							allowChange={ allowChange }
+						/>
+					);
+				} ) }
+		</div>
+	);
 }
 
-function mapDispatchToProps( dispatch: ThunkDispatch< RootState, unknown, any > ): RestApiStatusDispatchProps {
-	return {
-		onCheckApi: ( api ) => {
-			void dispatch( checkApi( api ) );
-		},
-	};
-}
-
-function mapStateToProps( state: RootState ): RestApiStatusOwnProps {
-	const {
-		api: { routes, current },
-		apiTest,
-	} = state.settings;
-
-	return {
-		apiTest,
-		routes,
-		current,
-	};
-}
-
-export default connect< RestApiStatusOwnProps, RestApiStatusDispatchProps, Record< string, never >, RootState >(
-	mapStateToProps,
-	mapDispatchToProps
-)( RestApiStatus );
+export default RestApiStatus;

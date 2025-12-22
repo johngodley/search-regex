@@ -37,7 +37,7 @@ export default function FilterString( {
 					value={ value }
 					disabled={ disabled }
 					onChange={ ( newValue ) => onChange( { value: newValue } ) }
-					fetchData={ remote !== false ? remote : undefined }
+					{ ...( remote !== false && { fetchData: remote } ) }
 				/>
 			) : (
 				<textarea

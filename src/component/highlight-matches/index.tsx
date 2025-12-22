@@ -1,8 +1,7 @@
-import { connect } from 'react-redux';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import RestrictedMatches from '../result/column/restricted-matches';
 import Replacement from './replacement';
-import { saveRow } from '../../state/search/action';
+import { useSaveRow } from '../../hooks/use-search';
 import type { Match as MatchType, Schema } from '../../types/search';
 import './style.scss';
 
@@ -16,12 +15,7 @@ interface SpecificReplacement {
 interface MatchProps {
 	beforePhrase: JSX.Element;
 	match: MatchType;
-	onReplace: (
-		replaceValue: SpecificReplacement & { searchValue: string; posId: number },
-		searchValue: string,
-		rowId: number,
-		posId: number
-	) => void;
+	onReplace: ( replaceValue: SpecificReplacement & { searchValue: string; posId: number } ) => void;
 	column: string;
 	schema: Schema;
 	rowId: number;
@@ -32,7 +26,7 @@ interface CropValue {
 	end?: number;
 }
 
-interface HighlightMatchesOwnProps {
+interface HighlightMatchesProps {
 	matches: MatchType[];
 	count: number;
 	source: string;
@@ -42,17 +36,6 @@ interface HighlightMatchesOwnProps {
 	rowId: number;
 	crop?: CropValue;
 }
-
-interface HighlightMatchesDispatchProps {
-	onReplace: (
-		replaceValue: SpecificReplacement & { searchValue: string; posId: number },
-		searchValue: string,
-		rowId: number,
-		posId: number
-	) => void;
-}
-
-type HighlightMatchesProps = HighlightMatchesOwnProps & HighlightMatchesDispatchProps;
 
 /**
  * Display a matched phrase.
@@ -68,12 +51,7 @@ function Match( props: MatchProps ): JSX.Element {
 
 			<Replacement
 				onSave={ ( phrase ) =>
-					onReplace(
-						{ ...phrase, searchValue: match, posId, source: schema.source || '' },
-						match,
-						rowId,
-						posId
-					)
+					onReplace( { ...phrase, searchValue: match, posId, source: schema.source || '' } )
 				}
 				match={ match }
 				replacement={ replacement }
@@ -92,11 +70,16 @@ function Match( props: MatchProps ): JSX.Element {
  * @param props
  */
 function HighlightMatches( props: HighlightMatchesProps ): JSX.Element {
-	const { matches, count, onReplace, source, column, schema, className, rowId, crop = {} } = props;
+	const { matches, count, source, column, schema, className, rowId, crop = {} } = props;
+	const saveRowMutation = useSaveRow();
 	let offset = 0;
 
+	const onReplace = ( replaceValue: SpecificReplacement & { searchValue: string; posId: number } ) => {
+		saveRowMutation.mutate( { replacement: replaceValue, rowId: String( rowId ) } );
+	};
+
 	return (
-		<div className={ classnames( 'searchregex-match__context', className ) }>
+		<div className={ clsx( 'searchregex-match__context', className ) }>
 			{ matches.map( ( match, pos ) => {
 				const oldOffset = offset;
 
@@ -128,21 +111,4 @@ function HighlightMatches( props: HighlightMatchesProps ): JSX.Element {
 	);
 }
 
-function mapDispatchToProps( dispatch: any ): HighlightMatchesDispatchProps {
-	return {
-		onReplace: (
-			replaceValue: SpecificReplacement & { searchValue: string; posId: number },
-			_searchValue: string,
-			rowId: number,
-			_posId: number
-		) => {
-			void _posId;
-			dispatch( saveRow( replaceValue, String( rowId ) ) );
-		},
-	};
-}
-
-export default connect< null, HighlightMatchesDispatchProps, HighlightMatchesOwnProps >(
-	null,
-	mapDispatchToProps
-)( HighlightMatches );
+export default HighlightMatches;

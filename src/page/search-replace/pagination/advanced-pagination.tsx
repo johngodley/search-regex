@@ -1,8 +1,13 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { useDispatch } from 'react-redux';
 import Nav from './nav-button';
-import { SEARCH_FORWARD } from '../../../state/search/type';
-import { search } from '../../../state/search/action';
+import { SEARCH_FORWARD, STATUS_FAILED, STATUS_COMPLETE, STATUS_IN_PROGRESS } from '../../../lib/constants';
+import {
+	useSearchStore,
+	convertToSearchTotals,
+	convertToSearchProgress,
+	convertToResults,
+} from '../../../stores/search-store';
+import { useSearch } from '../../../hooks/use-search';
 
 interface Progress {
 	previous?: number | false;
@@ -28,14 +33,52 @@ const backPercent = ( total: number, current: number | false ): number =>
 	current === false || current === 0 ? 0 : ( current / total ) * 100;
 
 export default function AdvancedPagination( props: AdvancedPaginationProps ) {
-	const dispatch = useDispatch();
+	const searchValues = useSearchStore( ( state ) => state.search );
+	const setResults = useSearchStore( ( state ) => state.setResults );
+	const setTotals = useSearchStore( ( state ) => state.setTotals );
+	const setProgress = useSearchStore( ( state ) => state.setProgress );
+	const setStatus = useSearchStore( ( state ) => state.setStatus );
+	const setShowLoading = useSearchStore( ( state ) => state.setShowLoading );
+	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
+	const setResultsDirty = useSearchStore( ( state ) => state.setResultsDirty );
+	const setSearchDirection = useSearchStore( ( state ) => state.setSearchDirection );
+
+	const searchMutation = useSearch();
 	const { total, progress, isLoading, searchDirection, noTotal = false, totals } = props;
 	const { previous = false, next = false } = progress;
 
 	function onChangePage( page: number, direction: string ) {
-		/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-		dispatch( search( page, direction ) as any );
-		/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
+		setResults( [] );
+		setResultsDirty( false );
+		setShowLoading( true );
+		setCanCancel( true );
+		setSearchDirection( direction );
+		setStatus( STATUS_IN_PROGRESS );
+
+		searchMutation.mutate(
+			{
+				...searchValues,
+				page,
+				searchDirection: direction,
+			},
+			{
+				onSuccess: ( data ) => {
+					// ✨ Data is already validated by Zod in useSearch hook
+					// Convert API results (number row_id) to Result[] (string row_id)
+					setResults( convertToResults( data.results ) );
+					setTotals( convertToSearchTotals( data.totals ) );
+					setProgress( convertToSearchProgress( data.progress ) );
+					setStatus( data.status ?? STATUS_COMPLETE );
+					setShowLoading( false );
+					setCanCancel( false );
+				},
+				onError: () => {
+					setStatus( STATUS_FAILED );
+					setShowLoading( false );
+					setCanCancel( false );
+				},
+			}
+		);
 	}
 
 	return (
@@ -46,7 +89,7 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 					{ sprintf(
 						/* translators: %s: total number of rows searched */
 						_n( '%s database row in total', '%s database rows in total', total, 'search-regex' ),
-						new Intl.NumberFormat( window.SearchRegexi10n.locale ).format( total )
+						new Intl.NumberFormat( SearchRegexi10n.locale ).format( total )
 					) }
 					&nbsp;&mdash;&nbsp;
 					{
@@ -55,9 +98,7 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 							/* translators: %(searched)s: number of rows matched */
 							__( 'matched rows = %(searched)s', 'search-regex' ),
 							{
-								searched: new Intl.NumberFormat( window.SearchRegexi10n.locale ).format(
-									totals.matched_rows
-								),
+								searched: new Intl.NumberFormat( SearchRegexi10n.locale ).format( totals.matched_rows ),
 							}
 						)
 						/* eslint-enable camelcase */

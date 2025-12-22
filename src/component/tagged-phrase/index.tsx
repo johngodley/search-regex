@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import replaceSearchTags from './tag';
 import type { PresetTag } from '../../types/preset';
 
@@ -33,7 +33,7 @@ function TaggedPhrases( props: TaggedPhrasesProps ): JSX.Element[] {
 	}
 
 	return tags.map( ( tag, pos ) => (
-		<tr className={ classnames( 'searchregex-preset__tag', className ) } key={ tag.name }>
+		<tr className={ clsx( 'searchregex-preset__tag', className ) } key={ tag.name }>
 			<th>{ tag.label }</th>
 			<td>
 				<input

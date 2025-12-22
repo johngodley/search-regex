@@ -1,7 +1,6 @@
 import { useEffect, useState, ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
-import { connect } from 'react-redux';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { Select, Button, MultiOptionDropdown } from '@wp-plugin-components';
 import {
 	getAvailablePerPage,
@@ -9,7 +8,7 @@ import {
 	getSearchOptionsForSources,
 	getSchema,
 	getFilterForType,
-} from '../../../state/search/selector';
+} from '../../../lib/search-utils';
 import {
 	isLocked,
 	hasTags,
@@ -17,21 +16,16 @@ import {
 	getDefaultPresetValues,
 	hasFilterTag,
 	hasActionTag,
-} from '../../../state/preset/selector';
+} from '../../../lib/preset-utils';
 import Search from '../../../component/search';
 import Filters from './filters';
 import { convertToSource, getSourcesForDropdown } from './utils';
 import Actions from '../actions';
 import SearchFlags from '../../../component/search-flags';
 import TaggedPhrases from '../../../component/tagged-phrase';
+import { useSearchStore } from '../../../stores/search-store';
 import type { PresetValue, PresetTag } from '../../../types/preset';
-import type {
-	Schema,
-	Filter,
-	FilterItem,
-	SearchValues as ImportedSearchValues,
-	SearchSourceGroup,
-} from '../../../types/search';
+import type { Schema, Filter, FilterItem, SearchValues as ImportedSearchValues } from '../../../types/search';
 
 const MAX_AND_FILTERS = 20;
 
@@ -52,20 +46,11 @@ interface SearchValues extends ImportedSearchValues {
 	view?: string[];
 }
 
-interface RootState {
-	search: {
-		sources: SearchSourceGroup[];
-		schema: Schema[];
-	};
-}
-
 interface FormProps {
 	search: SearchValues;
 	onSetSearch: ( values: SearchValues ) => void;
 	isBusy: boolean;
-	sources: SearchSourceGroup[];
 	preset: PresetValue | null;
-	schema: Schema[];
 }
 
 function hasFilter( filters: FilterGroup[], source: string, column: string ): boolean {
@@ -150,9 +135,19 @@ function hasVisibleFilters( filters: FilterGroup[], tags: PresetTag[] ): boolean
 		total = 0;
 
 	for ( let index = 0; index < filters.length; index++ ) {
-		for ( let itemIndex = 0; itemIndex < filters[ index ].items.length; itemIndex++ ) {
+		const filter = filters[ index ];
+		if ( ! filter ) {
+			continue;
+		}
+
+		for ( let itemIndex = 0; itemIndex < filter.items.length; itemIndex++ ) {
+			const item = filter.items[ itemIndex ];
+			if ( ! item ) {
+				continue;
+			}
+
 			total++;
-			tagCount += hasFilterTag( tags, filters[ index ].items[ itemIndex ] ) ? 1 : 0;
+			tagCount += hasFilterTag( tags, item ) ? 1 : 0;
 		}
 	}
 
@@ -172,14 +167,21 @@ function hasVisibleAction(
 		total = 0;
 
 	for ( let index = 0; index < actionOption.length; index++ ) {
+		const option = actionOption[ index ];
+		if ( ! option ) {
+			continue;
+		}
+
 		total++;
-		tagCount += hasActionTag( tags, actionOption[ index ] ) ? 1 : 0;
+		tagCount += hasActionTag( tags, option ) ? 1 : 0;
 	}
 
 	return tagCount !== total;
 }
 
-function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormProps ) {
+function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
+	const sources = useSearchStore( ( state ) => state.sources );
+	const schema = useSearchStore( ( state ) => state.schema );
 	const {
 		searchPhrase = '',
 		searchFlags = [],
@@ -193,20 +195,19 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormPro
 	const locked = preset ? preset.locked : [];
 	const tags = preset ? preset.tags : [];
 	const headerClassObject = getHeaderClass( tags );
-	const headerClass = classnames( headerClassObject );
+	const headerClass = clsx( headerClassObject );
 	const defaultValues = getDefaultPresetValues( preset );
 	const filterOptions = getSearchOptionsForSources( source, schema );
+	const firstFilterOption = filterOptions.length > 0 ? filterOptions[ 0 ] : null;
 	const initialFilterValue =
-		filterOptions.length > 0 && typeof filterOptions[ 0 ].value === 'string' ? filterOptions[ 0 ].value : '';
+		firstFilterOption && typeof firstFilterOption.value === 'string' ? firstFilterOption.value : '';
 	const [ currentFilter, setCurrentFilter ] = useState( initialFilterValue );
 	const viewFilters = hasVisibleFilters( filters, tags ) && ! isLocked( locked, 'filters' );
 
 	useEffect( () => {
 		if ( ! filterOptions.find( ( option ) => option.value === currentFilter ) ) {
-			const newValue =
-				filterOptions.length > 0 && typeof filterOptions[ 0 ].value === 'string'
-					? filterOptions[ 0 ].value
-					: '';
+			const firstOption = filterOptions.length > 0 ? filterOptions[ 0 ] : null;
+			const newValue = firstOption && typeof firstOption.value === 'string' ? firstOption.value : '';
 			setCurrentFilter( newValue );
 		}
 	}, [ source, currentFilter, filterOptions ] );
@@ -223,7 +224,11 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormPro
 			source: newSource,
 			filters: filters.filter( ( f ) => allowedFilters.indexOf( f.type ) !== -1 ).concat( newFilters ),
 			actionOption: [],
-			view: view.filter( ( f ) => newSource.indexOf( f.split( '__' )[ 0 ] ) !== -1 ),
+			view: view.filter( ( f ) => {
+				const parts = f.split( '__' );
+				const firstPart = parts[ 0 ];
+				return firstPart ? newSource.indexOf( firstPart ) !== -1 : false;
+			} ),
 		};
 	}
 
@@ -248,7 +253,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormPro
 			) : null }
 
 			{ ( ! isLocked( locked, 'source' ) || viewFilters ) && (
-				<tr className={ classnames( 'searchregex-search__source', headerClass ) }>
+				<tr className={ clsx( 'searchregex-search__source', headerClass ) }>
 					<th>{ __( 'Source', 'search-regex' ) }</th>
 					<td>
 						{ ! isLocked( locked, 'source' ) && (
@@ -304,7 +309,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormPro
 
 			{ ( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
 				! hasTags( tags, preset?.search?.searchPhrase ?? '' ) && (
-					<tr className={ classnames( 'searchregex-search__search', headerClass ) }>
+					<tr className={ clsx( 'searchregex-search__search', headerClass ) }>
 						<th>{ __( 'Search', 'search-regex' ) }</th>
 
 						<td>
@@ -361,7 +366,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormPro
 				/>
 			) }
 			{ ( ! isLocked( locked, 'perPage' ) || ! isLocked( locked, 'view' ) ) && (
-				<tr className={ classnames( 'searchregex-search__results', headerClass ) }>
+				<tr className={ clsx( 'searchregex-search__results', headerClass ) }>
 					<th>{ __( 'Results', 'search-regex' ) }</th>
 					<td>
 						{ ! isLocked( locked, 'perPage' ) && (
@@ -393,7 +398,7 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormPro
 				</tr>
 			) }
 			{ showPresetValue( searchPhrase, replacement, defaultValues ) ? (
-				<tr className={ classnames( headerClass ) }>
+				<tr className={ clsx( headerClass ) }>
 					<th />
 					<td>
 						<code>{ searchPhrase }</code>
@@ -409,13 +414,4 @@ function Form( { search, onSetSearch, isBusy, sources, preset, schema }: FormPro
 	);
 }
 
-function mapStateToProps( state: RootState ) {
-	const { sources, schema } = state.search;
-
-	return {
-		sources,
-		schema,
-	};
-}
-
-export default connect( mapStateToProps, null )( Form );
+export default Form;

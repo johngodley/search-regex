@@ -36,7 +36,10 @@ function replaceTag( phrase: string, tag: string, value: string ): string {
 }
 
 function replaceTags( phrase: string, tags: PresetTag[], tagValues: string[] ): string {
-	return tags.reduce( ( prev, current, index ) => replaceTag( prev, current.name, tagValues[ index ] ), phrase );
+	return tags.reduce( ( prev, current, index ) => {
+		const value = tagValues[ index ];
+		return value !== undefined ? replaceTag( prev, current.name, value ) : prev;
+	}, phrase );
 }
 
 export default function replaceSearchTags(

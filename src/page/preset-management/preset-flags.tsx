@@ -1,30 +1,28 @@
-import { connect } from 'react-redux';
 import { __ } from '@wordpress/i18n';
-import { getAvailableSearchFlags } from '../../state/search/selector';
+import { getAvailableSearchFlags } from '../../lib/search-utils';
 import { getSource } from '../../lib/sources';
+import { useSearchStore } from '../../stores/search-store';
 import type { PresetValue } from '../../types/preset';
-import type { SearchSourceGroup } from '../../types/search';
-
-interface RootState {
-	search: {
-		sources: SearchSourceGroup[];
-	};
-}
 
 interface PresetFlagsProps {
 	preset: PresetValue;
-	sources?: SearchSourceGroup[];
 }
 
 function PresetFlags( props: PresetFlagsProps ) {
-	const { sources = [], preset } = props;
+	const sources = useSearchStore( ( state ) => state.sources );
+	const { preset } = props;
 	const { search, locked } = preset;
 	const flags: string[] = [];
 	const { searchFlags = [], source = [] } = search;
 
 	// Add sources
 	for ( let index = 0; index < source.length; index++ ) {
-		const flag = getSource( sources, source[ index ] );
+		const sourceName = source[ index ];
+		if ( ! sourceName ) {
+			continue;
+		}
+
+		const flag = getSource( sources, sourceName );
 
 		if ( flag ) {
 			flags.push( flag.label );
@@ -47,12 +45,4 @@ function PresetFlags( props: PresetFlagsProps ) {
 	return <p>{ flags.join( ', ' ) }</p>;
 }
 
-function mapStateToProps( state: RootState ) {
-	const { sources } = state.search;
-
-	return {
-		sources,
-	};
-}
-
-export default connect( mapStateToProps, null )( PresetFlags );
+export default PresetFlags;

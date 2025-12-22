@@ -1,10 +1,8 @@
-import DatePicker from 'react-datepicker';
-import { parseISO } from 'date-fns';
+import DatePicker from '../../../../wp-plugin-components/date-picker';
 import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wp-plugin-components';
 import Logic from '../logic';
 import type { SchemaColumn, FilterItem } from '../../../../types/search';
-import './style.scss';
 
 interface FilterDateProps {
 	disabled: boolean;
@@ -19,7 +17,10 @@ function parseToDate( value: string | number | undefined ): Date | null {
 		return null;
 	}
 	if ( typeof value === 'string' ) {
-		return parseISO( value );
+		// Use native Date parsing instead of date-fns parseISO
+		const date = new Date( value );
+		// Check if date is valid
+		return isNaN( date.getTime() ) ? null : date;
 	}
 	return new Date( value );
 }
@@ -42,7 +43,11 @@ export default function FilterDate( { disabled, item, onChange }: FilterDateProp
 				<DatePicker
 					disabled={ disabled }
 					selected={ startValueDate }
-					onChange={ ( date ) => onChange( { startValue: date?.toISOString() } ) }
+					onChange={ ( date ) => {
+						if ( date ) {
+							onChange( { startValue: date.toISOString() } );
+						}
+					} }
 					showTimeSelect
 					dateFormat="MMMM d, yyyy hh:mm"
 				/>
@@ -53,7 +58,11 @@ export default function FilterDate( { disabled, item, onChange }: FilterDateProp
 					first: (
 						<DatePicker
 							selected={ startValueDate }
-							onChange={ ( date ) => onChange( { startValue: date?.toISOString() } ) }
+							onChange={ ( date ) => {
+								if ( date ) {
+									onChange( { startValue: date.toISOString() } );
+								}
+							} }
 							selectsStart
 							startDate={ startValueDate }
 							endDate={ endValueDate }
@@ -64,11 +73,15 @@ export default function FilterDate( { disabled, item, onChange }: FilterDateProp
 					second: (
 						<DatePicker
 							selected={ endValueDate }
-							onChange={ ( date ) => onChange( { endValue: date?.toISOString() } ) }
+							onChange={ ( date ) => {
+								if ( date ) {
+									onChange( { endValue: date.toISOString() } );
+								}
+							} }
 							selectsEnd
 							startDate={ startValueDate }
 							endDate={ endValueDate }
-							minDate={ startValueDate ?? undefined }
+							{ ...( startValueDate !== null && { minDate: startValueDate } ) }
 							showTimeSelect
 							dateFormat="MMMM d, yyyy hh:mm"
 						/>

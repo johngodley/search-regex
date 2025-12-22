@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux';
 import { useEffect, useState, useMemo, ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Select, Button } from '@wp-plugin-components';
-import { getSchema, getNewAction } from '../../../state/search/selector';
+import { getSchema, getNewAction } from '../../../lib/search-utils';
+import { useSearchStore } from '../../../stores/search-store';
 import type { Schema } from '../../../types/search';
 
 interface Column {
@@ -13,12 +13,6 @@ interface Column {
 interface ModifyActionOption {
 	column: string;
 	[ key: string ]: unknown;
-}
-
-interface RootState {
-	search: {
-		schema: Schema[];
-	};
 }
 
 interface ModifyColumnsProps {
@@ -44,16 +38,19 @@ function getColumns( schema: Schema, existing: ModifyActionOption[] ): Column[] 
 
 function ModifyColumns( props: ModifyColumnsProps ) {
 	const { disabled, columns, source, onSetSearch } = props;
-	const { schema } = useSelector( ( state: RootState ) => state.search );
+
+	const schema = useSearchStore( ( state ) => state.schema );
 	const sourceSchema = getSchema( schema, source );
 	const filteredColumns = useMemo(
 		() => ( sourceSchema ? getColumns( sourceSchema, columns ) : [] ),
 		[ sourceSchema, columns ]
 	);
-	const [ modify, setModify ] = useState( filteredColumns.length > 0 ? filteredColumns[ 0 ].value : '' );
+	const firstColumn = filteredColumns.length > 0 ? filteredColumns[ 0 ] : null;
+	const [ modify, setModify ] = useState( firstColumn?.value || '' );
 
 	useEffect( () => {
-		setModify( filteredColumns.length > 0 ? filteredColumns[ 0 ].value : '' );
+		const first = filteredColumns.length > 0 ? filteredColumns[ 0 ] : null;
+		setModify( first?.value || '' );
 	}, [ filteredColumns ] );
 
 	function addActionOption() {
@@ -61,7 +58,13 @@ function ModifyColumns( props: ModifyColumnsProps ) {
 			return;
 		}
 
-		const newAction = getNewAction( modify ? modify : filteredColumns[ 0 ].value, sourceSchema );
+		const firstCol = filteredColumns.length > 0 ? filteredColumns[ 0 ] : null;
+		const columnValue = modify || firstCol?.value;
+		if ( ! columnValue ) {
+			return;
+		}
+
+		const newAction = getNewAction( columnValue, sourceSchema );
 
 		onSetSearch( {
 			actionOption: columns.concat( [ newAction as unknown as ModifyActionOption ] ),

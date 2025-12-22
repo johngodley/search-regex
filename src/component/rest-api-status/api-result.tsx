@@ -25,7 +25,7 @@ interface ApiResultProps {
 }
 
 function getApiNonce(): string {
-	return ( window as any ).SearchRegexi10n.api.WP_API_nonce as string;
+	return SearchRegexi10n.api.WP_API_nonce;
 }
 
 const isLoading = ( result: ApiResult ): boolean =>
@@ -38,11 +38,7 @@ function ApiResult( { item, result, routes, isCurrent, allowChange }: ApiResultP
 
 	return (
 		<div className="api-result-log">
-			<form
-				className="api-result-select"
-				action={ ( ( window as any ).SearchRegexi10n.pluginRoot as string ) + '&sub=support' }
-				method="POST"
-			>
+			<form className="api-result-select" action={ SearchRegexi10n.pluginRoot + '&sub=support' } method="POST">
 				{ allowChange && ! isCurrent && (
 					<input
 						type="submit"
@@ -62,7 +58,7 @@ function ApiResult( { item, result, routes, isCurrent, allowChange }: ApiResultP
 			<p>
 				URL:{ ' ' }
 				<code>
-					<ExternalLink url={ routes[ item.value ] }>{ routes[ item.value ] }</ExternalLink>
+					<ExternalLink url={ routes[ item.value ] || '' }>{ routes[ item.value ] || '' }</ExternalLink>
 				</code>
 			</p>
 

@@ -1,26 +1,17 @@
 import { __ } from '@wordpress/i18n';
-import { useSelector, useDispatch } from 'react-redux';
 import { Spinner, Button } from '@wp-plugin-components';
-import { STATUS_IN_PROGRESS } from '../../state/settings/type';
-import { cancel, perform } from '../../state/search/action';
+import { STATUS_IN_PROGRESS, STATUS_FAILED, STATUS_COMPLETE } from '../../lib/constants';
+import {
+	useSearchStore,
+	convertToSearchTotals,
+	convertToSearchProgress,
+	convertToResults,
+} from '../../stores/search-store';
+import { useSearch } from '../../hooks/use-search';
 
 interface ActionOption {
 	length?: number;
 	hook?: string;
-}
-
-interface RootState {
-	search: {
-		search: {
-			action: string;
-			actionOption: ActionOption;
-			replacement: string | null;
-		};
-		status: string;
-		canCancel: boolean;
-		resultsDirty: boolean;
-		isSaving: boolean;
-	};
 }
 
 function isPerformReady( action: string, actionOption: ActionOption, replacement: string | null ): boolean {
@@ -68,9 +59,62 @@ function getPerformButton( action: string ): string {
 }
 
 function SearchActions() {
-	const { search, status, canCancel, resultsDirty, isSaving } = useSelector( ( state: RootState ) => state.search );
-	const { action, actionOption, replacement } = search;
-	const dispatch = useDispatch();
+	const search = useSearchStore( ( state ) => state.search );
+	const status = useSearchStore( ( state ) => state.status );
+	const canCancel = useSearchStore( ( state ) => state.canCancel );
+	const resultsDirty = useSearchStore( ( state ) => state.resultsDirty );
+	const isSaving = useSearchStore( ( state ) => state.isSaving );
+	const setStatus = useSearchStore( ( state ) => state.setStatus );
+	const setResults = useSearchStore( ( state ) => state.setResults );
+	const setTotals = useSearchStore( ( state ) => state.setTotals );
+	const setProgress = useSearchStore( ( state ) => state.setProgress );
+	const setIsSaving = useSearchStore( ( state ) => state.setIsSaving );
+	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
+	const setReplaceAll = useSearchStore( ( state ) => state.setReplaceAll );
+
+	const { action = '', actionOption = {}, replacement = null } = search;
+	const performMutation = useSearch();
+
+	const handlePerform = () => {
+		setIsSaving( true );
+		setCanCancel( true );
+		setReplaceAll( true );
+		setStatus( STATUS_IN_PROGRESS );
+
+		performMutation.mutate(
+			{
+				...search,
+				page: 0,
+				save: true,
+			},
+			{
+				onSuccess: ( data ) => {
+					// ✨ Data is already validated by Zod in useSearch hook
+					// Convert API results (number row_id) to Result[] (string row_id)
+					setResults( convertToResults( data.results ) );
+					setTotals( convertToSearchTotals( data.totals ) );
+					setProgress( convertToSearchProgress( data.progress ) );
+					setStatus( data.status ?? STATUS_COMPLETE );
+					setIsSaving( false );
+					setCanCancel( false );
+					setReplaceAll( false );
+				},
+				onError: () => {
+					setStatus( STATUS_FAILED );
+					setIsSaving( false );
+					setCanCancel( false );
+					setReplaceAll( false );
+				},
+			}
+		);
+	};
+
+	const handleCancel = () => {
+		setCanCancel( false );
+		setIsSaving( false );
+		setReplaceAll( false );
+		setStatus( null );
+	};
 
 	return (
 		<div className="searchregex-search__action">
@@ -86,11 +130,7 @@ function SearchActions() {
 						status === STATUS_IN_PROGRESS ||
 						isSaving
 					}
-					onClick={ () => {
-						/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-						dispatch( perform( 0 ) as any );
-						/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-					} }
+					onClick={ handlePerform }
 				>
 					{ getPerformButton( action ) }
 				</Button>
@@ -99,14 +139,7 @@ function SearchActions() {
 			{ ( status === STATUS_IN_PROGRESS || isSaving ) && canCancel && (
 				<>
 					&nbsp;
-					<Button
-						isDestructive
-						onClick={ () => {
-							/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-							dispatch( cancel() as any );
-							/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call */
-						} }
-					>
+					<Button isDestructive onClick={ handleCancel }>
 						{ __( 'Cancel', 'search-regex' ) }
 					</Button>
 					<Spinner />

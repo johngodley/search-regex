@@ -1,13 +1,12 @@
-import classnames from 'classnames';
-import { connect } from 'react-redux';
+import clsx from 'clsx';
 import ResultColumn from './column';
 import ResultTitle from './result-title';
 import Actions from './actions';
-import { getSchema, getSchemaColumn } from '../../state/search/selector';
+import { getSchema, getSchemaColumn } from '../../lib/search-utils';
 import { getReplacedColumn } from './modify-column';
+import { useSearchStore } from '../../stores/search-store';
 import './style.scss';
-import type { ResultColumn as ResultColumnType, Schema, SchemaColumn, Result } from '../../types/search';
-import type { RootState } from '../../state/reducers';
+import type { ResultColumn as ResultColumnType, Schema, SchemaColumn, Result as ResultType } from '../../types/search';
 
 interface GlobalReplacementItem {
 	column: string;
@@ -15,17 +14,9 @@ interface GlobalReplacementItem {
 	value?: string;
 }
 
-interface ResultOwnProps {
-	result: Result;
+interface ResultProps {
+	result: ResultType;
 }
-
-interface ResultStateProps {
-	isReplacing: boolean;
-	globalReplacement: GlobalReplacementItem[];
-	schema: Schema | undefined;
-}
-
-type ResultProps = ResultOwnProps & ResultStateProps;
 
 function getReplacement(
 	globalReplacement: GlobalReplacementItem[],
@@ -36,12 +27,14 @@ function getReplacement(
 		return column;
 	}
 
-	if ( globalReplacement && globalReplacement.length > 0 && globalReplacement[ 0 ].column === 'global' ) {
-		const globalColumn = schema.columns.find( ( item ) => item.column === column.column_id );
+	if ( globalReplacement && globalReplacement.length > 0 && globalReplacement[ 0 ]?.column === 'global' ) {
+		const globalColumn = schema?.columns.find( ( item ) => item.column === column.column_id );
 
 		if ( globalColumn && ( globalColumn as any ).global ) {
-			const schemaColumn = schema.columns.find( ( item ) => item.column === column.column_id );
-			return getReplacedColumn( column, globalReplacement[ 0 ] as any, schemaColumn as SchemaColumn );
+			const schemaColumn = schema?.columns.find( ( item ) => item.column === column.column_id );
+			if ( schemaColumn ) {
+				return getReplacedColumn( column, globalReplacement[ 0 ] as any, schemaColumn as SchemaColumn );
+			}
 		}
 	}
 
@@ -55,12 +48,20 @@ function getReplacement(
 }
 
 function Result( props: ResultProps ): JSX.Element {
-	const { result, globalReplacement, isReplacing, schema } = props;
+	const { result } = props;
+
+	const replacing = useSearchStore( ( state ) => state.replacing );
+	const search = useSearchStore( ( state ) => state.search );
+	const schemaList = useSearchStore( ( state ) => state.schema );
 	const { columns, actions, row_id: rowId, source_name: sourceName, source_type: sourceType, title } = result;
+
+	const isReplacing = replacing.indexOf( rowId ) !== -1;
+	const globalReplacement = getGlobalReplacement( search as any );
+	const schema = getSchema( schemaList, sourceType );
 
 	if ( ! schema ) {
 		return (
-			<tr className={ classnames( 'searchregex-result', { 'searchregex-result__updating': isReplacing } ) }>
+			<tr className={ clsx( 'searchregex-result', { 'searchregex-result__updating': isReplacing } ) }>
 				<td className="searchregex-result__table">
 					<span title={ sourceType }>{ sourceName }</span>
 				</td>
@@ -74,14 +75,12 @@ function Result( props: ResultProps ): JSX.Element {
 	}
 
 	return (
-		<tr className={ classnames( 'searchregex-result', { 'searchregex-result__updating': isReplacing } ) }>
+		<tr className={ clsx( 'searchregex-result', { 'searchregex-result__updating': isReplacing } ) }>
 			<td className="searchregex-result__table">
 				<span title={ sourceType }>{ sourceName }</span>
 			</td>
 			<td className="searchregex-result__row">
-				{ new Intl.NumberFormat( ( window as any ).SearchRegexi10n.locale as string ).format(
-					parseInt( rowId, 10 )
-				) }
+				{ new Intl.NumberFormat( SearchRegexi10n.locale ).format( parseInt( rowId, 10 ) ) }
 			</td>
 
 			<td className="searchregex-result__match">
@@ -138,17 +137,5 @@ function getGlobalReplacement( { action, actionOption, replacement }: SearchStat
 	return [];
 }
 
-function mapStateToProps( state: RootState, ownProps: ResultOwnProps ): ResultStateProps {
-	const { replacing, search, schema } = state.search;
-
-	return {
-		isReplacing: replacing.indexOf( ownProps.result.row_id ) !== -1,
-		globalReplacement: getGlobalReplacement( search as any ),
-		schema: getSchema( schema, ownProps.result.source_type ),
-	};
-}
-
-export default connect< ResultStateProps, Record< string, never >, ResultOwnProps, RootState >(
-	mapStateToProps,
-	null
-)( Result );
+export { Result };
+export default Result;

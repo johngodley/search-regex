@@ -1,15 +1,15 @@
-import { useSelector } from 'react-redux';
 import { useEffect, useState, ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { Select } from '@wp-plugin-components';
-import { isLocked, hasTags, hasActionTag } from '../../../state/preset/selector';
+import { isLocked, hasTags, hasActionTag } from '../../../lib/preset-utils';
 import ModifyColumns from './modify-columns';
 import Modify from '../../../component/schema/modify';
 import { getActions, getExportOptions } from './constants';
-import { getSearchOptionsForSources, getSchemaSourceColumn } from '../../../state/search/selector';
+import { getSearchOptionsForSources, getSchemaSourceColumn } from '../../../lib/search-utils';
+import { useSearchStore } from '../../../stores/search-store';
 import type { PresetValue, PresetTag } from '../../../types/preset';
-import type { Schema, ModifyColumn } from '../../../types/search';
+import type { ModifyColumn } from '../../../types/search';
 import './style.scss';
 
 interface ActionOption {
@@ -26,12 +26,6 @@ interface SearchValues {
 	action?: string;
 	actionOption?: ActionOption | ActionOption[];
 	replacement?: string | null;
-}
-
-interface RootState {
-	search: {
-		schema: Schema[];
-	};
 }
 
 interface ActionsProps {
@@ -60,10 +54,12 @@ function getPresetAction( preset: PresetValue | null, pos: number ): ActionOptio
 
 function Actions( props: ActionsProps ) {
 	const { locked, tags, preset, headerClass, searchPhrase, disabled, sources, onSetSearch, search } = props;
-	const { schema } = useSelector( ( state: RootState ) => state.search );
+
+	const schema = useSearchStore( ( state ) => state.schema );
 	const { action = '', actionOption = {}, replacement } = search;
 	const actions = getActions( Boolean( searchPhrase && searchPhrase.length > 0 ), sources.length === 1 );
 	const currentAction = actions.find( ( item ) => item.value === action ) || actions[ 0 ];
+	const firstAction = actions[ 0 ];
 	const [ currentSource, setSource ] = useState( sources.length > 0 ? sources[ 0 ] : '' );
 	const filterOptions = getSearchOptionsForSources( sources, schema );
 	const exportCheckboxId = 'searchregex-export-selected';
@@ -72,12 +68,12 @@ function Actions( props: ActionsProps ) {
 	const actionOptionObj = ! Array.isArray( actionOption ) ? actionOption : {};
 
 	useEffect( () => {
-		if ( currentAction.disabled ) {
-			onSetSearch( { action: actions[ 0 ].value, actionOption: [] } );
+		if ( currentAction && currentAction.disabled && firstAction ) {
+			onSetSearch( { action: firstAction.value, actionOption: [] } );
 		}
 
 		setSource( sources.length > 0 ? sources[ 0 ] : '' );
-	}, [ actions, currentAction.disabled, onSetSearch, sources ] );
+	}, [ actions, currentAction, firstAction, onSetSearch, sources ] );
 
 	function removeModify( column: ActionOption ) {
 		onSetSearch( {
@@ -102,7 +98,7 @@ function Actions( props: ActionsProps ) {
 	return (
 		<>
 			{ ! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' ) && (
-				<tr className={ classnames( 'searchregex-search__action', headerClass ) }>
+				<tr className={ clsx( 'searchregex-search__action', headerClass ) }>
 					<th>{ __( 'Action', 'search-regex' ) }</th>
 					<td>
 						<Select
@@ -122,7 +118,7 @@ function Actions( props: ActionsProps ) {
 								<Select
 									disabled={ disabled }
 									name="actionSource"
-									value={ currentSource }
+									value={ currentSource || '' }
 									onChange={ ( ev: ChangeEvent< HTMLSelectElement > ) =>
 										setSource( ev.target.value )
 									}
@@ -134,7 +130,7 @@ function Actions( props: ActionsProps ) {
 										actionOptionArray as unknown as { column: string; [ key: string ]: unknown }[]
 									}
 									disabled={ disabled }
-									source={ currentSource }
+									source={ currentSource || '' }
 									onSetSearch={
 										onSetSearch as ( values: {
 											actionOption: { column: string; [ key: string ]: unknown }[];
@@ -175,7 +171,7 @@ function Actions( props: ActionsProps ) {
 							</>
 						) }
 
-						<span>{ currentAction.desc }</span>
+						<span>{ currentAction?.desc || '' }</span>
 					</td>
 				</tr>
 			) }

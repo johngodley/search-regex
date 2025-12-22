@@ -1,4 +1,4 @@
-@import "../../../global.scss";
+@use "../../../global" as *;
 
 .searchregex-filter {
 	display: flex;
@@ -152,7 +152,7 @@
 		height: 20px;
 	}
 
-	button.dashicons:before {
+	button.dashicons::before {
 		font-size: 20px;
 	}
 

@@ -1,22 +1,20 @@
 import React from 'react';
 import { __ } from '@wordpress/i18n';
-import { useSelector } from 'react-redux';
-import { getSchema } from '../../../state/search/selector';
-import { hasFilterTag } from '../../../state/preset/selector';
+import { getSchema } from '../../../lib/search-utils';
+import { hasFilterTag } from '../../../lib/preset-utils';
 import { Badge } from '@wp-plugin-components';
 import Filter from '../../../component/schema/filter';
+import { useSearchStore } from '../../../stores/search-store';
 import type { PresetTag } from '../../../types/preset';
-import type { Schema, FilterItem } from '../../../types/search';
+import type { FilterItem } from '../../../types/search';
 
 interface FilterGroup {
 	type: string;
 	items: FilterItem[];
 }
 
-interface RootState {
-	search: {
-		schema: Schema[];
-	};
+function isFilterGroup( filter: FilterGroup | { items: FilterItem[]; type?: string } ): filter is FilterGroup {
+	return typeof filter.type === 'string';
 }
 
 interface FiltersProps {
@@ -28,10 +26,11 @@ interface FiltersProps {
 }
 
 function Filters( { filters, disabled, onSetSearch, tags, presetFilters }: FiltersProps ) {
-	const schema = useSelector( ( state: RootState ) => state.search.schema );
+	const schema = useSearchStore( ( state ) => state.schema );
 
-	function updateFilters( updatedFilters: FilterGroup[] ) {
-		onSetSearch( { filters: updatedFilters } );
+	function updateFilters( updatedFilters: Array< FilterGroup | { items: FilterItem[]; type?: string } > ) {
+		const validFilters = updatedFilters.filter( isFilterGroup ) as FilterGroup[];
+		onSetSearch( { filters: validFilters } );
 	}
 
 	function canShowBadge( current: number, type: string ): boolean {
@@ -39,7 +38,8 @@ function Filters( { filters, disabled, onSetSearch, tags, presetFilters }: Filte
 			return false;
 		}
 
-		return filters[ current + 1 ].type === type;
+		const nextFilter = filters[ current + 1 ];
+		return nextFilter ? nextFilter.type === type : false;
 	}
 
 	if ( filters.length === 0 ) {
@@ -56,6 +56,9 @@ function Filters( { filters, disabled, onSetSearch, tags, presetFilters }: Filte
 						const visibleItems = items.filter( ( _item, pos ) => {
 							if ( filterForSource ) {
 								const matchingItem = filterForSource.items[ pos ];
+								if ( ! matchingItem ) {
+									return true;
+								}
 
 								return ! hasFilterTag( tags, matchingItem );
 							}
@@ -79,16 +82,20 @@ function Filters( { filters, disabled, onSetSearch, tags, presetFilters }: Filte
 									items={ visibleItems }
 									disabled={ disabled }
 									source={ type }
-									onChange={ ( updatedFilters: FilterItem[] ) =>
+									onChange={ ( updatedFilters: FilterItem[] ) => {
+										const currentFilter = filters[ rowPosition ];
+										if ( ! currentFilter ) {
+											return;
+										}
 										updateFilters( [
 											...filters.slice( 0, rowPosition ),
 											{
-												...filters[ rowPosition ],
+												type: currentFilter.type,
 												items: updatedFilters,
 											},
 											...filters.slice( rowPosition + 1 ),
-										] )
-									}
+										] );
+									} }
 									onRemove={ () =>
 										updateFilters( [
 											...filters.slice( 0, rowPosition ),

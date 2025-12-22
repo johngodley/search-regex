@@ -1,10 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { useSelector, useDispatch } from 'react-redux';
 import Logic from '../logic';
 import { DropdownText, MultiOptionDropdown } from '@wp-plugin-components';
 import SearchFlags from '../../../search-flags';
-import { setLabel } from '../../../../state/search/action';
-import { getLabel } from '../../../../state/search/selector';
+import { getLabel } from '../../../../lib/search-utils';
+import { useSearchStore } from '../../../../stores/search-store';
 import type { SchemaColumn, FilterItem, SelectOption } from '../../../../types/search';
 
 interface FilterMemberProps {
@@ -21,6 +20,16 @@ function setValues( values: string[], changed: string, all: string[] ): string[]
 	}
 
 	return values.filter( ( item ) => item !== '' );
+}
+
+function getChangedValue( previous: string[], next: string[] ): string {
+	const added = next.find( ( value ) => previous.indexOf( value ) === -1 );
+	if ( added !== undefined ) {
+		return added;
+	}
+
+	const removed = previous.find( ( value ) => next.indexOf( value ) === -1 );
+	return removed || '';
 }
 
 function getValues( values: string[], allLength: number ): string[] {
@@ -50,8 +59,9 @@ export default function FilterMember( {
 }: FilterMemberProps ): JSX.Element {
 	const { logic = 'include', values = [], flags = [ 'case' ] } = item;
 	const remote = schema.options === 'api' ? fetchData : false;
-	const { labels } = useSelector( ( state: { search: { labels: unknown } } ) => state.search );
-	const dispatch = useDispatch();
+
+	const labels = useSearchStore( ( state ) => state.labels );
+	const setLabels = useSearchStore( ( state ) => state.setLabels );
 
 	const logicComponent = (
 		<Logic
@@ -67,7 +77,7 @@ export default function FilterMember( {
 			<>
 				{ logicComponent }
 				<DropdownText
-					value={ values.length === 0 ? '' : values[ 0 ] }
+					value={ values[ 0 ] ?? '' }
 					disabled={ disabled }
 					onChange={ ( newValue ) => onChange( { values: [ newValue ] } ) }
 				/>
@@ -91,11 +101,27 @@ export default function FilterMember( {
 					disabled={ disabled }
 					onChange={ ( newValue ) => onChange( { values: newValue } ) }
 					fetchData={ remote }
-					loadOnFocus={ schema.preload }
+					{ ...( schema.preload !== undefined && { loadOnFocus: schema.preload } ) }
 					maxChoices={ 20 }
 					onlyChoices
 					setLabel={ ( labelId: string, labelValue: string | null ) => {
-						dispatch( setLabel( schema.column + '_' + labelId, labelValue || '' ) );
+						const existingIndex = ( labels as Array< { value: string; label: string } > ).findIndex(
+							( l ) => l.value === schema.column + '_' + labelId
+						);
+
+						if ( existingIndex >= 0 ) {
+							const updatedLabels = [ ...( labels as Array< { value: string; label: string } > ) ];
+							updatedLabels[ existingIndex ] = {
+								value: schema.column + '_' + labelId,
+								label: labelValue || '',
+							};
+							setLabels( updatedLabels );
+						} else {
+							setLabels( [
+								...( labels as Array< { value: string; label: string } > ),
+								{ value: schema.column + '_' + labelId, label: labelValue || '' },
+							] );
+						}
 					} }
 					getLabel={ ( labelId: string ) =>
 						getLabel( labels as { value: string; label: string }[], schema.column + '_' + labelId )
@@ -116,18 +142,18 @@ export default function FilterMember( {
 					selected={ getValues( values, options.length ) }
 					onChange={ ( newValue: string[] | Record< string, string | boolean | undefined > ) => {
 						const valueArray = Array.isArray( newValue ) ? newValue : [];
+						const previousSelectedValues = getValues( values, options.length );
+						const changedValue = getChangedValue( previousSelectedValues, valueArray );
+						const optionValues = options.map( ( option ) => option.value as string );
+
 						onChange( {
-							values: setValues(
-								valueArray,
-								'',
-								options.map( ( option ) => option.value as string )
-							),
+							values: setValues( valueArray, changedValue, optionValues ),
 						} );
 					} }
 					multiple={ schema.multiple ?? true }
 					disabled={ disabled }
 					hideTitle
-					title={ schema.title }
+					{ ...( schema.title !== undefined && { title: schema.title } ) }
 					badges
 				/>
 			) }

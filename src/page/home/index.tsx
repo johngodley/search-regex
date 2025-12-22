@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { getPluginPage } from '../../lib/plugin';
 import { Snackbar, Menu, ErrorBoundary, Error } from '@wp-plugin-components';
 /* eslint-disable camelcase */
 import { has_page_access } from '../../lib/capabilities';
 /* eslint-enable camelcase */
-import { clearErrors, clearNotices } from '../../state/message/action';
-import { setPreset } from '../../state/preset/action';
+import { useMessageStore } from '../../stores/message-store';
+import { usePresets } from '../../hooks/use-presets';
+import { usePresetStore } from '../../stores/preset-store';
 import DebugReport from './debug';
 import ErrorDetails from './error-details';
 import CrashHandler from './crash-handler';
@@ -29,25 +28,6 @@ interface MenuItem {
 interface ErrorMessage {
 	code: string;
 	jsonData?: string;
-}
-
-interface RootState {
-	message: {
-		errors: ErrorMessage[];
-		notices: string[];
-	};
-	preset: {
-		presets: PresetValue[];
-	};
-}
-
-interface HomeProps {
-	onClearErrors: () => void;
-	onResetPreset: ( preset: PresetValue | null ) => void;
-	errors: ErrorMessage[];
-	onClearNotices: () => void;
-	notices: string[];
-	presets: PresetValue[];
 }
 
 const getTitles = (): Record< string, string > => ( {
@@ -79,25 +59,34 @@ const getMenu = (): MenuItem[] =>
 	].filter( ( option ) => has_page_access( option.value ) || ( option.value === '' && has_page_access( 'search' ) ) );
 /* eslint-enable camelcase */
 
-function Home( props: HomeProps ) {
-	const { onClearErrors, onResetPreset, errors, onClearNotices, notices, presets } = props;
+function Home() {
 	const [ page, setPage ] = useState( getPluginPage() );
+
+	const errors = useMessageStore( ( state ) => state.errors );
+	const notices = useMessageStore( ( state ) => state.notices );
+	const clearErrors = useMessageStore( ( state ) => state.clearErrors );
+	const clearNotices = useMessageStore( ( state ) => state.clearNotices );
+	const setCurrentPreset = usePresetStore( ( state ) => state.setCurrentPreset );
+
+	const { data: presets = [] } = usePresets();
 
 	if ( SEARCHREGEX_VERSION !== SearchRegexi10n.version ) {
 		return <CacheDetect />;
 	}
 
 	function pageChange() {
-		onClearErrors();
+		clearErrors();
 
-		if (
-			SearchRegexi10n.settings.defaultPreset &&
-			presets.find( ( item ) => item.id === SearchRegexi10n.settings.defaultPreset )
-		) {
-			onResetPreset( presets.find( ( item ) => item.id === SearchRegexi10n.settings.defaultPreset ) || null );
-		} else {
-			onResetPreset( null );
+		const defaultPresetId = SearchRegexi10n.settings?.defaultPreset;
+		if ( defaultPresetId !== undefined ) {
+			const presetId = String( defaultPresetId );
+			const preset = presets.find( ( item: PresetValue ) => item.id === presetId );
+			if ( preset ) {
+				setCurrentPreset( preset );
+				return;
+			}
 		}
+		setCurrentPreset( null );
 	}
 
 	return (
@@ -122,15 +111,15 @@ function Home( props: HomeProps ) {
 						urlBase={ SearchRegexi10n.pluginRoot }
 					/>
 
-					{ errors.length > 0 && errors[ 0 ].code === 'searchregex_database' ? (
+					{ errors.length > 0 && ( errors[ 0 ] as ErrorMessage ).code === 'searchregex_database' ? (
 						<DatabaseError
 							error={ errors[ 0 ] as { jsonData: string; code: string } }
-							onClear={ onClearErrors }
+							onClear={ clearErrors }
 						/>
 					) : (
 						<Error
 							errors={ errors }
-							onClear={ onClearErrors }
+							onClear={ clearErrors }
 							renderDebug={ DebugReport }
 							details={ getErrorDetails() }
 							links={ getErrorLinks() }
@@ -142,38 +131,11 @@ function Home( props: HomeProps ) {
 
 					<PageContent page={ page } />
 
-					<Snackbar notices={ notices } onClear={ onClearNotices } snackBarViewText={ __( 'View' ) } />
+					<Snackbar notices={ notices } onClear={ clearNotices } snackBarViewText={ __( 'View' ) } />
 				</PageRouter>
 			</div>
 		</ErrorBoundary>
 	);
 }
 
-function mapDispatchToProps( dispatch: Dispatch ) {
-	return {
-		onClearErrors: () => {
-			dispatch( clearErrors() );
-		},
-		onClearNotices: () => {
-			dispatch( clearNotices() );
-		},
-		onResetPreset: ( preset: PresetValue | null ) => {
-			dispatch( setPreset( preset ) );
-		},
-	};
-}
-
-function mapStateToProps( state: RootState ) {
-	const {
-		message: { errors, notices },
-	} = state;
-	const { presets } = state.preset;
-
-	return {
-		errors,
-		notices,
-		presets,
-	};
-}
-
-export default connect( mapStateToProps, mapDispatchToProps )( Home );
+export default Home;

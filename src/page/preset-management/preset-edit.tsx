@@ -60,11 +60,16 @@ function PresetEdit( props: PresetEditProps ) {
 	];
 
 	function changeTag( pos: number, value: Partial< PresetTag > ) {
+		const existingTag = presetTags[ pos ];
+		if ( ! existingTag ) {
+			return;
+		}
+
 		setTags( [
 			...presetTags.slice( 0, pos ),
 			{
-				...presetTags[ pos ],
-				...value,
+				name: value.name ?? existingTag.name,
+				label: value.label ?? existingTag.label,
 			},
 			...presetTags.slice( pos + 1 ),
 		] );
@@ -79,8 +84,11 @@ function PresetEdit( props: PresetEditProps ) {
 	}
 
 	function cleanTags( tagList: PresetTag[] ): PresetTag[] {
-		if ( tagList.length === 1 && tagList[ 0 ].name === '' && tagList[ 0 ].label === '' ) {
-			return [];
+		if ( tagList.length === 1 ) {
+			const firstTag = tagList[ 0 ];
+			if ( firstTag && firstTag.name === '' && firstTag.label === '' ) {
+				return [];
+			}
 		}
 
 		return tagList;
