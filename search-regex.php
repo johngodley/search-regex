@@ -21,8 +21,6 @@ For full license details see license.txt
 ============================================================================================================
 */
 
-// XXX look at report in email
-
 define( 'SEARCHREGEX_FILE', __FILE__ );
 
 // This file must support PHP < 7.2 so as not to crash
