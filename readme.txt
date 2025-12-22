@@ -120,9 +120,9 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.2 - December 7th 2025 =
-* Variety of small fixes and improvements
+= 3.2 - December 22nd 2025 =
 * Add WP CLI functions
+* Variety of small fixes and improvements
 * Update for WordPress 6.9
 * Bump PHP minimum to 7.2
 
