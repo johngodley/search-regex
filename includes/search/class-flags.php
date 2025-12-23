@@ -8,8 +8,10 @@ namespace SearchRegex\Search;
  * @phpstan-type SearchFlag 'regex'|'case'
  */
 class Flags {
-	/** @var SearchFlag[] */
-	private $flags = [];
+	/**
+	 * @var SearchFlag[]
+	 */
+	private array $flags = [];
 
 	/**
 	 * Create a Flags object with an array of flag strings
@@ -23,9 +25,7 @@ class Flags {
 		];
 
 		$this->flags = array_filter(
-			$flags, function ( $flag ) use ( $allowed ) {
-				return array_search( $flag, $allowed, true ) !== false;
-			}
+			$flags, fn( $flag ) => array_search( $flag, $allowed, true ) !== false
 		);
 	}
 

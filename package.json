@@ -1,6 +1,6 @@
 {
 	"name": "search-regex",
-	"version": "3.2.0",
+	"version": "3.3.0",
 	"description": "Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support",
 	"main": "search-regex.php",
 	"sideEffects": [
@@ -17,7 +17,7 @@
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"lint:ts": "tsc --noEmit",
-		"lint:php": "composer run-script lint",
+		"lint:php": "composer run-script checks",
 		"plugin-zip": "pnpm build && rm -rf release && mkdir -p release && wp-scripts plugin-zip && mv search-regex.zip release",
 		"release": "pnpm plugin-zip && release-it",
 		"release:svn": "pnpm plugin-zip && cd release && unzip search-regex.zip && cd .. && rm release/search-regex.zip && dev/svn.sh $npm_package_version",
@@ -61,8 +61,10 @@
 		"eslint-plugin-jsx-a11y": "^6.10.2",
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^7.0.1",
+		"husky": "^9.1.7",
 		"jest": "^30.2.0",
 		"jest-environment-jsdom": "^30.2.0",
+		"lint-staged": "^16.2.7",
 		"npm-check-updates": "^19.2.0",
 		"path": "^0.12.7",
 		"prettier": "npm:wp-prettier@3.0.3",
@@ -117,7 +119,7 @@
 		"sampleUrl": null
 	},
 	"wordpress": {
-		"supported": "6.4"
+		"supported": "6.5"
 	},
 	"release-it": {
 		"github": {
@@ -127,5 +129,18 @@
 			]
 		},
 		"npm": false
+	},
+	"lint-staged": {
+		"*.php": [
+			"composer lint",
+			"composer format"
+		],
+		"*.{ts,tsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{css,scss}": [
+			"prettier --write"
+		]
 	}
 }

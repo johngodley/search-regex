@@ -4,7 +4,7 @@ class SearchRegex_Api_Test extends WP_Ajax_UnitTestCase {
 	private $nonce;
 	private $cap;
 
-	protected function callApi( $endpoint, array $params = array(), $method = 'GET' ) {
+	protected function callApi( $endpoint, array $params = [], $method = 'GET' ) {
 		$request = new WP_REST_Request( $method, '/search-regex/v1/' . $endpoint );
 
 		foreach ( $params as $name => $value ) {
@@ -67,7 +67,7 @@ class SearchRegex_Api_Test extends WP_Ajax_UnitTestCase {
 	}
 
 	protected static function load_fixture( $filename, $limit ) {
-		$handle = fopen( dirname( __FILE__ ) . '/fixtures/' . $filename , 'r' );
+		$handle = fopen( __DIR__ . '/fixtures/' . $filename , 'r' );
 		if ( ! $handle ) {
 			return [];
 		}

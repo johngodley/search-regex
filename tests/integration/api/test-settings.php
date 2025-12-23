@@ -34,7 +34,7 @@ class SearchRegexApiSettingsTest extends SearchRegex_Api_Test {
 		update_option( 'searchregex_options', (array) $before->data['settings'] );
 		$before = $before->data['settings'];
 
-		$after = $this->callApi( 'setting', array(), 'POST' );
+		$after = $this->callApi( 'setting', [], 'POST' );
 		$after = $after->data['settings'];
 
 		$this->assertEquals( $before, $after );
@@ -44,7 +44,7 @@ class SearchRegexApiSettingsTest extends SearchRegex_Api_Test {
 		$data = true;
 		$this->setNonce();
 
-		$result = $this->callApi( 'setting', array( 'support' => $data ), 'POST' );
+		$result = $this->callApi( 'setting', [ 'support' => $data ], 'POST' );
 		$this->assertEquals( true, $result->data['settings']['support'] );
 	}
 
@@ -52,7 +52,7 @@ class SearchRegexApiSettingsTest extends SearchRegex_Api_Test {
 		$data = 1;
 		$this->setNonce();
 
-		$result = $this->callApi( 'setting', array( 'rest_api' => $data ), 'POST' );
+		$result = $this->callApi( 'setting', [ 'rest_api' => $data ], 'POST' );
 		$this->assertEquals( 1, $result->data['settings']['rest_api'] );
 	}
 }

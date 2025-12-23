@@ -16,9 +16,7 @@ class Modifier_Member_Test extends SearchRegex_Api_Test {
 
 	private function perform( $modifier, array $value ) {
 		$source = Source\Manager::get( [ 'posts' ], [] );
-		$contexts = array_map( function( $item ) {
-			return new Context\Type\Value( $item );
-		}, $value );
+		$contexts = array_map( fn($item) => new Context\Type\Value( $item ), $value );
 		$column = new Search\Column( 1, 1, $contexts, [] );
 
 		$results = $modifier->perform( 1, $value, $source[0], $column, [], true );

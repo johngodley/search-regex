@@ -10,9 +10,8 @@ class Group {
 	 * Group name
 	 *
 	 * @readonly
-	 * @var string
 	 */
-	private $group;
+	private string $group;
 
 	public function __construct( Value $group ) {
 		$this->group = $group->get_value();

@@ -4,30 +4,19 @@ namespace SearchRegex\Sql\Join;
 
 use SearchRegex\Sql;
 
-require_once __DIR__ . '/join-meta.php';
-require_once __DIR__ . '/join-term.php';
-require_once __DIR__ . '/join-taxonomy.php';
-require_once __DIR__ . '/join-post.php';
-require_once __DIR__ . '/join-user.php';
-require_once __DIR__ . '/join-comment.php';
-
 /**
  * SQL join
  */
 abstract class Join {
 	/**
 	 * Does this require matching?
-	 *
-	 * @var boolean
 	 */
-	protected $is_matching = true;
+	protected bool $is_matching = true;
 
 	/**
 	 * Column to join on
-	 *
-	 * @var string
 	 */
-	protected $column;
+	protected string $column;
 
 	/**
 	 * Create a Join object

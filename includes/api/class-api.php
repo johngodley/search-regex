@@ -2,30 +2,21 @@
 
 namespace SearchRegex\Api;
 
-require_once __DIR__ . '/class-route.php';
-require_once __DIR__ . '/route/route-search.php';
-require_once __DIR__ . '/route/route-source.php';
-require_once __DIR__ . '/route/route-settings.php';
-require_once __DIR__ . '/route/route-plugin.php';
-require_once __DIR__ . '/route/route-preset.php';
-
 class Api {
 	const SEARCHREGEX_API_NAMESPACE = 'search-regex/v1';
 
 	/**
 	 * Instance variable
-	 *
-	 * @var Api|null
-	 **/
-	private static $instance = null;
+	 */
+	private static ?Api $instance = null;
 
 	/**
 	 * Array of endpoint routes
 	 *
 	 * @var Route[]
 	 * @phpstan-ignore property.onlyWritten
-	 **/
-	private $routes = [];
+	 */
+	private array $routes = [];
 
 	/**
 	 * Create API

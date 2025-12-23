@@ -13,21 +13,19 @@ class Totals {
 	 *
 	 * @var array<string,array{rows: int, matched_rows: int}>
 	 */
-	private $totals = [];
+	private array $totals = [];
 
 	/**
 	 * `true` if we have a regex search anywhere, `false` othewise
-	 *
-	 * @var boolean
 	 */
-	private $has_advanced = false;
+	private bool $has_advanced = false;
 
 	/**
 	 * The grand totals across all sources
 	 *
 	 * @var array{rows: int, matched_rows: int}
 	 */
-	private $grand_totals = [
+	private array $grand_totals = [
 		'rows' => 0,
 		'matched_rows' => 0,
 	];
@@ -40,9 +38,7 @@ class Totals {
 	 */
 	private function set_advanced( array $sources ) {
 		$advanced = array_filter(
-			$sources, function ( $source ) {
-				return $source->has_advanced_filter();
-			}
+			$sources, fn( $source ) => $source->has_advanced_filter()
 		);
 
 		$this->has_advanced = count( $advanced ) > 0;

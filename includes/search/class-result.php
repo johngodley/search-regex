@@ -26,52 +26,46 @@ use SearchRegex\Search;
 class Result {
 	/**
 	 * Row ID
-	 *
-	 * @var int
-	 **/
-	private $row_id;
+	 */
+	private int $row_id;
 
 	/**
 	 * Source type
-	 *
-	 * @var string
-	 **/
-	private $source_type;
+	 */
+	private string $source_type;
 
 	/**
 	 * Source name
-	 *
-	 * @var string
-	 **/
-	private $source_name;
+	 */
+	private string $source_name;
 
 	/**
 	 * A title for the result. e.g. post title
 	 *
-	 * @var string
-	 **/
+	 * @var string|false
+	 */
 	private $result_title;
 
 	/**
 	 * Array of columns with matches
 	 *
 	 * @var Search\Column[]
-	 **/
-	private $columns;
+	 */
+	private array $columns;
 
 	/**
 	 * Raw data for this result
 	 *
 	 * @var string[]
-	 **/
-	private $raw;
+	 */
+	private array $raw;
 
 	/**
 	 * Array of actions that can be performed on this result
 	 *
 	 * @var string[]
-	 **/
-	private $actions = [];
+	 */
+	private array $actions = [];
 
 	/**
 	 * Create the result given a row ID, the Source\Source, a set of columns, and the raw database data.
@@ -87,7 +81,7 @@ class Result {
 		$this->raw = $raw;
 		$this->source_type = $source->get_type( $raw );
 		$this->source_name = $source->get_name( $raw );
-		$this->result_title = isset( $raw[ $source->get_title_column() ] ) ? $raw[ $source->get_title_column() ] : false;
+		$this->result_title = $raw[ $source->get_title_column() ] ?? false;
 		$this->actions = \apply_filters( 'searchregex_result_actions', $source->get_actions( $this ), $this->source_type, $this );
 
 		// Get columns as positional values
@@ -95,14 +89,9 @@ class Result {
 
 		usort(
 			$this->columns, function ( $a, $b ) use ( $schema ) {
-				$a = $schema[ $a->get_column_id() ];
-				$b = $schema[ $b->get_column_id() ];
-
-				if ( $a === $b ) {
-					return 0;
-				}
-
-				return $a < $b ? -1 : 1;
+					$a = $schema[ $a->get_column_id() ];
+					$b = $schema[ $b->get_column_id() ];
+					return $a <=> $b;
 			}
 		);
 	}
@@ -127,12 +116,10 @@ class Result {
 			'columns' => $columns,
 
 			'actions' => $this->actions,
-			'title' => html_entity_decode( $this->result_title ),
+			'title' => $this->result_title !== false ? html_entity_decode( $this->result_title ) : '',
 
 			'match_count' => \array_reduce(
-				$columns, function ( $carry, $column ) {
-					return $carry + $column['match_count'];
-				}, 0
+				$columns, fn( $carry, $column ) => $carry + $column['match_count'], 0
 			),
 		];
 	}

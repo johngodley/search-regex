@@ -14,24 +14,20 @@ namespace SearchRegex\Schema;
 class Source {
 	/**
 	 * Source type
-	 *
-	 * @var string
 	 */
-	private $type = '';
+	private string $type = '';
 
 	/**
 	 * Source table
-	 *
-	 * @var string
 	 */
-	private $table = '';
+	private string $table = '';
 
 	/**
 	 * Array of Column objects
 	 *
 	 * @var Column[]
 	 */
-	private $columns = [];
+	private array $columns = [];
 
 	/**
 	 * Constructor
@@ -64,11 +60,7 @@ class Source {
 	 * @return Column|null
 	 */
 	public function get_column( $column_name ) {
-		if ( isset( $this->columns[ $column_name ] ) ) {
-			return $this->columns[ $column_name ];
-		}
-
-		return null;
+		return $this->columns[ $column_name ] ?? null;
 	}
 
 	/**
@@ -87,9 +79,7 @@ class Source {
 	 */
 	public function get_global_columns() {
 		return array_filter(
-			$this->columns, function ( $column ) {
-				return $column->is_global();
-			}
+			$this->columns, fn( $column ) => $column->is_global()
 		);
 	}
 

@@ -2,8 +2,6 @@
 
 namespace SearchRegex\Plugin;
 
-require_once __DIR__ . '/class-settings-base.php';
-
 class Settings extends Plugin_Settings {
 	/** @var string */
 	const OPTION_NAME = 'searchregex_options';
@@ -76,7 +74,7 @@ class Settings extends Plugin_Settings {
 	public function set_rest_api( $rest_api ) {
 		$rest_api = intval( $rest_api, 10 );
 
-		if ( in_array( $rest_api, array( 0, 1, 2, 3, 4 ), true ) ) {
+		if ( in_array( $rest_api, [ 0, 1, 2, 3, 4 ], true ) ) {
 			$this->settings['rest_api'] = $rest_api;
 		}
 	}

@@ -10,16 +10,13 @@ class From {
 	 * Table name
 	 *
 	 * @readonly
-	 * @var string
 	 */
-	private $table;
+	private string $table;
 
 	/**
 	 * Table alias
-	 *
-	 * @var string|null
 	 */
-	private $alias = null;
+	private ?string $alias = null;
 
 	/**
 	 * Constructor

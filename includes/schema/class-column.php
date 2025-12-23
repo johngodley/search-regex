@@ -19,52 +19,46 @@ namespace SearchRegex\Schema;
 class Column {
 	/**
 	 * Column name
-	 *
-	 * @var string
 	 */
-	private $column = '';
+	private string $column = '';
 
 	/**
 	 * Column type
 	 *
 	 * @var ColumnType
 	 */
-	private $type = 'string';
+	private string $type = 'string';
 
 	/**
 	 * Is this a global column?
-	 *
-	 * @var boolean
 	 */
-	private $global = false;
+	private bool $global = false;
 
 	/**
 	 * Join column, if any
 	 *
 	 * @var string
 	 */
-	private $join = '';
+	private string $join = '';
 
 	/**
 	 * Joined by column
 	 *
 	 * @var string
 	 */
-	private $joined_by = '';
+	private string $joined_by = '';
 
 	/**
 	 * Any options, if this is a member type
 	 *
 	 * @var list<ColumnOption>
 	 */
-	private $options = [];
+	private array $options = [];
 
 	/**
 	 * Source name for this column
-	 *
-	 * @var Source
 	 */
-	private $source;
+	private Source $source;
 
 	/**
 	 * Constructor

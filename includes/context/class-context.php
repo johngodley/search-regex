@@ -2,16 +2,6 @@
 
 namespace SearchRegex\Context;
 
-require_once __DIR__ . '/class-value-type.php';
-require_once __DIR__ . '/context-value.php';
-require_once __DIR__ . '/context-matched.php';
-require_once __DIR__ . '/context-add.php';
-require_once __DIR__ . '/context-delete.php';
-require_once __DIR__ . '/context-pair.php';
-require_once __DIR__ . '/context-empty.php';
-require_once __DIR__ . '/context-replace.php';
-require_once __DIR__ . '/context-text.php';
-
 /**
  * A group of matches within the same area of a column
  *
@@ -24,16 +14,16 @@ abstract class Context {
 	/**
 	 * Context ID
 	 *
-	 * @var Int
-	 **/
-	protected $context_id = 0;
+	 * @var int
+	 */
+	protected int $context_id = 0;
 
 	/**
 	 * Create a Context_String with a given context ID
 	 *
 	 * @param int $context_id Context ID.
 	 */
-	public function __construct( $context_id = 0 ) {
+	public function __construct( int $context_id = 0 ) {
 		$this->context_id = $context_id;
 	}
 

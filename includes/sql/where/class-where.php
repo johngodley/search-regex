@@ -4,14 +4,6 @@ namespace SearchRegex\Sql\Where;
 
 use SearchRegex\Sql;
 
-require_once __DIR__ . '/where-or.php';
-require_once __DIR__ . '/where-and.php';
-require_once __DIR__ . '/where-integer.php';
-require_once __DIR__ . '/where-string.php';
-require_once __DIR__ . '/where-date.php';
-require_once __DIR__ . '/where-in.php';
-require_once __DIR__ . '/where-null.php';
-
 /**
  * SQL WHERE
  */
@@ -20,17 +12,15 @@ class Where {
 	 * Column
 	 *
 	 * @readonly
-	 * @var Sql\Select\Select|null
 	 */
-	protected $column = null;
+	protected ?Sql\Select\Select $column;
 
 	/**
 	 * WHERE logic
 	 *
 	 * @readonly
-	 * @var string
 	 */
-	protected $logic = '=';
+	protected string $logic;
 
 	/**
 	 * WHERE value
@@ -38,7 +28,7 @@ class Where {
 	 * @readonly
 	 * @var string|integer|list<string|int>
 	 */
-	protected $value = '';
+	protected $value;
 
 	/**
 	 * Constructor

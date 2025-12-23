@@ -17,3 +17,4 @@ svn
 # TypeScript declaration files (not needed for WordPress plugin)
 *.d.ts
 *.d.ts.map
+/WARP.md
