@@ -7,7 +7,7 @@ import type { SearchValues } from '../../types/search';
 
 const MAX_PRESETS = 20;
 
-const emptyTag = (): PresetTag => ( { name: '', label: '' } );
+const emptyTag = (): PresetTag => ( { name: '', title: '' } );
 
 interface PresetEditProps {
 	preset: PresetValue;
@@ -69,7 +69,7 @@ function PresetEdit( props: PresetEditProps ) {
 			...presetTags.slice( 0, pos ),
 			{
 				name: value.name ?? existingTag.name,
-				label: value.label ?? existingTag.label,
+				title: value.title ?? existingTag.title,
 			},
 			...presetTags.slice( pos + 1 ),
 		] );
@@ -86,7 +86,7 @@ function PresetEdit( props: PresetEditProps ) {
 	function cleanTags( tagList: PresetTag[] ): PresetTag[] {
 		if ( tagList.length === 1 ) {
 			const firstTag = tagList[ 0 ];
-			if ( firstTag && firstTag.name === '' && firstTag.label === '' ) {
+			if ( firstTag && firstTag.name === '' && firstTag.title === '' ) {
 				return [];
 			}
 		}
@@ -186,9 +186,9 @@ function PresetEdit( props: PresetEditProps ) {
 										<input
 											type="text"
 											placeholder={ __( 'Enter tag title shown to user', 'search-regex' ) }
-											value={ tag.label }
+											value={ tag.title }
 											onChange={ ( ev: ChangeEvent< HTMLInputElement > ) =>
-												changeTag( pos, { label: ev.target.value } )
+												changeTag( pos, { title: ev.target.value } )
 											}
 										/>
 									</label>{ ' ' }
@@ -219,7 +219,7 @@ function PresetEdit( props: PresetEditProps ) {
 
 							<p>
 								{ __(
-									'A tag creates a custom input field. Insert the tag anywhere in the search, replace, text filter, or text action and when the preset is used it will be replaced with a custom text field with the tag label.',
+									'A tag creates a custom input field. Insert the tag anywhere in the search, replace, text filter, or text action and when the preset is used it will be replaced with a custom text field with the tag title.',
 									'search-regex'
 								) }
 							</p>

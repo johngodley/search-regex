@@ -238,7 +238,7 @@ export type SourceCompleteResponse = z.infer< typeof sourceCompleteResponseSchem
  */
 export const presetTagSchema = z.object( {
 	name: z.string(),
-	label: z.string(),
+	title: z.string(),
 } );
 
 /**

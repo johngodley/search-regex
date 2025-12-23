@@ -35,7 +35,7 @@ function getPhraseWithTags( phrase: string, tags: PresetTag[] ): ReactNode[] {
 		for ( let subIndex = 0; subIndex < phraseParts.length; subIndex++ ) {
 			const part = phraseParts[ subIndex ];
 			if ( typeof part === 'string' ) {
-				const replacedTags = replaceTag( part, tag.name, tag.label );
+				const replacedTags = replaceTag( part, tag.name, tag.title );
 				newPhraseParts.push( ...replacedTags );
 			} else {
 				newPhraseParts.push( part );

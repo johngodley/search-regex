@@ -34,12 +34,12 @@ function TaggedPhrases( props: TaggedPhrasesProps ): JSX.Element[] {
 
 	return tags.map( ( tag, pos ) => (
 		<tr className={ clsx( 'searchregex-preset__tag', className ) } key={ tag.name }>
-			<th>{ tag.label }</th>
+			<th>{ tag.title }</th>
 			<td>
 				<input
 					type="text"
 					value={ tagValues[ pos ] }
-					placeholder={ tag.label }
+					placeholder={ tag.title }
 					onChange={ ( ev ) => updateTag( ev.target.value, pos ) }
 					disabled={ disabled }
 				/>

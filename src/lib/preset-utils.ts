@@ -48,7 +48,7 @@ function getLongestTag( tags: PresetTag[] ): number {
 	for ( let index = 0; index < tags.length; index++ ) {
 		const tag = tags[ index ];
 		if ( tag ) {
-			longest = Math.max( longest, tag.label.length );
+			longest = Math.max( longest, tag.title.length );
 		}
 	}
 

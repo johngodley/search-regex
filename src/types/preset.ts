@@ -5,7 +5,7 @@ import type { SearchValues } from './search';
  */
 export interface PresetTag {
 	name: string;
-	label: string;
+	title: string;
 }
 
 /**
