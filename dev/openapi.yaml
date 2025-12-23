@@ -1,0 +1,757 @@
+openapi: 3.0.3
+info:
+  title: Search Regex REST API
+  version: 1.0.0
+  description: WordPress REST API documentation for Search Regex
+servers:
+  - url: https://searchregex.com/wp-json
+    description: Production
+  - url: http://localhost/wp-json
+    description: Local development
+
+tags:
+  - name: Search
+    description: Perform searches across WordPress data sources
+  - name: Preset
+    description: Manage saved search presets
+  - name: Settings
+    description: Manage Search Regex plugin settings
+  - name: Source
+    description: Inspect and modify individual source rows
+
+paths:
+  /search-regex/v1/search:
+    post:
+      tags: [Search]
+      summary: Search
+      description: |
+        Perform a search using Search Regex.
+
+        The search is designed to not timeout and may require multiple requests
+        to retrieve a full set of results.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchQuery'
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResults'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /search-regex/v1/preset:
+    get:
+      tags: [Preset]
+      summary: Get presets
+      description: Get a list of all presets.
+      responses:
+        '200':
+          description: List of presets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    post:
+      tags: [Preset]
+      summary: Create preset
+      description: Create a new preset.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresetCreateRequest'
+      responses:
+        '200':
+          description: Created preset and list of presets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetWithListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /search-regex/v1/preset/import:
+    post:
+      tags: [Preset]
+      summary: Import presets
+      description: Import presets from an uploaded file.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: JSON file containing presets to import.
+      responses:
+        '200':
+          description: Import result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  presets:
+                    $ref: '#/components/schemas/PresetsArray'
+                  import:
+                    type: integer
+                    description: Number of imported presets.
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /search-regex/v1/preset/id/{id}:
+    post:
+      tags: [Preset]
+      summary: Update preset
+      description: Update an existing preset.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Preset ID.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresetCreateRequest'
+      responses:
+        '200':
+          description: Updated preset and list of presets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetWithListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /search-regex/v1/preset/id/{id}/delete:
+    post:
+      tags: [Preset]
+      summary: Delete preset
+      description: Delete an existing preset.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Preset ID.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deletion result and list of presets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetWithListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /search-regex/v1/setting:
+    get:
+      tags: [Settings]
+      summary: Get settings
+      description: Get all Search Regex settings.
+      responses:
+        '200':
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags: [Settings]
+      summary: Update settings
+      description: |
+        Update Search Regex settings. Partial updates are supported and only
+        provided values will be changed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsUpdateRequest'
+      responses:
+        '200':
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /search-regex/v1/source:
+    get:
+      tags: [Source]
+      summary: List sources
+      description: Return all available sources.
+      responses:
+        '200':
+          description: List of sources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SourceInfo'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /search-regex/v1/source/{source}/complete/{column}:
+    get:
+      tags: [Source]
+      summary: Autocomplete
+      description: Return autocomplete suggestions for a given source column.
+      parameters:
+        - name: source
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Source name.
+        - name: column
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Column name.
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Value to autocomplete.
+      responses:
+        '200':
+          description: Autocomplete results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AutocompleteItem'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /search-regex/v1/source/{source}/row/{rowId}:
+    get:
+      tags: [Source]
+      summary: Load row
+      description: Load a row of data from a source.
+      parameters:
+        - name: source
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Source name.
+        - name: rowId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Source row ID.
+      responses:
+        '200':
+          description: Row data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    $ref: '#/components/schemas/ColumnData'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    post:
+      tags: [Source]
+      summary: Save row
+      description: Save a row of data to a source.
+      parameters:
+        - name: source
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Source name.
+        - name: rowId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Source row ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/SearchQuery'
+                - type: object
+                  properties:
+                    replacement:
+                      $ref: '#/components/schemas/Replacement'
+      responses:
+        '200':
+          description: Updated row
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    $ref: '#/components/schemas/SearchResult'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /search-regex/v1/source/{source}/row/{rowId}/delete:
+    post:
+      tags: [Source]
+      summary: Delete row
+      description: Delete a row of data from a source.
+      parameters:
+        - name: source
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Source name.
+        - name: rowId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Source row ID.
+      responses:
+        '200':
+          description: Deletion result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+components:
+  responses:
+    UnauthorizedError:
+      description: You are not authorized to access this API endpoint.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundError:
+      description: Endpoint not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequestError:
+      description: Invalid request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      additionalProperties: true
+
+    SearchQuery:
+      type: object
+      description: Parameters for a search request.
+      properties:
+        page:
+          type: integer
+          minimum: 0
+          default: 0
+        perPage:
+          type: integer
+          minimum: 25
+          maximum: 5000
+          default: 25
+        searchDirection:
+          type: string
+          enum: [forward, backward]
+          default: forward
+        limit:
+          type: integer
+          minimum: 0
+          description: Maximum number of results to return.
+        action:
+          type: string
+          description: Action to perform on the search.
+          enum: [nothing, modify, replace, delete, export, action, '']
+          default: nothing
+        actionOption:
+          type: object
+          description: Options for the action.
+        searchPhrase:
+          type: string
+          description: Global search phrase.
+          default: ''
+        replacement:
+          type: string
+          description: Global replacement value.
+          default: ''
+        searchFlags:
+          type: array
+          description: Flags for the global replacement.
+          items:
+            type: string
+          default: []
+        source:
+          type: array
+          description: Sources to search through.
+          items:
+            type: string
+        view:
+          type: array
+          description: Additional columns to return data for.
+          items:
+            type: string
+        filters:
+          type: array
+          description: Additional column filters.
+          items:
+            type: object
+      required:
+        - source
+
+    SearchResults:
+      type: object
+      description: Results for a Search Regex search.
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+        totals:
+          type: object
+          properties:
+            current:
+              type: integer
+            rows:
+              type: integer
+            matched_rows:
+              type: integer
+        progress:
+          type: object
+          properties:
+            current:
+              type: integer
+            rows:
+              type: integer
+            previous:
+              type: integer
+            next:
+              type: integer
+
+    SearchResult:
+      type: object
+      description: A single search result.
+      properties:
+        row_id:
+          type: integer
+        source_type:
+          type: string
+        source_name:
+          type: string
+        title:
+          type: string
+        match_count:
+          type: integer
+        actions:
+          type: array
+          items:
+            type: object
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              column_id:
+                type: string
+              column_label:
+                type: string
+              context_count:
+                type: integer
+              match_count:
+                type: integer
+              contexts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    context_id:
+                      type: string
+                    type:
+                      type: string
+                      enum: [value, add, delete, empty, keyvalue, replace, string]
+                    context:
+                      type: string
+                    matches:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          pos_id:
+                            type: integer
+                          context_offset:
+                            type: integer
+                          match:
+                            type: string
+                          replacement:
+                            type: string
+                          captures:
+                            type: array
+                            items:
+                              type: string
+                    match_count:
+                      type: integer
+
+    Preset:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        search:
+          $ref: '#/components/schemas/SearchQuery'
+        perPage:
+          type: integer
+          description: Per page values.
+        searchFlags:
+          type: array
+          items:
+            type: string
+        sourceFlags:
+          type: array
+          items:
+            type: string
+        source:
+          type: array
+          items:
+            type: string
+        locked:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              title:
+                type: string
+
+    PresetsArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Preset'
+
+    PresetsResponse:
+      type: object
+      properties:
+        presets:
+          $ref: '#/components/schemas/PresetsArray'
+
+    PresetWithListResponse:
+      type: object
+      properties:
+        current:
+          $ref: '#/components/schemas/Preset'
+        presets:
+          $ref: '#/components/schemas/PresetsArray'
+
+    PresetCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        search:
+          $ref: '#/components/schemas/SearchQuery'
+        locked:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              title:
+                type: string
+      required:
+        - name
+
+    ColumnData:
+      type: array
+      description: Data for a column.
+      items:
+        type: object
+        properties:
+          column:
+            type: string
+          value:
+            type: string
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                key:
+                  type: string
+                value:
+                  type: string
+                value_type:
+                  type: string
+
+    Replacement:
+      type: object
+      description: Replacement data for a source row.
+      properties:
+        column:
+          type: string
+        operation:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+        searchValue:
+          type: array
+          items:
+            type: string
+        replaceValue:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              key:
+                type: string
+              value:
+                type: string
+
+    SettingsResponse:
+      type: object
+      properties:
+        settings:
+          type: object
+          additionalProperties: true
+
+    SettingsUpdateRequest:
+      type: object
+      description: Settings to update.
+      properties:
+        rest_api:
+          type: boolean
+        support:
+          type: boolean
+        defaultPreset:
+          type: string
+        startupMode:
+          type: string
+        startupPreset:
+          type: string
+        update_notice:
+          type: boolean
+      additionalProperties: true
+
+    SourceInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+
+    AutocompleteItem:
+      type: object
+      properties:
+        value:
+          type: string
+        title:
+          type: string

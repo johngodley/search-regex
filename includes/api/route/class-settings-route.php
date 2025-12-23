@@ -8,54 +8,6 @@ use WP_REST_Request;
 use WP_Error;
 
 /**
- * @api {get} /search-regex/v1/setting Get settings
- * @apiVersion 1.0.0
- * @apiName GetSettings
- * @apiDescription Get all settings for Search Regex. This includes user-configurable settings, as well as necessary WordPress settings.
- * @apiGroup Settings
- *
- * @apiUse SettingItem
- * @apiUse 401Error
- * @apiUse 404Error
- */
-
-/**
- * @api {post} /search-regex/v1/setting Update settings
- * @apiVersion 1.0.0
- * @apiName UpdateSettings
- * @apiDescription Update Search Regex settings. Note you can do partial updates, and only the values specified will be changed.
- * @apiGroup Settings
- *
- * @apiParam {Object} settings An object containing all the settings to update
- * @apiParamExample {json} settings:
- *     {
- *       "expire_redirect": 14,
- *       "https": false
- *     }
- *
- * @apiUse SettingItem
- * @apiUse 401Error
- * @apiUse 404Error
- */
-
-/**
- * @apiDefine SettingItem Settings
- * Search Regex settings
- *
- * @apiSuccess {Object[]} settings An object containing all settings
- * @apiSuccess {String} settings.support
- * @apiSuccess {String} settings.rest_api
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "settings": {
- *         "support": false,
- *       }
- *     }
- */
-
-/**
  * Settings API endpoint
  */
 class Settings_Route extends Api\Route {
@@ -105,8 +57,18 @@ class Settings_Route extends Api\Route {
 			$settings->set_is_supported( $params['support'] );
 		}
 
+		// Legacy setting kept for backwards compatibility. New clients
+		// should use startupMode/startupPreset instead.
 		if ( isset( $params['defaultPreset'] ) ) {
 			$settings->set_default_preset( $params['defaultPreset'] );
+		}
+
+		if ( isset( $params['startupMode'] ) ) {
+			$settings->set_startup_mode( $params['startupMode'] );
+		}
+
+		if ( isset( $params['startupPreset'] ) ) {
+			$settings->set_startup_preset( $params['startupPreset'] );
 		}
 
 		if ( isset( $params['update_notice'] ) ) {

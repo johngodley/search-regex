@@ -1,6 +1,5 @@
 node_modules
 .vscode
-api-doc
 vendor
 .DS_Store
 build
@@ -18,3 +17,5 @@ svn
 *.d.ts
 *.d.ts.map
 /WARP.md
+/api-doc.html
+/openapi.html
