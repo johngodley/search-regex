@@ -58,13 +58,49 @@ class Settings extends Plugin_Settings {
 	 */
 	protected function get_defaults() {
 		$defaults = [
-			'support' => false,
-			'rest_api' => self::API_JSON,
+			'support'       => false,
+			'rest_api'      => self::API_JSON,
+			// Legacy option kept for backwards compatibility. New installs should
+			// prefer startupMode/startupPreset instead.
 			'defaultPreset' => 0,
+			// Startup behaviour for the UI. "advanced" preserves existing
+			// behaviour until the user selects a different startup mode.
+			'startupMode'   => 'advanced',
+			// When startupMode is "preset" this contains the preset ID.
+			'startupPreset' => '',
 			'update_notice' => 0,
 		];
 
 		return \apply_filters( 'searchregex_default_options', $defaults );
+	}
+
+	/**
+	 * Settings constructor.
+	 *
+	 * Ensures new startup options are initialised and migrates any legacy
+	 * default preset configuration into the new structure.
+	 *
+	 * @return void
+	 */
+	public function __construct() {
+		parent::__construct();
+
+		// If startupMode has not been initialised yet, migrate from the
+		// legacy defaultPreset option so existing sites keep their behaviour.
+		if ( ! isset( $this->settings['startupMode'] ) ) {
+			$legacy_default = $this->get( 'defaultPreset', 0 );
+
+			if ( ! empty( $legacy_default ) && $legacy_default !== '0' ) {
+				// A preset was previously selected as the default.
+				$this->settings['startupMode']   = 'preset';
+				$this->settings['startupPreset'] = (string) $legacy_default;
+			} else {
+				// No default preset configured – previously this meant the
+				// standard (advanced) UI. Keep that behaviour.
+				$this->settings['startupMode']   = 'advanced';
+				$this->settings['startupPreset'] = '';
+			}
+		}
 	}
 
 	/**
@@ -102,7 +138,59 @@ class Settings extends Plugin_Settings {
 	 * @return void
 	 */
 	public function set_default_preset( $preset_id ) {
+		// Keep legacy behaviour for callers that still use this method, but
+		// avoid accepting arbitrary values.
 		$this->settings['defaultPreset'] = preg_replace( '/[^A-Fa-f0-9]*/', '', $preset_id );
+	}
+
+	/**
+	 * Set startup mode.
+	 *
+	 * @param string $mode Startup mode (simple, advanced, preset).
+	 * @return void
+	 */
+	public function set_startup_mode( $mode ) {
+		$mode = (string) $mode;
+
+		if ( ! in_array( $mode, [ 'simple', 'advanced', 'preset' ], true ) ) {
+			return;
+		}
+
+		$this->settings['startupMode'] = $mode;
+	}
+
+	/**
+	 * Set startup preset id.
+	 *
+	 * @param string $preset_id Preset ID to use when startupMode is "preset".
+	 * @return void
+	 */
+	public function set_startup_preset( $preset_id ) {
+		$this->settings['startupPreset'] = (string) $preset_id;
+	}
+
+	/**
+	 * Get startup mode.
+	 *
+	 * @return string
+	 */
+	public function get_startup_mode() {
+		$mode = $this->get( 'startupMode', 'advanced' );
+
+		if ( ! in_array( $mode, [ 'simple', 'advanced', 'preset' ], true ) ) {
+			return 'advanced';
+		}
+
+		return $mode;
+	}
+
+	/**
+	 * Get startup preset id.
+	 *
+	 * @return string
+	 */
+	public function get_startup_preset() {
+		return (string) $this->get( 'startupPreset', '' );
 	}
 
 	/**

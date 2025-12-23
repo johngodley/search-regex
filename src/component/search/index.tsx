@@ -8,10 +8,20 @@ interface SearchProps {
 	onChange: ( value: string ) => void;
 	className?: string;
 	multiline?: boolean;
+	placeholder?: string;
+	multilinePlaceholder?: string;
 }
 
 function Search( props: SearchProps ): JSX.Element {
-	const { value, onChange, disabled = false, multiline = false, className } = props;
+	const {
+		value,
+		onChange,
+		disabled = false,
+		multiline = false,
+		className,
+		placeholder,
+		multilinePlaceholder,
+	} = props;
 
 	if ( multiline ) {
 		return (
@@ -24,7 +34,9 @@ function Search( props: SearchProps ): JSX.Element {
 				onChange={ ( ev: ChangeEvent< HTMLTextAreaElement > ) => onChange( ev.target.value ) }
 				disabled={ disabled }
 				className={ className }
-				placeholder={ __( 'Enter search phrase', 'search-regex' ) }
+				placeholder={
+					multilinePlaceholder ?? __( 'Enter search phrase', 'search-regex' )
+				}
 			/>
 		);
 	}
@@ -37,7 +49,10 @@ function Search( props: SearchProps ): JSX.Element {
 			disabled={ disabled }
 			onChange={ ( ev: ChangeEvent< HTMLInputElement > ) => onChange( ev.target.value ) }
 			className={ className }
-			placeholder={ __( 'Optional global search phrase. Leave blank to use filters only.', 'search-regex' ) }
+			placeholder={
+				placeholder ??
+				__( 'Optional global search phrase. Leave blank to use filters only.', 'search-regex' )
+			}
 		/>
 	);
 }

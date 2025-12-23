@@ -71,8 +71,11 @@ function SearchActions() {
 	const setIsSaving = useSearchStore( ( state ) => state.setIsSaving );
 	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
 	const setReplaceAll = useSearchStore( ( state ) => state.setReplaceAll );
+	const mode = useSearchStore( ( state ) => state.mode );
 
-	const { action = '', actionOption = {}, replacement = null } = search;
+	const { action: rawAction = '', actionOption = {}, replacement = null } = search;
+	const effectiveAction = mode === 'simple' ? 'replace' : rawAction;
+	const effectiveActionOption = mode === 'simple' ? {} : ( actionOption as ActionOption );
 	const performMutation = useSearch();
 
 	const handlePerform = () => {
@@ -81,9 +84,18 @@ function SearchActions() {
 		setReplaceAll( true );
 		setStatus( STATUS_IN_PROGRESS );
 
+		const payload =
+			mode === 'simple'
+				? {
+					...search,
+					action: 'replace',
+					actionOption: {},
+				}
+				: search;
+
 		performMutation.mutate(
 			{
-				...search,
+				...payload,
 				page: 0,
 				save: true,
 			},
@@ -122,17 +134,17 @@ function SearchActions() {
 				{ resultsDirty ? __( 'Refresh', 'search-regex' ) : __( 'Search', 'search-regex' ) }
 			</Button>
 
-			{ action !== '' && (
+			{ effectiveAction !== '' && (
 				<Button
 					isDestructive
 					disabled={
-						! isPerformReady( action, actionOption, replacement ) ||
+						! isPerformReady( effectiveAction, effectiveActionOption, replacement ) ||
 						status === STATUS_IN_PROGRESS ||
 						isSaving
 					}
 					onClick={ handlePerform }
 				>
-					{ getPerformButton( action ) }
+					{ getPerformButton( effectiveAction ) }
 				</Button>
 			) }
 
