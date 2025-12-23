@@ -1,15 +1,16 @@
-import { useEffect, useState, ChangeEvent } from 'react';
+import { useEffect, useState, useCallback, ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
 import clsx from 'clsx';
 import { Select } from '@wp-plugin-components';
 import { isLocked, hasTags, hasActionTag } from '../../../lib/preset-utils';
 import ModifyColumns from './modify-columns';
 import Modify from '../../../component/schema/modify';
+import Replace from '../../../component/replace';
 import { getActions, getExportOptions } from './constants';
 import { getSearchOptionsForSources, getSchemaSourceColumn } from '../../../lib/search-utils';
 import { useSearchStore } from '../../../stores/search-store';
 import type { PresetValue, PresetTag } from '../../../types/preset';
-import type { ModifyColumn } from '../../../types/search';
+import type { ModifyColumn, SchemaColumn, ResultColumn } from '../../../types/search';
 import './style.scss';
 
 interface ActionOption {
@@ -66,6 +67,14 @@ function Actions( props: ActionsProps ) {
 
 	const actionOptionArray = Array.isArray( actionOption ) ? actionOption : [];
 	const actionOptionObj = ! Array.isArray( actionOption ) ? actionOption : {};
+
+	const setReplace = useCallback(
+		( value: unknown ) => {
+			const replacementValue = ( value as { replacement?: string | null } ).replacement;
+			onSetSearch( { replacement: replacementValue ?? null } );
+		},
+		[ onSetSearch ]
+	);
 
 	useEffect( () => {
 		if ( currentAction && currentAction.disabled && firstAction ) {
@@ -244,13 +253,21 @@ function Actions( props: ActionsProps ) {
 				<tr className="searchregex-search__replace">
 					<th>{ __( 'Replace', 'search-regex' ) }</th>
 					<td>
-						<input
-							type="text"
-							value={ replacement ?? '' }
-							onChange={ ( ev: ChangeEvent< HTMLInputElement > ) =>
-								onSetSearch( { replacement: ev.target.value } )
-							}
+						<Replace
 							disabled={ disabled }
+							setReplace={ setReplace }
+							replacement={ replacement }
+							preset={ preset }
+							schema={ { type: 'string' } as SchemaColumn }
+							column={
+								{
+									column_id: 'global',
+									column_label: __( 'Global', 'search-regex' ),
+									contexts: [],
+									context_count: 0,
+									match_count: 0,
+								} as ResultColumn
+							}
 							placeholder={ __( 'Enter global replacement text', 'search-regex' ) }
 						/>
 					</td>

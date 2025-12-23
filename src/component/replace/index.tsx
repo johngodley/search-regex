@@ -33,12 +33,13 @@ function Replace( props: ReplaceProps ): JSX.Element {
 	};
 
 	useEffect( () => {
-		if ( searchFlags === 'remove' ) {
+		if ( searchFlags === 'remove' && replacement !== null ) {
 			setReplace( { replacement: null } );
-		} else if ( replacement === null ) {
+		} else if ( searchFlags !== 'remove' && replacement === null ) {
 			setReplace( { replacement: '' } );
 		}
-	}, [ searchFlags, replacement, setReplace ] );
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ searchFlags ] );
 
 	return (
 		<>
