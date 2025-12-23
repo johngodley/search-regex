@@ -55,7 +55,7 @@ class SearchTest extends SearchRegex_Api_Test {
 	}
 
 	public function testNoMatchedText() {
-		list( $search, $action ) = $this->get_search_replace( [ 'posts' ], 'zxyw', 'cat', false );
+		[$search, $action] = $this->get_search_replace( [ 'posts' ], 'zxyw', 'cat', false );
 
 		$results = $search->get_search_results( $action, 0, 25 );
 		$expected_totals = [
@@ -75,7 +75,7 @@ class SearchTest extends SearchRegex_Api_Test {
 	}
 
 	public function testSearchSingleSource() {
-		list( $search, $action ) = $this->get_search_replace( [ 'posts' ], 'the', 'cat', false );
+		[$search, $action] = $this->get_search_replace( [ 'posts' ], 'the', 'cat', false );
 
 		$expected_totals = [
 			'rows' => 199,
@@ -100,7 +100,7 @@ class SearchTest extends SearchRegex_Api_Test {
 	}
 
 	public function testSearchMultipleSource() {
-		list( $search, $action ) = $this->get_search_replace( [ 'posts', 'comment' ], 'the', 'cat', false );
+		[$search, $action] = $this->get_search_replace( [ 'posts', 'comment' ], 'the', 'cat', false );
 
 		$expected_totals = [
 			'rows' => 300,
@@ -125,7 +125,7 @@ class SearchTest extends SearchRegex_Api_Test {
 	}
 
 	public function testSearchSingleSourceRegex() {
-		list( $search, $action ) = $this->get_search_replace( [ 'posts' ], 'the\w', 'cat', true );
+		[$search, $action] = $this->get_search_replace( [ 'posts' ], 'the\w', 'cat', true );
 
 		$expected_totals = [
 			'rows' => 199,
@@ -186,7 +186,7 @@ class SearchTest extends SearchRegex_Api_Test {
 	}
 
 	public function testSearchMultipleSourceRegex() {
-		list( $search, $action ) = $this->get_search_replace( [ 'posts', 'comment' ], 'the\w', 'cat', true );
+		[$search, $action] = $this->get_search_replace( [ 'posts', 'comment' ], 'the\w', 'cat', true );
 
 		$expected_totals = [
 			'rows' => 300,
@@ -271,7 +271,7 @@ class SearchTest extends SearchRegex_Api_Test {
 	}
 
 	public function testSearchMultipleSourceRegexLimit() {
-		list( $search, $action ) = $this->get_search_replace( [ 'posts', 'comment' ], 'the\w', 'cat', true );
+		[$search, $action] = $this->get_search_replace( [ 'posts', 'comment' ], 'the\w', 'cat', true );
 
 		$expected = [
 			'current' => 25,

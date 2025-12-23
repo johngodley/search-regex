@@ -2,7 +2,7 @@
 <ruleset name="WordPress Coding Standards for Gutenberg Plugin">
 	<description>Coding standard for Search Regex plugin. Based on WordPress coding standards, but without the annoying Yoda and alignment options</description>
 
-	<config name="testVersion" value="7.2-"/>
+	<config name="testVersion" value="7.4-"/>
 
 	<file>includes/</file>
 	<file>search-regex.php</file>
@@ -35,6 +35,7 @@
 		<exclude name="Squiz.Commenting.FileComment.Missing"/>
 		<exclude name="Squiz.Commenting.ClassComment.Missing"/>
 		<exclude name="Squiz.Commenting.VariableComment.Missing"/>
+		<exclude name="Squiz.Commenting.VariableComment.MissingVar"/>
 		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
 		<exclude name="Squiz.Commenting.FileComment.WrongStyle"/>
 		<exclude name="Squiz.Commenting.FunctionComment.WrongStyle"/>

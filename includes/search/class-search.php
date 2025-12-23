@@ -7,13 +7,6 @@ use SearchRegex\Filter;
 use SearchRegex\Source;
 use WP_Error;
 
-require_once __DIR__ . '/class-match-text.php';
-require_once __DIR__ . '/class-match-column.php';
-require_once __DIR__ . '/class-flags.php';
-require_once __DIR__ . '/class-totals.php';
-require_once __DIR__ . '/class-preset.php';
-require_once __DIR__ . '/class-result.php';
-
 /**
  * Perform a search
  *
@@ -35,8 +28,8 @@ class Search {
 	 * The sources to search across.
 	 *
 	 * @var Source\Source[]
-	 **/
-	private $sources = [];
+	 */
+	private array $sources = [];
 
 	/**
 	 * Create a Search object, with a search value, an array of sources, and some search flags
@@ -110,7 +103,7 @@ class Search {
 			$previous = false;
 		}
 
-		list( $next, $results ) = $this->get_next_results( $totals, $offset, $per_page, $limit, $results );
+		[$next, $results] = $this->get_next_results( $totals, $offset, $per_page, $limit, $results );
 
 		return [
 			'results' => $action->should_save() ? [] : array_values( $results ),
@@ -158,9 +151,7 @@ class Search {
 			$next = min( $new_offset, $next );
 		} else {
 			$results = array_filter(
-				$results, function ( $item ) {
-					return $item !== false;
-				}
+				$results, fn( $item ) => $item !== false
 			);
 		}
 

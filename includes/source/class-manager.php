@@ -22,25 +22,25 @@ class Manager {
 		$sources = [
 			[
 				'name' => 'posts',
-				'class' => 'SearchRegex\Source\Core\Post',
+				'class' => \SearchRegex\Source\Core\Post::class,
 				'label' => __( 'Posts (core & custom)', 'search-regex' ),
 				'type' => 'core',
 			],
 			[
 				'name' => 'comment',
-				'class' => 'SearchRegex\Source\Core\Comment',
+				'class' => \SearchRegex\Source\Core\Comment::class,
 				'label' => __( 'Comments', 'search-regex' ),
 				'type' => 'core',
 			],
 			[
 				'name' => 'user',
-				'class' => 'SearchRegex\Source\Core\User',
+				'class' => \SearchRegex\Source\Core\User::class,
 				'label' => __( 'Users', 'search-regex' ),
 				'type' => 'core',
 			],
 			[
 				'name' => 'options',
-				'class' => 'SearchRegex\Source\Core\Options',
+				'class' => \SearchRegex\Source\Core\Options::class,
 				'label' => __( 'WordPress Options', 'search-regex' ),
 				'type' => 'core',
 			],
@@ -58,25 +58,25 @@ class Manager {
 		$sources = [
 			[
 				'name' => 'post-meta',
-				'class' => 'SearchRegex\Source\Core\Post_Meta',
+				'class' => \SearchRegex\Source\Core\Post_Meta::class,
 				'label' => __( 'Post Meta', 'search-regex' ),
 				'type' => 'advanced',
 			],
 			[
 				'name' => 'comment-meta',
-				'class' => 'SearchRegex\Source\Core\Comment_Meta',
+				'class' => \SearchRegex\Source\Core\Comment_Meta::class,
 				'label' => __( 'Comment Meta', 'search-regex' ),
 				'type' => 'advanced',
 			],
 			[
 				'name' => 'user-meta',
-				'class' => 'SearchRegex\Source\Core\User_Meta',
+				'class' => \SearchRegex\Source\Core\User_Meta::class,
 				'label' => __( 'User Meta', 'search-regex' ),
 				'type' => 'advanced',
 			],
 			[
 				'name' => 'terms',
-				'class' => 'SearchRegex\Source\Core\Terms',
+				'class' => \SearchRegex\Source\Core\Terms::class,
 				'label' => __( 'Terms', 'search-regex' ),
 				'type' => 'advanced',
 			],
@@ -103,21 +103,18 @@ class Manager {
 			}
 		}
 
+		/** @var list<array<string, mixed>> $plugin_sources */
 		$plugin_sources = apply_filters( 'searchregex_sources_plugin', [] );
 		$plugin_sources = array_map(
-			function ( $source ) {
-				$source['type'] = 'plugin';
-				return $source;
-			}, $plugin_sources
+			fn( $source ) => array_merge( $source, [ 'type' => 'plugin' ] ),
+			$plugin_sources
 		);
 
-		return array_values(
-			array_merge(
-				array_values( $core_sources ),
-				array_values( $advanced_sources ),
-				array_values( $plugin_sources )
-			)
+		/** @var list<SourceConfig> $result */
+		$result = array_values(
+			array_merge( array_values( $core_sources ), array_values( $advanced_sources ), array_values( $plugin_sources ) )
 		);
+		return $result;
 	}
 
 	/**
@@ -157,9 +154,7 @@ class Manager {
 				'label' => __( 'Standard', 'search-regex' ),
 				'sources' => array_values(
 					array_filter(
-						$sources, function ( $source ) {
-							return $source['type'] === 'core';
-						}
+						$sources, fn( $source ) => $source['type'] === 'core'
 					)
 				),
 			],
@@ -168,9 +163,7 @@ class Manager {
 				'label' => __( 'Advanced', 'search-regex' ),
 				'sources' => array_values(
 					array_filter(
-						$sources, function ( $source ) {
-							return $source['type'] === 'advanced';
-						}
+						$sources, fn( $source ) => $source['type'] === 'advanced'
 					)
 				),
 			],
@@ -179,9 +172,7 @@ class Manager {
 				'label' => __( 'Plugins', 'search-regex' ),
 				'sources' => array_values(
 					array_filter(
-						$sources, function ( $source ) {
-							return $source['type'] === 'plugin';
-						}
+						$sources, fn( $source ) => $source['type'] === 'plugin'
 					)
 				),
 			],
@@ -189,9 +180,7 @@ class Manager {
 
 		return array_values(
 			array_filter(
-				apply_filters( 'searchregex_source_groups', $groups ), function ( $group ) {
-					return count( $group['sources'] ) > 0;
-				}
+				apply_filters( 'searchregex_source_groups', $groups ), fn( $group ) => count( $group['sources'] ) > 0
 			)
 		);
 	}
@@ -210,9 +199,7 @@ class Manager {
 			if ( $handler['name'] === $source ) {
 				// Only use the filters for this source
 				$filters = array_filter(
-					$filters, function ( $filter ) use ( $source ) {
-						return $filter->is_for_source( $source );
-					}
+					$filters, fn( $filter ) => $filter->is_for_source( $source )
 				);
 
 				// Create the source
@@ -234,9 +221,8 @@ class Manager {
 		$sources = self::get_all_sources();
 
 		return array_map(
-			function ( $source ) {
-				return $source['name'];
-			}, $sources
+			fn( $source ) => $source['name'],
+			$sources
 		);
 	}
 

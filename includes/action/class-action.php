@@ -7,31 +7,19 @@ use SearchRegex\Schema;
 use SearchRegex\Source;
 use SearchRegex\Search;
 
-require_once __DIR__ . '/action-nothing.php';
-require_once __DIR__ . '/action-modify.php';
-require_once __DIR__ . '/action-delete.php';
-require_once __DIR__ . '/action-export.php';
-require_once __DIR__ . '/action-run.php';
-require_once __DIR__ . '/action-global-replace.php';
-require_once __DIR__ . '/class-dynamic-column.php';
-
 /**
  * Perform an action on a result
  */
 abstract class Action {
 	/**
 	 * Schema
-	 *
-	 * @var Schema\Source
 	 */
-	protected $schema;
+	protected Schema\Source $schema;
 
 	/**
 	 * Should this action save data to the database?
-	 *
-	 * @var bool
 	 */
-	protected $save = false;
+	protected bool $save = false;
 
 	/**
 	 * Constructor
@@ -166,6 +154,6 @@ abstract class Action {
 			];
 		}
 
-		return isset( $options['actionOption'] ) ? $options['actionOption'] : [];
+		return $options['actionOption'] ?? [];
 	}
 }

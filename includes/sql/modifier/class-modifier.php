@@ -4,8 +4,6 @@ namespace SearchRegex\Sql\Modifier;
 
 use SearchRegex\Sql;
 
-require_once __DIR__ . '/class-count.php';
-
 /**
  * Modifies an SQL query
  */
@@ -27,7 +25,8 @@ class Modifier {
 					return false;
 				},
 				$queries
-			)
+			),
+			fn( $v ) => $v !== false
 		);
 
 		return array_values( $queries );
@@ -43,10 +42,8 @@ class Modifier {
 	protected function get_joins( array $joins, $column ) {
 		return $this->get_queries(
 			array_map(
-				function ( $join ) use ( $column ) {
-					// @phpstan-ignore method.dynamicName
-					return $join->$column();
-				},
+				// @phpstan-ignore method.dynamicName
+				fn( $join ) => $join->$column(),
 				$joins
 			)
 		);

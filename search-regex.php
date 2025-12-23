@@ -3,20 +3,12 @@
 Plugin Name: Search Regex
 Plugin URI: https://searchregex.com/
 Description: Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support
-Version: 3.2
+Version: 3.3.0
 Author: John Godley
-Requires PHP: 7.2
-Requires at least: 6.4
+Requires PHP: 7.4
+Requires at least: 6.5
 Text Domain: search-regex
 ============================================================================================================
-This software is provided "as is" and any express or implied warranties, including, but not limited to, the
-implied warranties of merchantibility and fitness for a particular purpose are disclaimed. In no event shall
-the copyright owner or contributors be liable for any direct, indirect, incidental, special, exemplary, or
-consequential damages(including, but not limited to, procurement of substitute goods or services; loss of
-use, data, or profits; or business interruption) however caused and on any theory of liability, whether in
-contract, strict liability, or tort(including negligence or otherwise) arising in any way out of the use of
-this software, even if advised of the possibility of such damage.
-
 For full license details see license.txt
 ============================================================================================================
 */
@@ -43,58 +35,15 @@ if ( version_compare( phpversion(), '7.2' ) < 0 ) {
 	return;
 }
 
-require_once __DIR__ . '/build/search-regex-version.php';
-require_once __DIR__ . '/includes/plugin/class-settings.php';
-require_once __DIR__ . '/includes/plugin/class-capabilities.php';
+require_once __DIR__ . '/search-regex-loader.php';
 
-/**
- * Is the request for WP CLI?
- *
- * @return bool
- */
-function searchregex_is_wpcli() {
-	if ( defined( 'WP_CLI' ) && WP_CLI ) {
-		return true;
-	}
-
-	return false;
-}
-
-/**
- * Is the request for Search Regex admin?
- *
- * @return bool
- */
-function searchregex_is_admin() {
-	if ( is_admin() ) {
-		return true;
-	}
-
-	return false;
-}
-
-/**
- * Start the Search Regex REST API
- *
- * @return void
- */
-function searchregex_start_rest() {
-	require_once __DIR__ . '/includes/search-regex-admin.php';
-	require_once __DIR__ . '/includes/api/class-api.php';
-
-	SearchRegex\Api\Api::init();
+if ( is_admin() ) {
 	SearchRegex\Admin\Admin::init();
-
-	remove_action( 'rest_api_init', 'searchregex_start_rest' );
+} elseif ( defined( 'WP_CLI' ) && WP_CLI ) {
+	// Trigger autoloader
+	class_exists( SearchRegex\Cli\Search_Regex_CLI::class );
 }
 
-if ( searchregex_is_admin() || searchregex_is_wpcli() ) {
-	require_once __DIR__ . '/includes/search-regex-admin.php';
-	require_once __DIR__ . '/includes/api/class-api.php';
-}
-
-if ( searchregex_is_wpcli() ) {
-	require_once __DIR__ . '/includes/search-regex-cli.php';
-}
-
-add_action( 'rest_api_init', 'searchregex_start_rest' );
+add_action( 'rest_api_init', function () {
+	SearchRegex\Api\Api::init();
+} );

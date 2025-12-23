@@ -1,4 +1,4 @@
-@import "global.scss";
+@use "global" as *;
 
 .react-error h1,
 .react-loading h1 {

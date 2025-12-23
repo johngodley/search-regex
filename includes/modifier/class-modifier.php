@@ -7,12 +7,6 @@ use SearchRegex\Modifier\Value;
 use SearchRegex\Search;
 use SearchRegex\Source;
 
-require_once __DIR__ . '/modifier-string.php';
-require_once __DIR__ . '/modifier-member.php';
-require_once __DIR__ . '/modifier-integer.php';
-require_once __DIR__ . '/modifier-date.php';
-require_once __DIR__ . '/modifier-keyvalue.php';
-
 /**
  * Modify a column
  *
@@ -28,17 +22,13 @@ require_once __DIR__ . '/modifier-keyvalue.php';
 abstract class Modifier {
 	/**
 	 * Operation to perform
-	 *
-	 * @var string|null
 	 */
-	protected $operation = null;
+	protected ?string $operation = null;
 
 	/**
 	 * Schema
-	 *
-	 * @var Schema\Column
 	 */
-	protected $schema;
+	protected Schema\Column $schema;
 
 	/**
 	 * Constructor
@@ -95,11 +85,7 @@ abstract class Modifier {
 	 * @return string|false
 	 */
 	public function get_row_data( array $row ) {
-		if ( isset( $row[ $this->get_column_name() ] ) ) {
-			return $row[ $this->get_column_name() ];
-		}
-
-		return false;
+		return $row[ $this->get_column_name() ] ?? false;
 	}
 
 	/**
@@ -110,7 +96,7 @@ abstract class Modifier {
 	 * @return Modifier|null
 	 */
 	public static function create( $option, Schema\Source $schema ) {
-		$column = $schema->get_column( isset( $option['column'] ) ? $option['column'] : '' );
+		$column = $schema->get_column( $option['column'] ?? '' );
 		if ( ! $column ) {
 			return null;
 		}

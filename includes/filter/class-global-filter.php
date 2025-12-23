@@ -14,9 +14,8 @@ class Global_Filter extends Filter {
 	 * Global search phrase
 	 *
 	 * @readonly
-	 * @var string
 	 */
-	private $search_phrase = '';
+	private string $search_phrase;
 
 	/**
 	 * Global search flags
@@ -24,7 +23,7 @@ class Global_Filter extends Filter {
 	 * @readonly
 	 * @var string[]
 	 */
-	private $search_flags = [];
+	private array $search_flags;
 
 	/**
 	 * Constructor
@@ -79,13 +78,12 @@ class Global_Filter extends Filter {
 			$items[] = new Type\Filter_String( $filter, $column );
 		}
 
-		return array_merge(
-			$items, array_filter(
-				$this->items, function ( $item ) use ( $source ) {
-					return $item->get_schema()->get_type() === $source->get_type();
-				}
-			)
-		);
+		return [
+			...$items,
+			...array_filter(
+				$this->items, fn( $item ) => $item->get_schema()->get_type() === $source->get_type()
+			),
+		];
 	}
 
 	public function has_column( $column, Schema\Column $schema ) {

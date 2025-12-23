@@ -1,0 +1,19 @@
+// SEARCHREGEX_VERSION is declared globally in types/search-regex-i18n.ts
+
+export function getErrorLinks() {
+	return {
+		url: 'https://searchregex.com/support/problems/rest-api/#url',
+		http: 'https://searchregex.com/support/problems/rest-api/#http',
+		api: 'https://searchregex.com/support/problems/rest-api/',
+		rootUrl: SearchRegexi10n.api.WP_API_root,
+		siteHealth: SearchRegexi10n.api.site_health,
+	};
+}
+
+export function getErrorDetails(): string[] {
+	return SearchRegexi10n.versions.split( '\n' ).concat( [ 'Query: ' + document.location.search ] );
+}
+
+export function getCacheBuster(): string {
+	return 'Buster: ' + SEARCHREGEX_VERSION + ' === ' + SearchRegexi10n.version;
+}

@@ -2,12 +2,16 @@ parameters:
 	level: 8
 	paths:
 		- search-regex.php
+		- search-regex-loader.php
+		- build/search-regex-version.php
 		- includes
 	scanFiles:
 		- dev/stubs.php
 	excludePaths:
 		- vendor
-	phpVersion: 70200
+	phpVersion: 70400
+	reportUnmatchedIgnoredErrors: false
+	treatPhpDocTypesAsCertain: false
 
 	parallel:
 		maximumNumberOfProcesses: 4
@@ -42,3 +46,6 @@ parameters:
 			identifier: booleanAnd.rightNotBoolean
 		-
 			identifier: booleanAnd.leftNotBoolean
+		-
+			message: '#Property SearchRegex\\Plugin\\Plugin_Settings::\$settings \(array<string, mixed>\) does not accept array<int, mixed>\.#'
+			path: 'includes/plugin/class-plugin-settings.php'

@@ -23,14 +23,14 @@ class Convert_Values {
 
 		if ( method_exists( $this, $func ) ) {
 			// @phpstan-ignore method.dynamicName
-			return $this->$func( $column, $value );
+			return $this->$func( $column, is_string( $value ) ? $value : (string) $value );
 		}
 
 		$func = 'get_' . $column->get_type();
 
 		if ( method_exists( $this, $func ) ) {
 			// @phpstan-ignore method.dynamicName
-			return $this->$func( $column, $value );
+			return $this->$func( $column, is_string( $value ) ? $value : (string) $value );
 		}
 
 		return (string) $value;
@@ -146,6 +146,10 @@ class Convert_Values {
 	 * @return string
 	 */
 	public function get_date( $column, $value ) {
-		return gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), intval( mysql2date( 'U', $value ), 10 ) );
+		$timestamp = mysql2date( 'U', $value );
+		if ( $timestamp === false ) {
+			return $value;
+		}
+		return gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), intval( $timestamp, 10 ) );
 	}
 }

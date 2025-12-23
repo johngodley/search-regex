@@ -8,26 +8,11 @@ use SearchRegex\Search;
 use SearchRegex\Filter;
 use SearchRegex\Context;
 
-require_once __DIR__ . '/class-manager.php';
-require_once __DIR__ . '/class-convert-values.php';
-require_once __DIR__ . '/class-autocomplete.php';
-require_once __DIR__ . '/trait-has-meta.php';
-require_once __DIR__ . '/trait-has-terms.php';
-require_once __DIR__ . '/core/source-meta.php';
-require_once __DIR__ . '/core/source-post.php';
-require_once __DIR__ . '/core/source-post-meta.php';
-require_once __DIR__ . '/core/source-user.php';
-require_once __DIR__ . '/core/source-user-meta.php';
-require_once __DIR__ . '/core/source-terms.php';
-require_once __DIR__ . '/core/source-comment.php';
-require_once __DIR__ . '/core/source-comment-meta.php';
-require_once __DIR__ . '/core/source-options.php';
-
 /**
  * Represents a source of data that can be searched. Typically maps directly to a database table
  *
- * @phpstan-import-type MetaItem from HasMeta
- * @phpstan-import-type TermItem from HasTerms
+ * @phpstan-import-type MetaItem from Has_Meta
+ * @phpstan-import-type TermItem from Has_Terms
  * @phpstan-type PostActions array{edit?: string, view?: string}
  * @phpstan-type RowColumn array{column: string, value?: mixed, items?: list<MetaItem|TermItem>}
  */
@@ -39,21 +24,17 @@ abstract class Source {
 	 *
 	 * @var array<Filter\Filter>
 	 */
-	protected $filters;
+	protected array $filters;
 
 	/**
 	 * The source type
-	 *
-	 * @var string
-	 **/
-	protected $source_type;
+	 */
+	protected string $source_type;
 
 	/**
 	 * The source type name
-	 *
-	 * @var string
-	 **/
-	protected $source_name;
+	 */
+	protected string $source_name;
 
 	/**
 	 * Create a Source\Source object
@@ -63,8 +44,8 @@ abstract class Source {
 	 */
 	public function __construct( array $handler, array $filters ) {
 		$this->filters = $filters;
-		$this->source_type = isset( $handler['name'] ) ? $handler['name'] : 'unknown';
-		$this->source_name = isset( $handler['label'] ) ? $handler['label'] : $this->source_type;
+		$this->source_type = $handler['name'] ?? 'unknown';
+		$this->source_name = $handler['label'] ?? $this->source_type;
 	}
 
 	/**
@@ -103,7 +84,7 @@ abstract class Source {
 	 * @return list<Filter\Filter> Filter\Filter objects
 	 */
 	public function get_search_filters() {
-		return $this->filters;
+		return array_values( $this->filters );
 	}
 
 	/**
@@ -250,9 +231,8 @@ abstract class Source {
 		);
 
 		$columns = array_map(
-			function ( $column ) {
-				return $column['column'];
-			}, $columns
+			fn( $column ) => $column['column'],
+			$columns
 		);
 
 		// Known query
@@ -357,12 +337,12 @@ abstract class Source {
 	 * @return Sql\Select\Select[] SQL string
 	 */
 	protected function get_query_selects() {
-		return array_merge(
+		return [
 			// Table ID column
-			[ new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ) ],
+			new Sql\Select\Select( Sql\Value::table( $this->get_table_name() ), Sql\Value::column( $this->get_table_id() ) ),
 			// Any extra 'info' columns
-			$this->get_info_columns()
-		);
+			...$this->get_info_columns(),
+		];
 	}
 
 	/**
@@ -371,7 +351,7 @@ abstract class Source {
 	 * @return list<Filter\Filter>
 	 */
 	public function get_filters() {
-		return $this->filters;
+		return array_values( $this->filters );
 	}
 
 	/**
@@ -392,9 +372,7 @@ abstract class Source {
 		$schema = $this->get_schema_for_source();
 		$values = range( 0, count( $schema['columns'] ) - 1 );
 		$keys = array_map(
-			function ( $column ) {
-				return $column['column'];
-			}, $schema['columns']
+			fn( $column ) => $column['column'], $schema['columns']
 		);
 
 		$result = array_combine( $keys, $values );
@@ -466,7 +444,6 @@ abstract class Source {
 	public function convert_result_value( Schema\Column $schema, $value ) {
 		if ( $schema->get_options() ) {
 			foreach ( $schema->get_options() as $option ) {
-				// @phpstan-ignore identical.alwaysFalse
 				if ( $option['value'] === $value || intval( $option['value'], 10 ) === $value ) {
 					return $option['label'];
 				}

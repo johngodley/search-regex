@@ -1,4 +1,4 @@
-@import "../../../global.scss";
+@use "../../../global" as *;
 
 .tablenav-pages {
 	display: flex;

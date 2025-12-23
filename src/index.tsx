@@ -1,21 +1,11 @@
-/**
- * External dependencies
- */
 import { createRoot } from 'react-dom/client';
-import { setDefaultLocale } from 'react-datepicker';
-
-/**
- * Internal dependencies
- */
-
 import App from './app';
 import './style.scss';
 
-function show( dom: string ) {
+function show( dom: string ): void {
 	const element = document.getElementById( dom );
 	if ( element ) {
 		const root = createRoot( element );
-
 		root.render( <App /> );
 	}
 }
@@ -27,8 +17,9 @@ if ( document.querySelector( '#react-ui' ) ) {
 		migrate.remove();
 	}
 
-	setDefaultLocale( SearchRegexi10n.locale.replace( '_', '' ) );
+	// ✨ Locale handling moved to DatePicker component
+	// No need for react-datepicker locale setup
 	show( 'react-ui' );
 }
 
-window.searchregex = SearchRegexi10n.version;
+( window as any ).searchregex = SearchRegexi10n.version;

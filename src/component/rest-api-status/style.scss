@@ -1,8 +1,28 @@
-@import "../../global";
+@use "../../global" as *;
 
 .api-result-retry {
 	float: right;
 	clear: both;
+}
+
+button.api-result-hide {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	color: #2271b1;
+	text-decoration: underline;
+	font: inherit;
+}
+
+button.api-result-hide:hover {
+	color: #135e96;
+}
+
+button.api-result-hide:focus {
+	outline: 1px dotted;
+	outline: 5px auto -webkit-focus-ring-color;
 }
 
 .api-result-log {
@@ -46,9 +66,6 @@
 	pre {
 		background-color: #ccc;
 		padding: 10px 15px;
-	}
-
-	pre {
 		font-family: 'Courier New', Courier, monospace;
 	}
 

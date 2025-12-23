@@ -106,9 +106,7 @@ class Capabilities {
 		$caps = self::get_every_capability();
 
 		$caps = array_filter(
-			$caps, function ( $cap ) {
-				return self::has_access( $cap );
-			}
+			$caps, fn( $cap ) => self::has_access( $cap )
 		);
 
 		return array_values( apply_filters( self::FILTER_ALL, $caps ) );

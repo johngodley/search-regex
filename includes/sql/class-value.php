@@ -11,9 +11,8 @@ class Value {
 	 * Underlying value
 	 *
 	 * @readonly
-	 * @var string
 	 */
-	private $value;
+	private string $value;
 
 	/**
 	 * Constructor

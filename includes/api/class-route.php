@@ -175,20 +175,20 @@ class Route {
 	 * @param string        $method Method name.
 	 * @param string        $callback Function name.
 	 * @param callable|bool $permissions Permissions callback.
-	 * @return array<string, mixed>{methods: string, callback: callable, permission_callback: callable|bool} Route detials
+	 * @return array<string, mixed>
 	 */
 	public function get_route( $method, $callback, $permissions = false ) {
-		return [
-			'methods' => $method,
-			'callback' => [ $this, $callback ],
-			'permission_callback' => $permissions ? $permissions : [ $this, 'permission_callback' ],
-		];
+			return [
+				'methods' => $method,
+				'callback' => [ $this, $callback ],
+				'permission_callback' => $permissions !== false ? $permissions : [ $this, 'permission_callback' ],
+			];
 	}
 
 	/**
 	 * Return API search args
 	 *
-	 * @return array<string, mixed><string, array>
+	 * @return array<string, array<string, mixed>>
 	 */
 	protected function get_search_params() {
 		return [
@@ -255,7 +255,7 @@ class Route {
 		$filters = isset( $params['filters'] ) ? Filter\Filter::create( $params['filters'], $schema ) : [];
 
 		// Create the actions for the search
-		$action = Action\Action::create( isset( $params['action'] ) ? $params['action'] : '', Action\Action::get_options( $params ), $schema );
+		$action = Action\Action::create( $params['action'] ?? '', Action\Action::get_options( $params ), $schema );
 
 		// Convert global search to filters
 		if ( isset( $params['searchPhrase'] ) && $params['searchPhrase'] ) {
@@ -270,7 +270,7 @@ class Route {
 		// Add any view columns
 		$columns = $action->get_view_columns();
 		if ( isset( $params['view'] ) ) {
-			$columns = array_unique( array_merge( $columns, $params['view'] ) );
+			$columns = array_unique( [ ...$columns, ...$params['view'] ] );
 		}
 
 		$filters = Filter\Filter::get_missing_column_filters( $schema, $filters, $columns );
@@ -298,7 +298,7 @@ class Route {
 			return true;
 		}
 
-		return new WP_Error( 'rest_invalid_param', 'Invalid search flag detected', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid search flag detected', [ 'status' => 400 ] );
 	}
 
 	/**
@@ -314,14 +314,14 @@ class Route {
 			foreach ( $value as $view ) {
 				$parts = explode( '__', $view );
 				if ( count( $parts ) !== 2 ) {
-					return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
+					return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', [ 'status' => 400 ] );
 				}
 			}
 
 			return true;
 		}
 
-		return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', [ 'status' => 400 ] );
 	}
 
 	/**
@@ -337,7 +337,7 @@ class Route {
 			return true;
 		}
 
-		return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid view parameter', [ 'status' => 400 ] );
 	}
 
 	/**
@@ -359,16 +359,14 @@ class Route {
 		}
 
 		$valid = array_filter(
-			$value, function ( $item ) use ( $allowed ) {
-				return array_search( $item, $allowed, true ) !== false;
-			}
+			$value, fn( $item ) => array_search( $item, $allowed, true ) !== false
 		);
 
 		if ( count( $valid ) === count( $value ) ) {
 			return true;
 		}
 
-		return new WP_Error( 'rest_invalid_param', 'Invalid source detected', array( 'status' => 400 ) );
+		return new WP_Error( 'rest_invalid_param', 'Invalid source detected', [ 'status' => 400 ] );
 	}
 
 	/**
