@@ -2,16 +2,14 @@ openapi: 3.0.3
 info:
   title: Search Regex REST API
   version: 1.0.0
-  description: WordPress REST API documentation for Search Regex
-servers:
-  - url: https://searchregex.com/wp-json
-    description: Production
-  - url: http://localhost/wp-json
-    description: Local development
+  description: WordPress API documentation for Search Regex. This API is used to interact with the Search Regex plugin via the WordPress REST API, and allows you to perform searches, manage presets, and more. All requests must be authenticated by someone with manage_options capabilities. See the [REST API authentication guide](https://developer.wordpress.org/rest-api/using-the-rest-api/authentication/).
+  servers:
+    - url: https://searchregex.com/wp-json
+      description: Production
 
 tags:
   - name: Search
-    description: Perform searches across WordPress data sources
+    description: Perform searches across WordPress data sources.
   - name: Preset
     description: Manage saved search presets
   - name: Settings

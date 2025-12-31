@@ -17,5 +17,3 @@ svn
 *.d.ts
 *.d.ts.map
 /WARP.md
-/api-doc.html
-/openapi.html
