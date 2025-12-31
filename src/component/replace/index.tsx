@@ -16,7 +16,7 @@ interface ReplaceProps {
 }
 
 function Replace( props: ReplaceProps ): JSX.Element {
-	const { disabled, replacement, setReplace } = props;
+	const { disabled, replacement, setReplace, placeholder } = props;
 	const [ searchFlags, setFlags ] = useState( 'single' );
 	const value = {
 		id: 'replace',
@@ -25,7 +25,7 @@ function Replace( props: ReplaceProps ): JSX.Element {
 		placeholder:
 			searchFlags === 'remove'
 				? __( 'Matched values will be removed', 'search-regex' )
-				: __( 'Enter replacement value', 'search-regex' ),
+				: placeholder ?? __( 'Enter replacement value', 'search-regex' ),
 		name: 'replace',
 		onChange: ( ev: ChangeEvent< HTMLInputElement | HTMLTextAreaElement > ) => {
 			setReplace( { replacement: ev.target.value } );

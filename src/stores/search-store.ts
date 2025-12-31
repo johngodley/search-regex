@@ -4,7 +4,7 @@ import type { SearchValues, SearchSourceGroup, Schema, Result } from '../types/s
 import type { PresetValue } from '../types/preset';
 import getPreload from '../lib/preload';
 import getValidatedSearch, { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from '../lib/search-utils';
-import type { SearchResponse } from '../lib/api-schemas';
+import type { SearchResponse, SettingsValues } from '../lib/api-schemas';
 
 interface SearchTotals {
 	matched_rows: number;
@@ -80,11 +80,26 @@ export function convertToSearchProgress( data: {
 function getInitialSearch( presets: PresetValue[] ): SearchValues {
 	const query = getPageUrl();
 	const defaultSearch = getDefaultSearch();
-	const defaultPresetId = SearchRegexi10n.settings?.defaultPreset;
+
+	const settings = SearchRegexi10n.settings as SettingsValues | undefined;
+	let startupMode: SettingsValues[ 'startupMode' ] | undefined = settings?.startupMode;
+	let startupPresetId: string | undefined = settings?.startupPreset;
+
+	// Backwards compatibility: fall back to legacy defaultPreset if
+	// startupMode has not been initialised yet.
+	if ( ! startupMode && settings && ( settings as any ).defaultPreset !== undefined ) {
+		const legacyDefault = ( settings as any ).defaultPreset;
+		if ( legacyDefault ) {
+			startupMode = 'preset';
+			startupPresetId = String( legacyDefault );
+		}
+	}
+
 	const presetSearch = getSearchFromPreset(
 		presets.find(
 			( item ) =>
-				item.id === query.preset || ( defaultPresetId !== undefined && item.id === String( defaultPresetId ) )
+				item.id === query.preset ||
+				( startupMode === 'preset' && startupPresetId && item.id === startupPresetId )
 		) as any
 	);
 	const querySearch = getQuerySearchParams();
@@ -102,6 +117,10 @@ interface SearchStore {
 	// Search form values
 	search: SearchValues;
 	setSearch: ( search: Partial< SearchValues > ) => void;
+
+	// UI mode (Simple vs Advanced)
+	mode: 'simple' | 'advanced';
+	setMode: ( mode: 'simple' | 'advanced' ) => void;
 
 	// Search results
 	results: Result[];
@@ -154,6 +173,9 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => ( {
 	// Note: This will be updated by initialize() when presets are loaded,
 	// but we want query params to work even before presets load
 	search: getInitialSearch( [] ) as SearchValues,
+	// Current UI mode. If startupMode is "simple" we start in simple mode,
+	// otherwise we default to advanced.
+	mode: ( SearchRegexi10n.settings as SettingsValues | undefined )?.startupMode === 'simple' ? 'simple' : 'advanced',
 	results: [],
 	status: null,
 	isSaving: false,
@@ -181,6 +203,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => ( {
 	setResults: ( results ) => set( { results } ),
 	setStatus: ( status ) => set( { status } ),
 	setIsSaving: ( isSaving ) => set( { isSaving } ),
+	setMode: ( mode ) => set( { mode } ),
 	setCanCancel: ( canCancel ) => set( { canCancel } ),
 	setTotals: ( totals ) => set( { totals } ),
 	setProgress: ( progress ) => set( { progress } ),

@@ -20,14 +20,40 @@ function OptionsForm() {
 	const { data: values } = useSettings() as { data: SettingsValues | undefined };
 	const { mutate: saveSettings, isPending } = useSaveSettings();
 	const { data: presets = [] } = usePresets();
-	const [ defaultPreset, setDefaultPreset ] = useState< string >( values?.defaultPreset ?? '0' );
+
+	// Single selection representing the startup behaviour – either a mode
+	// (simple/advanced) or a specific preset id.
+	const [ startupSelection, setStartupSelection ] = useState< string >( () => {
+		if ( ! values ) {
+			return 'advanced';
+		}
+
+		if ( values.startupMode === 'preset' && values.startupPreset ) {
+			return values.startupPreset;
+		}
+
+		return values.startupMode;
+	} );
 	const [ restApi, setApi ] = useState< number >( values?.rest_api ?? 0 );
 
 	function onSubmit( ev: FormEvent< HTMLFormElement > ) {
 		ev.preventDefault();
 
+		let startupMode: SettingsValues[ 'startupMode' ] = 'advanced';
+		let startupPreset: string | undefined;
+
+		if ( startupSelection === 'simple' || startupSelection === 'advanced' ) {
+			startupMode = startupSelection;
+			startupPreset = '';
+		} else {
+			startupMode = 'preset';
+			startupPreset = startupSelection;
+		}
+
 		saveSettings( {
-			defaultPreset,
+			startupMode,
+			// Always send startupPreset so the server state stays consistent
+			startupPreset,
 			rest_api: restApi,
 		} );
 	}
@@ -39,21 +65,28 @@ function OptionsForm() {
 	return (
 		<form onSubmit={ onSubmit }>
 			<Table className="form-table">
-				<TableRow title={ __( 'Default Preset', 'search-regex' ) }>
+				<TableRow title={ __( 'Startup Mode', 'search-regex' ) }>
 					<>
 						<Select
 							items={ [
-								{ value: '0', label: __( 'No default preset', 'search-regex' ) },
-								...presets.map( ( preset ) => ( { value: String( preset.id ), label: preset.name } ) ),
+								{ value: 'simple', label: __( 'Simple', 'search-regex' ) },
+								{ value: 'advanced', label: __( 'Advanced', 'search-regex' ) },
+								...presets.map( ( preset ) => ( {
+									value: String( preset.id ),
+									label: preset.name,
+								} ) ),
 							] }
-							name="defaultPreset"
-							value={ defaultPreset }
+							name="startupMode"
+							value={ startupSelection }
 							onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) =>
-								setDefaultPreset( ev.target.value )
+								setStartupSelection( ev.target.value )
 							}
 						/>{ ' ' }
 						<span>
-							{ __( 'Set a preset to use by default when Search Regex is loaded.', 'search-regex' ) }
+							{ __(
+								'Choose which mode Search Regex should start in. You can still switch modes in the UI.',
+								'search-regex'
+							) }
 						</span>
 					</>
 				</TableRow>

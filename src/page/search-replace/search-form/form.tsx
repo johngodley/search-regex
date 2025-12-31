@@ -2,6 +2,7 @@ import { useEffect, useState, ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
 import clsx from 'clsx';
 import { Select, Button, MultiOptionDropdown } from '@wp-plugin-components';
+import Replace from '../../../component/replace';
 import {
 	getAvailablePerPage,
 	getDefaultFilters,
@@ -25,7 +26,15 @@ import SearchFlags from '../../../component/search-flags';
 import TaggedPhrases from '../../../component/tagged-phrase';
 import { useSearchStore } from '../../../stores/search-store';
 import type { PresetValue, PresetTag } from '../../../types/preset';
-import type { Schema, Filter, FilterItem, SearchValues as ImportedSearchValues } from '../../../types/search';
+import type {
+	Schema,
+	Filter,
+	FilterItem,
+	SearchValues as ImportedSearchValues,
+	SetReplace,
+	SchemaColumn,
+	ResultColumn,
+} from '../../../types/search';
 
 const MAX_AND_FILTERS = 20;
 
@@ -182,6 +191,7 @@ function hasVisibleAction(
 function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 	const sources = useSearchStore( ( state ) => state.sources );
 	const schema = useSearchStore( ( state ) => state.schema );
+	const mode = useSearchStore( ( state ) => state.mode );
 	const {
 		searchPhrase = '',
 		searchFlags = [],
@@ -203,6 +213,17 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 		firstFilterOption && typeof firstFilterOption.value === 'string' ? firstFilterOption.value : '';
 	const [ currentFilter, setCurrentFilter ] = useState( initialFilterValue );
 	const viewFilters = hasVisibleFilters( filters, tags ) && ! isLocked( locked, 'filters' );
+
+	const showSearchRow =
+		( ! isLocked( locked, 'searchFlags' ) || ! isLocked( locked, 'searchPhrase' ) ) &&
+		! hasTags( tags, preset?.search?.searchPhrase ?? '' );
+	const showReplaceSimple =
+		! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' );
+
+	const setSimpleReplace: SetReplace = ( value ) => {
+		const replacementValue = ( value as { replacement?: string | null } ).replacement;
+		onSetSearch( { replacement: replacementValue ?? null } );
+	};
 
 	useEffect( () => {
 		if ( ! filterOptions.find( ( option ) => option.value === currentFilter ) ) {
@@ -239,6 +260,74 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 				filters: filters.concat( getFilterForType( currentFilter, currentSchema ) ),
 			} );
 		}
+	}
+
+	if ( mode === 'simple' ) {
+		return (
+			<>
+				{ preset && preset.description ? (
+					<tr>
+						<th />
+						<td>
+							<h3 className="searchregex-preset__description">{ preset.description }</h3>
+						</td>
+					</tr>
+				) : null }
+
+				{ showSearchRow && (
+					<tr className={ clsx( 'searchregex-search__search', headerClass ) }>
+						<th>{ __( 'Search', 'search-regex' ) }</th>
+
+						<td>
+							{ ! isLocked( locked, 'searchPhrase' ) && (
+								<Search
+									disabled={ isBusy }
+									value={ searchPhrase }
+									onChange={ ( value: string ) => onSetSearch( { searchPhrase: value } ) }
+									multiline={ searchFlags.indexOf( 'multi' ) !== -1 }
+									placeholder={ __( 'Phrase to search for', 'search-regex' ) }
+									multilinePlaceholder={ __( 'Phrase to search for', 'search-regex' ) }
+								/>
+							) }
+
+							{ ! isLocked( locked, 'searchFlags' ) && (
+								<SearchFlags
+									flags={ searchFlags }
+									disabled={ isBusy }
+									onChange={ ( flags: string[] ) => onSetSearch( { searchFlags: flags } ) }
+									allowMultiline
+								/>
+							) }
+						</td>
+					</tr>
+				) }
+
+				{ showReplaceSimple && (
+					<tr className={ clsx( 'searchregex-search__replace', headerClass ) }>
+						<th>{ __( 'Replace', 'search-regex' ) }</th>
+						<td>
+							<Replace
+								disabled={ isBusy }
+								setReplace={ setSimpleReplace }
+								replacement={ replacement ?? null }
+								preset={ preset }
+								schema={ { type: 'string' } as SchemaColumn }
+								column={
+									{
+										column_id: 'global',
+										column_label: __( 'Global', 'search-regex' ),
+										contexts: [],
+										context_count: 0,
+										match_count: 0,
+									} as ResultColumn
+								}
+								placeholder={ __( 'Phrase to replace with (optional)', 'search-regex' ) }
+							/>
+						</td>
+					</tr>
+				) }
+			</>
+		);
 	}
 
 	return (

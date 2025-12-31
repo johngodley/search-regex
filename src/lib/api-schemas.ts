@@ -299,8 +299,13 @@ export type PresetUploadResponse = z.infer< typeof presetUploadResponseSchema >;
  */
 export const settingsValuesSchema = z.object( {
 	support: z.boolean(),
-	defaultPreset: z.string(), // Preset ID is a string (hex format)
 	rest_api: z.number(),
+	// Startup behaviour for the UI. "advanced" preserves existing behaviour
+	// and matches the current default UI.
+	startupMode: z.enum( [ 'simple', 'advanced', 'preset' ] ),
+	// When startupMode is "preset" this contains the preset ID. For other
+	// modes this may be an empty string or undefined.
+	startupPreset: z.string().optional(),
 	update_notice: z.union( [ z.string(), z.literal( false ) ] ).optional(),
 } );
 

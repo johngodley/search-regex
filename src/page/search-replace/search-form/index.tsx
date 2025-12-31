@@ -12,6 +12,7 @@ function SearchForm() {
 	const setSearch = useSearchStore( ( state ) => state.setSearch );
 	const replaceAll = useSearchStore( ( state ) => state.replaceAll );
 	const status = useSearchStore( ( state ) => state.status );
+	const mode = useSearchStore( ( state ) => state.mode );
 	const currentPreset = usePresetStore( ( state ) => state.currentPreset );
 
 	const headerClass = getHeaderClass( currentPreset ? currentPreset.tags : [] );
@@ -19,12 +20,14 @@ function SearchForm() {
 	return (
 		<table>
 			<tbody>
-				<tr className={ clsx( headerClass ) }>
-					<th>{ __( 'Preset', 'search-regex' ) }</th>
-					<td>
-						<Presets />
-					</td>
-				</tr>
+				{ mode === 'advanced' && (
+					<tr className={ clsx( headerClass ) }>
+						<th>{ __( 'Preset', 'search-regex' ) }</th>
+						<td>
+							<Presets />
+						</td>
+					</tr>
+				) }
 
 				<Form
 					search={ search as any }
