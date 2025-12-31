@@ -1,6 +1,5 @@
 node_modules
 .vscode
-api-doc
 vendor
 .DS_Store
 build

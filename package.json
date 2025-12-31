@@ -26,7 +26,7 @@
 		"test:integration": "wp-env run cli --env-cwd=wp-content/plugins/search-regex composer run test-integration",
 		"test:js": "wp-scripts test-unit-js",
 		"test:php": "composer run-script test",
-		"doc": "apidoc -v -i api/ -o ./api-doc/",
+		"doc": "redocly build-docs dev/openapi.yaml -o release/api-doc.html",
 		"update": "pnpm update",
 		"wp-env:start": "wp-env start",
 		"wp-env:destroy": "wp-env destroy"
@@ -53,7 +53,6 @@
 		"@wordpress/prettier-config": "^4.36.0",
 		"@wordpress/scripts": "^30.27.0",
 		"@wordpress/stylelint-config": "^23.28.0",
-		"apidoc": "^1.2.0",
 		"download": "^8.0.0",
 		"eslint": "^8.57.1",
 		"eslint-import-resolver-typescript": "^4.4.4",
@@ -68,6 +67,7 @@
 		"npm-check-updates": "^19.2.0",
 		"path": "^0.12.7",
 		"prettier": "npm:wp-prettier@3.0.3",
+		"@redocly/cli": "^1.0.0",
 		"release-it": "^19.1.0",
 		"request": "^2.88.2",
 		"stylelint": "^16.26.1",
@@ -99,24 +99,6 @@
 		"use-debounce": "^10.0.6",
 		"zod": "^4.2.1",
 		"zustand": "^5.0.9"
-	},
-	"apidoc": {
-		"name": "Search Regex REST API",
-		"version": "1.0.0",
-		"description": "WordPress REST API documentation for Search Regex",
-		"title": "Search Regex REST API",
-		"url": "https://searchregex.com/wp-json",
-		"header": {
-			"title": "Introduction",
-			"filename": "./api-header.md"
-		},
-		"footer": {
-			"filename": "./api-footer.md"
-		},
-		"template": {
-			"withCompare": false
-		},
-		"sampleUrl": null
 	},
 	"wordpress": {
 		"supported": "6.5"
