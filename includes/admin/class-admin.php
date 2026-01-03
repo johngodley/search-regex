@@ -237,7 +237,10 @@ class Admin {
 
 		if ( isset( $_GET['filters'] ) && is_string( $_GET['filters'] ) ) {
 			$filters = json_decode( stripslashes( $_GET['filters'] ), true );
-			$filters_to_preload = array_merge( $filters_to_preload, $filters );
+
+			if ( is_array( $filters ) ) {
+				$filters_to_preload = array_merge( $filters_to_preload, $filters );
+			}
 		}
 
 		foreach ( $presets as $preset ) {

@@ -66,9 +66,9 @@ abstract class Action {
 	/**
 	 * Perform the action
 	 *
-	 * @param int              $row_id Row ID.
-	 * @param array<string, mixed>                $row Data for row.
-	 * @param Source\Source        $source Source.
+	 * @param int $row_id Row ID.
+	 * @param array<string, mixed> $row Data for row.
+	 * @param Source\Source $source Source.
 	 * @param array<Search\Column> $columns Contexts.
 	 * @return array<Search\Column>|\WP_Error
 	 */
