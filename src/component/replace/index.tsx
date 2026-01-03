@@ -18,14 +18,22 @@ interface ReplaceProps {
 function Replace( props: ReplaceProps ): JSX.Element {
 	const { disabled, replacement, setReplace, placeholder } = props;
 	const [ searchFlags, setFlags ] = useState( 'single' );
+
+	// Ensure placeholder is always a string for input/textarea
+	let placeholderText: string;
+	if ( searchFlags === 'remove' ) {
+		placeholderText = __( 'Matched values will be removed', 'search-regex' );
+	} else if ( typeof placeholder === 'string' ) {
+		placeholderText = placeholder;
+	} else {
+		placeholderText = __( 'Enter replacement value', 'search-regex' );
+	}
+
 	const value = {
 		id: 'replace',
 		value: replacement ?? '',
 		disabled: disabled || searchFlags === 'remove',
-		placeholder:
-			searchFlags === 'remove'
-				? __( 'Matched values will be removed', 'search-regex' )
-				: placeholder ?? __( 'Enter replacement value', 'search-regex' ),
+		placeholder: placeholderText,
 		name: 'replace',
 		onChange: ( ev: ChangeEvent< HTMLInputElement | HTMLTextAreaElement > ) => {
 			setReplace( { replacement: ev.target.value } );
