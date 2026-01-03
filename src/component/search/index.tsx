@@ -34,9 +34,7 @@ function Search( props: SearchProps ): JSX.Element {
 				onChange={ ( ev: ChangeEvent< HTMLTextAreaElement > ) => onChange( ev.target.value ) }
 				disabled={ disabled }
 				className={ className }
-				placeholder={
-					multilinePlaceholder ?? __( 'Enter search phrase', 'search-regex' )
-				}
+				placeholder={ multilinePlaceholder ?? __( 'Enter search phrase', 'search-regex' ) }
 			/>
 		);
 	}
@@ -50,8 +48,7 @@ function Search( props: SearchProps ): JSX.Element {
 			onChange={ ( ev: ChangeEvent< HTMLInputElement > ) => onChange( ev.target.value ) }
 			className={ className }
 			placeholder={
-				placeholder ??
-				__( 'Optional global search phrase. Leave blank to use filters only.', 'search-regex' )
+				placeholder ?? __( 'Optional global search phrase. Leave blank to use filters only.', 'search-regex' )
 			}
 		/>
 	);

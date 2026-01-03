@@ -87,10 +87,10 @@ function SearchActions() {
 		const payload =
 			mode === 'simple'
 				? {
-					...search,
-					action: 'replace',
-					actionOption: {},
-				}
+						...search,
+						action: 'replace',
+						actionOption: {},
+				  }
 				: search;
 
 		performMutation.mutate(
@@ -101,7 +101,6 @@ function SearchActions() {
 			},
 			{
 				onSuccess: ( data ) => {
-					// ✨ Data is already validated by Zod in useSearch hook
 					// Convert API results (number row_id) to Result[] (string row_id)
 					setResults( convertToResults( data.results ) );
 					setTotals( convertToSearchTotals( data.totals ) );

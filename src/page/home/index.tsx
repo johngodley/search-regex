@@ -111,27 +111,27 @@ function Home() {
 	return (
 		<ErrorBoundary renderCrash={ CrashHandler } extra={ { page } }>
 			<div className="wrap searchregex">
-					<PageRouter
-						page={ page }
-						setPage={ ( newPage: string ) => setPage( newPage as typeof page ) }
-						onPageChange={ pageChange }
-					>
-						<div className="searchregex-header">
-							<h1 className="wp-heading-inline">{ getTitles()[ page ] }</h1>
-							{ page === 'search' && (
-								<Select
-									items={ [
-										{ value: 'simple', label: __( 'Simple mode', 'search-regex' ) },
-										{ value: 'advanced', label: __( 'Advanced mode', 'search-regex' ) },
-									] }
-									name="search-mode"
-									value={ mode }
-									onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) =>
-										setMode( ev.target.value as 'simple' | 'advanced' )
-									}
-								/>
-							) }
-						</div>
+				<PageRouter
+					page={ page }
+					setPage={ ( newPage: string ) => setPage( newPage as typeof page ) }
+					onPageChange={ pageChange }
+				>
+					<div className="searchregex-header">
+						<h1 className="wp-heading-inline">{ getTitles()[ page ] }</h1>
+						{ page === 'search' && (
+							<Select
+								items={ [
+									{ value: 'simple', label: __( 'Simple mode', 'search-regex' ) },
+									{ value: 'advanced', label: __( 'Advanced mode', 'search-regex' ) },
+								] }
+								name="search-mode"
+								value={ mode }
+								onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) =>
+									setMode( ev.target.value as 'simple' | 'advanced' )
+								}
+							/>
+						) }
+					</div>
 
 					<UpdateNotice />
 
