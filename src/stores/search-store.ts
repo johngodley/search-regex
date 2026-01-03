@@ -235,29 +235,17 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => ( {
 		}
 
 		// Otherwise, update all search parameters
-		const defaults = {
-			searchPhrase: '',
-			searchFlags: [ 'case' ],
-			source: [ 'posts' ],
-			perPage: 25,
-			sub: 'search',
-			filters: [
-				{
-					type: 'posts',
-					items: [
-						{
-							column: 'post_type',
-							logic: 'include',
-							values: [ 'post', 'page' ],
-						},
-					],
-				},
-			],
-			view: [],
-		};
-
 		const { search } = get();
-		const filters = search.filters && search.filters.length > 0 ? search.filters : null;
+		const defaultSearch = getDefaultSearch();
+		const defaults = {
+			searchPhrase: defaultSearch.searchPhrase,
+			searchFlags: defaultSearch.searchFlags,
+			source: defaultSearch.source,
+			perPage: defaultSearch.perPage,
+			sub: 'search',
+			filters: defaultSearch.filters,
+			view: defaultSearch.view,
+		};
 
 		setPageUrl(
 			{
@@ -266,7 +254,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => ( {
 				searchFlags: search.searchFlags,
 				source: search.source,
 				perPage: search.perPage,
-				filters,
+				filters: search.filters && search.filters.length > 0 ? search.filters : null,
 				view: search.view ? ( search.view as string[] ) : [],
 			},
 			defaults

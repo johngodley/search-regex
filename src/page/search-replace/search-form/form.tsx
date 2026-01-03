@@ -222,7 +222,7 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 
 	const setSimpleReplace: SetReplace = ( value ) => {
 		const replacementValue = ( value as { replacement?: string | null } ).replacement;
-		onSetSearch( { replacement: replacementValue ?? null } );
+		onSetSearch( { replacement: replacementValue ?? '' } );
 	};
 
 	useEffect( () => {

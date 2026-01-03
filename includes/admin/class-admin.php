@@ -235,7 +235,7 @@ class Admin {
 		$preload = [];
 		$filters_to_preload = [];
 
-		if ( isset( $_GET['filters'] ) ) {
+		if ( isset( $_GET['filters'] ) && is_string( $_GET['filters'] ) ) {
 			$filters = json_decode( stripslashes( $_GET['filters'] ), true );
 			$filters_to_preload = array_merge( $filters_to_preload, $filters );
 		}

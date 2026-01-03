@@ -140,7 +140,8 @@ class Settings extends Plugin_Settings {
 	public function set_default_preset( $preset_id ) {
 		// Keep legacy behaviour for callers that still use this method, but
 		// avoid accepting arbitrary values.
-		$this->settings['defaultPreset'] = preg_replace( '/[^A-Fa-f0-9]*/', '', $preset_id );
+		$cleaned = preg_replace( '/[^A-Fa-f0-9]*/', '', $preset_id );
+		$this->settings['defaultPreset'] = $cleaned !== null ? $cleaned : '';
 	}
 
 	/**

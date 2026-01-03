@@ -39,6 +39,13 @@ function FilterItem( {
 		return null;
 	}
 
+	function handleColumnChange( newColumn: string ): void {
+		// When column changes, reset the filter to only have the column property
+		// This prevents properties from the old column type (e.g., member) from
+		// persisting when switching to a new column type (e.g., string)
+		onChange( { column: newColumn } );
+	}
+
 	return (
 		<div className={ clsx( 'searchregex-filter__item', `searchregex-filter__type__${ schema.type }` ) }>
 			<Select
@@ -46,7 +53,7 @@ function FilterItem( {
 				items={ getOptionsForColumn( columns ) }
 				value={ item.column }
 				disabled={ disabled }
-				onChange={ ( ev: ChangeEvent< HTMLSelectElement > ) => onChange( { column: ev.target.value } ) }
+				onChange={ ( ev: ChangeEvent< HTMLSelectElement > ) => handleColumnChange( ev.target.value ) }
 			/>
 
 			<button
@@ -128,13 +135,21 @@ function Filter( { schema, items, disabled, onChange, onRemove, source }: Filter
 							columns={ schema.columns }
 							disabled={ disabled }
 							fetchData={ ( value ) => fetchData( item.column, value ) }
-							onChange={ ( filter ) =>
+							onChange={ ( filter ) => {
+								// If only 'column' property is provided, replace the entire item
+								// (this happens when changing column type to avoid property pollution)
+								// Otherwise, merge the changes with existing item
+								const isColumnChange = Object.keys( filter ).length === 1 && 'column' in filter;
+								const updatedItem: FilterItemType = isColumnChange
+									? ( filter as FilterItemType )
+									: { ...item, ...filter };
+
 								onChange( [
 									...items.slice( 0, columnPosition ),
-									{ ...item, ...filter },
+									updatedItem,
 									...items.slice( columnPosition + 1 ),
-								] )
-							}
+								] );
+							} }
 							onRemove={ () => removeItem( columnPosition ) }
 						/>
 						{ columnPosition !== items.length - 1 && (

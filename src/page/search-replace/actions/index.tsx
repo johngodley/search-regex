@@ -254,7 +254,7 @@ function Actions( props: ActionsProps ) {
 					<th>{ __( 'Replace', 'search-regex' ) }</th>
 					<td>
 						<Replace
-							disabled={ disabled }
+							disabled={ disabled || searchPhrase.length === 0 }
 							setReplace={ setReplace }
 							replacement={ replacement }
 							preset={ preset }
@@ -268,7 +268,10 @@ function Actions( props: ActionsProps ) {
 									match_count: 0,
 								} as ResultColumn
 							}
-							placeholder={ __( 'Enter global replacement text', 'search-regex' ) }
+							placeholder={ __(
+								'Optional global replacement text. Only applies to the global search.',
+								'search-regex'
+							) }
 						/>
 					</td>
 				</tr>
