@@ -82,6 +82,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -100,8 +111,13 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          composer install --prefer-dist --no-progress
+
+      - name: Build JavaScript assets
+        run: pnpm build
 
       - name: Run PHPStan
         run: composer run-script analyse
