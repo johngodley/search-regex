@@ -331,12 +331,55 @@ paths:
         content:
           application/json:
             schema:
-              allOf:
-                - $ref: '#/components/schemas/SearchQuery'
-                - type: object
-                  properties:
-                    replacement:
-                      $ref: '#/components/schemas/Replacement'
+              type: object
+              description: Search query with row-specific replacement data.
+              properties:
+                page:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                perPage:
+                  type: integer
+                  minimum: 25
+                  maximum: 5000
+                  default: 25
+                searchDirection:
+                  type: string
+                  enum: [forward, backward]
+                  default: forward
+                limit:
+                  type: integer
+                  minimum: 0
+                action:
+                  type: string
+                  enum: [nothing, modify, replace, delete, export, action, '']
+                  default: nothing
+                actionOption:
+                  type: object
+                searchPhrase:
+                  type: string
+                  default: ''
+                searchFlags:
+                  type: array
+                  items:
+                    type: string
+                  default: []
+                source:
+                  type: array
+                  items:
+                    type: string
+                view:
+                  type: array
+                  items:
+                    type: string
+                filters:
+                  type: array
+                  items:
+                    type: object
+                replacement:
+                  $ref: '#/components/schemas/Replacement'
+              required:
+                - source
       responses:
         '200':
           description: Updated row
