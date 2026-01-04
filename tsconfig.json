@@ -7,7 +7,7 @@
 		"target": "esnext",
 		"module": "esnext",
 		"lib": ["dom", "esnext"],
-		"types": ["node"],
+		"types": ["node", "jest"],
 		"noEmit": true,
 		"isolatedModules": true,
 		/* Strict Type-Checking Options */
