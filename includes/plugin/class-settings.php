@@ -63,9 +63,9 @@ class Settings extends Plugin_Settings {
 			// Legacy option kept for backwards compatibility. New installs should
 			// prefer startupMode/startupPreset instead.
 			'defaultPreset' => 0,
-			// Startup behaviour for the UI. "advanced" preserves existing
-			// behaviour until the user selects a different startup mode.
-			'startupMode'   => 'advanced',
+			// Startup behaviour for the UI. "simple" is the default for new
+			// installs. Existing installs are migrated to "advanced" in __construct.
+			'startupMode'   => 'simple',
 			// When startupMode is "preset" this contains the preset ID.
 			'startupPreset' => '',
 			'update_notice' => 0,
@@ -78,28 +78,44 @@ class Settings extends Plugin_Settings {
 	 * Settings constructor.
 	 *
 	 * Ensures new startup options are initialised and migrates any legacy
-	 * default preset configuration into the new structure.
+	 * default preset configuration into the new structure. First-time installs
+	 * default to "simple" mode, while existing installs preserve "advanced" mode
+	 * unless the user has explicitly saved a preference.
 	 *
 	 * @return void
 	 */
 	public function __construct() {
 		parent::__construct();
 
-		// If startupMode has not been initialised yet, migrate from the
-		// legacy defaultPreset option so existing sites keep their behaviour.
-		if ( ! isset( $this->settings['startupMode'] ) ) {
-			$legacy_default = $this->get( 'defaultPreset', 0 );
+		$saved_settings = $this->load();
 
-			if ( ! empty( $legacy_default ) && $legacy_default !== '0' ) {
-				// A preset was previously selected as the default.
-				$this->settings['startupMode']   = 'preset';
-				$this->settings['startupPreset'] = (string) $legacy_default;
-			} else {
-				// No default preset configured – previously this meant the
-				// standard (advanced) UI. Keep that behaviour.
-				$this->settings['startupMode']   = 'advanced';
-				$this->settings['startupPreset'] = '';
+		// Check if this is an existing installation by looking for any saved settings.
+		// Empty array means first-time install (will use "simple" default).
+		$is_existing_install = count( $saved_settings ) > 0;
+
+		// If startupMode has not been initialised yet, handle migration.
+		if ( ! isset( $this->settings['startupMode'] ) ) {
+			// For existing installs, migrate from legacy defaultPreset.
+			if ( $is_existing_install ) {
+				$legacy_default = $this->get( 'defaultPreset', 0 );
+
+				if ( $legacy_default !== false && $legacy_default !== 0 && $legacy_default !== '0' && $legacy_default !== '' ) {
+					// A preset was previously selected as the default.
+					$this->settings['startupMode'] = 'preset';
+					if ( is_string( $legacy_default ) ) {
+						$this->settings['startupPreset'] = $legacy_default;
+					} else {
+						// @phpstan-ignore cast.string
+						$this->settings['startupPreset'] = (string) $legacy_default;
+					}
+				} else {
+					// No default preset configured – previously this meant the
+					// standard (advanced) UI. Keep that behaviour for existing users.
+					$this->settings['startupMode']   = 'advanced';
+					$this->settings['startupPreset'] = '';
+				}
 			}
+			// For new installs, startupMode will be "simple" from get_defaults().
 		}
 	}
 
@@ -191,7 +207,12 @@ class Settings extends Plugin_Settings {
 	 * @return string
 	 */
 	public function get_startup_preset() {
-		return (string) $this->get( 'startupPreset', '' );
+		$preset = $this->get( 'startupPreset', '' );
+		if ( is_string( $preset ) ) {
+			return $preset;
+		}
+		// @phpstan-ignore cast.string
+		return (string) $preset;
 	}
 
 	/**
@@ -199,7 +220,12 @@ class Settings extends Plugin_Settings {
 	 * @return bool
 	 */
 	public function is_new_version( $major_version ) {
-		return version_compare( $this->get( 'update_notice', '0' ), $major_version ) < 0;
+		$update_notice = $this->get( 'update_notice', '0' );
+		if ( ! is_string( $update_notice ) ) {
+			// @phpstan-ignore cast.string
+			$update_notice = (string) $update_notice;
+		}
+		return version_compare( $update_notice, $major_version ) < 0;
 	}
 
 	/**
@@ -218,7 +244,11 @@ class Settings extends Plugin_Settings {
 			$type = $this->get( 'rest_api' );
 		}
 
-		return intval( $type, 10 );
+		if ( is_int( $type ) ) {
+			return $type;
+		}
+		// @phpstan-ignore cast.int
+		return (int) $type;
 	}
 
 	/**
@@ -259,7 +289,15 @@ class Settings extends Plugin_Settings {
 	 * @return string|null
 	 */
 	public function get_default_preset() {
-		return $this->get( 'defaultPreset' );
+		$preset = $this->get( 'defaultPreset' );
+		if ( $preset === false || $preset === null ) {
+			return null;
+		}
+		if ( is_string( $preset ) ) {
+			return $preset;
+		}
+		// @phpstan-ignore cast.string
+		return (string) $preset;
 	}
 
 	/**
