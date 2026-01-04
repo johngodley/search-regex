@@ -237,7 +237,10 @@ class Filter {
 			}
 		}
 
-		$query->add_where( new Sql\Where\Where_Or( $wheres ) );
+		if ( count( $wheres ) > 0 ) {
+			$query->add_where( new Sql\Where\Where_Or( $wheres ) );
+		}
+
 		return $query;
 	}
 

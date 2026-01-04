@@ -75,7 +75,7 @@ class SearchRegex_Api_Test extends WP_Ajax_UnitTestCase {
 		$csv = [];
 		$row = 0;
 		$header = [];
-		while ( ( $data = fgetcsv( $handle, 10000, ',' ) ) !== false ) {
+		while ( ( $data = fgetcsv( $handle, 10000, ',', '"', '\\' ) ) !== false ) {
 			if ( $row === 0 ) {
 				$header = $data;
 			} else {

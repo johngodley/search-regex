@@ -78,21 +78,27 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 	}
 
 	public function testJoinQueryHas() {
+		global $wpdb;
+
 		$options = [ 'startValue' => '1', 'logic' => 'has' ];
 		$filter = $this->get_filter( $options );
 		$query = $this->get_query_for_filter( $filter );
 		$query = $filter->modify_query( $query );
 
-		$this->assertEquals( 'SELECT author, wp_posts.post_author FROM posts LEFT JOIN wp_users ON wp_users.ID=wp_posts.post_author WHERE wp_users.ID IS NOT NULL', $query->get_as_sql() );
+		$expected = sprintf( 'SELECT author, %1$sposts.post_author FROM posts LEFT JOIN %1$susers ON %1$susers.ID=%1$sposts.post_author WHERE %1$susers.ID IS NOT NULL', $wpdb->prefix );
+		$this->assertEquals( $expected, $query->get_as_sql() );
 	}
 
 	public function testJoinQueryHasNot() {
+		global $wpdb;
+
 		$options = [ 'startValue' => '1', 'logic' => 'hasnot' ];
 		$filter = $this->get_filter( $options );
 		$query = $this->get_query_for_filter( $filter );
 		$query = $filter->modify_query( $query );
 
-		$this->assertEquals( 'SELECT author, wp_posts.post_author FROM posts LEFT JOIN wp_users ON wp_users.ID=wp_posts.post_author WHERE wp_users.ID IS NULL', $query->get_as_sql() );
+		$expected = sprintf( 'SELECT author, %1$sposts.post_author FROM posts LEFT JOIN %1$susers ON %1$susers.ID=%1$sposts.post_author WHERE %1$susers.ID IS NULL', $wpdb->prefix );
+		$this->assertEquals( $expected, $query->get_as_sql() );
 	}
 
 	public function testGetDataInvalid() {
