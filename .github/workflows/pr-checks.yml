@@ -205,6 +205,9 @@ jobs:
           pnpm install --frozen-lockfile
           composer install --prefer-dist --no-progress
 
+      - name: Build JavaScript assets
+        run: pnpm build
+
       - name: Start WordPress environment
         run: pnpm wp-env:start
 
