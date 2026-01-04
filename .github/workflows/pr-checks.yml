@@ -33,9 +33,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: |
-          pnpm config set shamefully-hoist true
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --shamefully-hoist
 
       - name: Lint CSS
         run: pnpm lint:css
@@ -115,8 +113,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm config set shamefully-hoist true
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --shamefully-hoist
           composer install --prefer-dist --no-progress
 
       - name: Build JavaScript assets
@@ -195,8 +192,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm config set shamefully-hoist true
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --shamefully-hoist
           composer install --prefer-dist --no-progress
 
       - name: Start WordPress environment
@@ -224,9 +220,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: |
-          pnpm config set shamefully-hoist true
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --shamefully-hoist
 
       - name: Run JavaScript tests
         run: pnpm test:js
