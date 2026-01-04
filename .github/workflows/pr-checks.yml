@@ -10,6 +10,9 @@ on:
       - trunk
       - main
 
+permissions:
+  contents: read
+
 jobs:
   lint-js-ts:
     name: Lint JavaScript/TypeScript
