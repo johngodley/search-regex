@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Placeholder unit test to ensure the test suite runs successfully.
  * This test should be replaced with actual unit tests.

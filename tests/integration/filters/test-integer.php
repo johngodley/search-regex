@@ -83,7 +83,7 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$query = $this->get_query_for_filter( $filter );
 		$query = $filter->modify_query( $query );
 
-		$this->assertEquals( 'SELECT author, wp_posts.post_author FROM posts LEFT JOIN wp_users ON wp_users.ID=wp_posts.post_author WHERE wp_users.ID IS NOT NULL', $query->get_as_sql() );
+		$this->assertEquals( 'SELECT author, wptests_posts.post_author FROM posts LEFT JOIN wptests_users ON wptests_users.ID=wptests_posts.post_author WHERE wptests_users.ID IS NOT NULL', $query->get_as_sql() );
 	}
 
 	public function testJoinQueryHasNot() {
@@ -92,7 +92,7 @@ class Filter_Integer_Test extends SearchRegex_Api_Test {
 		$query = $this->get_query_for_filter( $filter );
 		$query = $filter->modify_query( $query );
 
-		$this->assertEquals( 'SELECT author, wp_posts.post_author FROM posts LEFT JOIN wp_users ON wp_users.ID=wp_posts.post_author WHERE wp_users.ID IS NULL', $query->get_as_sql() );
+		$this->assertEquals( 'SELECT author, wptests_posts.post_author FROM posts LEFT JOIN wptests_users ON wptests_users.ID=wptests_posts.post_author WHERE wptests_users.ID IS NULL', $query->get_as_sql() );
 	}
 
 	public function testGetDataInvalid() {

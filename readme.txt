@@ -24,7 +24,7 @@ Search filters can be created to match any column of any WordPress table. For ex
 
 Search Regex handles small and large sites.
 
-Search Regex has been tested with PHP from 7.2 to 8.4.
+Search Regex has been tested with PHP from 7.4 to 8.4.
 
 == What can I search? ==
 
