@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import clsx from 'clsx';
 import Result from '../../../component/result';
@@ -74,22 +74,22 @@ function hasMoreResults(
 		( searchDirection === SEARCH_BACKWARD && prev !== false )
 	);
 }
-const shouldLoadMore = (
-	status: string | null,
-	requestCount: number,
-	results: ResultType[],
-	perPage: number | undefined
-): boolean => status === STATUS_IN_PROGRESS && requestCount > 0 && perPage !== undefined && results.length < perPage;
+const shouldLoadMore = ( requestCount: number, results: ResultType[], perPage: number | undefined ): boolean => {
+	// Allow loading more if we're still paginating (requestCount > 0) and haven't reached the page limit
+	// Don't check status here - status can be COMPLETE for individual requests but we still want to paginate
+	return requestCount > 0 && perPage !== undefined && results.length < perPage;
+};
 
 function SearchResults() {
 	const results = useSearchStore( ( state ) => state.results );
 	const totals = useSearchStore( ( state ) => state.totals );
 	const progress = useSearchStore( ( state ) => state.progress );
-	const status = useSearchStore( ( state ) => state.status );
+	const isBusy = useSearchStore( ( state ) => state.isBusy );
 	const search = useSearchStore( ( state ) => state.search );
 	const searchDirection = useSearchStore( ( state ) => state.searchDirection );
 	const showLoading = useSearchStore( ( state ) => state.showLoading );
 	const resultsDirty = useSearchStore( ( state ) => state.resultsDirty );
+	const cumulativeMatchedRows = useSearchStore( ( state ) => state.cumulativeMatchedRows );
 	const setResults = useSearchStore( ( state ) => state.setResults );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
@@ -101,12 +101,28 @@ function SearchResults() {
 	const { perPage } = search;
 	const isAdvanced = isAdvancedSearch( search );
 
+	// Initialize request count to 1 when results first arrive to trigger automatic pagination
+	useEffect( () => {
+		if (
+			results.length > 0 &&
+			requestCount === 0 &&
+			isAdvanced &&
+			! isBusy &&
+			hasMoreResults( searchDirection ?? SEARCH_FORWARD, progress )
+		) {
+			// Results have arrived and no requests in progress, start the sliding window
+			setRequestCount( 1 );
+		} else if ( results.length === 0 && requestCount > 0 ) {
+			// Results cleared, reset count
+			setRequestCount( 0 );
+		}
+	}, [ results.length, requestCount, isAdvanced, isBusy, searchDirection, progress ] );
+
 	const onSearchMore = ( page: number | false, pageSize: number, limit: number ) => {
 		if ( page === false ) {
 			return;
 		}
 
-		setRequestCount( ( prev ) => prev + 1 );
 		setStatus( STATUS_IN_PROGRESS );
 
 		searchMutation.mutate(
@@ -121,10 +137,16 @@ function SearchResults() {
 				onSuccess: ( data ) => {
 					// ✨ Data is already validated by Zod in useSearch hook
 					// Convert API results (number row_id) to Result[] (string row_id)
-					setResults( [ ...results, ...convertToResults( data.results ) ] );
+
+					// Get fresh results to append to
+					const currentResults = useSearchStore.getState().results;
+					setResults( [ ...currentResults, ...convertToResults( data.results ) ] );
 					setTotals( convertToSearchTotals( data.totals ) );
 					setProgress( convertToSearchProgress( data.progress ) );
 					setStatus( data.status ?? STATUS_COMPLETE );
+
+					// Increment request count AFTER updating progress to trigger next request with fresh data
+					setRequestCount( ( prev ) => prev + 1 );
 				},
 			}
 		);
@@ -134,30 +156,49 @@ function SearchResults() {
 		setStatus( STATUS_FAILED );
 		addError( __( 'Your search resulted in too many requests. Please narrow your search terms.', 'search-regex' ) );
 	};
-	const isLoading = status === STATUS_IN_PROGRESS;
-	const canLoad =
-		isAdvanced &&
-		perPage !== undefined &&
-		shouldLoadMore( status, requestCount, results, perPage ) &&
-		hasMoreResults( searchDirection ?? SEARCH_FORWARD, progress );
+	const isLoading = isBusy;
+	const shouldLoad = shouldLoadMore( requestCount, results, perPage );
+	const hasMore = hasMoreResults( searchDirection ?? SEARCH_FORWARD, progress );
+	// Sliding window enabled when we have results and haven't filled the page yet
+	// Also check requestCount > 0 to prevent firing immediately after manual navigation clears results
+	const canLoad = isAdvanced && perPage !== undefined && shouldLoad && hasMore && requestCount > 0;
 
-	const nextValue = normalizeProgressValue( progress.next );
-	const prevValue = normalizeProgressValue( progress.previous );
-	const pageValue = searchDirection === SEARCH_FORWARD ? nextValue : prevValue;
 	const perPageValue = perPage ?? 25;
+
+	// For advanced searches, calculate matched_rows from actual results loaded
+	// since the API returns 0 during the sliding window.
+	// The total is: cumulative matches from previous pages + matches in current page
+	const effectiveTotals = isAdvanced
+		? {
+				...totals,
+				matched_rows: cumulativeMatchedRows + results.length,
+		  }
+		: totals;
 
 	useSlidingSearchWindow(
 		canLoad,
 		requestCount,
 		perPageValue,
-		( size: number ) => onSearchMore( pageValue, size, perPageValue - results.length ),
+		( size: number ) => {
+			// Get fresh values from store to avoid stale closure
+			const currentProgress = useSearchStore.getState().progress;
+			const currentSearchDirection = useSearchStore.getState().searchDirection;
+			const currentResults = useSearchStore.getState().results;
+
+			const nextVal = normalizeProgressValue( currentProgress.next );
+			const prevVal = normalizeProgressValue( currentProgress.previous );
+			const currentPageValue = currentSearchDirection === SEARCH_FORWARD ? nextVal : prevVal;
+			const limit = perPageValue - currentResults.length;
+
+			onSearchMore( currentPageValue, size, limit );
+		},
 		onError
 	);
 
 	return (
 		<>
 			<Pagination
-				totals={ totals }
+				totals={ effectiveTotals }
 				perPage={ perPage ?? 25 }
 				isLoading={ isLoading }
 				progress={ convertProgressToLocal( progress ) }
@@ -187,7 +228,7 @@ function SearchResults() {
 			</table>
 
 			<Pagination
-				totals={ totals }
+				totals={ effectiveTotals }
 				perPage={ perPage ?? 25 }
 				isLoading={ isLoading }
 				progress={ convertProgressToLocal( progress ) }

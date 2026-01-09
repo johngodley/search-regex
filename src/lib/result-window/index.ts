@@ -82,15 +82,42 @@ export function useSlidingSearchWindow(
 	onPerform: ( perPage: number ) => void,
 	onError: () => void
 ): void {
+	// Use refs to store the latest callbacks without causing re-renders
+	const onPerformRef = useRef( onPerform );
+	const onErrorRef = useRef( onError );
+	// Use refs to store latest values to check inside throttled callback
+	const canLoadRef = useRef( canLoad );
+	const requestCountRef = useRef( requestCount );
+
+	// Update refs when callbacks change
+	useEffect( () => {
+		onPerformRef.current = onPerform;
+		onErrorRef.current = onError;
+	}, [ onPerform, onError ] );
+
+	// Update refs when values change
+	useEffect( () => {
+		canLoadRef.current = canLoad;
+		requestCountRef.current = requestCount;
+	}, [ canLoad, requestCount ] );
+
 	useEffect( () => {
 		if ( requestCount === 0 || ! canLoad ) {
 			return;
 		}
 
 		if ( requestCount > REQUEST_MAX ) {
-			onError();
+			onErrorRef.current();
+			return;
 		}
 
-		throttle( () => onPerform( adjustPerPage( requestCount, perPage ) ) );
-	}, [ canLoad, onError, onPerform, perPage, requestCount ] );
+		const adjustedPerPage = adjustPerPage( requestCount, perPage );
+		throttle( () => {
+			// Check fresh values inside throttled callback to avoid stale closures
+			if ( requestCountRef.current === 0 || ! canLoadRef.current ) {
+				return;
+			}
+			onPerformRef.current( adjustedPerPage );
+		} );
+	}, [ canLoad, perPage, requestCount ] ); // Removed onError and onPerform from dependencies
 }

@@ -27,6 +27,7 @@ function SearchReplace() {
 	const setShowLoading = useSearchStore( ( state ) => state.setShowLoading );
 	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
 	const setResultsDirty = useSearchStore( ( state ) => state.setResultsDirty );
+	const setSearchDirection = useSearchStore( ( state ) => state.setSearchDirection );
 	const updateSearchUrl = useSearchStore( ( state ) => state.updateSearchUrl );
 
 	const searchMutation = useSearch();
@@ -39,6 +40,9 @@ function SearchReplace() {
 		setResultsDirty( false );
 		setShowLoading( true );
 		setCanCancel( true );
+
+		// Set search direction to forward for new searches
+		setSearchDirection( SEARCH_FORWARD );
 
 		// Update URL with search parameters
 		updateSearchUrl();

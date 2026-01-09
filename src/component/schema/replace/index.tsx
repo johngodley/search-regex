@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { apiFetch } from '@wp-plugin-lib';
-import SearchRegexApi from '../../../lib/api-request';
+import { ApiUtils } from '../../../lib/api-utils';
 import ReplaceType from './types';
 import type { SchemaColumn, ResultColumn } from '../../../types/search';
 
@@ -27,12 +27,12 @@ export default function ReplaceColumn( {
 }: ReplaceColumnProps ): JSX.Element {
 	const fetchData = useCallback(
 		( value: string ): Promise< unknown > =>
-			apiFetch( SearchRegexApi.source.complete( source, column.column_id, value ) ),
+			apiFetch( ApiUtils.source.complete( source, column.column_id, value ) ),
 		[ source, column.column_id ]
 	);
 
 	const loadColumn = useCallback( async (): Promise< unknown > => {
-		const data = ( await apiFetch( SearchRegexApi.source.loadRow( source, rowId ) ) ) as {
+		const data = ( await apiFetch( ApiUtils.source.loadRow( source, rowId ) ) ) as {
 			result: Array< { column: string } >;
 		};
 		return data.result.find( ( item ) => item.column === column.column_id );

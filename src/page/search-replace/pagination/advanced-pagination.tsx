@@ -34,6 +34,8 @@ const backPercent = ( total: number, current: number | false ): number =>
 
 export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 	const searchValues = useSearchStore( ( state ) => state.search );
+	const results = useSearchStore( ( state ) => state.results );
+	const cumulativeMatchedRows = useSearchStore( ( state ) => state.cumulativeMatchedRows );
 	const setResults = useSearchStore( ( state ) => state.setResults );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
@@ -42,12 +44,16 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
 	const setResultsDirty = useSearchStore( ( state ) => state.setResultsDirty );
 	const setSearchDirection = useSearchStore( ( state ) => state.setSearchDirection );
+	const addToCumulativeMatchedRows = useSearchStore( ( state ) => state.addToCumulativeMatchedRows );
 
 	const searchMutation = useSearch();
 	const { total, progress, isLoading, searchDirection, noTotal = false, totals } = props;
 	const { previous = false, next = false } = progress;
 
 	function onChangePage( page: number, direction: string ) {
+		// Before clearing results, add current matches to cumulative total
+		addToCumulativeMatchedRows( results.length );
+
 		setResults( [] );
 		setResultsDirty( false );
 		setShowLoading( true );
@@ -110,7 +116,7 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 					title={ __( 'First page', 'search-regex' ) }
 					button="«"
 					className="first-page"
-					enabled={ previous !== false && ! isLoading }
+					enabled={ cumulativeMatchedRows > 0 && previous !== false && ! isLoading }
 					onClick={ () => onChangePage( 0, SEARCH_FORWARD ) }
 				/>
 

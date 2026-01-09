@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wp-plugin-lib';
-import SearchRegexApi from '../../../lib/api-request';
+import { ApiUtils } from '../../../lib/api-utils';
 import ModifyType from './types';
 import type { SchemaColumn, ModifyColumn } from '../../../types/search';
 import './style.scss';
@@ -16,7 +16,7 @@ interface ModifyProps {
 
 export default function Modify( { disabled, schema, column, onRemove, onChange }: ModifyProps ): JSX.Element {
 	function fetchData( value: string ): Promise< unknown > {
-		return apiFetch( SearchRegexApi.source.complete( column.source || '', column.column, value ) );
+		return apiFetch( ApiUtils.source.complete( column.source || '', column.column, value ) );
 	}
 
 	return (

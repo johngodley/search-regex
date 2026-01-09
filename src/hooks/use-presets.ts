@@ -1,8 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@wp-plugin-lib';
+import { apiFetch, getApiRequest, postApiRequest, uploadApiRequest } from '@wp-plugin-lib';
 import getPreload from '../lib/preload';
-import SearchRegexApi from '../lib/api-request';
 import { useMessageStore } from '../stores/message-store';
 import type { PresetValue } from '../types/preset';
 import type { SearchValues } from '../types/search';
@@ -33,7 +32,7 @@ export function useSavePreset() {
 
 	return useMutation< PresetResponse, Error, { name: string; searchValues: SearchValues } >( {
 		mutationFn: async ( { name, searchValues } ) => {
-			const response = await apiFetch( SearchRegexApi.preset.save( searchValues, name ) );
+			const response = await apiFetch( postApiRequest( 'search-regex/v1/preset', { ...searchValues, name } ) );
 			return presetResponseSchema.parse( response );
 		},
 		onSuccess: ( data ) => {
@@ -53,7 +52,12 @@ export function useUpdatePreset() {
 
 	return useMutation< PresetResponse, Error, PresetValue >( {
 		mutationFn: async ( preset ) => {
-			const response = await apiFetch( SearchRegexApi.preset.update( preset ) );
+			const response = await apiFetch(
+				postApiRequest(
+					`search-regex/v1/preset/id/${ preset.id }`,
+					preset as unknown as Record< string, unknown >
+				)
+			);
 			return presetResponseSchema.parse( response );
 		},
 		onSuccess: ( data ) => {
@@ -72,7 +76,7 @@ export function useDeletePreset() {
 
 	return useMutation< PresetResponse, Error, string >( {
 		mutationFn: async ( id ) => {
-			const response = await apiFetch( SearchRegexApi.preset.delete( id ) );
+			const response = await apiFetch( postApiRequest( `search-regex/v1/preset/id/${ id }/delete` ) );
 			return presetResponseSchema.parse( response );
 		},
 		onSuccess: ( data ) => {
@@ -91,7 +95,7 @@ export function useUploadPreset() {
 
 	return useMutation< PresetUploadResponse, Error, File >( {
 		mutationFn: async ( file ) => {
-			const response = await apiFetch( SearchRegexApi.preset.upload( file ) );
+			const response = await apiFetch( uploadApiRequest( 'search-regex/v1/preset/import', {}, file ) );
 			return presetUploadResponseSchema.parse( response );
 		},
 		onSuccess: ( data ) => {
@@ -107,7 +111,7 @@ export function useUploadPreset() {
 export function useExportPresets() {
 	return {
 		exportPresets: () => {
-			const request = SearchRegexApi.preset.export();
+			const request = getApiRequest( 'search-regex/v1/preset', { force: true } );
 			document.location.href = apiFetch.getUrl( request.url ) + '&_wpnonce=' + SearchRegexi10n.api.WP_API_nonce;
 		},
 	};

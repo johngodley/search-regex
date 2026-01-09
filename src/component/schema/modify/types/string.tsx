@@ -135,7 +135,7 @@ export default function ModifyString( {
 				extraItems={ modifiedFilters.map( ( filterItem ) => ( {
 					value: filterItem.column + '-' + filterItem.value,
 					/* translators: %s: value being replaced */
-					label: sprintf( __( 'Replace "%s"', 'search-regex' ), ( filterItem.value || '' ).substr( 0, 20 ) ),
+					label: sprintf( __( 'Replace "%s"', 'search-regex' ), ( filterItem.value || '' ).slice( 0, 20 ) ),
 				} ) ) }
 			/>
 

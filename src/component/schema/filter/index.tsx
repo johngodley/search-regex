@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import clsx from 'clsx';
 import { apiFetch } from '@wp-plugin-lib';
 import { Select, Button, Badge } from '@wp-plugin-components';
-import SearchRegexApi from '../../../lib/api-request';
+import { ApiUtils } from '../../../lib/api-utils';
 import FilterType from './types';
 import type { SelectOption, SchemaColumn, FilterItem as FilterItemType, Schema } from '../../../types/search';
 import './style.scss';
@@ -105,7 +105,7 @@ function Filter( { schema, items, disabled, onChange, onRemove, source }: Filter
 	}
 
 	function fetchData( column: string, value: string ): Promise< unknown > {
-		return apiFetch( SearchRegexApi.source.complete( source, column, value ) );
+		return apiFetch( ApiUtils.source.complete( source, column, value ) );
 	}
 
 	return (

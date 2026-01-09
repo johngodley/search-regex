@@ -1,7 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@wp-plugin-lib';
-import SearchRegexApi from '../lib/api-request';
+import { apiFetch, getApiRequest, postApiRequest } from '@wp-plugin-lib';
 import { useMessageStore } from '../stores/message-store';
 import { settingsResponseSchema, type SettingsValues, type SettingsResponse } from '../lib/api-schemas';
 
@@ -12,7 +11,7 @@ export function useSettings() {
 	return useQuery< SettingsValues >( {
 		queryKey: SETTINGS_QUERY_KEY,
 		queryFn: async () => {
-			const response = await apiFetch( SearchRegexApi.setting.get() );
+			const response = await apiFetch( getApiRequest( 'search-regex/v1/setting' ) );
 
 			const validated = settingsResponseSchema.parse( response );
 			return validated.settings;
@@ -29,7 +28,7 @@ export function useSaveSettings() {
 
 	return useMutation< SettingsResponse, Error, Partial< SettingsValues > >( {
 		mutationFn: async ( settings ) => {
-			const response = await apiFetch( SearchRegexApi.setting.update( settings ) );
+			const response = await apiFetch( postApiRequest( 'search-regex/v1/setting', settings ) );
 
 			return settingsResponseSchema.parse( response );
 		},

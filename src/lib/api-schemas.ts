@@ -376,7 +376,7 @@ export const queryParamsSchema = z
 		searchflags: z
 			.string()
 			.optional()
-			.transform( ( val ) => ( val ? val.split( ',' ).filter( Boolean ) : [] ) ),
+			.transform( ( val ) => ( val ? val.split( ',' ).filter( Boolean ) : undefined ) ),
 		source: z
 			.string()
 			.optional()
@@ -392,7 +392,7 @@ export const queryParamsSchema = z
 			.optional()
 			.transform( ( val ) => {
 				if ( ! val ) {
-					return [];
+					return undefined;
 				}
 				try {
 					const parsed = JSON.parse( val );
@@ -404,6 +404,7 @@ export const queryParamsSchema = z
 		view: z
 			.string()
 			.optional()
-			.transform( ( val ) => ( val ? val.split( ',' ).filter( Boolean ) : [] ) ),
+			.transform( ( val ) => ( val ? val.split( ',' ).filter( Boolean ) : undefined ) ),
+		mode: z.enum( [ 'simple', 'advanced' ] ).optional(),
 	} )
 	.passthrough(); // Allow other query params
