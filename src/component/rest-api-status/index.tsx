@@ -5,7 +5,7 @@ import { apiFetch } from '@wp-plugin-lib';
 import ApiResultComponent from './api-result';
 import { Spinner } from '@wp-plugin-components';
 import { getRestApi } from '../../page/options';
-import SearchRegexApi from '../../lib/api-request';
+import { ApiUtils } from '../../lib/api-utils';
 import { useSettings } from '../../hooks/use-settings';
 import type { SettingsValues } from '../../lib/api-schemas';
 import './style.scss';
@@ -70,7 +70,7 @@ function RestApiStatus( { allowChange = false }: RestApiStatusProps ) {
 
 			// Test GET
 			setTimeout( () => {
-				apiFetch( SearchRegexApi.plugin.checkApi( url ) )
+				apiFetch( ApiUtils.plugin.checkApi( url ) )
 					.then( () => {
 						setApiTest( ( prev ) => ( {
 							...prev,
@@ -91,7 +91,7 @@ function RestApiStatus( { allowChange = false }: RestApiStatusProps ) {
 					} );
 
 				// Test POST
-				apiFetch( SearchRegexApi.plugin.checkApi( url, true ) )
+				apiFetch( ApiUtils.plugin.checkApi( url, true ) )
 					.then( () => {
 						setApiTest( ( prev ) => ( {
 							...prev,

@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { getPluginPage } from '../../lib/plugin';
 import { Snackbar, Menu, ErrorBoundary, Error, Select } from '@wp-plugin-components';
-/* eslint-disable camelcase */
-import { has_page_access } from '../../lib/capabilities';
-/* eslint-enable camelcase */
+import { hasPageAccess } from '../../lib/capabilities';
 import { useMessageStore } from '../../stores/message-store';
 import { usePresets } from '../../hooks/use-presets';
 import { usePresetStore } from '../../stores/preset-store';
@@ -57,15 +55,14 @@ const getMenu = (): MenuItem[] =>
 			name: __( 'Support', 'search-regex' ),
 			value: 'support',
 		},
-		/* eslint-disable camelcase */
-	].filter( ( option ) => has_page_access( option.value ) || ( option.value === '' && has_page_access( 'search' ) ) );
-/* eslint-enable camelcase */
+	].filter( ( option ) => hasPageAccess( option.value ) || ( option.value === '' && hasPageAccess( 'search' ) ) );
 
 function Home() {
 	const [ page, setPage ] = useState( getPluginPage() );
 
 	const mode = useSearchStore( ( state ) => state.mode );
 	const setMode = useSearchStore( ( state ) => state.setMode );
+	const updateSearchUrl = useSearchStore( ( state ) => state.updateSearchUrl );
 
 	const errors = useMessageStore( ( state ) => state.errors );
 	const notices = useMessageStore( ( state ) => state.notices );
@@ -126,9 +123,10 @@ function Home() {
 								] }
 								name="search-mode"
 								value={ mode }
-								onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) =>
-									setMode( ev.target.value as 'simple' | 'advanced' )
-								}
+								onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) => {
+									setMode( ev.target.value as 'simple' | 'advanced' );
+									updateSearchUrl();
+								} }
 							/>
 						) }
 					</div>

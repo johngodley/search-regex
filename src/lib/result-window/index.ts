@@ -1,17 +1,21 @@
 import { useEffect, useRef } from 'react';
 import { useDelta } from 'react-delta';
 
-export const INCREMENT_FAST = 1.2;
-export const INCREMENT_SLOW = 0.8;
+// Scaling factors for adjusting page size based on request performance
+export const INCREMENT_FAST = 1.2; // Scale up by 20% for faster pagination
+export const INCREMENT_SLOW = 0.8; // Scale down by 20% for slower pagination
 
+// Maximum number of requests before aborting to prevent infinite loops
 const REQUEST_MAX = 1000;
 
-const LIMIT_MAX = 2000;
-const LIMIT_MIN = 3;
+// Limits for database rows to fetch in a single request
+const LIMIT_MAX = 2000; // Maximum rows per request (hard cap)
+const LIMIT_MIN = 3; // Minimum requests before scaling up page size
 
-const TIME_GAP = 500;
-const TIME_DELAY = 500;
+// Throttling timing to prevent flooding the server with requests
+const THROTTLE_INTERVAL = 500; // ms - Minimum time between requests
 
+// Default starting size for sliding window pagination
 const DEFAULT_WINDOW_SIZE = 200;
 
 let lastTime = 0;
@@ -42,7 +46,7 @@ function throttle( cb: () => void ): void {
 			lastTime = currentTime;
 			cb();
 		},
-		currentTime - lastTime > TIME_GAP ? 0 : TIME_DELAY
+		currentTime - lastTime > THROTTLE_INTERVAL ? 0 : THROTTLE_INTERVAL
 	);
 }
 
@@ -82,15 +86,42 @@ export function useSlidingSearchWindow(
 	onPerform: ( perPage: number ) => void,
 	onError: () => void
 ): void {
+	// Use refs to store the latest callbacks without causing re-renders
+	const onPerformRef = useRef( onPerform );
+	const onErrorRef = useRef( onError );
+	// Use refs to store latest values to check inside throttled callback
+	const canLoadRef = useRef( canLoad );
+	const requestCountRef = useRef( requestCount );
+
+	// Update refs when callbacks change
+	useEffect( () => {
+		onPerformRef.current = onPerform;
+		onErrorRef.current = onError;
+	}, [ onPerform, onError ] );
+
+	// Update refs when values change
+	useEffect( () => {
+		canLoadRef.current = canLoad;
+		requestCountRef.current = requestCount;
+	}, [ canLoad, requestCount ] );
+
 	useEffect( () => {
 		if ( requestCount === 0 || ! canLoad ) {
 			return;
 		}
 
 		if ( requestCount > REQUEST_MAX ) {
-			onError();
+			onErrorRef.current();
+			return;
 		}
 
-		throttle( () => onPerform( adjustPerPage( requestCount, perPage ) ) );
-	}, [ canLoad, onError, onPerform, perPage, requestCount ] );
+		const adjustedPerPage = adjustPerPage( requestCount, perPage );
+		throttle( () => {
+			// Check fresh values inside throttled callback to avoid stale closures
+			if ( requestCountRef.current === 0 || ! canLoadRef.current ) {
+				return;
+			}
+			onPerformRef.current( adjustedPerPage );
+		} );
+	}, [ canLoad, perPage, requestCount ] ); // Removed onError and onPerform from dependencies
 }

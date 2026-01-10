@@ -15,7 +15,7 @@ function Presets(): JSX.Element {
 	const currentPreset = usePresetStore( ( state ) => state.currentPreset );
 	const setCurrentPreset = usePresetStore( ( state ) => state.setCurrentPreset );
 	const search = useSearchStore( ( state ) => state.search );
-	const searchStatus = useSearchStore( ( state ) => state.status );
+	const searchIsBusy = useSearchStore( ( state ) => state.isBusy );
 	const savePresetMutation = useSavePreset();
 	const updatePresetMutation = useUpdatePreset();
 	const [ askName, showName ] = useState( false );
@@ -119,7 +119,7 @@ function Presets(): JSX.Element {
 			<Select
 				name="saved-search"
 				value={ currentPreset?.id ?? '0' }
-				disabled={ status === STATUS_IN_PROGRESS || searchStatus === STATUS_IN_PROGRESS }
+				disabled={ status === STATUS_IN_PROGRESS || searchIsBusy }
 				items={ status === STATUS_IN_PROGRESS ? savingItem : items }
 				onChange={ changePreset }
 			/>

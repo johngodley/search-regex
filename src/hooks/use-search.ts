@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { apiFetch } from '@wp-plugin-lib';
-import SearchRegexApi from '../lib/api-request';
+import { apiFetch, postApiRequest } from '@wp-plugin-lib';
+import { ApiUtils } from '../lib/api-utils';
 import type { SearchValues, Result } from '../types/search';
 import { useMessageStore } from '../stores/message-store';
 import { useSearchStore } from '../stores/search-store';
@@ -29,7 +29,7 @@ export function useSearch() {
 
 	return useMutation< SearchResponse, Error, SearchParams >( {
 		mutationFn: async ( searchParams ) => {
-			const response = await apiFetch( SearchRegexApi.search.perform( searchParams ) );
+			const response = await apiFetch( postApiRequest( 'search-regex/v1/search', searchParams ) );
 			// Validate and parse response with Zod
 			return searchResponseSchema.parse( response );
 		},
@@ -44,7 +44,9 @@ export function useDeleteRow() {
 
 	return useMutation< DeleteRowResponse, Error, { source: string; rowId: string | number } >( {
 		mutationFn: async ( { source, rowId } ) => {
-			const response = await apiFetch( SearchRegexApi.source.deleteRow( source, rowId ) );
+			const response = await apiFetch(
+				postApiRequest( `search-regex/v1/source/${ source }/row/${ rowId }/delete` )
+			);
 			return deleteRowResponseSchema.parse( response );
 		},
 		onError: ( error ) => {
@@ -58,7 +60,7 @@ export function useLoadRow() {
 
 	return useMutation< LoadRowResponse, Error, { source: string; rowId: string | number } >( {
 		mutationFn: async ( { source, rowId } ) => {
-			const response = await apiFetch( SearchRegexApi.source.loadRow( source, rowId ) );
+			const response = await apiFetch( ApiUtils.source.loadRow( source, rowId ) );
 			return loadRowResponseSchema.parse( response );
 		},
 		onError: ( error ) => {
@@ -80,7 +82,10 @@ export function useSaveRow() {
 	>( {
 		mutationFn: async ( { replacement, rowId } ) => {
 			const response = await apiFetch(
-				SearchRegexApi.source.saveRow( replacement.source, rowId, replacement, search )
+				postApiRequest( `search-regex/v1/source/${ replacement.source }/row/${ rowId }`, {
+					...search,
+					replacement,
+				} )
 			);
 			return saveRowResponseSchema.parse( response );
 		},
@@ -126,7 +131,7 @@ export function useSourceComplete() {
 
 	return useMutation< SourceCompleteResponse, Error, { source: string; column: string; value: string } >( {
 		mutationFn: async ( { source, column, value } ) => {
-			const response = await apiFetch( SearchRegexApi.source.complete( source, column, value ) );
+			const response = await apiFetch( ApiUtils.source.complete( source, column, value ) );
 			return sourceCompleteResponseSchema.parse( response );
 		},
 		onError: ( error ) => {

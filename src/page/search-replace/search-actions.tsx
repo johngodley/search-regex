@@ -60,10 +60,9 @@ function getPerformButton( action: string ): string {
 
 function SearchActions() {
 	const search = useSearchStore( ( state ) => state.search );
-	const status = useSearchStore( ( state ) => state.status );
 	const canCancel = useSearchStore( ( state ) => state.canCancel );
 	const resultsDirty = useSearchStore( ( state ) => state.resultsDirty );
-	const isSaving = useSearchStore( ( state ) => state.isSaving );
+	const isBusy = useSearchStore( ( state ) => state.isBusy );
 	const setStatus = useSearchStore( ( state ) => state.setStatus );
 	const setResults = useSearchStore( ( state ) => state.setResults );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
@@ -129,25 +128,21 @@ function SearchActions() {
 
 	return (
 		<div className="searchregex-search__action">
-			<Button isPrimary isSubmit disabled={ status === STATUS_IN_PROGRESS || isSaving } name="search">
+			<Button isPrimary isSubmit disabled={ isBusy } name="search">
 				{ resultsDirty ? __( 'Refresh', 'search-regex' ) : __( 'Search', 'search-regex' ) }
 			</Button>
 
 			{ effectiveAction !== '' && (
 				<Button
 					isDestructive
-					disabled={
-						! isPerformReady( effectiveAction, effectiveActionOption, replacement ) ||
-						status === STATUS_IN_PROGRESS ||
-						isSaving
-					}
+					disabled={ ! isPerformReady( effectiveAction, effectiveActionOption, replacement ) || isBusy }
 					onClick={ handlePerform }
 				>
 					{ getPerformButton( effectiveAction ) }
 				</Button>
 			) }
 
-			{ ( status === STATUS_IN_PROGRESS || isSaving ) && canCancel && (
+			{ isBusy && canCancel && (
 				<>
 					&nbsp;
 					<Button isDestructive onClick={ handleCancel }>

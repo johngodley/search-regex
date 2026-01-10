@@ -1,6 +1,7 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import Nav from './nav-button';
 import { SEARCH_FORWARD, STATUS_FAILED, STATUS_COMPLETE, STATUS_IN_PROGRESS } from '../../../lib/constants';
+import type { SearchTotals } from '../../../types/search';
 import {
 	useSearchStore,
 	convertToSearchTotals,
@@ -14,17 +15,13 @@ interface Progress {
 	next?: number | false;
 }
 
-interface Totals {
-	matched_rows: number; // eslint-disable-line camelcase
-}
-
 interface AdvancedPaginationProps {
 	total: number;
 	progress: Progress;
 	isLoading: boolean;
 	searchDirection: string;
 	noTotal?: boolean;
-	totals: Totals;
+	totals: SearchTotals;
 }
 
 const forwardPercent = ( total: number, current: number | false ): number =>
@@ -34,6 +31,8 @@ const backPercent = ( total: number, current: number | false ): number =>
 
 export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 	const searchValues = useSearchStore( ( state ) => state.search );
+	const results = useSearchStore( ( state ) => state.results );
+	const cumulativeMatchedRows = useSearchStore( ( state ) => state.cumulativeMatchedRows );
 	const setResults = useSearchStore( ( state ) => state.setResults );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
@@ -42,12 +41,17 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
 	const setResultsDirty = useSearchStore( ( state ) => state.setResultsDirty );
 	const setSearchDirection = useSearchStore( ( state ) => state.setSearchDirection );
+	const addToCumulativeMatchedRows = useSearchStore( ( state ) => state.addToCumulativeMatchedRows );
+	const setCumulativeMatchedRows = useSearchStore( ( state ) => state.setCumulativeMatchedRows );
 
 	const searchMutation = useSearch();
 	const { total, progress, isLoading, searchDirection, noTotal = false, totals } = props;
 	const { previous = false, next = false } = progress;
 
 	function onChangePage( page: number, direction: string ) {
+		// Before clearing results, add current matches to cumulative total
+		addToCumulativeMatchedRows( results.length );
+
 		setResults( [] );
 		setResultsDirty( false );
 		setShowLoading( true );
@@ -60,6 +64,43 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 				...searchValues,
 				page,
 				searchDirection: direction,
+			},
+			{
+				onSuccess: ( data ) => {
+					// ✨ Data is already validated by Zod in useSearch hook
+					// Convert API results (number row_id) to Result[] (string row_id)
+					setResults( convertToResults( data.results ) );
+					setTotals( convertToSearchTotals( data.totals ) );
+					setProgress( convertToSearchProgress( data.progress ) );
+					setStatus( data.status ?? STATUS_COMPLETE );
+					setShowLoading( false );
+					setCanCancel( false );
+				},
+				onError: () => {
+					setStatus( STATUS_FAILED );
+					setShowLoading( false );
+					setCanCancel( false );
+				},
+			}
+		);
+	}
+
+	function onFirstPage() {
+		// Reset cumulative counter when going back to first page
+		setCumulativeMatchedRows( 0 );
+
+		setResults( [] );
+		setResultsDirty( false );
+		setShowLoading( true );
+		setCanCancel( true );
+		setSearchDirection( SEARCH_FORWARD );
+		setStatus( STATUS_IN_PROGRESS );
+
+		searchMutation.mutate(
+			{
+				...searchValues,
+				page: 0,
+				searchDirection: SEARCH_FORWARD,
 			},
 			{
 				onSuccess: ( data ) => {
@@ -110,8 +151,8 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 					title={ __( 'First page', 'search-regex' ) }
 					button="«"
 					className="first-page"
-					enabled={ previous !== false && ! isLoading }
-					onClick={ () => onChangePage( 0, SEARCH_FORWARD ) }
+					enabled={ cumulativeMatchedRows > 0 && previous !== false && ! isLoading }
+					onClick={ onFirstPage }
 				/>
 
 				<span className="tablenav-paging-text">

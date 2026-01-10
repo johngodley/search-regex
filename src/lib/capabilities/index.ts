@@ -1,10 +1,8 @@
-// eslint-disable-next-line camelcase
-export function has_capability( cap: string ): boolean {
+export function hasCapability( cap: string ): boolean {
 	return SearchRegexi10n.caps.capabilities.indexOf( cap ) !== -1;
 }
 
-// eslint-disable-next-line camelcase
-export function has_page_access( page: string ): boolean {
+export function hasPageAccess( page: string ): boolean {
 	return SearchRegexi10n.caps.pages.indexOf( page ) !== -1;
 }
 

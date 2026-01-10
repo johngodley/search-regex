@@ -1,9 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink, Notice, Button, createInterpolateElement } from '@wp-plugin-components';
 import { useSaveSettings } from '../../hooks/use-settings';
-/* eslint-disable camelcase */
-import { CAP_SEARCHREGEX_OPTIONS, has_capability } from '../../lib/capabilities';
-/* eslint-enable camelcase */
+import { CAP_SEARCHREGEX_OPTIONS, hasCapability } from '../../lib/capabilities';
 
 function UpdateNotice() {
 	/* eslint-disable camelcase */
@@ -22,7 +20,7 @@ function UpdateNotice() {
 	}
 
 	/* eslint-disable camelcase */
-	if ( ! update_notice || ! has_capability( CAP_SEARCHREGEX_OPTIONS ) ) {
+	if ( ! update_notice || ! hasCapability( CAP_SEARCHREGEX_OPTIONS ) ) {
 		/* eslint-enable camelcase */
 		return null;
 	}

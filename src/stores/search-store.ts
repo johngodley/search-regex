@@ -1,29 +1,20 @@
 import { create } from 'zustand';
 import { setPageUrl, getPageUrl } from '@wp-plugin-lib';
-import type { SearchValues, SearchSourceGroup, Schema, Result } from '../types/search';
+import type { SearchValues, SearchSourceGroup, Schema, Result, SearchTotals, SearchProgress } from '../types/search';
 import type { PresetValue } from '../types/preset';
 import getPreload from '../lib/preload';
 import getValidatedSearch, { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from '../lib/search-utils';
 import type { SearchResponse, SettingsValues } from '../lib/api-schemas';
-
-interface SearchTotals {
-	matched_rows: number;
-	rows: number;
-	custom?: Array< { name: string; value: number } >;
-}
-
-interface SearchProgress {
-	current?: number;
-	rows?: number;
-	next: boolean | number;
-	previous?: boolean | number | undefined;
-}
+import { STATUS_IN_PROGRESS } from '../lib/constants';
 
 // Helper functions to convert API response to store types
 
 /**
- * Convert API search response results (with number row_id) to Result[] (with string row_id)
- * @param apiResults
+ * Convert API search response results (with number row_id) to Result[] (with string row_id).
+ * The API returns row_id as a number, but the store expects it as a string.
+ *
+ * @param {SearchResponse['results']} apiResults - Results array from API response
+ * @return {Result[]} Results array with row_id converted to string
  */
 export function convertToResults( apiResults: SearchResponse[ 'results' ] ): Result[] {
 	return apiResults.map( ( result ) => ( {
@@ -32,6 +23,15 @@ export function convertToResults( apiResults: SearchResponse[ 'results' ] ): Res
 	} ) ) as Result[];
 }
 
+/**
+ * Convert API totals data to SearchTotals type, preserving optional custom field.
+ *
+ * @param {Object}            data              - Totals object from API response
+ * @param {number}            data.matched_rows - Number of matched rows
+ * @param {number}            data.rows         - Total number of rows
+ * @param {Array | undefined} data.custom       - Optional custom totals
+ * @return {SearchTotals} SearchTotals with required and optional fields
+ */
 export function convertToSearchTotals( data: {
 	matched_rows: number;
 	rows: number;
@@ -47,6 +47,17 @@ export function convertToSearchTotals( data: {
 	return result;
 }
 
+/**
+ * Convert API progress data to SearchProgress type, preserving optional fields.
+ * Special care is taken to distinguish between undefined and falsy values (like 0).
+ *
+ * @param {Object}                       data          - Progress object from API response
+ * @param {number | boolean}             data.next     - Next page indicator
+ * @param {number | undefined}           data.current  - Current position
+ * @param {number | undefined}           data.rows     - Total rows
+ * @param {boolean | number | undefined} data.previous - Previous page indicator
+ * @return {SearchProgress} SearchProgress with all available fields preserved
+ */
 export function convertToSearchProgress( data: {
 	next: number | boolean;
 	current?: number | undefined;
@@ -77,7 +88,7 @@ export function convertToSearchProgress( data: {
 	return result;
 }
 
-function getInitialSearch( presets: PresetValue[] ): SearchValues {
+function getInitialSearch( presets: PresetValue[], sources?: SearchSourceGroup[], schema?: Schema[] ): SearchValues {
 	const query = getPageUrl();
 	const defaultSearch = getDefaultSearch();
 
@@ -110,7 +121,21 @@ function getInitialSearch( presets: PresetValue[] ): SearchValues {
 		...querySearch, // Query params should override presets and defaults
 	};
 
-	return getValidatedSearch( merged as any );
+	return getValidatedSearch( merged as any, sources, schema );
+}
+
+function getInitialMode(): 'simple' | 'advanced' {
+	const settings = SearchRegexi10n.settings as SettingsValues | undefined;
+	const startupMode = settings?.startupMode;
+	const queryParams = getQuerySearchParams();
+
+	// Query param overrides startup mode
+	if ( queryParams.mode ) {
+		return queryParams.mode as 'simple' | 'advanced';
+	}
+
+	// Fall back to startup mode or default to advanced
+	return startupMode === 'simple' ? 'simple' : 'advanced';
 }
 
 interface SearchStore {
@@ -134,11 +159,19 @@ interface SearchStore {
 	canCancel: boolean;
 	setCanCancel: ( canCancel: boolean ) => void;
 
+	// Computed state - use this instead of subscribing to status directly
+	isBusy: boolean;
+
 	// Progress tracking
 	totals: SearchTotals;
 	setTotals: ( totals: SearchTotals ) => void;
 	progress: SearchProgress;
 	setProgress: ( progress: SearchProgress ) => void;
+
+	// Cumulative matched rows for advanced search across page navigations
+	cumulativeMatchedRows: number;
+	setCumulativeMatchedRows: ( count: number ) => void;
+	addToCumulativeMatchedRows: ( count: number ) => void;
 
 	// Replace operation
 	replaceAll: boolean;
@@ -168,101 +201,134 @@ interface SearchStore {
 	initialize: ( presets?: PresetValue[] ) => void;
 }
 
-export const useSearchStore = create< SearchStore >()( ( set, get ) => ( {
-	// Initial state - use query params if available, otherwise defaults
-	// Note: This will be updated by initialize() when presets are loaded,
-	// but we want query params to work even before presets load
-	search: getInitialSearch( [] ) as SearchValues,
-	// Current UI mode. If startupMode is "simple" we start in simple mode,
-	// otherwise we default to advanced.
-	mode: ( SearchRegexi10n.settings as SettingsValues | undefined )?.startupMode === 'simple' ? 'simple' : 'advanced',
-	results: [],
-	status: null,
-	isSaving: false,
-	canCancel: false,
-	totals: {
-		matched_rows: 0,
-		rows: 0,
-	},
-	progress: { next: false },
-	replaceAll: false,
-	replacing: [],
-	searchDirection: null,
-	showLoading: false,
-	resultsDirty: false,
-	sources: getPreload( 'sources', [] ) as unknown as SearchSourceGroup[],
-	schema: getPreload< Schema[] >( 'schema', [] ),
-	labels: getPreload( 'labels', [] ),
+export const useSearchStore = create< SearchStore >()( ( set, get ) => {
+	const sources = getPreload( 'sources', [] ) as unknown as SearchSourceGroup[];
+	const schema = getPreload< Schema[] >( 'schema', [] );
 
-	// Setters
-	setSearch: ( searchValue ) =>
-		set( ( state ) => ( {
-			search: { ...state.search, ...searchValue },
-		} ) ),
+	return {
+		// Initial state - use query params if available, otherwise defaults
+		// Note: This will be updated by initialize() when presets are loaded,
+		// but we want query params to work even before presets load
+		search: getInitialSearch( [], sources, schema ) as SearchValues,
+		// Current UI mode. Query params override startup mode.
+		mode: getInitialMode(),
+		results: [],
+		status: null,
+		isSaving: false,
+		canCancel: false,
+		// Computed: true when search is in progress or replacing
+		isBusy: false,
+		totals: {
+			matched_rows: 0,
+			rows: 0,
+		},
+		progress: { next: false },
+		replaceAll: false,
+		replacing: [],
+		searchDirection: null,
+		showLoading: false,
+		resultsDirty: false,
+		cumulativeMatchedRows: 0,
+		sources,
+		schema,
+		labels: getPreload( 'labels', [] ),
 
-	setResults: ( results ) => set( { results } ),
-	setStatus: ( status ) => set( { status } ),
-	setIsSaving: ( isSaving ) => set( { isSaving } ),
-	setMode: ( mode ) => set( { mode } ),
-	setCanCancel: ( canCancel ) => set( { canCancel } ),
-	setTotals: ( totals ) => set( { totals } ),
-	setProgress: ( progress ) => set( { progress } ),
-	setReplaceAll: ( replaceAll ) => set( { replaceAll } ),
-	setReplacing: ( replacing ) => set( { replacing } ),
-	setSearchDirection: ( searchDirection ) => set( { searchDirection } ),
-	setShowLoading: ( showLoading ) => set( { showLoading } ),
-	setResultsDirty: ( resultsDirty ) => set( { resultsDirty } ),
-	setLabels: ( labels ) => set( { labels } ),
+		// Setters
+		setSearch: ( searchValue ) =>
+			set( ( state ) => {
+				// If we have results and search params are changing, mark results as dirty
+				// A search has been performed if we have a status (even if it's STATUS_COMPLETE)
+				const hasPerformedSearch = state.status !== null;
+				const shouldMarkDirty = hasPerformedSearch && Object.keys( searchValue ).length > 0;
 
-	// Actions
-	clearResults: () =>
-		set( {
-			results: [],
-			status: null,
-			totals: { matched_rows: 0, rows: 0 },
-			progress: { next: false },
-			replacing: [],
-			resultsDirty: false,
-		} ),
+				return {
+					search: { ...state.search, ...searchValue },
+					resultsDirty: shouldMarkDirty ? true : state.resultsDirty,
+				};
+			} ),
 
-	updateSearchUrl: () => {
-		const query = getPageUrl();
+		setResults: ( results ) => set( { results } ),
+		setStatus: ( status ) =>
+			set( ( state ) => ( {
+				status,
+				isBusy: status === STATUS_IN_PROGRESS || state.replaceAll,
+			} ) ),
+		setIsSaving: ( isSaving ) => set( { isSaving } ),
+		setMode: ( mode ) => set( { mode } ),
+		setCanCancel: ( canCancel ) => set( { canCancel } ),
+		setTotals: ( totals ) => set( { totals } ),
+		setProgress: ( progress ) => set( { progress } ),
+		setCumulativeMatchedRows: ( cumulativeMatchedRows ) => set( { cumulativeMatchedRows } ),
+		addToCumulativeMatchedRows: ( count ) =>
+			set( ( state ) => ( { cumulativeMatchedRows: state.cumulativeMatchedRows + count } ) ),
+		setReplaceAll: ( replaceAll ) =>
+			set( ( state ) => ( {
+				replaceAll,
+				isBusy: state.status === STATUS_IN_PROGRESS || replaceAll,
+			} ) ),
+		setReplacing: ( replacing ) => set( { replacing } ),
+		setSearchDirection: ( searchDirection ) => set( { searchDirection } ),
+		setShowLoading: ( showLoading ) => set( { showLoading } ),
+		setResultsDirty: ( resultsDirty ) => set( { resultsDirty } ),
+		setLabels: ( labels ) => set( { labels } ),
 
-		// If there's a preset selected, just update the preset parameter
-		if ( query.preset ) {
-			setPageUrl( { page: 'search-regex.php', preset: query.preset }, {} );
-			return;
-		}
+		// Actions
+		clearResults: () =>
+			set( {
+				results: [],
+				status: null,
+				totals: { matched_rows: 0, rows: 0 },
+				progress: { next: false },
+				replacing: [],
+				resultsDirty: false,
+				cumulativeMatchedRows: 0,
+			} ),
 
-		// Otherwise, update all search parameters
-		const { search } = get();
-		const defaultSearch = getDefaultSearch();
-		const defaults = {
-			searchPhrase: defaultSearch.searchPhrase,
-			searchFlags: defaultSearch.searchFlags,
-			source: defaultSearch.source,
-			perPage: defaultSearch.perPage,
-			sub: 'search',
-			filters: defaultSearch.filters,
-			view: defaultSearch.view,
-		};
+		updateSearchUrl: () => {
+			const query = getPageUrl();
 
-		setPageUrl(
-			{
-				page: 'search-regex.php',
-				searchPhrase: search.searchPhrase,
-				searchFlags: search.searchFlags,
-				source: search.source,
-				perPage: search.perPage,
-				filters: search.filters && search.filters.length > 0 ? search.filters : null,
-				view: search.view ? ( search.view as string[] ) : [],
-			},
-			defaults
-		);
-	},
+			// If there's a preset selected, just update the preset parameter
+			if ( query.preset ) {
+				setPageUrl( { page: 'search-regex.php', preset: query.preset }, {} );
+				return;
+			}
 
-	initialize: ( presets = [] ) => {
-		const search = getInitialSearch( presets );
-		set( { search } );
-	},
-} ) );
+			// Otherwise, update all search parameters
+			const { search, mode } = get();
+			const defaultSearch = getDefaultSearch();
+			const settings = SearchRegexi10n.settings as SettingsValues | undefined;
+			const startupMode = settings?.startupMode === 'simple' ? 'simple' : 'advanced';
+
+			const defaults = {
+				searchPhrase: defaultSearch.searchPhrase,
+				searchFlags: defaultSearch.searchFlags,
+				source: defaultSearch.source,
+				perPage: defaultSearch.perPage,
+				sub: 'search',
+				filters: defaultSearch.filters,
+				view: defaultSearch.view,
+				mode: startupMode, // Only include mode in URL if different from startup mode
+			};
+
+			setPageUrl(
+				{
+					page: 'search-regex.php',
+					searchPhrase: search.searchPhrase,
+					searchFlags: search.searchFlags,
+					source: search.source,
+					perPage: search.perPage,
+					filters: search.filters && search.filters.length > 0 ? search.filters : null,
+					view: search.view ? ( search.view as string[] ) : [],
+					mode, // Include current mode
+				},
+				defaults
+			);
+		},
+
+		initialize: ( presets = [] ) => {
+			const state = get();
+			const search = getInitialSearch( presets, state.sources, state.schema );
+			set( { search } );
+		},
+	};
+} );

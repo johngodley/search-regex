@@ -291,10 +291,10 @@ export function getQuerySearchParams( queryParams: Record< string, any > | null 
 	if ( parsed.searchphrase ) {
 		result.searchPhrase = parsed.searchphrase;
 	}
-	if ( parsed.searchflags && parsed.searchflags.length > 0 ) {
+	if ( parsed.searchflags !== undefined ) {
 		result.searchFlags = parsed.searchflags;
 	}
-	if ( parsed.source && parsed.source.length > 0 ) {
+	if ( parsed.source !== undefined && parsed.source.length > 0 ) {
 		result.source = parsed.source;
 	}
 	if ( parsed.replacement ) {
@@ -303,11 +303,14 @@ export function getQuerySearchParams( queryParams: Record< string, any > | null 
 	if ( parsed.perpage !== undefined ) {
 		result.perPage = parsed.perpage;
 	}
-	if ( parsed.filters && parsed.filters.length > 0 ) {
+	if ( parsed.filters !== undefined ) {
 		result.filters = parsed.filters as Filter[];
 	}
-	if ( parsed.view && parsed.view.length > 0 ) {
+	if ( parsed.view !== undefined ) {
 		result.view = parsed.view;
+	}
+	if ( parsed.mode ) {
+		result.mode = parsed.mode as 'simple' | 'advanced';
 	}
 
 	return result;

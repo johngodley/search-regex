@@ -39,11 +39,16 @@ function Pagination( props: PaginationProps ) {
 	} = props;
 	const { matched_rows: matchedRows, rows } = totals; // eslint-disable-line camelcase
 
-	if (
-		( matchedRows === null || matchedRows === undefined || matchedRows === 0 ) &&
-		! progress.next &&
-		! progress.prev
-	) {
+	// For advanced searches, show pagination if we have totals data (even if matched_rows is 0)
+	// Only hide if matchedRows is null/undefined (no search performed yet)
+	// For simple searches, hide if there are no matches AND no pagination buttons
+	const shouldHide = advanced
+		? matchedRows === null || matchedRows === undefined
+		: ( matchedRows === null || matchedRows === undefined || matchedRows === 0 ) &&
+		  ! progress.next &&
+		  ! progress.prev;
+
+	if ( shouldHide ) {
 		return (
 			<div className="tablenav-pages">
 				<div className="displaying-num">&nbsp;</div>
@@ -70,7 +75,7 @@ function Pagination( props: PaginationProps ) {
 				isLoading={ isLoading }
 				searchDirection={ searchDirection }
 				noTotal={ noTotal }
-				totals={ totals as { matched_rows: number } }
+				totals={ totals as { matched_rows: number; rows: number } }
 			/>
 		);
 	}

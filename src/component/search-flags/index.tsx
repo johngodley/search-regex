@@ -20,7 +20,11 @@ function SearchFlags( props: SearchFlagsProps ): JSX.Element {
 	const options = getAvailableSearchFlags()
 		.filter( ( item ) => item.value !== 'regex' || allowRegex )
 		.filter( ( item ) => item.value !== 'case' || allowCase )
-		.filter( ( item ) => item.value !== 'multi' || allowMultiline );
+		.filter( ( item ) => item.value !== 'multi' || allowMultiline )
+		.map( ( item ) => ( {
+			...item,
+			badge: item.alt,
+		} ) );
 
 	return (
 		<MultiOptionDropdown
