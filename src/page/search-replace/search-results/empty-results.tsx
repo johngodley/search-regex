@@ -7,7 +7,7 @@ interface EmptyResultsProps {
 function EmptyResults( { columns }: EmptyResultsProps ) {
 	return (
 		<tr>
-			<td colSpan={ columns }>{ __( 'No more matching results found.', 'search-regex' ) }</td>
+			<td colSpan={ columns }>{ __( 'No matching results found.', 'search-regex' ) }</td>
 		</tr>
 	);
 }
