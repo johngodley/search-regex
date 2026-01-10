@@ -6,6 +6,8 @@ import SearchFlags from '../../../search-flags';
 import { useSearchStore } from '../../../../stores/search-store';
 import type { SchemaColumn, ModifyStringColumn, FilterItem, Filter } from '../../../../types/search';
 
+const MAX_LABEL_LENGTH = 20;
+
 interface ModifyStringProps {
 	disabled: boolean;
 	item: ModifyStringColumn;
@@ -134,8 +136,11 @@ export default function ModifyString( {
 				onChange={ setLocalOperation }
 				extraItems={ modifiedFilters.map( ( filterItem ) => ( {
 					value: filterItem.column + '-' + filterItem.value,
-					/* translators: %s: value being replaced */
-					label: sprintf( __( 'Replace "%s"', 'search-regex' ), ( filterItem.value || '' ).slice( 0, 20 ) ),
+					label: sprintf(
+						/* translators: %s: value being replaced */
+						__( 'Replace "%s"', 'search-regex' ),
+						( filterItem.value || '' ).slice( 0, MAX_LABEL_LENGTH )
+					),
 				} ) ) }
 			/>
 

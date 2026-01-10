@@ -75,7 +75,7 @@ function Pagination( props: PaginationProps ) {
 				isLoading={ isLoading }
 				searchDirection={ searchDirection }
 				noTotal={ noTotal }
-				totals={ totals as { matched_rows: number } }
+				totals={ totals as { matched_rows: number; rows: number } }
 			/>
 		);
 	}

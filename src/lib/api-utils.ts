@@ -42,9 +42,10 @@ export const ApiUtils = {
 				? postApiRequest( 'search-regex/v1/plugin/test', { test: 'ping' } )
 				: getApiRequest( 'search-regex/v1/plugin/test' );
 
-			request.url = url.startsWith( 'http' ) ? url + request.url : request.url;
-
-			return request;
+			return {
+				...request,
+				url: url.startsWith( 'http' ) ? url + request.url : request.url,
+			};
 		},
 	},
 };
