@@ -78,6 +78,15 @@ function SearchActions() {
 	const performMutation = useSearch();
 
 	const handlePerform = () => {
+		// Show confirmation dialog for destructive delete action
+		if ( effectiveAction === 'delete' ) {
+			/* eslint-disable no-alert */
+			if ( ! confirm( __( 'Are you sure you want to delete all matching rows?', 'search-regex' ) ) ) {
+				/* eslint-enable no-alert */
+				return;
+			}
+		}
+
 		setIsSaving( true );
 		setCanCancel( true );
 		setReplaceAll( true );

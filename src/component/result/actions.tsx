@@ -26,6 +26,12 @@ function Actions( props: ActionsProps ): JSX.Element {
 	function onDelete( ev: MouseEvent< HTMLButtonElement > ): void {
 		ev.preventDefault();
 
+		/* eslint-disable no-alert */
+		if ( ! confirm( __( 'Are you sure you want to delete this database row?', 'search-regex' ) ) ) {
+			/* eslint-enable no-alert */
+			return;
+		}
+
 		deleteRowMutation.mutate(
 			{ source: sourceType, rowId },
 			{
