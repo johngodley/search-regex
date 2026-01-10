@@ -28,6 +28,7 @@ function SearchReplace() {
 	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
 	const setResultsDirty = useSearchStore( ( state ) => state.setResultsDirty );
 	const setSearchDirection = useSearchStore( ( state ) => state.setSearchDirection );
+	const setCumulativeMatchedRows = useSearchStore( ( state ) => state.setCumulativeMatchedRows );
 	const updateSearchUrl = useSearchStore( ( state ) => state.updateSearchUrl );
 
 	const searchMutation = useSearch();
@@ -35,9 +36,10 @@ function SearchReplace() {
 	function submit( ev: FormEvent< HTMLFormElement > ) {
 		ev.preventDefault();
 
-		// Clear previous results
+		// Clear previous results and reset cumulative counter
 		setResults( [] );
 		setResultsDirty( false );
+		setCumulativeMatchedRows( 0 );
 		setShowLoading( true );
 		setCanCancel( true );
 

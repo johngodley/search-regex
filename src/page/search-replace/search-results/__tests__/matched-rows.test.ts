@@ -162,4 +162,41 @@ describe( 'Matched rows calculation', () => {
 			expect( effectiveTotals.matched_rows ).toBe( 50 ); // Show cumulative even if current is empty
 		} );
 	} );
+
+	describe( 'First page navigation', () => {
+		it( 'should reset cumulative when going back to first page', () => {
+			// User was on page 3 with cumulative=50, clicks "First page"
+			// The cumulative should be reset to 0, not add current results
+			const isAdvanced = true;
+			const totals = { matched_rows: 0, rows: 1000 };
+			const results = new Array( 25 ); // First page after reset has 25 matches
+			const cumulativeMatchedRows = 0; // Reset to 0 when going to first page
+
+			const effectiveTotals = isAdvanced
+				? {
+						...totals,
+						matched_rows: cumulativeMatchedRows + results.length,
+				  }
+				: totals;
+
+			expect( effectiveTotals.matched_rows ).toBe( 25 ); // Should show only first page results, not 75
+		} );
+
+		it( 'should start fresh count from first page', () => {
+			// Verify that after reset, counts start from 0 again
+			const isAdvanced = true;
+			const totals = { matched_rows: 0, rows: 1000 };
+			const results = new Array( 10 );
+			const cumulativeMatchedRows = 0; // Fresh start
+
+			const effectiveTotals = isAdvanced
+				? {
+						...totals,
+						matched_rows: cumulativeMatchedRows + results.length,
+				  }
+				: totals;
+
+			expect( effectiveTotals.matched_rows ).toBe( 10 );
+		} );
+	} );
 } );

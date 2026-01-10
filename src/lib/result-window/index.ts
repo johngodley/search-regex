@@ -1,17 +1,22 @@
 import { useEffect, useRef } from 'react';
 import { useDelta } from 'react-delta';
 
-export const INCREMENT_FAST = 1.2;
-export const INCREMENT_SLOW = 0.8;
+// Scaling factors for adjusting page size based on request performance
+export const INCREMENT_FAST = 1.2; // Scale up by 20% for faster pagination
+export const INCREMENT_SLOW = 0.8; // Scale down by 20% for slower pagination
 
+// Maximum number of requests before aborting to prevent infinite loops
 const REQUEST_MAX = 1000;
 
-const LIMIT_MAX = 2000;
-const LIMIT_MIN = 3;
+// Limits for database rows to fetch in a single request
+const LIMIT_MAX = 2000; // Maximum rows per request (hard cap)
+const LIMIT_MIN = 3; // Minimum requests before scaling up page size
 
-const TIME_GAP = 500;
-const TIME_DELAY = 500;
+// Throttling timings to prevent flooding the server with requests
+const TIME_GAP = 500; // ms - Minimum gap required before triggering another request
+const TIME_DELAY = 500; // ms - Delay to add if requests are too close together
 
+// Default starting size for sliding window pagination
 const DEFAULT_WINDOW_SIZE = 200;
 
 let lastTime = 0;

@@ -36,8 +36,8 @@ interface Progress {
  * Normalize a progress value (next or previous) from API format to local format.
  * Converts boolean values to false, preserves numbers (including 0), and defaults undefined to false.
  *
- * @param value - The progress value from the API (boolean, number, or undefined)
- * @return The normalized value (number or false)
+ * @param {boolean | number | undefined} value - The progress value from the API
+ * @return {number | false} The normalized value (number or false)
  */
 function normalizeProgressValue( value: boolean | number | undefined ): number | false {
 	if ( value === false || value === true ) {
@@ -49,6 +49,16 @@ function normalizeProgressValue( value: boolean | number | undefined ): number |
 	return false;
 }
 
+/**
+ * Convert API progress format to local Progress format with normalized values.
+ *
+ * @param {Object}                       progress          - Progress object from API response
+ * @param {boolean | number}             progress.next     - Next page indicator
+ * @param {boolean | number | undefined} progress.previous - Previous page indicator
+ * @param {number | undefined}           progress.current  - Current position
+ * @param {number | undefined}           progress.rows     - Total rows
+ * @return {Progress} Progress object with normalized next/previous values and optional current/rows
+ */
 function convertProgressToLocal( progress: {
 	next: boolean | number;
 	previous?: boolean | number | undefined;
@@ -63,6 +73,15 @@ function convertProgressToLocal( progress: {
 	};
 }
 
+/**
+ * Check if there are more results available in the current search direction.
+ *
+ * @param {string | null}                searchDirection   - Current search direction (SEARCH_FORWARD or SEARCH_BACKWARD)
+ * @param {Object}                       progress          - Progress object containing next/previous page indicators
+ * @param {boolean | number}             progress.next     - Next page indicator
+ * @param {boolean | number | undefined} progress.previous - Previous page indicator
+ * @return {boolean} true if more results can be loaded in the current direction
+ */
 function hasMoreResults(
 	searchDirection: string | null,
 	progress: { next: boolean | number; previous?: boolean | number | undefined }
@@ -74,9 +93,20 @@ function hasMoreResults(
 		( searchDirection === SEARCH_BACKWARD && prev !== false )
 	);
 }
+/**
+ * Determines if more results should be loaded via the sliding window mechanism.
+ * This is used during advanced searches to automatically load additional results
+ * until the page is full (perPage limit reached) or no more results are available.
+ *
+ * @param {number}             requestCount - Number of requests made (0 means not started, >0 means in progress)
+ * @param {ResultType[]}       results      - Current results array
+ * @param {number | undefined} perPage      - Target number of results per page
+ * @return {boolean} true if we should continue loading to fill the page
+ */
 const shouldLoadMore = ( requestCount: number, results: ResultType[], perPage: number | undefined ): boolean => {
 	// Allow loading more if we're still paginating (requestCount > 0) and haven't reached the page limit
-	// Don't check status here - status can be COMPLETE for individual requests but we still want to paginate
+	// Note: We don't check status here because status can be COMPLETE for individual API requests
+	// but we still want to continue paginating via the sliding window until the page is full
 	return requestCount > 0 && perPage !== undefined && results.length < perPage;
 };
 
@@ -87,7 +117,6 @@ function SearchResults() {
 	const isBusy = useSearchStore( ( state ) => state.isBusy );
 	const search = useSearchStore( ( state ) => state.search );
 	const searchDirection = useSearchStore( ( state ) => state.searchDirection );
-	const showLoading = useSearchStore( ( state ) => state.showLoading );
 	const resultsDirty = useSearchStore( ( state ) => state.resultsDirty );
 	const cumulativeMatchedRows = useSearchStore( ( state ) => state.cumulativeMatchedRows );
 	const setResults = useSearchStore( ( state ) => state.setResults );
@@ -101,19 +130,23 @@ function SearchResults() {
 	const { perPage } = search;
 	const isAdvanced = isAdvancedSearch( search );
 
-	// Initialize request count to 1 when results first arrive to trigger automatic pagination
+	// Initialize request count to 1 when initial search completes to trigger automatic pagination
+	// This starts the sliding window mechanism for advanced searches, even if first page has 0 results
 	useEffect( () => {
 		if (
-			results.length > 0 &&
 			requestCount === 0 &&
 			isAdvanced &&
 			! isBusy &&
 			hasMoreResults( searchDirection ?? SEARCH_FORWARD, progress )
 		) {
-			// Results have arrived and no requests in progress, start the sliding window
+			// Initial search completed and more pages available, start the sliding window
 			setRequestCount( 1 );
-		} else if ( results.length === 0 && requestCount > 0 ) {
-			// Results cleared, reset count
+		} else if (
+			results.length === 0 &&
+			requestCount > 0 &&
+			! hasMoreResults( searchDirection ?? SEARCH_FORWARD, progress )
+		) {
+			// Results cleared and no more pages available, reset count
 			setRequestCount( 0 );
 		}
 	}, [ results.length, requestCount, isAdvanced, isBusy, searchDirection, progress ] );
@@ -140,10 +173,21 @@ function SearchResults() {
 
 					// Get fresh results to append to
 					const currentResults = useSearchStore.getState().results;
-					setResults( [ ...currentResults, ...convertToResults( data.results ) ] );
+					const newResults = [ ...currentResults, ...convertToResults( data.results ) ];
+					setResults( newResults );
 					setTotals( convertToSearchTotals( data.totals ) );
-					setProgress( convertToSearchProgress( data.progress ) );
-					setStatus( data.status ?? STATUS_COMPLETE );
+					const newProgress = convertToSearchProgress( data.progress );
+					setProgress( newProgress );
+
+					// Check if we'll continue loading more results via sliding window
+					const willContinueLoading =
+						isAdvanced &&
+						perPage !== undefined &&
+						newResults.length < perPage &&
+						hasMoreResults( searchDirection ?? SEARCH_FORWARD, newProgress );
+
+					// Keep status as IN_PROGRESS if sliding window will continue, otherwise use API status
+					setStatus( willContinueLoading ? STATUS_IN_PROGRESS : data.status ?? STATUS_COMPLETE );
 
 					// Increment request count AFTER updating progress to trigger next request with fresh data
 					setRequestCount( ( prev ) => prev + 1 );
@@ -221,7 +265,7 @@ function SearchResults() {
 						<Result key={ result.source_type + '-' + result.row_id } result={ result } />
 					) ) }
 
-					{ showLoading && <TableLoading columns={ 3 } /> }
+					{ isLoading && results.length === 0 && <TableLoading columns={ 3 } /> }
 
 					{ ! isLoading && results.length === 0 && <EmptyResults columns={ 3 } /> }
 				</tbody>

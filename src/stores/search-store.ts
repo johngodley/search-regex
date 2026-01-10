@@ -1,29 +1,20 @@
 import { create } from 'zustand';
 import { setPageUrl, getPageUrl } from '@wp-plugin-lib';
-import type { SearchValues, SearchSourceGroup, Schema, Result } from '../types/search';
+import type { SearchValues, SearchSourceGroup, Schema, Result, SearchTotals, SearchProgress } from '../types/search';
 import type { PresetValue } from '../types/preset';
 import getPreload from '../lib/preload';
 import getValidatedSearch, { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from '../lib/search-utils';
 import type { SearchResponse, SettingsValues } from '../lib/api-schemas';
-
-interface SearchTotals {
-	matched_rows: number;
-	rows: number;
-	custom?: Array< { name: string; value: number } >;
-}
-
-interface SearchProgress {
-	current?: number;
-	rows?: number;
-	next: boolean | number;
-	previous?: boolean | number | undefined;
-}
+import { STATUS_IN_PROGRESS } from '../lib/constants';
 
 // Helper functions to convert API response to store types
 
 /**
- * Convert API search response results (with number row_id) to Result[] (with string row_id)
- * @param apiResults
+ * Convert API search response results (with number row_id) to Result[] (with string row_id).
+ * The API returns row_id as a number, but the store expects it as a string.
+ *
+ * @param {SearchResponse['results']} apiResults - Results array from API response
+ * @return {Result[]} Results array with row_id converted to string
  */
 export function convertToResults( apiResults: SearchResponse[ 'results' ] ): Result[] {
 	return apiResults.map( ( result ) => ( {
@@ -32,6 +23,15 @@ export function convertToResults( apiResults: SearchResponse[ 'results' ] ): Res
 	} ) ) as Result[];
 }
 
+/**
+ * Convert API totals data to SearchTotals type, preserving optional custom field.
+ *
+ * @param {Object}            data              - Totals object from API response
+ * @param {number}            data.matched_rows - Number of matched rows
+ * @param {number}            data.rows         - Total number of rows
+ * @param {Array | undefined} data.custom       - Optional custom totals
+ * @return {SearchTotals} SearchTotals with required and optional fields
+ */
 export function convertToSearchTotals( data: {
 	matched_rows: number;
 	rows: number;
@@ -47,6 +47,17 @@ export function convertToSearchTotals( data: {
 	return result;
 }
 
+/**
+ * Convert API progress data to SearchProgress type, preserving optional fields.
+ * Special care is taken to distinguish between undefined and falsy values (like 0).
+ *
+ * @param {Object}                       data          - Progress object from API response
+ * @param {number | boolean}             data.next     - Next page indicator
+ * @param {number | undefined}           data.current  - Current position
+ * @param {number | undefined}           data.rows     - Total rows
+ * @param {boolean | number | undefined} data.previous - Previous page indicator
+ * @return {SearchProgress} SearchProgress with all available fields preserved
+ */
 export function convertToSearchProgress( data: {
 	next: number | boolean;
 	current?: number | undefined;
@@ -240,7 +251,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 		setStatus: ( status ) =>
 			set( ( state ) => ( {
 				status,
-				isBusy: status === 'in-progress' || state.replaceAll,
+				isBusy: status === STATUS_IN_PROGRESS || state.replaceAll,
 			} ) ),
 		setIsSaving: ( isSaving ) => set( { isSaving } ),
 		setMode: ( mode ) => set( { mode } ),
@@ -253,7 +264,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 		setReplaceAll: ( replaceAll ) =>
 			set( ( state ) => ( {
 				replaceAll,
-				isBusy: state.status === 'in-progress' || replaceAll,
+				isBusy: state.status === STATUS_IN_PROGRESS || replaceAll,
 			} ) ),
 		setReplacing: ( replacing ) => set( { replacing } ),
 		setSearchDirection: ( searchDirection ) => set( { searchDirection } ),

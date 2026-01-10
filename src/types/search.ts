@@ -89,6 +89,25 @@ export interface Result {
 }
 
 /**
+ * Search totals returned from API
+ */
+export interface SearchTotals {
+	matched_rows: number;
+	rows: number;
+	custom?: Array< { name: string; value: number } >;
+}
+
+/**
+ * Search progress information for pagination
+ */
+export interface SearchProgress {
+	current?: number;
+	rows?: number;
+	next: boolean | number;
+	previous?: boolean | number | undefined;
+}
+
+/**
  * Search schema column
  */
 export interface SchemaColumn {
