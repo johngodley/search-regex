@@ -131,6 +131,55 @@ class Where_Test extends SearchRegex_Api_Test {
 		$this->assertEquals( "posts.column LIKE '\\\\%cat\'s and dog\'s'", $this->unescape_like( $where->get_as_sql() ) );
 	}
 
+	public function testWhereStringCaseSensitive() {
+		$select = new Sql\Select\Select( Sql\Value::table( 'posts' ), Sql\Value::column( 'column' ) );
+		$flags = new \SearchRegex\Search\Flags( [] ); // No 'case' flag = case sensitive
+
+		// Case-sensitive equals should use COLLATE utf8mb4_bin
+		$where = new Sql\Where\Where_String( $select, 'equals', "Test", $flags );
+		$this->assertEquals( "posts.column COLLATE utf8mb4_bin LIKE 'Test'", $where->get_as_sql() );
+
+		// Case-sensitive contains should use COLLATE utf8mb4_bin
+		$where = new Sql\Where\Where_String( $select, 'contains', "Test", $flags );
+		$this->assertEquals( "posts.column COLLATE utf8mb4_bin LIKE '%Test%'", $this->unescape_like( $where->get_as_sql() ) );
+
+		// Case-sensitive NOT LIKE should use COLLATE utf8mb4_bin
+		$where = new Sql\Where\Where_String( $select, 'notcontains', "Test", $flags );
+		$this->assertEquals( "posts.column COLLATE utf8mb4_bin NOT LIKE '%Test%'", $this->unescape_like( $where->get_as_sql() ) );
+	}
+
+	public function testWhereStringCaseInsensitive() {
+		$select = new Sql\Select\Select( Sql\Value::table( 'posts' ), Sql\Value::column( 'column' ) );
+		$flags = new \SearchRegex\Search\Flags( [ 'case' ] ); // 'case' flag = case insensitive
+
+		// Case-insensitive should NOT use COLLATE
+		$where = new Sql\Where\Where_String( $select, 'equals', "Test", $flags );
+		$this->assertEquals( "posts.column LIKE 'Test'", $where->get_as_sql() );
+
+		// Case-insensitive contains should NOT use COLLATE
+		$where = new Sql\Where\Where_String( $select, 'contains', "Test", $flags );
+		$this->assertEquals( "posts.column LIKE '%Test%'", $this->unescape_like( $where->get_as_sql() ) );
+	}
+
+	public function testWhereStringWithEmoji() {
+		$select = new Sql\Select\Select( Sql\Value::table( 'posts' ), Sql\Value::column( 'column' ) );
+
+		// Case-sensitive emoji search should use COLLATE utf8mb4_bin (not LIKE BINARY)
+		$flags = new \SearchRegex\Search\Flags( [] ); // No 'case' flag = case sensitive
+		$where = new Sql\Where\Where_String( $select, 'contains', '💊', $flags );
+		$this->assertEquals( "posts.column COLLATE utf8mb4_bin LIKE '%💊%'", $this->unescape_like( $where->get_as_sql() ) );
+
+		// Case-insensitive emoji search should NOT use COLLATE
+		$flags = new \SearchRegex\Search\Flags( [ 'case' ] ); // 'case' flag = case insensitive
+		$where = new Sql\Where\Where_String( $select, 'contains', '💊', $flags );
+		$this->assertEquals( "posts.column LIKE '%💊%'", $this->unescape_like( $where->get_as_sql() ) );
+
+		// Test with multiple emojis and special characters
+		$flags = new \SearchRegex\Search\Flags( [] ); // case sensitive
+		$where = new Sql\Where\Where_String( $select, 'contains', '🔍💊🎉', $flags );
+		$this->assertEquals( "posts.column COLLATE utf8mb4_bin LIKE '%🔍💊🎉%'", $this->unescape_like( $where->get_as_sql() ) );
+	}
+
 	public function testWhereOr() {
 		$select = new Sql\Select\Select( Sql\Value::table( 'posts' ), Sql\Value::column( 'column' ) );
 
