@@ -126,9 +126,12 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.3.0 - January 4th 2026 =
+= 3.3.0 - January 11th 2026 =
 * Add a simple/advanced mode toggle
-* Use PHP autoloading
+* Add delete confirmation dialog
+* Improve case-sensitive search to properly handle emojis and multi-byte characters
+* Improved client code
+* Use PHP autoloading for better performance
 * Bump minimum PHP to 7.4
 
 = 3.2 - December 22nd 2025 =
