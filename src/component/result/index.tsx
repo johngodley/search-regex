@@ -79,9 +79,7 @@ function Result( props: ResultProps ): JSX.Element {
 			<td className="searchregex-result__table">
 				<span title={ sourceType }>{ sourceName }</span>
 			</td>
-			<td className="searchregex-result__row">
-				{ new Intl.NumberFormat( SearchRegexi10n.locale ).format( parseInt( rowId, 10 ) ) }
-			</td>
+			<td className="searchregex-result__row">{ rowId }</td>
 
 			<td className="searchregex-result__match">
 				<h2>
