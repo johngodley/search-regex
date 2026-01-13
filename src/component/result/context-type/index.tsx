@@ -95,6 +95,7 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 	}
 
 	if ( type === 'string' ) {
+		const sourceValue = ( schema as any ).source || '';
 		return (
 			<HighlightMatches
 				source={ context.context || '' }
@@ -103,7 +104,7 @@ function ContextType( props: ContextTypeProps ): JSX.Element {
 				count={ context.match_count || 0 }
 				rowId={ Number( rowId ) }
 				column={ column.column_id }
-				schema={ { name: '', type: '', columns: [ schema ] } as Schema }
+				schema={ { name: '', type: sourceValue, columns: [ schema ], source: sourceValue } as Schema }
 				{ ...( className !== undefined ? { className } : {} ) }
 			/>
 		);

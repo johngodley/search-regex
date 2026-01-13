@@ -21,7 +21,7 @@
 		"plugin": "pnpm build && rm -rf release && mkdir -p release/search-regex && cp -R search-regex.php search-regex-loader.php changelog.txt readme.txt build license.txt includes release/search-regex",
 		"plugin:zip": "pnpm plugin && cd release && zip -r search-regex.zip search-regex",
 		"release": "pnpm plugin:zip && release-it",
-		"release:svn": "pnpm plugin:zip && cd release && unzip search-regex.zip && cd .. && rm release/search-regex.zip && dev/svn.sh $npm_package_version",
+		"release:svn": "pnpm plugin && dev/svn.sh $npm_package_version",
 		"start": "wp-scripts start",
 		"test": "pnpm test:php && pnpm test:js && pnpm test:integration",
 		"test:integration": "wp-env run cli --env-cwd=wp-content/plugins/search-regex composer run test-integration",
