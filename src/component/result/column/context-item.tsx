@@ -28,7 +28,7 @@ function ContextItem( props: ContextItemProps ): JSX.Element {
 	function onSave( toggle: () => void ): void {
 		toggle();
 		save( null );
-		saveRowMutation.mutate( { replacement, rowId: String( rowId ) } );
+		saveRowMutation.mutate( { replacement: { ...replacement, source }, rowId: String( rowId ) } );
 	}
 
 	return (

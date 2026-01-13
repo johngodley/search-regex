@@ -166,7 +166,7 @@ export interface Filter {
  */
 export interface ModifyStringColumn {
 	column: string;
-	source?: string;
+	source: string;
 	operation: 'set' | 'replace' | 'regex';
 	setValue?: string;
 	replaceValue?: string;
@@ -179,7 +179,7 @@ export interface ModifyStringColumn {
  */
 export interface ModifyDateColumn {
 	column: string;
-	source?: string;
+	source: string;
 	operation: 'set' | 'increment' | 'decrement';
 	value: string | Date;
 	unit?: 'second' | 'hour' | 'day' | 'month' | 'year';
@@ -190,7 +190,7 @@ export interface ModifyDateColumn {
  */
 export interface ModifyIntegerColumn {
 	column: string;
-	source?: string;
+	source: string;
 	operation: 'set' | 'increment' | 'decrement';
 	value: string;
 }
@@ -200,7 +200,7 @@ export interface ModifyIntegerColumn {
  */
 export interface ModifyMemberColumn {
 	column: string;
-	source?: string;
+	source: string;
 	operation: 'set' | 'include' | 'exclude';
 	values: string[];
 	label?: string | string[];
