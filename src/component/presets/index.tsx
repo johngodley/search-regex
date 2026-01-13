@@ -6,6 +6,7 @@ import { STATUS_IN_PROGRESS } from '../../lib/constants';
 import { usePresets, useSavePreset, useUpdatePreset } from '../../hooks/use-presets';
 import { usePresetStore } from '../../stores/preset-store';
 import { useSearchStore } from '../../stores/search-store';
+import { getSearchFromPreset } from '../../lib/search-utils';
 import type { PresetValue } from '../../types/preset';
 import type { SearchValues } from '../../types/search';
 
@@ -15,6 +16,7 @@ function Presets(): JSX.Element {
 	const currentPreset = usePresetStore( ( state ) => state.currentPreset );
 	const setCurrentPreset = usePresetStore( ( state ) => state.setCurrentPreset );
 	const search = useSearchStore( ( state ) => state.search );
+	const setSearch = useSearchStore( ( state ) => state.setSearch );
 	const searchIsBusy = useSearchStore( ( state ) => state.isBusy );
 	const savePresetMutation = useSavePreset();
 	const updatePresetMutation = useUpdatePreset();
@@ -24,6 +26,9 @@ function Presets(): JSX.Element {
 
 	const onChangePreset = ( preset: PresetValue | undefined ) => {
 		setCurrentPreset( preset ?? null );
+		// Apply the preset's search values to the search form
+		const presetSearch = getSearchFromPreset( preset as any );
+		setSearch( presetSearch );
 	};
 
 	const onSavePreset = ( name: string, searchValues: SearchValues ) => {

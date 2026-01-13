@@ -2,9 +2,10 @@ import { StrictMode, useEffect } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Home from './page/home';
-import { apiFetch } from '@wp-plugin-lib';
+import { apiFetch, getPageUrl } from '@wp-plugin-lib';
 import { queryClient } from './lib/query-client';
 import { useSearchStore } from './stores/search-store';
+import { usePresetStore } from './stores/preset-store';
 import getPreload from './lib/preload';
 import type { PresetValue } from './types/preset';
 
@@ -25,11 +26,23 @@ const preloadedPresets = getPreload< PresetValue[] >( 'presets', [] );
 
 function AppInitializer( { children }: { children: React.ReactNode } ) {
 	const initialize = useSearchStore( ( state ) => state.initialize );
+	const setCurrentPreset = usePresetStore( ( state ) => state.setCurrentPreset );
 
 	useEffect( () => {
 		// Initialize with presets - this will merge query params + presets properly
 		// Query params are already used in initial state, but this ensures presets are applied
 		initialize( preloadedPresets );
+
+		// If a preset is specified in the URL, set it as the current preset
+		// This ensures locked fields and tags are applied correctly
+		const query = getPageUrl();
+		if ( query.preset ) {
+			const preset = preloadedPresets.find( ( item: PresetValue ) => item.id === query.preset );
+			if ( preset ) {
+				// Use currentOnly=true to avoid updating the URL (it's already in the URL)
+				setCurrentPreset( preset, true );
+			}
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] ); // Only run once on mount
 
