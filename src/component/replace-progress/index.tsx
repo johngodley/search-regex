@@ -3,7 +3,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { Line } from 'rc-progress';
 import { isAdvancedSearch } from '../../lib/search-utils';
 import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from '../../lib/constants';
-import { useSlidingActionWindow } from '../../lib/result-window';
+import { useSlidingSearchWindow } from '../../lib/result-window';
 import { useSearchStore, convertToResults } from '../../stores/search-store';
 import { useSearch } from '../../hooks/use-search';
 import { useMessageStore } from '../../stores/message-store';
@@ -67,6 +67,9 @@ function ReplaceProgress(): JSX.Element {
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
 	const setStatus = useSearchStore( ( state ) => state.setStatus );
+	const setIsSaving = useSearchStore( ( state ) => state.setIsSaving );
+	const setCanCancel = useSearchStore( ( state ) => state.setCanCancel );
+	const setReplaceAll = useSearchStore( ( state ) => state.setReplaceAll );
 	const clearResults = useSearchStore( ( state ) => state.clearResults );
 	const addError = useMessageStore( ( state ) => state.addError );
 
@@ -76,31 +79,37 @@ function ReplaceProgress(): JSX.Element {
 	const isAdvanced = isAdvancedSearch( search );
 	const total = getTotal( isAdvanced, totals );
 	const { current = 0, next = 0, rows = 0 } = progress;
-	const percent = Math.min(
-		100,
-		status === STATUS_IN_PROGRESS ? getPercent( next === false ? total : ( next as number ), total ) : 100
-	);
-	const canLoad = progress.next !== false && status === STATUS_IN_PROGRESS;
 
-	const onNext = ( page: number | false, perPage: number ) => {
+	// Calculate progress percentage based on current position in database
+	// For regex: current = offset processed, total = totals.rows (total DB rows)
+	// When complete (next = false AND status = COMPLETE), show 100%
+	const percent = Math.min( 100, status === STATUS_COMPLETE && next === false ? 100 : getPercent( current, total ) );
+
+	// Initialize request count when replace operation starts
+	useEffect( () => {
+		if ( status === STATUS_IN_PROGRESS && progress.next !== false && requestCount === 0 ) {
+			setRequestCount( 1 );
+		}
+	}, [ status, progress.next, requestCount ] );
+
+	const onReplaceMore = ( page: number | false, pageSize: number ) => {
 		if ( page === false ) {
 			return;
 		}
 
-		setRequestCount( ( prev ) => prev + 1 );
 		setStatus( STATUS_IN_PROGRESS );
 
 		performMutation.mutate(
 			{
 				...search,
 				page,
-				perPage,
 				save: true,
+				perPage: pageSize,
 			},
 			{
 				onSuccess: ( data ) => {
 					// ✨ Data is already validated by Zod in useSearch hook
-					// Convert API results (number row_id) to Result[] (string row_id)
+					// Backend returns empty results when save=true, but we track totals
 					setResults( [ ...results, ...convertToResults( data.results ) ] );
 					setTotals( {
 						matched_rows: data.totals.matched_rows,
@@ -113,7 +122,13 @@ function ReplaceProgress(): JSX.Element {
 						...( data.progress.rows !== undefined ? { rows: data.progress.rows } : {} ),
 						...( data.progress.previous !== undefined ? { previous: data.progress.previous } : {} ),
 					} );
-					setStatus( data.status ?? STATUS_COMPLETE );
+
+					// Keep status as IN_PROGRESS if more pages, otherwise complete
+					const hasMorePages = data.progress.next !== false;
+					setStatus( hasMorePages ? STATUS_IN_PROGRESS : data.status ?? STATUS_COMPLETE );
+
+					// Increment request count to trigger next iteration
+					setRequestCount( ( prev ) => prev + 1 );
 				},
 				onError: () => {
 					setStatus( STATUS_FAILED );
@@ -128,7 +143,24 @@ function ReplaceProgress(): JSX.Element {
 
 	const onClear = () => {
 		clearResults();
+		setIsSaving( false );
+		setCanCancel( false );
+		setReplaceAll( false );
 	};
+
+	// Determine if we should continue loading (sliding window)
+	const hasMorePages = progress.next !== false;
+	const canLoad = hasMorePages && status === STATUS_IN_PROGRESS && requestCount > 0;
+	const perPageValue = search.perPage ?? 200;
+
+	// Clean up flags when operation fails (not on success - let user click Finished button)
+	useEffect( () => {
+		if ( status === STATUS_FAILED ) {
+			setIsSaving( false );
+			setCanCancel( false );
+			setReplaceAll( false );
+		}
+	}, [ status, setIsSaving, setCanCancel, setReplaceAll ] );
 
 	// Handle export when operation completes
 	useEffect( () => {
@@ -143,10 +175,18 @@ function ReplaceProgress(): JSX.Element {
 		}
 	}, [ status, progress.next, search.action, search.actionOption, results ] );
 
-	useSlidingActionWindow(
+	// Use sliding window for replace all - same as search but with save=true
+	useSlidingSearchWindow(
 		canLoad,
 		requestCount,
-		( size: number ) => onNext( progress.next as number, size ),
+		perPageValue,
+		( size: number ) => {
+			// Get fresh progress value from store to avoid stale closure
+			const currentProgress = useSearchStore.getState().progress;
+			const nextPage = currentProgress.next;
+
+			onReplaceMore( nextPage as number, size );
+		},
 		onError
 	);
 
