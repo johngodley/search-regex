@@ -27,7 +27,7 @@ function Presets(): JSX.Element {
 	const onChangePreset = ( preset: PresetValue | undefined ) => {
 		setCurrentPreset( preset ?? null );
 		// Apply the preset's search values to the search form
-		const presetSearch = getSearchFromPreset( preset as any );
+		const presetSearch = getSearchFromPreset( preset ?? null );
 		setSearch( presetSearch );
 	};
 
