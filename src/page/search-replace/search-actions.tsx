@@ -91,6 +91,8 @@ function SearchActions() {
 		setCanCancel( true );
 		setReplaceAll( true );
 		setStatus( STATUS_IN_PROGRESS );
+		// Reset progress to initial state for new replace operation
+		setProgress( { next: false } );
 
 		const payload =
 			mode === 'simple'
@@ -113,10 +115,20 @@ function SearchActions() {
 					setResults( convertToResults( data.results ) );
 					setTotals( convertToSearchTotals( data.totals ) );
 					setProgress( convertToSearchProgress( data.progress ) );
-					setStatus( data.status ?? STATUS_COMPLETE );
-					setIsSaving( false );
-					setCanCancel( false );
-					setReplaceAll( false );
+
+					// For regex searches, keep status as IN_PROGRESS if there are more pages
+					// The sliding window in ReplaceProgress will handle the rest
+					const hasMorePages = data.progress.next !== false;
+					if ( hasMorePages ) {
+						// Keep status as IN_PROGRESS so ReplaceProgress sliding window continues
+						setStatus( STATUS_IN_PROGRESS );
+					} else {
+						// All done - mark as complete and clean up flags
+						setStatus( data.status ?? STATUS_COMPLETE );
+						setIsSaving( false );
+						setCanCancel( false );
+						setReplaceAll( false );
+					}
 				},
 				onError: () => {
 					setStatus( STATUS_FAILED );
