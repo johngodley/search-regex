@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, type ChangeEvent } from 'react';
+import { useState, useMemo, type ChangeEvent } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import Operation from '../operation';
 import { DropdownText } from '@wp-plugin-components';
@@ -116,9 +116,10 @@ export default function ModifyString( {
 		length: schema.length ? schema.length : 0,
 	};
 
-	useEffect( () => {
-		onChange( getOperation( localOperation, modifiedFilters ) );
-	}, [ localOperation, modifiedFilters, onChange ] );
+	function handleOperationChange( newOperation: string ) {
+		setLocalOperation( newOperation );
+		onChange( getOperation( newOperation, modifiedFilters ) );
+	}
 
 	const searchPropsWithFetch =
 		searchFlags.indexOf( 'multi' ) === -1 && remote !== false ? { ...searchProps, fetchData: remote } : searchProps;
@@ -133,7 +134,7 @@ export default function ModifyString( {
 				type="string"
 				value={ localOperation }
 				disabled={ disabled }
-				onChange={ setLocalOperation }
+				onChange={ handleOperationChange }
 				extraItems={ modifiedFilters.map( ( filterItem ) => ( {
 					value: filterItem.column + '-' + filterItem.value,
 					label: sprintf(
