@@ -8,18 +8,23 @@ import { getErrorLinks, getErrorDetails } from '../../lib/error-links';
  * Check if the error is caused by a browser extension modifying the DOM.
  * Common culprits: Google Translate, Grammarly, ad blockers, password managers.
  *
- * @param {Error | null} error The error to check.
- * @return {boolean} True if the error is caused by a browser extension, false otherwise.
+ * @param error The error to check.
  */
 function isBrowserExtensionError( error: Error | null ): boolean {
 	const message = error?.message || '';
+	const stack = error?.stack || '';
 
+	// Check for extension URLs in the stack trace
+	if ( stack.includes( 'chrome-extension://' ) || stack.includes( 'moz-extension://' ) ) {
+		return true;
+	}
+
+	// Check for DOM manipulation errors typically caused by extensions
 	return (
-		message.includes( 'removeChild' ) ||
-		message.includes( 'insertBefore' ) ||
-		message.includes( 'appendChild' ) ||
-		message.includes( 'The node to be removed is not a child of this node' ) ||
-		message.includes( 'Failed to execute' )
+		message.includes( "Failed to execute 'removeChild'" ) ||
+		message.includes( "Failed to execute 'insertBefore'" ) ||
+		message.includes( "Failed to execute 'appendChild'" ) ||
+		message.includes( 'The node to be removed is not a child of this node' )
 	);
 }
 
@@ -36,7 +41,7 @@ function BrowserExtensionWarning() {
 			</p>
 			<p>{ __( 'To fix this:', 'search-regex' ) }</p>
 			<ul style={ { listStyle: 'disc', marginLeft: '20px' } }>
-				<li>{ __( 'Disable browser extension for this page', 'search-regex' ) }</li>
+				<li>{ __( 'Disable browser extensions for this page', 'search-regex' ) }</li>
 				<li>{ __( 'Try using a different browser or incognito/private mode', 'search-regex' ) }</li>
 			</ul>
 		</>
