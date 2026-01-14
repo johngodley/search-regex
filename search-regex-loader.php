@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Legacy autoloader - retained for backward compatibility.
  *
@@ -10,7 +9,9 @@
  * has passed for caches to be cleared.
  *
  * @deprecated 3.5.0 Use the autoloader in search-regex.php instead.
+ * @package Search_Regex
  */
+
 spl_autoload_register(
 	function ( $requested_class ) {
 		$prefix = 'SearchRegex\\';
