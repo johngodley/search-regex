@@ -1,5 +1,6 @@
 <?php
 
+// TODO: this file is not used anymore. It was used in version 3.3.0 to load the plugin.
 spl_autoload_register(
 	function ( $requested_class ) {
 		$prefix = 'SearchRegex\\';
