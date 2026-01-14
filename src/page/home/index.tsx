@@ -107,7 +107,7 @@ function Home() {
 
 	return (
 		<ErrorBoundary renderCrash={ CrashHandler } extra={ { page } }>
-			<div className="wrap searchregex">
+			<div className="wrap searchregex notranslate" translate="no">
 				<PageRouter
 					page={ page }
 					setPage={ ( newPage: string ) => setPage( newPage as typeof page ) }
