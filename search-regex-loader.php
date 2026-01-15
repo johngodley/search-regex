@@ -1,4 +1,16 @@
 <?php
+/**
+ * Legacy autoloader - retained for backward compatibility.
+ *
+ * This file was used in version 3.3.0 to load the plugin, but in retrospect it is better
+ * to have it in the main plugin file.
+ *
+ * This file can safely be removed in a future major version (3.5+) after sufficient time
+ * has passed for caches to be cleared.
+ *
+ * @deprecated 3.5.0 Use the autoloader in search-regex.php instead.
+ * @package Search_Regex
+ */
 
 spl_autoload_register(
 	function ( $requested_class ) {

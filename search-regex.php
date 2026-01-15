@@ -3,7 +3,7 @@
 Plugin Name: Search Regex
 Plugin URI: https://searchregex.com/
 Description: Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support
-Version: 3.3.0
+Version: 3.3.1
 Author: John Godley
 Requires PHP: 7.4
 Requires at least: 6.5
@@ -35,9 +35,80 @@ if ( version_compare( phpversion(), '7.4' ) < 0 ) {
 	return;
 }
 
-require_once __DIR__ . '/search-regex-loader.php';
+spl_autoload_register(
+	function ( $requested_class ) {
+		$prefix = 'SearchRegex\\';
+
+		if ( strncmp( $prefix, $requested_class, strlen( $prefix ) ) !== 0 ) {
+			return;
+		}
+
+		$relative_class = substr( $requested_class, strlen( $prefix ) );
+		if ( $relative_class === '' ) {
+			return;
+		}
+
+		$normalize = static function ( string $value ): string {
+			return str_replace( '_', '-', strtolower( $value ) );
+		};
+
+		$segments = explode( '\\', $relative_class );
+		$class_name = array_pop( $segments );
+		$normalized_segments = array_filter(
+			array_map( $normalize, $segments ),
+			static fn ( $value ) => $value !== ''
+		);
+
+		$base_dir = __DIR__ . '/includes/';
+		if ( count( $normalized_segments ) > 0 ) {
+			$base_dir .= implode( '/', $normalized_segments ) . '/';
+		}
+
+		$path = $base_dir . 'class-' . $normalize( $class_name ) . '.php';
+
+		if ( file_exists( $path ) ) {
+			require_once $path;
+		}
+	}
+);
+
+// Check if the version is defined. This is to help with mid-update errors.
+if ( file_exists( __DIR__ . '/build/search-regex-version.php' ) ) {
+	require_once __DIR__ . '/build/search-regex-version.php';
+}
+
+/**
+ * Clear PHP opcache when plugin is updated. This is to help with mid-update errors.
+ *
+ * @param object $upgrader The upgrader object.
+ * @param array{action: string, type: string, plugins?: string[]} $options The upgrade options.
+ * @return void
+ */
+function searchregex_clear_opcache_on_upgrade( $upgrader, $options ) {
+	if ( $options['action'] !== 'update' || $options['type'] !== 'plugin' ) {
+		return;
+	}
+
+	$plugin_basename = plugin_basename( SEARCHREGEX_FILE );
+	$plugins = $options['plugins'] ?? [];
+
+	if ( ! in_array( $plugin_basename, $plugins, true ) ) {
+		return;
+	}
+
+	if ( function_exists( 'opcache_reset' ) ) {
+		opcache_reset();
+	}
+}
+
+add_action( 'upgrader_process_complete', 'searchregex_clear_opcache_on_upgrade', 10, 2 );
 
 if ( is_admin() ) {
+	// Check if it exists. Version 3.3 updated a lot of files and this might stop some mid-update errors.
+	if ( ! class_exists( SearchRegex\Admin\Admin::class ) ) {
+		return;
+	}
+
 	SearchRegex\Admin\Admin::init();
 } elseif ( defined( 'WP_CLI' ) && WP_CLI ) {
 	// Trigger autoloader
