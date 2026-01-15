@@ -269,7 +269,7 @@ function Actions( props: ActionsProps ) {
 								} as ResultColumn
 							}
 							placeholder={ __(
-								'Optional global replacement text. Only applies to the global search.',
+								'Optional global replacement phrase. Only applies to the global search.',
 								'search-regex'
 							) }
 						/>
