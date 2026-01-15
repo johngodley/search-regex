@@ -10,38 +10,7 @@ abstract class TestCase extends BaseTestCase {
 
 		// Define WordPress function stubs that are needed for unit tests.
 		Monkey\Functions\stubs( [
-			'is_serialized' => function ( $data ) {
-				if ( ! is_string( $data ) ) {
-					return false;
-				}
-				$data = trim( $data );
-				if ( 'N;' === $data ) {
-					return true;
-				}
-				if ( strlen( $data ) < 4 ) {
-					return false;
-				}
-				if ( ':' !== $data[1] ) {
-					return false;
-				}
-				$lastc = substr( $data, -1 );
-				if ( ';' !== $lastc && '}' !== $lastc ) {
-					return false;
-				}
-				$token = $data[0];
-				switch ( $token ) {
-					case 's':
-						return ( '"' === substr( $data, -2, 1 ) );
-					case 'a':
-					case 'O':
-						return (bool) preg_match( "/^{$token}:[0-9]+:/s", $data );
-					case 'b':
-					case 'i':
-					case 'd':
-						return (bool) preg_match( "/^{$token}:[0-9.E+-]+;$/", $data );
-				}
-				return false;
-			},
+			'is_serialized' => [ self::class, 'is_serialized' ],
 			'wp_kses' => function ( $string, $allowed_html = 'post' ) {
 				return strip_tags( $string );
 			},
@@ -61,7 +30,76 @@ abstract class TestCase extends BaseTestCase {
 
 	protected function tearDown(): void {
 		Monkey\tearDown();
+		$this->resetWpdb();
 		parent::tearDown();
+	}
+
+	/**
+	 * WordPress is_serialized() implementation.
+	 *
+	 * @param mixed $data The data to check.
+	 * @return bool True if serialized, false otherwise.
+	 */
+	public static function is_serialized( $data ): bool {
+		if ( ! is_string( $data ) ) {
+			return false;
+		}
+		$data = trim( $data );
+		if ( 'N;' === $data ) {
+			return true;
+		}
+		if ( preg_match( '/^([adObis]):/', $data, $matches ) ) {
+			switch ( $matches[1] ) {
+				case 'a':
+				case 'O':
+				case 's':
+					if ( preg_match( "/^{$matches[1]}:[0-9]+:.*[;}]\$/s", $data ) ) {
+						return true;
+					}
+					break;
+				case 'b':
+				case 'i':
+				case 'd':
+					if ( preg_match( "/^{$matches[1]}:[0-9.E+-]+;\$/", $data ) ) {
+						return true;
+					}
+					break;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Set up the global $wpdb mock for SQL-related tests.
+	 */
+	protected function setUpWpdb(): void {
+		global $wpdb;
+		$wpdb = new class {
+			public $prefix = 'wp_';
+
+			public function prepare( $format, ...$args ) {
+				$value = $args[0] ?? '';
+				if ( $format === '%d' ) {
+					return (string) intval( $value );
+				}
+				if ( $format === '%s' ) {
+					return "'" . addslashes( $value ) . "'";
+				}
+				return "'" . addslashes( $value ) . "'";
+			}
+
+			public function esc_like( $text ) {
+				return addcslashes( $text, '_%\\' );
+			}
+		};
+	}
+
+	/**
+	 * Reset the global $wpdb mock.
+	 */
+	protected function resetWpdb(): void {
+		global $wpdb;
+		$wpdb = null;
 	}
 }
 

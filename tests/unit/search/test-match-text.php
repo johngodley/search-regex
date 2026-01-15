@@ -7,7 +7,6 @@
 
 use SearchRegex\Search;
 use SearchRegex\Context;
-use Brain\Monkey\Functions;
 
 class MatchTextTest extends TestCase {
 	public static function setUpBeforeClass(): void {
@@ -18,40 +17,6 @@ class MatchTextTest extends TestCase {
 		require_once PLUGIN_PATH . '/includes/context/class-context.php';
 		require_once PLUGIN_PATH . '/includes/context/class-value-type.php';
 		require_once PLUGIN_PATH . '/includes/context/type/class-text.php';
-	}
-
-	protected function setUp(): void {
-		parent::setUp();
-
-		// Mock is_serialized to behave like WordPress
-		Functions\when( 'is_serialized' )->alias( function( $data ) {
-			if ( ! is_string( $data ) ) {
-				return false;
-			}
-			$data = trim( $data );
-			if ( 'N;' === $data ) {
-				return true;
-			}
-			if ( preg_match( '/^([adObis]):/', $data, $matches ) ) {
-				switch ( $matches[1] ) {
-					case 'a':
-					case 'O':
-					case 's':
-						if ( preg_match( "/^{$matches[1]}:[0-9]+:.*[;}]\$/s", $data ) ) {
-							return true;
-						}
-						break;
-					case 'b':
-					case 'i':
-					case 'd':
-						if ( preg_match( "/^{$matches[1]}:[0-9.E+-]+;\$/", $data ) ) {
-							return true;
-						}
-						break;
-				}
-			}
-			return false;
-		} );
 	}
 
 	private function getMatchesAsJson( array $matches ): array {

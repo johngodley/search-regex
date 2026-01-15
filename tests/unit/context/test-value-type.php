@@ -6,48 +6,12 @@
  */
 
 use SearchRegex\Context;
-use Brain\Monkey\Functions;
 
 class ValueTypeTest extends TestCase {
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
 
 		require_once PLUGIN_PATH . '/includes/context/class-value-type.php';
-	}
-
-	protected function setUp(): void {
-		parent::setUp();
-
-		// Mock is_serialized to behave like WordPress
-		Functions\when( 'is_serialized' )->alias( function( $data ) {
-			// Simplified check for serialized data (matches WordPress behavior)
-			if ( ! is_string( $data ) ) {
-				return false;
-			}
-			$data = trim( $data );
-			if ( 'N;' === $data ) {
-				return true;
-			}
-			if ( preg_match( '/^([adObis]):/', $data, $matches ) ) {
-				switch ( $matches[1] ) {
-					case 'a':
-					case 'O':
-					case 's':
-						if ( preg_match( "/^{$matches[1]}:[0-9]+:.*[;}]\$/s", $data ) ) {
-							return true;
-						}
-						break;
-					case 'b':
-					case 'i':
-					case 'd':
-						if ( preg_match( "/^{$matches[1]}:[0-9.E+-]+;\$/", $data ) ) {
-							return true;
-						}
-						break;
-				}
-			}
-			return false;
-		} );
 	}
 
 	public function testDetectsPlainText() {

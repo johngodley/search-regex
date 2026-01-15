@@ -18,32 +18,7 @@ class FilterDateTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-
-		global $wpdb;
-		$wpdb = new class {
-			public $prefix = 'wp_';
-
-			public function prepare( $format, ...$args ) {
-				$value = $args[0] ?? '';
-				if ( $format === '%d' ) {
-					return (string) intval( $value );
-				}
-				if ( $format === '%s' ) {
-					return "'" . addslashes( $value ) . "'";
-				}
-				return "'" . addslashes( $value ) . "'";
-			}
-
-			public function esc_like( $text ) {
-				return addcslashes( $text, '_%\\' );
-			}
-		};
-	}
-
-	protected function tearDown(): void {
-		global $wpdb;
-		$wpdb = null;
-		parent::tearDown();
+		$this->setUpWpdb();
 	}
 
 	private function getFilter( array $options ): Filter\Type\Filter_Date {

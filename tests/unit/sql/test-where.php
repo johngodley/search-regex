@@ -27,33 +27,7 @@ class SqlWhereTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-
-		// Mock $wpdb global
-		global $wpdb;
-		$wpdb = new class {
-			public function prepare( $format, ...$args ) {
-				$value = $args[0] ?? '';
-				// Handle different format specifiers like WordPress does
-				if ( $format === '%d' ) {
-					return (string) intval( $value );
-				}
-				if ( $format === '%s' ) {
-					return "'" . addslashes( $value ) . "'";
-				}
-				return "'" . addslashes( $value ) . "'";
-			}
-
-			public function esc_like( $text ) {
-				// Escape % and _ for LIKE queries
-				return addcslashes( $text, '_%\\' );
-			}
-		};
-	}
-
-	protected function tearDown(): void {
-		global $wpdb;
-		$wpdb = null;
-		parent::tearDown();
+		$this->setUpWpdb();
 	}
 
 	private function unescapeLike( string $sql ): string {

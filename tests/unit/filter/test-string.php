@@ -8,43 +8,17 @@
 use SearchRegex\Filter;
 use SearchRegex\Schema;
 use SearchRegex\Sql;
-use Brain\Monkey\Functions;
 
 class FilterStringTest extends TestCase {
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
 
-		// Use the plugin's autoloader
 		require_once PLUGIN_PATH . '/search-regex-loader.php';
 	}
 
 	protected function setUp(): void {
 		parent::setUp();
-
-		// Mock $wpdb global
-		global $wpdb;
-		$wpdb = new class {
-			public function prepare( $format, ...$args ) {
-				$value = $args[0] ?? '';
-				if ( $format === '%d' ) {
-					return (string) intval( $value );
-				}
-				if ( $format === '%s' ) {
-					return "'" . addslashes( $value ) . "'";
-				}
-				return "'" . addslashes( $value ) . "'";
-			}
-
-			public function esc_like( $text ) {
-				return addcslashes( $text, '_%\\' );
-			}
-		};
-	}
-
-	protected function tearDown(): void {
-		global $wpdb;
-		$wpdb = null;
-		parent::tearDown();
+		$this->setUpWpdb();
 	}
 
 	private function unescapeLike( string $sql ): string {
