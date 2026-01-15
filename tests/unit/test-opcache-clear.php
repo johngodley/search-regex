@@ -3,21 +3,20 @@
 use Brain\Monkey\Functions;
 
 class OpcacheClearTest extends TestCase {
-	public static function setUpBeforeClass(): void {
-		parent::setUpBeforeClass();
-
-		// Load the plugin file to get the real function
-		require_once PLUGIN_PATH . '/search-regex.php';
-	}
-
 	protected function setUp(): void {
 		parent::setUp();
 
 		// Stub functions for each test (Brain\Monkey tears down stubs after each test)
 		Functions\stubs( [
 			'plugin_basename' => 'search-regex/search-regex.php',
+			'add_action' => null,
+			'add_filter' => null,
+			'is_admin' => false,
 		] );
 		Functions\when( 'function_exists' )->justReturn( true );
+
+		// Load the plugin file to get the real function (must be after stubs are set up)
+		require_once PLUGIN_PATH . '/search-regex.php';
 	}
 
 	public function testDoesNotCallOpcacheResetWhenActionIsNotUpdate() {

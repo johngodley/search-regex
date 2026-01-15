@@ -1,16 +1,29 @@
 <?php
+/**
+ * Unit tests for the Search\Text class.
+ *
+ * @package Search_Regex
+ */
 
-use SearchRegex\Match;
-use SearchRegex\Context;
 use SearchRegex\Search;
+use SearchRegex\Context;
 
-class MatchTest extends WP_UnitTestCase {
-	private function get_matches_as_json( $matches ) {
+class MatchTextTest extends TestCase {
+	public static function setUpBeforeClass(): void {
+		parent::setUpBeforeClass();
+
+		require_once PLUGIN_PATH . '/includes/search/class-flags.php';
+		require_once PLUGIN_PATH . '/includes/search/class-text.php';
+		require_once PLUGIN_PATH . '/includes/context/class-context.php';
+		require_once PLUGIN_PATH . '/includes/context/class-value-type.php';
+		require_once PLUGIN_PATH . '/includes/context/type/class-text.php';
+	}
+
+	private function getMatchesAsJson( array $matches ): array {
 		$json = [];
 		foreach ( $matches as $match ) {
 			$json[] = $match->to_json();
 		}
-
 		return $json;
 	}
 
@@ -90,21 +103,21 @@ class MatchTest extends WP_UnitTestCase {
 						'pos_id' => 0,
 						'context_offset' => 0,
 						'match' => 'one',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 					[
 						'pos_id' => 13,
 						'context_offset' => 13,
 						'match' => 'one',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 					[
 						'pos_id' => 46,
 						'context_offset' => 46,
 						'match' => 'one',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 				],
@@ -112,7 +125,7 @@ class MatchTest extends WP_UnitTestCase {
 		];
 
 		$matches = Search\Text::get_all( $search, $flags, $replacements, $column_value );
-		$json = $this->get_matches_as_json( $matches );
+		$json = $this->getMatchesAsJson( $matches );
 
 		$this->assertEquals( $expected, $json );
 	}
@@ -140,14 +153,14 @@ class MatchTest extends WP_UnitTestCase {
 						'pos_id' => 0,
 						'context_offset' => 0,
 						'match' => 'one',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 					[
 						'pos_id' => 13,
 						'context_offset' => 13,
 						'match' => 'one',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 				],
@@ -168,7 +181,7 @@ class MatchTest extends WP_UnitTestCase {
 						'pos_id' => 119,
 						'context_offset' => 50,
 						'match' => 'one',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 				],
@@ -176,7 +189,7 @@ class MatchTest extends WP_UnitTestCase {
 		];
 
 		$matches = Search\Text::get_all( $search, $flags, $replacements, $column_value );
-		$json = $this->get_matches_as_json( $matches );
+		$json = $this->getMatchesAsJson( $matches );
 
 		$this->assertEquals( $expected, $json );
 	}
@@ -202,21 +215,21 @@ class MatchTest extends WP_UnitTestCase {
 						'pos_id' => 0,
 						'context_offset' => 0,
 						'match' => 'ONE',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 					[
 						'pos_id' => 13,
 						'context_offset' => 13,
 						'match' => 'ONE',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 					[
 						'pos_id' => 46,
 						'context_offset' => 46,
 						'match' => 'one',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [],
 					],
 				],
@@ -224,7 +237,7 @@ class MatchTest extends WP_UnitTestCase {
 		];
 
 		$matches = Search\Text::get_all( $search, $flags, $replacements, $column_value );
-		$json = $this->get_matches_as_json( $matches );
+		$json = $this->getMatchesAsJson( $matches );
 
 		$this->assertEquals( $expected, $json );
 	}
@@ -250,14 +263,14 @@ class MatchTest extends WP_UnitTestCase {
 						'pos_id' => 0,
 						'context_offset' => 0,
 						'match' => 'onething',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [ 'thing' ],
 					],
 					[
 						'pos_id' => 51,
 						'context_offset' => 51,
 						'match' => 'onemore',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [ 'more' ],
 					],
 				],
@@ -265,7 +278,7 @@ class MatchTest extends WP_UnitTestCase {
 		];
 
 		$matches = Search\Text::get_all( $search, $flags, $replacements, $column_value );
-		$json = $this->get_matches_as_json( $matches );
+		$json = $this->getMatchesAsJson( $matches );
 
 		$this->assertEquals( $expected, $json );
 	}
@@ -291,14 +304,14 @@ class MatchTest extends WP_UnitTestCase {
 						'pos_id' => 0,
 						'context_offset' => 0,
 						'match' => 'ONEthing',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [ 'thing' ],
 					],
 					[
 						'pos_id' => 51,
 						'context_offset' => 51,
 						'match' => 'onemore',
-						'replacement' => '',
+						'replacement' => null,
 						'captures' => [ 'more' ],
 					],
 				],
@@ -306,12 +319,12 @@ class MatchTest extends WP_UnitTestCase {
 		];
 
 		$matches = Search\Text::get_all( $search, $flags, $replacements, $column_value );
-		$json = $this->get_matches_as_json( $matches );
+		$json = $this->getMatchesAsJson( $matches );
 
 		$this->assertEquals( $expected, $json );
 	}
 
-	public function testUtfMatched_Text() {
+	public function testUtfMatchedText() {
 		$search = 'one(\w+)';
 		$column_value = 'ONE中国 there is one match here and at the end is onemore';
 		$flags = new Search\Flags( [ 'regex', 'case' ] );
@@ -347,8 +360,44 @@ class MatchTest extends WP_UnitTestCase {
 		];
 
 		$matches = Search\Text::get_all( $search, $flags, $replacements, $column_value );
-		$json = $this->get_matches_as_json( $matches );
+		$json = $this->getMatchesAsJson( $matches );
 
 		$this->assertEquals( $expected, $json );
+	}
+
+	public function testReplaceAtPosition() {
+		$match = new Search\Text( 'world', 6, 'universe' );
+		$text = 'Hello world!';
+
+		$result = $match->replace_at_position( $text );
+
+		$this->assertEquals( 'Hello universe!', $result );
+	}
+
+	public function testReplaceAtPositionWithUtf8() {
+		$match = new Search\Text( '世界', 2, '宇宙' );
+		$text = 'こん世界';
+
+		$result = $match->replace_at_position( $text );
+
+		$this->assertEquals( 'こん宇宙', $result );
+	}
+
+	public function testReplaceAtPositionWithNoReplacement() {
+		$match = new Search\Text( 'world', 6 );
+		$text = 'Hello world!';
+
+		$result = $match->replace_at_position( $text );
+
+		$this->assertEquals( 'Hello world!', $result );
+	}
+
+	public function testSetReplacement() {
+		$match = new Search\Text( 'test', 0 );
+		$match->set_replacement( 'replaced' );
+
+		$json = $match->to_json();
+
+		$this->assertEquals( 'replaced', $json['replacement'] );
 	}
 }
