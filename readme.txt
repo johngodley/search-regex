@@ -126,11 +126,13 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.3.1 - January 13th 2026 =
+= 3.3.1 - January 16th 2026 =
 * Fix replace all with regex
 * Fix presets on page load
 * Fix crash when adding a modification
 * Fix missing source param from column context
+* Add browser extension error detection
+* Add mid-update cache clearing detection
 
 = 3.3.0 - January 11th 2026 =
 * Add a simple/advanced mode toggle
