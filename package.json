@@ -110,6 +110,7 @@
 	"release-it": {
 		"github": {
 			"release": true,
+			"tokenRef": "GITHUB_TOKEN_RELEASE",
 			"assets": [
 				"release/search-regex.zip"
 			]
