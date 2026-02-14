@@ -51,6 +51,10 @@ class Terms extends Source\Source {
 				$update['slug'] = (string) $term['slug'];
 			}
 
+			if ( isset( $term['description'] ) ) {
+				$update['description'] = (string) $term['description'];
+			}
+
 			$this->log_save( 'term', array_merge( [ 'term_id' => $row_id ], $term ) );
 
 			// This does all the sanitization
@@ -98,6 +102,11 @@ class Terms extends Source\Source {
 			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT slug as id,slug as value FROM {$this->get_table_name()} WHERE slug LIKE %s LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
 		}
 
+		if ( $column['column'] === 'description' ) {
+			// phpcs:ignore
+			return $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT tt.description as id,tt.description as value FROM {$wpdb->term_taxonomy} AS tt WHERE tt.description LIKE %s AND tt.description != '' LIMIT %d", '%' . $wpdb->esc_like( $value ) . '%', self::AUTOCOMPLETE_LIMIT ) );
+		}
+
 		return [];
 	}
 
@@ -140,6 +149,14 @@ class Terms extends Source\Source {
 					'type' => 'string',
 					'title' => __( 'Slug', 'search-regex' ),
 					'options' => 'api',
+					'global' => true,
+				],
+				[
+					'column' => 'description',
+					'type' => 'string',
+					'title' => __( 'Description', 'search-regex' ),
+					'options' => 'api',
+					'join' => 'description',
 					'global' => true,
 				],
 				[
