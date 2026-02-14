@@ -128,4 +128,28 @@ class FilterStringTest extends TestCase {
 		$filter = $this->getFilter( [] );
 		$this->assertFalse( $filter->is_valid() );
 	}
+
+	private function getJoinedFilter( array $options ): Filter\Type\Filter_String {
+		$source = new Schema\Source( [ 'type' => 'terms', 'table' => 'wp_terms' ] );
+		$column = new Schema\Column( [ 'column' => 'description', 'join' => 'description' ], $source );
+		return new Filter\Type\Filter_String( $options, $column );
+	}
+
+	public function testNoJoinWithoutJoinColumn() {
+		$filter = $this->getFilter( [ 'value' => 'test', 'logic' => 'contains' ] );
+		$query = $this->getQueryForFilter( $filter );
+		$sql = $this->unescapeLike( $query->get_as_sql() );
+
+		$this->assertStringNotContainsString( 'JOIN', $sql );
+	}
+
+	public function testJoinWithJoinColumn() {
+		$filter = $this->getJoinedFilter( [ 'value' => 'test', 'logic' => 'contains' ] );
+		$query = $filter->get_query();
+		$query->add_from( new Sql\From( Sql\Value::table( 'wp_terms' ) ) );
+		$sql = $this->unescapeLike( $query->get_as_sql() );
+
+		$this->assertStringContainsString( 'INNER JOIN wp_term_taxonomy AS tt ON (wp_terms.term_id = tt.term_id)', $sql );
+		$this->assertStringContainsString( 'tt.description', $sql );
+	}
 }

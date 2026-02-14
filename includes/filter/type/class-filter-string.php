@@ -39,6 +39,11 @@ class Filter_String extends Filter_Type {
 	 */
 	private bool $has_value = false;
 
+	/**
+	 * Join
+	 */
+	private ?Sql\Join\Join $join = null;
+
 	public function __construct( array $item, Schema\Column $schema ) {
 		parent::__construct( $item, $schema );
 
@@ -52,6 +57,10 @@ class Filter_String extends Filter_Type {
 		}
 
 		$this->flags = new Search\Flags( $item['flags'] ?? [ 'case' ] );
+
+		if ( $this->schema->get_join_column() ) {
+			$this->join = Sql\Join\Join::create( $this->schema->get_column(), $schema->get_source() );
+		}
 	}
 
 	public function to_json() {
@@ -70,6 +79,10 @@ class Filter_String extends Filter_Type {
 	public function get_query() {
 		$query = new Sql\Query();
 		$select = new Sql\Select\Select_Column( $this->schema );
+
+		if ( $this->join ) {
+			$query->add_join( $this->join );
+		}
 
 		$query->add_select( $select );
 

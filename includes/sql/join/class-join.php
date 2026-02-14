@@ -38,6 +38,10 @@ abstract class Join {
 			return new Taxonomy( $column );
 		}
 
+		if ( $column === 'description' ) {
+			return new Term_Description( $column );
+		}
+
 		if ( $column === 'post' ) {
 			return new Post( $column, $source );
 		}
