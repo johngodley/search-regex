@@ -6,11 +6,13 @@ import { useMessageStore } from '../stores/message-store';
 import { useSearchStore } from '../stores/search-store';
 import {
 	searchResponseSchema,
+	exportActionResponseSchema,
 	deleteRowResponseSchema,
 	loadRowResponseSchema,
 	saveRowResponseSchema,
 	sourceCompleteResponseSchema,
 	type SearchResponse,
+	type ExportActionResponse,
 	type DeleteRowResponse,
 	type LoadRowResponse,
 	type SaveRowResponse,
@@ -24,13 +26,19 @@ interface SearchParams extends SearchValues {
 	limit?: number;
 }
 
+type SearchMutationResponse = SearchResponse | ExportActionResponse;
+
 export function useSearch() {
 	const addError = useMessageStore( ( state ) => state.addError );
 
-	return useMutation< SearchResponse, Error, SearchParams >( {
+	return useMutation< SearchMutationResponse, Error, SearchParams >( {
 		mutationFn: async ( searchParams ) => {
 			const response = await apiFetch( postApiRequest( 'search-regex/v1/search', searchParams ) );
-			// Validate and parse response with Zod
+
+			if ( searchParams.action === 'export' && searchParams.save ) {
+				return exportActionResponseSchema.parse( response );
+			}
+
 			return searchResponseSchema.parse( response );
 		},
 		onError: ( error ) => {

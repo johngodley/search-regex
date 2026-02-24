@@ -8,6 +8,8 @@ import {
 	convertToResults,
 } from '../../stores/search-store';
 import { useSearch } from '../../hooks/use-search';
+import { saveExport } from '../../lib/export';
+import type { SearchResponse } from '../../lib/api-schemas';
 
 interface ActionOption {
 	length?: number;
@@ -111,20 +113,32 @@ function SearchActions() {
 			},
 			{
 				onSuccess: ( data ) => {
+					if ( effectiveAction === 'export' ) {
+						const exportFormat = payload.actionOption?.format ?? 'json';
+						saveExport( data.results as unknown[], exportFormat );
+						setStatus( STATUS_COMPLETE );
+						setIsSaving( false );
+						setCanCancel( false );
+						setReplaceAll( false );
+						return;
+					}
+
+					const searchData = data as SearchResponse;
+
 					// Convert API results (number row_id) to Result[] (string row_id)
-					setResults( convertToResults( data.results ) );
-					setTotals( convertToSearchTotals( data.totals ) );
-					setProgress( convertToSearchProgress( data.progress ) );
+					setResults( convertToResults( searchData.results ) );
+					setTotals( convertToSearchTotals( searchData.totals ) );
+					setProgress( convertToSearchProgress( searchData.progress ) );
 
 					// For regex searches, keep status as IN_PROGRESS if there are more pages
 					// The sliding window in ReplaceProgress will handle the rest
-					const hasMorePages = data.progress.next !== false;
+					const hasMorePages = searchData.progress.next !== false;
 					if ( hasMorePages ) {
 						// Keep status as IN_PROGRESS so ReplaceProgress sliding window continues
 						setStatus( STATUS_IN_PROGRESS );
 					} else {
 						// All done - mark as complete and clean up flags
-						setStatus( data.status ?? STATUS_COMPLETE );
+						setStatus( searchData.status ?? STATUS_COMPLETE );
 						setIsSaving( false );
 						setCanCancel( false );
 						setReplaceAll( false );
