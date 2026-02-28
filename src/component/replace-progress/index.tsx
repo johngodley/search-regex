@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Line } from 'rc-progress';
 import { isAdvancedSearch } from '../../lib/search-utils';
@@ -75,6 +75,7 @@ function ReplaceProgress(): JSX.Element {
 	const addError = useMessageStore( ( state ) => state.addError );
 
 	const [ requestCount, setRequestCount ] = useState( 0 );
+	const exportSavedRef = useRef( false );
 	const performMutation = useSearch();
 	// ✨ Search is already validated - no need for type assertion
 	const isAdvanced = isAdvancedSearch( search );
@@ -163,18 +164,23 @@ function ReplaceProgress(): JSX.Element {
 		}
 	}, [ status, setIsSaving, setCanCancel, setReplaceAll ] );
 
-	// Handle export when operation completes
+	// Handle export when operation completes - use a ref to ensure it only fires once
+	// Reading actionOption from the store at fire time (not as a dependency) so that
+	// changing the format after completion does not re-trigger a download.
 	useEffect( () => {
 		if (
 			status === STATUS_COMPLETE &&
 			progress.next === false &&
 			search.action === 'export' &&
-			exportData.length > 0
+			exportData.length > 0 &&
+			! exportSavedRef.current
 		) {
-			const format = search.actionOption?.format || 'json';
+			exportSavedRef.current = true;
+			const { actionOption } = useSearchStore.getState().search;
+			const format = ( actionOption as { format?: string } )?.format || 'json';
 			saveExport( exportData, format );
 		}
-	}, [ status, progress.next, search.action, search.actionOption, exportData ] );
+	}, [ status, progress.next, search.action, exportData ] );
 
 	// Use sliding window for replace all - same as search but with save=true
 	useSlidingSearchWindow(
