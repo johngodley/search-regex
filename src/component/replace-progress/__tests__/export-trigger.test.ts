@@ -9,7 +9,7 @@
  */
 
 import { renderHook, act } from '@testing-library/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { STATUS_COMPLETE, STATUS_IN_PROGRESS } from '../../../lib/constants';
 
 // Mock saveExport so we can assert call counts without touching file-saver
@@ -25,6 +25,12 @@ import { saveExport } from '../../../lib/export';
  * Minimal reproduction of the export-trigger useEffect from ReplaceProgress.
  * Accepts the same inputs that drive the real effect so we can test the
  * ref-guard and reset behaviour in isolation.
+ * @param root0
+ * @param root0.status
+ * @param root0.nextIsFalse
+ * @param root0.action
+ * @param root0.exportData
+ * @param root0.format
  */
 function useExportTrigger( {
 	status,
@@ -47,12 +53,7 @@ function useExportTrigger( {
 			return;
 		}
 
-		if (
-			status === STATUS_COMPLETE &&
-			nextIsFalse &&
-			action === 'export' &&
-			! exportSavedRef.current
-		) {
+		if ( status === STATUS_COMPLETE && nextIsFalse && action === 'export' && ! exportSavedRef.current ) {
 			exportSavedRef.current = true;
 			saveExport( exportData, format );
 		}
@@ -68,18 +69,15 @@ describe( 'ReplaceProgress export trigger', () => {
 		it( 'fires saveExport exactly once when export completes', () => {
 			const exportData = [ { id: 1 } ];
 
-			const { rerender } = renderHook(
-				( props ) => useExportTrigger( props ),
-				{
-					initialProps: {
-						status: STATUS_IN_PROGRESS,
-						nextIsFalse: false,
-						action: 'export',
-						exportData,
-						format: 'json',
-					},
-				}
-			);
+			const { rerender } = renderHook( ( props ) => useExportTrigger( props ), {
+				initialProps: {
+					status: STATUS_IN_PROGRESS,
+					nextIsFalse: false,
+					action: 'export',
+					exportData,
+					format: 'json',
+				},
+			} );
 
 			expect( mockSaveExport ).not.toHaveBeenCalled();
 
@@ -107,10 +105,7 @@ describe( 'ReplaceProgress export trigger', () => {
 				format: 'json',
 			};
 
-			const { rerender } = renderHook(
-				( props ) => useExportTrigger( props ),
-				{ initialProps: completedProps }
-			);
+			const { rerender } = renderHook( ( props ) => useExportTrigger( props ), { initialProps: completedProps } );
 
 			expect( mockSaveExport ).toHaveBeenCalledTimes( 1 );
 			mockSaveExport.mockClear();
@@ -176,18 +171,15 @@ describe( 'ReplaceProgress export trigger', () => {
 		it( 'fires saveExport again after exportData is cleared and a new run completes', () => {
 			const exportData = [ { id: 1 } ];
 
-			const { rerender } = renderHook(
-				( props ) => useExportTrigger( props ),
-				{
-					initialProps: {
-						status: STATUS_IN_PROGRESS,
-						nextIsFalse: false,
-						action: 'export',
-						exportData,
-						format: 'json',
-					},
-				}
-			);
+			const { rerender } = renderHook( ( props ) => useExportTrigger( props ), {
+				initialProps: {
+					status: STATUS_IN_PROGRESS,
+					nextIsFalse: false,
+					action: 'export',
+					exportData,
+					format: 'json',
+				},
+			} );
 
 			// First run completes
 			act( () => {
@@ -234,18 +226,15 @@ describe( 'ReplaceProgress export trigger', () => {
 		} );
 
 		it( 'fires saveExport for each run across three consecutive exports', () => {
-			const { rerender } = renderHook(
-				( props ) => useExportTrigger( props ),
-				{
-					initialProps: {
-						status: STATUS_IN_PROGRESS,
-						nextIsFalse: false,
-						action: 'export',
-						exportData: [],
-						format: 'json',
-					},
-				}
-			);
+			const { rerender } = renderHook( ( props ) => useExportTrigger( props ), {
+				initialProps: {
+					status: STATUS_IN_PROGRESS,
+					nextIsFalse: false,
+					action: 'export',
+					exportData: [] as unknown[],
+					format: 'json',
+				},
+			} );
 
 			for ( let run = 1; run <= 3; run++ ) {
 				const exportData = [ { id: run } ];
