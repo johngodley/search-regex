@@ -105,28 +105,38 @@ const contextSchema: z.ZodType< any > = z.union( [
 ] );
 
 /**
+ * Schema for a standard search result row
+ */
+export const searchResultSchema = z.object( {
+	row_id: z.union( [ z.string(), z.number() ] ).transform( ( val ) => String( val ) ),
+	match_count: z.number().optional(),
+	source_name: z.string(),
+	source_type: z.string(),
+	title: z.string(),
+	actions: z.unknown(),
+	columns: z.array(
+		z.object( {
+			column_id: z.string(),
+			column_label: z.string().optional(),
+			contexts: z.array( contextSchema ),
+			context_count: z.number().optional(),
+			match_count: z.number().optional(),
+		} )
+	),
+} );
+
+export type SearchResult = z.infer< typeof searchResultSchema >;
+
+/**
+ * Schema for an export result row - can be a string (CSV/SQL) or an object (JSON)
+ */
+const exportResultSchema = z.union( [ z.string(), z.record( z.string(), z.unknown() ) ] );
+
+/**
  * Search API response schema
  */
 export const searchResponseSchema = z.object( {
-	results: z.array(
-		z.object( {
-			row_id: z.union( [ z.string(), z.number() ] ).transform( ( val ) => String( val ) ),
-			match_count: z.number().optional(),
-			source_name: z.string(),
-			source_type: z.string(),
-			title: z.string(),
-			actions: z.unknown(),
-			columns: z.array(
-				z.object( {
-					column_id: z.string(),
-					column_label: z.string().optional(),
-					contexts: z.array( contextSchema ),
-					context_count: z.number().optional(),
-					match_count: z.number().optional(),
-				} )
-			),
-		} )
-	),
+	results: z.array( z.union( [ searchResultSchema, exportResultSchema ] ) ),
 	progress: z.object( {
 		current: z.number().optional(),
 		rows: z.number().optional(),

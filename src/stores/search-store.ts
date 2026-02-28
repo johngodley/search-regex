@@ -4,20 +4,25 @@ import type { SearchValues, SearchSourceGroup, Schema, Result, SearchTotals, Sea
 import type { PresetValue } from '../types/preset';
 import getPreload from '../lib/preload';
 import getValidatedSearch, { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from '../lib/search-utils';
-import type { SearchResponse, SettingsValues } from '../lib/api-schemas';
+import type { SearchResponse, SearchResult, SettingsValues } from '../lib/api-schemas';
 import { STATUS_IN_PROGRESS } from '../lib/constants';
 
 // Helper functions to convert API response to store types
 
+function isSearchResult( result: SearchResponse[ 'results' ][ number ] ): result is SearchResult {
+	return typeof result === 'object' && result !== null && 'row_id' in result;
+}
+
 /**
  * Convert API search response results (with number row_id) to Result[] (with string row_id).
  * The API returns row_id as a number, but the store expects it as a string.
+ * Export results (strings or plain objects without row_id) are filtered out.
  *
  * @param {SearchResponse['results']} apiResults - Results array from API response
  * @return {Result[]} Results array with row_id converted to string
  */
 export function convertToResults( apiResults: SearchResponse[ 'results' ] ): Result[] {
-	return apiResults.map( ( result ) => ( {
+	return apiResults.filter( isSearchResult ).map( ( result ) => ( {
 		...result,
 		row_id: String( result.row_id ),
 	} ) ) as Result[];
@@ -179,6 +184,11 @@ interface SearchStore {
 	replacing: unknown[];
 	setReplacing: ( replacing: unknown[] ) => void;
 
+	// Accumulated raw export data (for export action)
+	exportData: unknown[];
+	appendExportData: ( items: unknown[] ) => void;
+	clearExportData: () => void;
+
 	// Search direction
 	searchDirection: string | null;
 	setSearchDirection: ( direction: string | null ) => void;
@@ -225,6 +235,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 		progress: { next: false },
 		replaceAll: false,
 		replacing: [],
+		exportData: [],
 		searchDirection: null,
 		showLoading: false,
 		resultsDirty: false,
@@ -267,6 +278,8 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 				isBusy: state.status === STATUS_IN_PROGRESS || replaceAll,
 			} ) ),
 		setReplacing: ( replacing ) => set( { replacing } ),
+		appendExportData: ( items ) => set( ( state ) => ( { exportData: [ ...state.exportData, ...items ] } ) ),
+		clearExportData: () => set( { exportData: [] } ),
 		setSearchDirection: ( searchDirection ) => set( { searchDirection } ),
 		setShowLoading: ( showLoading ) => set( { showLoading } ),
 		setResultsDirty: ( resultsDirty ) => set( { resultsDirty } ),
@@ -280,6 +293,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 				totals: { matched_rows: 0, rows: 0 },
 				progress: { next: false },
 				replacing: [],
+				exportData: [],
 				resultsDirty: false,
 				cumulativeMatchedRows: 0,
 			} ),

@@ -64,6 +64,8 @@ function ReplaceProgress(): JSX.Element {
 	const search = useSearchStore( ( state ) => state.search );
 	const results = useSearchStore( ( state ) => state.results );
 	const setResults = useSearchStore( ( state ) => state.setResults );
+	const appendExportData = useSearchStore( ( state ) => state.appendExportData );
+	const exportData = useSearchStore( ( state ) => state.exportData );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
 	const setStatus = useSearchStore( ( state ) => state.setStatus );
@@ -109,8 +111,11 @@ function ReplaceProgress(): JSX.Element {
 			{
 				onSuccess: ( data ) => {
 					// ✨ Data is already validated by Zod in useSearch hook
-					// Backend returns empty results when save=true, but we track totals
-					setResults( [ ...results, ...convertToResults( data.results ) ] );
+					if ( search.action === 'export' ) {
+						appendExportData( data.results );
+					} else {
+						setResults( [ ...results, ...convertToResults( data.results ) ] );
+					}
 					setTotals( {
 						matched_rows: data.totals.matched_rows,
 						rows: data.totals.rows,
@@ -168,12 +173,12 @@ function ReplaceProgress(): JSX.Element {
 			status === STATUS_COMPLETE &&
 			progress.next === false &&
 			search.action === 'export' &&
-			results.length > 0
+			exportData.length > 0
 		) {
 			const format = search.actionOption?.format || 'json';
-			saveExport( results, format );
+			saveExport( exportData, format );
 		}
-	}, [ status, progress.next, search.action, search.actionOption, results ] );
+	}, [ status, progress.next, search.action, search.actionOption, exportData ] );
 
 	// Use sliding window for replace all - same as search but with save=true
 	useSlidingSearchWindow(
