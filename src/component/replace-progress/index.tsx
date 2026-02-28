@@ -6,7 +6,6 @@ import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from '../../lib/co
 import { useSlidingSearchWindow } from '../../lib/result-window';
 import { useSearchStore, convertToResults } from '../../stores/search-store';
 import { useSearch } from '../../hooks/use-search';
-import type { SearchResponse } from '../../lib/api-schemas';
 import { useMessageStore } from '../../stores/message-store';
 import { saveExport } from '../../lib/export';
 import './style.scss';
@@ -65,7 +64,6 @@ function ReplaceProgress(): JSX.Element {
 	const search = useSearchStore( ( state ) => state.search );
 	const results = useSearchStore( ( state ) => state.results );
 	const setResults = useSearchStore( ( state ) => state.setResults );
-	const appendExportData = useSearchStore( ( state ) => state.appendExportData );
 	const exportData = useSearchStore( ( state ) => state.exportData );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
@@ -112,11 +110,8 @@ function ReplaceProgress(): JSX.Element {
 			{
 				onSuccess: ( data ) => {
 					// ✨ Data is already validated by Zod in useSearch hook
-					if ( search.action === 'export' ) {
-						appendExportData( data.results );
-					} else {
-						setResults( [ ...results, ...convertToResults( ( data as SearchResponse ).results ) ] );
-					}
+					// Export results are accumulated in useSearch; data.results is empty for exports
+					setResults( [ ...results, ...convertToResults( data.results ) ] );
 					setTotals( {
 						matched_rows: data.totals.matched_rows,
 						rows: data.totals.rows,

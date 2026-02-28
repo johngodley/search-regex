@@ -12,7 +12,6 @@ import {
 	saveRowResponseSchema,
 	sourceCompleteResponseSchema,
 	type SearchResponse,
-	type ExportActionResponse,
 	type DeleteRowResponse,
 	type LoadRowResponse,
 	type SaveRowResponse,
@@ -26,17 +25,20 @@ interface SearchParams extends SearchValues {
 	limit?: number;
 }
 
-export type SearchMutationResponse = SearchResponse | ExportActionResponse;
-
 export function useSearch() {
 	const addError = useMessageStore( ( state ) => state.addError );
+	const appendExportData = useSearchStore( ( state ) => state.appendExportData );
 
-	return useMutation< SearchMutationResponse, Error, SearchParams >( {
+	return useMutation< SearchResponse, Error, SearchParams >( {
 		mutationFn: async ( searchParams ) => {
 			const response = await apiFetch( postApiRequest( 'search-regex/v1/search', searchParams ) );
-			// Validate and parse response with Zod, using the export schema when saving export data
+			// For export saves, parse with the export schema and accumulate the raw data,
+			// then return a SearchResponse-shaped object with empty results so all callers
+			// can treat the response uniformly.
 			if ( searchParams.action === 'export' && searchParams.save ) {
-				return exportActionResponseSchema.parse( response );
+				const parsed = exportActionResponseSchema.parse( response );
+				appendExportData( parsed.results );
+				return { ...parsed, results: [] };
 			}
 			return searchResponseSchema.parse( response );
 		},

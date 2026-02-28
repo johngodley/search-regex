@@ -8,7 +8,6 @@ import {
 	convertToResults,
 } from '../../stores/search-store';
 import { useSearch } from '../../hooks/use-search';
-import type { SearchResponse } from '../../lib/api-schemas';
 
 interface ActionOption {
 	length?: number;
@@ -66,7 +65,6 @@ function SearchActions() {
 	const isBusy = useSearchStore( ( state ) => state.isBusy );
 	const setStatus = useSearchStore( ( state ) => state.setStatus );
 	const setResults = useSearchStore( ( state ) => state.setResults );
-	const appendExportData = useSearchStore( ( state ) => state.appendExportData );
 	const clearExportData = useSearchStore( ( state ) => state.clearExportData );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
@@ -115,12 +113,9 @@ function SearchActions() {
 			},
 			{
 				onSuccess: ( data ) => {
-					if ( effectiveAction === 'export' ) {
-						appendExportData( data.results );
-					} else {
-						// Convert API results (number row_id) to Result[] (string row_id)
-						setResults( convertToResults( ( data as SearchResponse ).results ) );
-					}
+					// Convert API results (number row_id) to Result[] (string row_id)
+					// Export results are accumulated in useSearch and data.results is empty for exports
+					setResults( convertToResults( data.results ) );
 					setTotals( convertToSearchTotals( data.totals ) );
 					setProgress( convertToSearchProgress( data.progress ) );
 

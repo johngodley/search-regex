@@ -21,7 +21,6 @@ import {
 	convertToResults,
 } from '../../../stores/search-store';
 import { useSearch } from '../../../hooks/use-search';
-import type { SearchResponse } from '../../../lib/api-schemas';
 import { useMessageStore } from '../../../stores/message-store';
 import type { Result as ResultType } from '../../../types/search';
 import './style.scss';
@@ -174,7 +173,7 @@ function SearchResults() {
 
 					// Get fresh results to append to
 					const currentResults = useSearchStore.getState().results;
-					const newResults = [ ...currentResults, ...convertToResults( ( data as SearchResponse ).results ) ];
+					const newResults = [ ...currentResults, ...convertToResults( data.results ) ];
 					setResults( newResults );
 					setTotals( convertToSearchTotals( data.totals ) );
 					const newProgress = convertToSearchProgress( data.progress );

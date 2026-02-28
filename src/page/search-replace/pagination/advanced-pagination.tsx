@@ -9,7 +9,6 @@ import {
 	convertToResults,
 } from '../../../stores/search-store';
 import { useSearch } from '../../../hooks/use-search';
-import type { SearchResponse } from '../../../lib/api-schemas';
 
 interface Progress {
 	previous?: number | false;
@@ -70,7 +69,7 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 				onSuccess: ( data ) => {
 					// ✨ Data is already validated by Zod in useSearch hook
 					// Convert API results (number row_id) to Result[] (string row_id)
-					setResults( convertToResults( ( data as SearchResponse ).results ) );
+					setResults( convertToResults( data.results ) );
 					setTotals( convertToSearchTotals( data.totals ) );
 					setProgress( convertToSearchProgress( data.progress ) );
 					setStatus( data.status ?? STATUS_COMPLETE );
@@ -107,7 +106,7 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 				onSuccess: ( data ) => {
 					// ✨ Data is already validated by Zod in useSearch hook
 					// Convert API results (number row_id) to Result[] (string row_id)
-					setResults( convertToResults( ( data as SearchResponse ).results ) );
+					setResults( convertToResults( data.results ) );
 					setTotals( convertToSearchTotals( data.totals ) );
 					setProgress( convertToSearchProgress( data.progress ) );
 					setStatus( data.status ?? STATUS_COMPLETE );
