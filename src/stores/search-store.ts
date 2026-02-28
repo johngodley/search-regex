@@ -179,6 +179,11 @@ interface SearchStore {
 	replacing: unknown[];
 	setReplacing: ( replacing: unknown[] ) => void;
 
+	// Accumulated raw export data (for export action)
+	exportData: unknown[];
+	appendExportData: ( items: unknown[] ) => void;
+	clearExportData: () => void;
+
 	// Search direction
 	searchDirection: string | null;
 	setSearchDirection: ( direction: string | null ) => void;
@@ -225,6 +230,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 		progress: { next: false },
 		replaceAll: false,
 		replacing: [],
+		exportData: [],
 		searchDirection: null,
 		showLoading: false,
 		resultsDirty: false,
@@ -267,6 +273,8 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 				isBusy: state.status === STATUS_IN_PROGRESS || replaceAll,
 			} ) ),
 		setReplacing: ( replacing ) => set( { replacing } ),
+		appendExportData: ( items ) => set( ( state ) => ( { exportData: [ ...state.exportData, ...items ] } ) ),
+		clearExportData: () => set( { exportData: [] } ),
 		setSearchDirection: ( searchDirection ) => set( { searchDirection } ),
 		setShowLoading: ( showLoading ) => set( { showLoading } ),
 		setResultsDirty: ( resultsDirty ) => set( { resultsDirty } ),
@@ -280,6 +288,7 @@ export const useSearchStore = create< SearchStore >()( ( set, get ) => {
 				totals: { matched_rows: 0, rows: 0 },
 				progress: { next: false },
 				replacing: [],
+				exportData: [],
 				resultsDirty: false,
 				cumulativeMatchedRows: 0,
 			} ),

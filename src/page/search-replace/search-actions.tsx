@@ -65,6 +65,7 @@ function SearchActions() {
 	const isBusy = useSearchStore( ( state ) => state.isBusy );
 	const setStatus = useSearchStore( ( state ) => state.setStatus );
 	const setResults = useSearchStore( ( state ) => state.setResults );
+	const clearExportData = useSearchStore( ( state ) => state.clearExportData );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
 	const setIsSaving = useSearchStore( ( state ) => state.setIsSaving );
@@ -93,6 +94,7 @@ function SearchActions() {
 		setStatus( STATUS_IN_PROGRESS );
 		// Reset progress to initial state for new replace operation
 		setProgress( { next: false } );
+		clearExportData();
 
 		const payload =
 			mode === 'simple'
@@ -112,6 +114,7 @@ function SearchActions() {
 			{
 				onSuccess: ( data ) => {
 					// Convert API results (number row_id) to Result[] (string row_id)
+					// Export results are accumulated in useSearch and data.results is empty for exports
 					setResults( convertToResults( data.results ) );
 					setTotals( convertToSearchTotals( data.totals ) );
 					setProgress( convertToSearchProgress( data.progress ) );
@@ -123,11 +126,15 @@ function SearchActions() {
 						// Keep status as IN_PROGRESS so ReplaceProgress sliding window continues
 						setStatus( STATUS_IN_PROGRESS );
 					} else {
-						// All done - mark as complete and clean up flags
+						// All done - mark as complete and clear busy flags
 						setStatus( data.status ?? STATUS_COMPLETE );
-						setIsSaving( false );
 						setCanCancel( false );
 						setReplaceAll( false );
+						// For export, keep isSaving=true so ReplaceProgress stays mounted
+						// long enough for the saveExport useEffect to fire
+						if ( effectiveAction !== 'export' ) {
+							setIsSaving( false );
+						}
 					}
 				},
 				onError: () => {

@@ -105,50 +105,72 @@ const contextSchema: z.ZodType< any > = z.union( [
 ] );
 
 /**
+ * Schema for a standard search result row
+ */
+export const searchResultSchema = z.object( {
+	row_id: z.union( [ z.string(), z.number() ] ).transform( ( val ) => String( val ) ),
+	match_count: z.number().optional(),
+	source_name: z.string(),
+	source_type: z.string(),
+	title: z.string(),
+	actions: z.unknown(),
+	columns: z.array(
+		z.object( {
+			column_id: z.string(),
+			column_label: z.string().optional(),
+			contexts: z.array( contextSchema ),
+			context_count: z.number().optional(),
+			match_count: z.number().optional(),
+		} )
+	),
+} );
+
+export type SearchResult = z.infer< typeof searchResultSchema >;
+
+const searchProgressSchema = z.object( {
+	current: z.number().optional(),
+	rows: z.number().optional(),
+	next: z.union( [ z.boolean(), z.number() ] ),
+	previous: z.union( [ z.boolean(), z.number() ] ).optional(),
+} );
+
+const searchTotalsSchema = z.object( {
+	matched_rows: z.number(),
+	rows: z.number(),
+	custom: z
+		.array(
+			z.object( {
+				name: z.string(),
+				value: z.number(),
+			} )
+		)
+		.optional(),
+} );
+
+/**
  * Search API response schema
  */
 export const searchResponseSchema = z.object( {
-	results: z.array(
-		z.object( {
-			row_id: z.union( [ z.string(), z.number() ] ).transform( ( val ) => String( val ) ),
-			match_count: z.number().optional(),
-			source_name: z.string(),
-			source_type: z.string(),
-			title: z.string(),
-			actions: z.unknown(),
-			columns: z.array(
-				z.object( {
-					column_id: z.string(),
-					column_label: z.string().optional(),
-					contexts: z.array( contextSchema ),
-					context_count: z.number().optional(),
-					match_count: z.number().optional(),
-				} )
-			),
-		} )
-	),
-	progress: z.object( {
-		current: z.number().optional(),
-		rows: z.number().optional(),
-		next: z.union( [ z.boolean(), z.number() ] ),
-		previous: z.union( [ z.boolean(), z.number() ] ).optional(),
-	} ),
-	totals: z.object( {
-		matched_rows: z.number(),
-		rows: z.number(),
-		custom: z
-			.array(
-				z.object( {
-					name: z.string(),
-					value: z.number(),
-				} )
-			)
-			.optional(),
-	} ),
+	results: z.array( searchResultSchema ),
+	progress: searchProgressSchema,
+	totals: searchTotalsSchema,
 	status: z.string().optional(),
 } );
 
 export type SearchResponse = z.infer< typeof searchResponseSchema >;
+
+/**
+ * Export action response schema
+ * The export action returns formatted rows (string for CSV/SQL, object for JSON).
+ */
+export const exportActionResponseSchema = z.object( {
+	results: z.array( z.union( [ z.string(), z.record( z.string(), z.unknown() ) ] ) ),
+	progress: searchProgressSchema,
+	totals: searchTotalsSchema,
+	status: z.string().optional(),
+} );
+
+export type ExportActionResponse = z.infer< typeof exportActionResponseSchema >;
 
 /**
  * Delete row response schema

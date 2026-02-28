@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Line } from 'rc-progress';
 import { isAdvancedSearch } from '../../lib/search-utils';
@@ -64,6 +64,7 @@ function ReplaceProgress(): JSX.Element {
 	const search = useSearchStore( ( state ) => state.search );
 	const results = useSearchStore( ( state ) => state.results );
 	const setResults = useSearchStore( ( state ) => state.setResults );
+	const exportData = useSearchStore( ( state ) => state.exportData );
 	const setTotals = useSearchStore( ( state ) => state.setTotals );
 	const setProgress = useSearchStore( ( state ) => state.setProgress );
 	const setStatus = useSearchStore( ( state ) => state.setStatus );
@@ -74,6 +75,7 @@ function ReplaceProgress(): JSX.Element {
 	const addError = useMessageStore( ( state ) => state.addError );
 
 	const [ requestCount, setRequestCount ] = useState( 0 );
+	const exportSavedRef = useRef( false );
 	const performMutation = useSearch();
 	// ✨ Search is already validated - no need for type assertion
 	const isAdvanced = isAdvancedSearch( search );
@@ -109,7 +111,7 @@ function ReplaceProgress(): JSX.Element {
 			{
 				onSuccess: ( data ) => {
 					// ✨ Data is already validated by Zod in useSearch hook
-					// Backend returns empty results when save=true, but we track totals
+					// Export results are accumulated in useSearch; data.results is empty for exports
 					setResults( [ ...results, ...convertToResults( data.results ) ] );
 					setTotals( {
 						matched_rows: data.totals.matched_rows,
@@ -162,18 +164,29 @@ function ReplaceProgress(): JSX.Element {
 		}
 	}, [ status, setIsSaving, setCanCancel, setReplaceAll ] );
 
-	// Handle export when operation completes
+	// Handle export when operation completes - use a ref to ensure it only fires once per run.
+	// Reset the ref when exportData is cleared (i.e. a new export operation starts) so that
+	// subsequent exports in the same mounted session work correctly.
+	// Reading actionOption from the store at fire time (not as a dependency) so that
+	// changing the format after completion does not re-trigger a download.
 	useEffect( () => {
+		if ( exportData.length === 0 ) {
+			exportSavedRef.current = false;
+			return;
+		}
+
 		if (
 			status === STATUS_COMPLETE &&
 			progress.next === false &&
 			search.action === 'export' &&
-			results.length > 0
+			! exportSavedRef.current
 		) {
-			const format = search.actionOption?.format || 'json';
-			saveExport( results, format );
+			exportSavedRef.current = true;
+			const { actionOption } = useSearchStore.getState().search;
+			const format = ( actionOption as { format?: string } )?.format || 'json';
+			saveExport( exportData, format );
 		}
-	}, [ status, progress.next, search.action, search.actionOption, results ] );
+	}, [ status, progress.next, search.action, exportData ] );
 
 	// Use sliding window for replace all - same as search but with save=true
 	useSlidingSearchWindow(
