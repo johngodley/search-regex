@@ -164,15 +164,21 @@ function ReplaceProgress(): JSX.Element {
 		}
 	}, [ status, setIsSaving, setCanCancel, setReplaceAll ] );
 
-	// Handle export when operation completes - use a ref to ensure it only fires once
+	// Handle export when operation completes - use a ref to ensure it only fires once per run.
+	// Reset the ref when exportData is cleared (i.e. a new export operation starts) so that
+	// subsequent exports in the same mounted session work correctly.
 	// Reading actionOption from the store at fire time (not as a dependency) so that
 	// changing the format after completion does not re-trigger a download.
 	useEffect( () => {
+		if ( exportData.length === 0 ) {
+			exportSavedRef.current = false;
+			return;
+		}
+
 		if (
 			status === STATUS_COMPLETE &&
 			progress.next === false &&
 			search.action === 'export' &&
-			exportData.length > 0 &&
 			! exportSavedRef.current
 		) {
 			exportSavedRef.current = true;
