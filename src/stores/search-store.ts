@@ -4,13 +4,13 @@ import type { SearchValues, SearchSourceGroup, Schema, Result, SearchTotals, Sea
 import type { PresetValue } from '../types/preset';
 import getPreload from '../lib/preload';
 import getValidatedSearch, { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from '../lib/search-utils';
-import type { SearchResponse, SearchResult, SettingsValues } from '../lib/api-schemas';
+import { searchResultSchema, type SearchResponse, type SearchResult, type SettingsValues } from '../lib/api-schemas';
 import { STATUS_IN_PROGRESS } from '../lib/constants';
 
 // Helper functions to convert API response to store types
 
 function isSearchResult( result: SearchResponse[ 'results' ][ number ] ): result is SearchResult {
-	return typeof result === 'object' && result !== null && 'row_id' in result;
+	return searchResultSchema.safeParse( result ).success;
 }
 
 /**

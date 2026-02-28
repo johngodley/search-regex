@@ -130,14 +130,14 @@ function SearchActions() {
 						// Keep status as IN_PROGRESS so ReplaceProgress sliding window continues
 						setStatus( STATUS_IN_PROGRESS );
 					} else {
-						// All done - mark as complete
+						// All done - mark as complete and clear busy flags
 						setStatus( data.status ?? STATUS_COMPLETE );
+						setCanCancel( false );
+						setReplaceAll( false );
 						// For export, keep isSaving=true so ReplaceProgress stays mounted
 						// long enough for the saveExport useEffect to fire
 						if ( effectiveAction !== 'export' ) {
 							setIsSaving( false );
-							setCanCancel( false );
-							setReplaceAll( false );
 						}
 					}
 				},
