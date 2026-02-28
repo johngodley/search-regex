@@ -4,25 +4,20 @@ import type { SearchValues, SearchSourceGroup, Schema, Result, SearchTotals, Sea
 import type { PresetValue } from '../types/preset';
 import getPreload from '../lib/preload';
 import getValidatedSearch, { getQuerySearchParams, getDefaultSearch, getSearchFromPreset } from '../lib/search-utils';
-import { searchResultSchema, type SearchResponse, type SearchResult, type SettingsValues } from '../lib/api-schemas';
+import type { SearchResponse, SettingsValues } from '../lib/api-schemas';
 import { STATUS_IN_PROGRESS } from '../lib/constants';
 
 // Helper functions to convert API response to store types
 
-function isSearchResult( result: SearchResponse[ 'results' ][ number ] ): result is SearchResult {
-	return searchResultSchema.safeParse( result ).success;
-}
-
 /**
  * Convert API search response results (with number row_id) to Result[] (with string row_id).
  * The API returns row_id as a number, but the store expects it as a string.
- * Export results (strings or plain objects without row_id) are filtered out.
  *
  * @param {SearchResponse['results']} apiResults - Results array from API response
  * @return {Result[]} Results array with row_id converted to string
  */
 export function convertToResults( apiResults: SearchResponse[ 'results' ] ): Result[] {
-	return apiResults.filter( isSearchResult ).map( ( result ) => ( {
+	return apiResults.map( ( result ) => ( {
 		...result,
 		row_id: String( result.row_id ),
 	} ) ) as Result[];

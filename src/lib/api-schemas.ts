@@ -127,38 +127,50 @@ export const searchResultSchema = z.object( {
 
 export type SearchResult = z.infer< typeof searchResultSchema >;
 
-/**
- * Schema for an export result row - can be a string (CSV/SQL) or an object (JSON)
- */
-const exportResultSchema = z.union( [ z.string(), z.record( z.string(), z.unknown() ) ] );
+const searchProgressSchema = z.object( {
+	current: z.number().optional(),
+	rows: z.number().optional(),
+	next: z.union( [ z.boolean(), z.number() ] ),
+	previous: z.union( [ z.boolean(), z.number() ] ).optional(),
+} );
+
+const searchTotalsSchema = z.object( {
+	matched_rows: z.number(),
+	rows: z.number(),
+	custom: z
+		.array(
+			z.object( {
+				name: z.string(),
+				value: z.number(),
+			} )
+		)
+		.optional(),
+} );
 
 /**
  * Search API response schema
  */
 export const searchResponseSchema = z.object( {
-	results: z.array( z.union( [ searchResultSchema, exportResultSchema ] ) ),
-	progress: z.object( {
-		current: z.number().optional(),
-		rows: z.number().optional(),
-		next: z.union( [ z.boolean(), z.number() ] ),
-		previous: z.union( [ z.boolean(), z.number() ] ).optional(),
-	} ),
-	totals: z.object( {
-		matched_rows: z.number(),
-		rows: z.number(),
-		custom: z
-			.array(
-				z.object( {
-					name: z.string(),
-					value: z.number(),
-				} )
-			)
-			.optional(),
-	} ),
+	results: z.array( searchResultSchema ),
+	progress: searchProgressSchema,
+	totals: searchTotalsSchema,
 	status: z.string().optional(),
 } );
 
 export type SearchResponse = z.infer< typeof searchResponseSchema >;
+
+/**
+ * Export action response schema
+ * The export action returns formatted rows (string for CSV/SQL, object for JSON).
+ */
+export const exportActionResponseSchema = z.object( {
+	results: z.array( z.union( [ z.string(), z.record( z.string(), z.unknown() ) ] ) ),
+	progress: searchProgressSchema,
+	totals: searchTotalsSchema,
+	status: z.string().optional(),
+} );
+
+export type ExportActionResponse = z.infer< typeof exportActionResponseSchema >;
 
 /**
  * Delete row response schema

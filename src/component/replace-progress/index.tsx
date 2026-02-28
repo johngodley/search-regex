@@ -6,6 +6,7 @@ import { STATUS_IN_PROGRESS, STATUS_COMPLETE, STATUS_FAILED } from '../../lib/co
 import { useSlidingSearchWindow } from '../../lib/result-window';
 import { useSearchStore, convertToResults } from '../../stores/search-store';
 import { useSearch } from '../../hooks/use-search';
+import type { SearchResponse } from '../../lib/api-schemas';
 import { useMessageStore } from '../../stores/message-store';
 import { saveExport } from '../../lib/export';
 import './style.scss';
@@ -114,7 +115,7 @@ function ReplaceProgress(): JSX.Element {
 					if ( search.action === 'export' ) {
 						appendExportData( data.results );
 					} else {
-						setResults( [ ...results, ...convertToResults( data.results ) ] );
+						setResults( [ ...results, ...convertToResults( ( data as SearchResponse ).results ) ] );
 					}
 					setTotals( {
 						matched_rows: data.totals.matched_rows,

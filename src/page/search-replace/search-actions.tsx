@@ -8,6 +8,7 @@ import {
 	convertToResults,
 } from '../../stores/search-store';
 import { useSearch } from '../../hooks/use-search';
+import type { SearchResponse } from '../../lib/api-schemas';
 
 interface ActionOption {
 	length?: number;
@@ -118,7 +119,7 @@ function SearchActions() {
 						appendExportData( data.results );
 					} else {
 						// Convert API results (number row_id) to Result[] (string row_id)
-						setResults( convertToResults( data.results ) );
+						setResults( convertToResults( ( data as SearchResponse ).results ) );
 					}
 					setTotals( convertToSearchTotals( data.totals ) );
 					setProgress( convertToSearchProgress( data.progress ) );
