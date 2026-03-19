@@ -71,7 +71,7 @@ class Dynamic_Column {
 
 		global $shortcode_tags;
 
-		$this->old_shortcodes = [ ...$shortcode_tags ];
+		$this->old_shortcodes = $shortcode_tags;
 
 		remove_all_shortcodes();
 
@@ -85,7 +85,7 @@ class Dynamic_Column {
 
 		// Restore shortcodes
 		// phpcs:ignore
-		$shortcode_tags = [ ...$this->old_shortcodes ];
+		$shortcode_tags = $this->old_shortcodes;
 	}
 
 	/**
