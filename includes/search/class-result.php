@@ -116,7 +116,7 @@ class Result {
 			'columns' => $columns,
 
 			'actions' => $this->actions,
-			'title' => $this->result_title !== false ? html_entity_decode( $this->result_title ) : '',
+			'title' => $this->result_title !== false ? html_entity_decode( $this->result_title, ENT_COMPAT, 'UTF-8' ) : '',
 
 			'match_count' => \array_reduce(
 				$columns, fn( $carry, $column ) => $carry + $column['match_count'], 0

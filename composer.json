@@ -15,7 +15,8 @@
 		"spaze/phpstan-disallowed-calls": "^4.7",
 		"squizlabs/php_codesniffer": "^3.13",
 		"brain/monkey": "^2.6",
-		"rector/rector": "^2.2"
+		"rector/rector": "^2.2",
+		"phpcompatibility/php-compatibility": "^10.0@alpha"
 	},
 	"scripts": {
 		"analyse": "@php ./vendor/bin/phpstan analyse --no-interaction --configuration=phpstan.neon $*",
