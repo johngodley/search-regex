@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc4b20ad66670c7c4fef80c7ba94a337",
+    "content-hash": "b4265f676dc4fd7c9f537389eee1d756",
     "packages": [],
     "packages-dev": [
         {
@@ -1796,41 +1796,33 @@
         },
         {
             "name": "phpcompatibility/php-compatibility",
-            "version": "10.0.0-alpha2",
+            "version": "9.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCompatibility/PHPCompatibility.git",
-                "reference": "e0f0e5a3dc819a4a0f8d679a0f2453d941976e18"
+                "reference": "9fb324479acf6f39452e0655d2429cc0d3914243"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibility/zipball/e0f0e5a3dc819a4a0f8d679a0f2453d941976e18",
-                "reference": "e0f0e5a3dc819a4a0f8d679a0f2453d941976e18",
+                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibility/zipball/9fb324479acf6f39452e0655d2429cc0d3914243",
+                "reference": "9fb324479acf6f39452e0655d2429cc0d3914243",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4",
-                "phpcsstandards/phpcsutils": "^1.1.2",
-                "squizlabs/php_codesniffer": "^3.13.3 || ^4.0"
+                "php": ">=5.3",
+                "squizlabs/php_codesniffer": "^2.3 || ^3.0.2"
             },
-            "replace": {
-                "wimg/php-compatibility": "*"
+            "conflict": {
+                "squizlabs/php_codesniffer": "2.6.2"
             },
             "require-dev": {
-                "php-parallel-lint/php-console-highlighter": "^1.0.0",
-                "php-parallel-lint/php-parallel-lint": "^1.4.0",
-                "phpcsstandards/phpcsdevcs": "^1.2.0",
-                "phpcsstandards/phpcsdevtools": "^1.2.3",
-                "phpunit/phpunit": "^4.8.36 || ^5.7.21 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4 || ^10.5.32 || ^11.3.3",
-                "yoast/phpunit-polyfills": "^1.1.5 || ^2.0.5 || ^3.1.0"
+                "phpunit/phpunit": "~4.5 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "suggest": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5 || This Composer plugin will sort out the PHPCS 'installed_paths' automatically.",
+                "roave/security-advisories": "dev-master || Helps prevent installing dependencies with known security issues."
             },
             "type": "phpcodesniffer-standard",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "9.x-dev",
-                    "dev-develop": "10.x-dev"
-                }
-            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0-or-later"
@@ -1852,37 +1844,17 @@
                 }
             ],
             "description": "A set of sniffs for PHP_CodeSniffer that checks for PHP cross-version compatibility.",
-            "homepage": "https://techblog.wimgodden.be/tag/codesniffer/",
+            "homepage": "http://techblog.wimgodden.be/tag/codesniffer/",
             "keywords": [
                 "compatibility",
                 "phpcs",
-                "standards",
-                "static analysis"
+                "standards"
             ],
             "support": {
                 "issues": "https://github.com/PHPCompatibility/PHPCompatibility/issues",
-                "security": "https://github.com/PHPCompatibility/PHPCompatibility/security/policy",
                 "source": "https://github.com/PHPCompatibility/PHPCompatibility"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/PHPCompatibility",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/jrfnl",
-                    "type": "github"
-                },
-                {
-                    "url": "https://opencollective.com/php_codesniffer",
-                    "type": "open_collective"
-                },
-                {
-                    "url": "https://thanks.dev/u/gh/phpcompatibility",
-                    "type": "thanks_dev"
-                }
-            ],
-            "time": "2025-11-28T11:36:33+00:00"
+            "time": "2019-12-27T09:44:58+00:00"
         },
         {
             "name": "phpcsstandards/phpcsextra",
@@ -7983,9 +7955,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpcompatibility/php-compatibility": 15
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
