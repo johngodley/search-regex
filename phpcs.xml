@@ -4,6 +4,8 @@
 
 	<config name="testVersion" value="7.4-"/>
 
+	<rule ref="PHPCompatibility"/>
+
 	<file>includes/</file>
 	<file>search-regex.php</file>
     <exclude-pattern>bin/</exclude-pattern>

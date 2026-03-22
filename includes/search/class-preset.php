@@ -207,7 +207,7 @@ class Preset {
 	 */
 	private function sanitize( $text ) {
 		$text = trim( wp_kses( $text, [] ) );
-		$text = \html_entity_decode( $text );
+		$text = \html_entity_decode( $text, ENT_COMPAT, 'UTF-8' );
 		return $text;
 	}
 
@@ -418,8 +418,8 @@ class Preset {
 
 		return [
 			'id' => $this->id,
-			'name' => \html_entity_decode( $this->name ),
-			'description' => \html_entity_decode( $this->description ),
+			'name' => \html_entity_decode( $this->name, ENT_COMPAT, 'UTF-8' ),
+			'description' => \html_entity_decode( $this->description, ENT_COMPAT, 'UTF-8' ),
 			'search' => $search,
 			'locked' => array_values( $this->locked ),
 			'tags' => $this->tags,
