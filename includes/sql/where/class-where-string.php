@@ -70,24 +70,53 @@ class Where_String extends Where {
 	}
 
 	/**
-	 * Get as SQL with COLLATE for case-sensitive searches
+	 * Get as SQL with case-sensitive comparison appropriate for the column's charset
 	 *
 	 * @return string
 	 */
 	public function get_as_sql() {
-		if ( $this->column !== null ) {
-			$column = $this->column->get_column_or_alias();
-
-			// Use COLLATE utf8mb4_bin for case-sensitive searches instead of LIKE BINARY
-			// This properly handles multi-byte UTF-8 characters like emojis
-			// WordPress has used utf8mb4 as default charset since version 4.2
-			if ( $this->flags !== null && ! $this->flags->is_case_insensitive() ) {
-				$column = $column . ' COLLATE utf8mb4_bin';
-			}
-
-			return $column . ' ' . $this->logic . ' ' . $this->get_value();
+		if ( $this->column === null ) {
+			return '';
 		}
 
-		return '';
+		$column = $this->column->get_column_or_alias();
+		$logic = $this->logic;
+
+		if ( $this->flags !== null && ! $this->flags->is_case_insensitive() ) {
+			// Prefer COLLATE utf8mb4_bin so multi-byte UTF-8 characters (e.g. emojis) compare correctly.
+			// On legacy databases where the column charset is still utf8 (or other non-utf8mb4),
+			// utf8mb4_bin is invalid and would raise a MySQL error, so fall back to LIKE BINARY.
+			if ( $this->is_utf8mb4_column() ) {
+				$column .= ' COLLATE utf8mb4_bin';
+			} else {
+				$logic = str_replace( 'LIKE', 'LIKE BINARY', $logic );
+			}
+		}
+
+		return $column . ' ' . $logic . ' ' . $this->get_value();
+	}
+
+	/**
+	 * Determine whether the underlying column is utf8mb4
+	 *
+	 * @return bool
+	 */
+	private function is_utf8mb4_column(): bool {
+		global $wpdb;
+
+		if ( $this->column !== null ) {
+			$table = $this->column->get_table();
+			$column = $this->column->get_column_name();
+
+			if ( $table !== '' && $column !== '' ) {
+				$charset = $wpdb->get_col_charset( $table, $column );
+
+				if ( is_string( $charset ) ) {
+					return $charset === 'utf8mb4';
+				}
+			}
+		}
+
+		return (bool) $wpdb->has_cap( 'utf8mb4' );
 	}
 }

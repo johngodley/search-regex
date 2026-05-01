@@ -184,6 +184,33 @@ class SqlWhereTest extends TestCase {
 		$this->assertStringContainsString( '💊', $where->get_as_sql() );
 	}
 
+	public function testWhereStringCaseSensitiveLegacyUtf8() {
+		// Legacy database where the column charset is utf8 (not utf8mb4):
+		// COLLATE utf8mb4_bin would raise a MySQL error, so we fall back to LIKE BINARY.
+		$this->setUpWpdb( 'utf8' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $this->getSelect(), 'equals', 'Test', $flags );
+		$this->assertEquals( "posts.column LIKE BINARY 'Test'", $where->get_as_sql() );
+	}
+
+	public function testWhereStringCaseSensitiveLegacyUtf8NotEquals() {
+		$this->setUpWpdb( 'utf8' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $this->getSelect(), 'notequals', 'Test', $flags );
+		$this->assertEquals( "posts.column NOT LIKE BINARY 'Test'", $where->get_as_sql() );
+	}
+
+	public function testWhereStringCaseInsensitiveOnLegacyUtf8() {
+		// Case-insensitive search must NOT add COLLATE or BINARY on a legacy column either.
+		$this->setUpWpdb( 'utf8' );
+
+		$flags = new Search\Flags( [ 'case' ] );
+		$where = new Sql\Where\Where_String( $this->getSelect(), 'equals', 'Test', $flags );
+		$this->assertEquals( "posts.column LIKE 'Test'", $where->get_as_sql() );
+	}
+
 	public function testWhereOrSingle() {
 		$where = new Sql\Where\Where_Or( [ new Sql\Where\Where_Integer( $this->getSelect(), 'equals', 5 ) ] );
 		$this->assertEquals( 'posts.column = 5', $where->get_as_sql() );

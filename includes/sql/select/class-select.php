@@ -65,6 +65,24 @@ class Select {
 	}
 
 	/**
+	 * Get the raw (unprefixed, unaliased) table name
+	 *
+	 * @return string
+	 */
+	public function get_table() {
+		return $this->table;
+	}
+
+	/**
+	 * Get the raw column name (without table or alias prefix)
+	 *
+	 * @return string
+	 */
+	public function get_column_name() {
+		return $this->column;
+	}
+
+	/**
 	 * Get the column or aliased column
 	 *
 	 * @return string
