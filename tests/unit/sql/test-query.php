@@ -93,6 +93,18 @@ class SqlQueryTest extends TestCase {
 		$this->assertStringNotContainsString( 'post_status', $sql );
 	}
 
+	public function testAddSelectOnlyCopiesGroup() {
+		$target = $this->makeBaseQuery();
+
+		$source = new Sql\Query();
+		$source->add_group( new Sql\Group( Sql\Value::column( 'wp_posts.ID' ) ) );
+
+		$target->add_select_only( $source );
+		$sql = $target->get_as_sql();
+
+		$this->assertStringContainsString( 'GROUP BY wp_posts.ID', $sql );
+	}
+
 	public function testAddSelectOnlyMergesWithExistingJoins() {
 		// Target already has a join; source also has a join and a select.
 		// After add_select_only, target should have both joins and both selects.

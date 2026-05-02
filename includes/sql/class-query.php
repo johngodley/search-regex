@@ -176,6 +176,7 @@ class Query {
 	public function add_select_only( Query $query ) {
 		$this->select = array_merge( $this->select, $query->select );
 		$this->joins = array_merge( $this->joins, $query->joins );
+		$this->group = array_merge( $this->group, $query->group );
 	}
 
 	/**
