@@ -212,17 +212,20 @@ class SqlWhereTest extends TestCase {
 	}
 
 	public function testWhereStringCaseSensitiveJoinedColumnFallsBackToBinary() {
-		// Modifier::replace_join_columns() rewrites a joined column on the Select via
-		// update_column(), which clears the table so the alias-prefixed value (e.g. 'tt.description')
-		// is emitted directly. With no table reference we can't look up the column charset, so the
-		// safe fallback is LIKE BINARY rather than risking COLLATE utf8mb4_bin against a utf8 column.
-		$select = $this->getSelect();
-		$select->update_column( 'column', 'tt.description' );
+		// Simulate what Modifier::replace_join_columns() does for a Term_Description join:
+		// rewrite the Select's column from 'description' to the alias-prefixed 'tt.description'
+		// and clear its table reference. With no table we can't look up the column charset,
+		// so we fall back to LIKE BINARY rather than risk COLLATE utf8mb4_bin against a utf8 column.
+		$select = new Sql\Select\Select( Sql\Value::table( 'wp_term_taxonomy' ), Sql\Value::column( 'description' ) );
+		$select->set_prefix_required();
+		$select->update_column( 'description', 'tt.description' );
 
 		$flags = new Search\Flags( [] );
 		$where = new Sql\Where\Where_String( $select, 'contains', 'Test', $flags );
-		$this->assertStringContainsString( 'tt.description LIKE BINARY', $where->get_as_sql() );
-		$this->assertStringNotContainsString( 'COLLATE', $where->get_as_sql() );
+		$sql = $where->get_as_sql();
+
+		$this->assertStringContainsString( 'tt.description LIKE BINARY', $sql );
+		$this->assertStringNotContainsString( 'COLLATE', $sql );
 	}
 
 	public function testWhereOrSingle() {

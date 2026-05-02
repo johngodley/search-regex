@@ -65,7 +65,7 @@ class Select {
 	}
 
 	/**
-	 * Get the raw (unprefixed, unaliased) table name
+	 * Get the raw table name. May be empty after update_column() clears it during a join rewrite.
 	 *
 	 * @return string
 	 */
@@ -74,11 +74,12 @@ class Select {
 	}
 
 	/**
-	 * Get the raw column name (without table or alias prefix)
+	 * Get the raw column name (without table or alias prefix). After update_column() this can hold
+	 * an alias-prefixed value such as 'tt.description'.
 	 *
 	 * @return string
 	 */
-	public function get_column_name() {
+	public function get_column() {
 		return $this->column;
 	}
 

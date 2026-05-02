@@ -89,7 +89,7 @@ class Where_String extends Where {
 			if ( $this->is_utf8mb4_column() ) {
 				$column .= ' COLLATE utf8mb4_bin';
 			} else {
-				$logic = str_replace( 'LIKE', 'LIKE BINARY', $logic );
+				$logic .= ' BINARY';
 			}
 		}
 
@@ -99,10 +99,13 @@ class Where_String extends Where {
 	/**
 	 * Determine whether the underlying column is utf8mb4.
 	 *
-	 * When the table or column can't be determined (e.g. after a join rewrite that strips
-	 * the table reference), assume non-utf8mb4 so the caller falls back to LIKE BINARY.
-	 * That's the safe choice on legacy databases — emitting COLLATE utf8mb4_bin against a
-	 * utf8 column raises a MySQL error.
+	 * When the table or column can't be determined (e.g. after Modifier::replace_join_columns()
+	 * has rewritten a joined column and cleared the table reference), assume non-utf8mb4 so the
+	 * caller falls back to LIKE BINARY. That's the safe choice on legacy databases — emitting
+	 * COLLATE utf8mb4_bin against a utf8 column raises a MySQL error. The trade-off is that
+	 * case-sensitive searches against joined string columns (e.g. term descriptions, meta values)
+	 * use bytewise comparison and lose correct multi-byte handling on those paths until the join
+	 * machinery is taught to thread the underlying table through to charset lookup.
 	 *
 	 * @return bool
 	 */
@@ -114,7 +117,7 @@ class Where_String extends Where {
 		}
 
 		$table = $this->column->get_table();
-		$column = $this->column->get_column_name();
+		$column = $this->column->get_column();
 
 		if ( $table === '' || $column === '' ) {
 			return false;
