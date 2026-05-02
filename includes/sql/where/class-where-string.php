@@ -97,26 +97,31 @@ class Where_String extends Where {
 	}
 
 	/**
-	 * Determine whether the underlying column is utf8mb4
+	 * Determine whether the underlying column is utf8mb4.
+	 *
+	 * When the table or column can't be determined (e.g. after a join rewrite that strips
+	 * the table reference), assume non-utf8mb4 so the caller falls back to LIKE BINARY.
+	 * That's the safe choice on legacy databases — emitting COLLATE utf8mb4_bin against a
+	 * utf8 column raises a MySQL error.
 	 *
 	 * @return bool
 	 */
 	private function is_utf8mb4_column(): bool {
 		global $wpdb;
 
-		if ( $this->column !== null ) {
-			$table = $this->column->get_table();
-			$column = $this->column->get_column_name();
-
-			if ( $table !== '' && $column !== '' ) {
-				$charset = $wpdb->get_col_charset( $table, $column );
-
-				if ( is_string( $charset ) ) {
-					return $charset === 'utf8mb4';
-				}
-			}
+		if ( $this->column === null ) {
+			return false;
 		}
 
-		return (bool) $wpdb->has_cap( 'utf8mb4' );
+		$table = $this->column->get_table();
+		$column = $this->column->get_column_name();
+
+		if ( $table === '' || $column === '' ) {
+			return false;
+		}
+
+		$charset = $wpdb->get_col_charset( $table, $column );
+
+		return is_string( $charset ) && $charset === 'utf8mb4';
 	}
 }

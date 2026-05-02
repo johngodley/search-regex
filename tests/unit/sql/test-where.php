@@ -211,6 +211,20 @@ class SqlWhereTest extends TestCase {
 		$this->assertEquals( "posts.column LIKE 'Test'", $where->get_as_sql() );
 	}
 
+	public function testWhereStringCaseSensitiveJoinedColumnFallsBackToBinary() {
+		// Modifier::replace_join_columns() rewrites a joined column on the Select via
+		// update_column(), which clears the table so the alias-prefixed value (e.g. 'tt.description')
+		// is emitted directly. With no table reference we can't look up the column charset, so the
+		// safe fallback is LIKE BINARY rather than risking COLLATE utf8mb4_bin against a utf8 column.
+		$select = $this->getSelect();
+		$select->update_column( 'column', 'tt.description' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $select, 'contains', 'Test', $flags );
+		$this->assertStringContainsString( 'tt.description LIKE BINARY', $where->get_as_sql() );
+		$this->assertStringNotContainsString( 'COLLATE', $where->get_as_sql() );
+	}
+
 	public function testWhereOrSingle() {
 		$where = new Sql\Where\Where_Or( [ new Sql\Where\Where_Integer( $this->getSelect(), 'equals', 5 ) ] );
 		$this->assertEquals( 'posts.column = 5', $where->get_as_sql() );

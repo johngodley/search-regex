@@ -99,10 +99,6 @@ abstract class TestCase extends BaseTestCase {
 				return addcslashes( $text, '_%\\' );
 			}
 
-			public function has_cap( $cap ) {
-				return $cap === 'utf8mb4' && $this->column_charset === 'utf8mb4';
-			}
-
 			public function get_col_charset( $table, $column ) {
 				return $this->column_charset;
 			}

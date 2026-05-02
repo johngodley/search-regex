@@ -16,6 +16,7 @@ class SqlQueryTest extends TestCase {
 		require_once PLUGIN_PATH . '/includes/sql/class-group.php';
 		require_once PLUGIN_PATH . '/includes/sql/select/class-select.php';
 		require_once PLUGIN_PATH . '/includes/sql/where/class-where.php';
+		require_once PLUGIN_PATH . '/includes/sql/where/class-where-integer.php';
 		require_once PLUGIN_PATH . '/includes/sql/join/class-join.php';
 		require_once PLUGIN_PATH . '/includes/sql/join/class-term-description.php';
 		require_once PLUGIN_PATH . '/includes/sql/modifier/class-modifier.php';
@@ -78,14 +79,18 @@ class SqlQueryTest extends TestCase {
 	public function testAddSelectOnlyDoesNotCopyWhere() {
 		$target = $this->makeBaseQuery();
 
-		// Source has a join with a WHERE condition; only its join should NOT be present
-		// since add_select_only only copies select+joins, not where clauses
 		$source = new Sql\Query();
-		// We verify WHERE absence by checking the target (which has no where) stays WHERE-free
+		$source->add_where( new Sql\Where\Where_Integer(
+			new Sql\Select\Select( Sql\Value::table( 'wp_posts' ), Sql\Value::column( 'post_status' ) ),
+			'equals',
+			42
+		) );
+
 		$target->add_select_only( $source );
 		$sql = $target->get_as_sql();
 
 		$this->assertStringNotContainsString( 'WHERE', $sql );
+		$this->assertStringNotContainsString( 'post_status', $sql );
 	}
 
 	public function testAddSelectOnlyMergesWithExistingJoins() {
