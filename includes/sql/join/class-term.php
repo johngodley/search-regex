@@ -19,8 +19,18 @@ class Term extends Join {
 	}
 
 	public function get_where() {
+		$taxonomy_col = new Sql\Select\Select( Sql\Value::column( 'tt' ), Sql\Value::column( 'taxonomy' ) );
+
 		if ( $this->is_matching ) {
-			return new Sql\Where\Where_String( new Sql\Select\Select( Sql\Value::column( 'tt' ), Sql\Value::column( 'taxonomy' ) ), '=', $this->column );
+			return new Sql\Where\Where_String( $taxonomy_col, '=', $this->column );
+		}
+
+		if ( $this->is_outer_join ) {
+			// LEFT JOIN: posts with no tags have NULL taxonomy, so allow either the taxonomy or NULL
+			return new Sql\Where\Where_Or( [
+				new Sql\Where\Where_String( $taxonomy_col, '=', $this->column ),
+				new Sql\Where\Where_Null( $taxonomy_col, 'empty' ),
+			] );
 		}
 
 		return false;
@@ -39,8 +49,12 @@ class Term extends Join {
 	public function get_from() {
 		global $wpdb;
 
-		if ( $this->is_matching ) {
-			return new Sql\From( Sql\Value::safe_raw( sprintf( 'INNER JOIN %sterm_relationships AS tr ON (%s.ID = tr.object_id) INNER JOIN %sterm_taxonomy AS tt ON tt.term_taxonomy_id=tr.term_taxonomy_id', $wpdb->prefix, $wpdb->posts, $wpdb->prefix ) ) );
+		if ( $this->is_matching || $this->is_outer_join ) {
+			$join_type = $this->is_outer_join ? 'LEFT JOIN' : 'INNER JOIN';
+			return new Sql\From( Sql\Value::safe_raw( sprintf(
+				'%s %sterm_relationships AS tr ON (%s.ID = tr.object_id) %s %sterm_taxonomy AS tt ON tt.term_taxonomy_id=tr.term_taxonomy_id',
+				$join_type, $wpdb->prefix, $wpdb->posts, $join_type, $wpdb->prefix
+			) ) );
 		}
 
 		return false;
