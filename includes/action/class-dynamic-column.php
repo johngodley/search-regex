@@ -122,6 +122,13 @@ class Dynamic_Column {
 			return '';
 		}
 
+		$named_attrs = [];
+		foreach ( $attrs as $name => $value ) {
+			if ( is_string( $name ) ) {
+				$named_attrs[ $name ] = $value;
+			}
+		}
+
 		$this->level++;
 		if ( $this->level > self::LOOP_MAX ) {
 			return '';
@@ -162,7 +169,7 @@ class Dynamic_Column {
 					$schema = $this->schema->get_column( $name );
 
 					if ( $schema ) {
-						return $this->get_schema_value( $schema, $attrs, $this->raw[ $name ] );
+						return $this->get_schema_value( $schema, $named_attrs, $this->raw[ $name ] );
 					}
 
 					return $this->raw[ $name ];
@@ -170,7 +177,7 @@ class Dynamic_Column {
 
 				$schema = $this->schema->get_column( $name );
 				if ( $schema && $schema->get_join_column() ) {
-					return $this->get_schema_join( $schema, $this->row_id, $attrs );
+					return $this->get_schema_join( $schema, $this->row_id, $named_attrs );
 				}
 
 				return '';

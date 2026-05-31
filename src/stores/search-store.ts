@@ -13,8 +13,8 @@ import { STATUS_IN_PROGRESS } from '../lib/constants';
  * Convert API search response results (with number row_id) to Result[] (with string row_id).
  * The API returns row_id as a number, but the store expects it as a string.
  *
- * @param {SearchResponse['results']} apiResults - Results array from API response
- * @return {Result[]} Results array with row_id converted to string
+ * @param apiResults Results array from API response.
+ * @return Results array with row_id converted to string.
  */
 export function convertToResults( apiResults: SearchResponse[ 'results' ] ): Result[] {
 	return apiResults.map( ( result ) => ( {
