@@ -99,13 +99,12 @@ class Where_String extends Where {
 	/**
 	 * Determine whether the underlying column is utf8mb4.
 	 *
-	 * When the table or column can't be determined (e.g. after Modifier::replace_join_columns()
-	 * has rewritten a joined column and cleared the table reference), assume non-utf8mb4 so the
-	 * caller falls back to LIKE BINARY. That's the safe choice on legacy databases — emitting
-	 * COLLATE utf8mb4_bin against a utf8 column raises a MySQL error. The trade-off is that
-	 * case-sensitive searches against joined string columns (e.g. term descriptions, meta values)
-	 * use bytewise comparison and lose correct multi-byte handling on those paths until the join
-	 * machinery is taught to thread the underlying table through to charset lookup.
+	 * Select::get_table() and get_column() preserve the original table/column metadata even after
+	 * join rewriting swaps the rendered SQL to an alias such as tt.description, so joined columns
+	 * can still look up their underlying charset. If the table or column genuinely can't be
+	 * determined, assume non-utf8mb4 so the caller falls back to LIKE BINARY. That's the safe
+	 * choice on legacy databases, because emitting COLLATE utf8mb4_bin against a utf8 column raises
+	 * a MySQL error.
 	 *
 	 * @return bool
 	 */

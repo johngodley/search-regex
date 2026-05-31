@@ -213,9 +213,10 @@ class SqlWhereTest extends TestCase {
 
 	public function testWhereStringCaseSensitiveJoinedColumnFallsBackToBinary() {
 		// Simulate what Modifier::replace_join_columns() does for a Term_Description join:
-		// rewrite the Select's column from 'description' to the alias-prefixed 'tt.description'
-		// and clear its table reference. With no table we can't look up the column charset,
-		// so we fall back to LIKE BINARY rather than risk COLLATE utf8mb4_bin against a utf8 column.
+		// rewrite the rendered SQL from 'description' to the alias-prefixed 'tt.description' while
+		// preserving the original table/column metadata for charset lookup. Because the mocked
+		// underlying column charset is utf8, we fall back to LIKE BINARY rather than risk
+		// COLLATE utf8mb4_bin against a legacy utf8 column.
 		$this->setUpWpdb( 'utf8' );
 
 		$select = new Sql\Select\Select( Sql\Value::table( 'wp_term_taxonomy' ), Sql\Value::column( 'description' ) );

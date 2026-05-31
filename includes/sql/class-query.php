@@ -168,7 +168,10 @@ class Query {
 	}
 
 	/**
-	 * Add the selects from another query
+	 * Add the SELECT-related state from another query without copying WHERE or FROM.
+	 *
+	 * This merges explicit SELECT items plus any JOIN and GROUP BY clauses that those selects
+	 * rely on.
 	 *
 	 * @param Query $query Query.
 	 * @return void
