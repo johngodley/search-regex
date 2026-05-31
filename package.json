@@ -15,7 +15,7 @@
 		"build:stats": "wp-scripts build --webpack-bundle-analyzer",
 		"lint": "pnpm lint:css && pnpm lint:js && pnpm lint:ts && pnpm lint:php",
 		"lint:css": "wp-scripts lint-style",
-		"lint:js": "wp-scripts lint-js",
+		"lint:js": "wp-scripts lint-js ./src",
 		"lint:ts": "tsc --noEmit",
 		"lint:php": "composer run-script checks",
 		"plugin": "pnpm build && rm -rf release && mkdir -p release/search-regex && cp -R search-regex.php search-regex-loader.php changelog.txt readme.txt build license.txt includes release/search-regex",
@@ -103,7 +103,7 @@
 		"zustand": "^5.0.14"
 	},
 	"wordpress": {
-		"supported": "6.5"
+		"supported": "6.6"
 	},
 	"release-it": {
 		"github": {
