@@ -3,10 +3,10 @@
 Plugin Name: Search Regex
 Plugin URI: https://searchregex.com/
 Description: Adds search and replace functionality across posts, pages, comments, and meta-data, with full regular expression support
-Version: 3.4.1
+Version: 3.4.2
 Author: John Godley
 Requires PHP: 7.4
-Requires at least: 6.5
+Requires at least: 6.6
 Text Domain: search-regex
 ============================================================================================================
 For full license details see license.txt
