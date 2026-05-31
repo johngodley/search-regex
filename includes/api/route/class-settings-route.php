@@ -14,7 +14,7 @@ class Settings_Route extends Api\Route {
 	/**
 	 * Create API endpoints with the given namespace
 	 *
-	 * @param string $namespace Namespace.
+	 * @param non-falsy-string $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
 		register_rest_route(

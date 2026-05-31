@@ -51,7 +51,7 @@ class Search_Route extends Api\Route {
 	/**
 	 * Search API endpoint constructor
 	 *
-	 * @param string $namespace Namespace.
+	 * @param non-falsy-string $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
 		register_rest_route(
