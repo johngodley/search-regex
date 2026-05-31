@@ -216,6 +216,8 @@ class SqlWhereTest extends TestCase {
 		// rewrite the Select's column from 'description' to the alias-prefixed 'tt.description'
 		// and clear its table reference. With no table we can't look up the column charset,
 		// so we fall back to LIKE BINARY rather than risk COLLATE utf8mb4_bin against a utf8 column.
+		$this->setUpWpdb( 'utf8' );
+
 		$select = new Sql\Select\Select( Sql\Value::table( 'wp_term_taxonomy' ), Sql\Value::column( 'description' ) );
 		$select->set_prefix_required();
 		$select->update_column( 'description', 'tt.description' );
@@ -226,6 +228,20 @@ class SqlWhereTest extends TestCase {
 
 		$this->assertStringContainsString( 'tt.description LIKE BINARY', $sql );
 		$this->assertStringNotContainsString( 'COLLATE', $sql );
+	}
+
+	public function testWhereStringCaseSensitiveJoinedUtf8mb4ColumnUsesCollate() {
+		$select = new Sql\Select\Select( Sql\Value::table( 'wp_term_taxonomy' ), Sql\Value::column( 'description' ) );
+		$select->set_prefix_required();
+		$select->update_column( 'description', 'tt.description' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $select, 'contains', '💊', $flags );
+		$sql = $where->get_as_sql();
+
+		$this->assertStringContainsString( 'tt.description COLLATE utf8mb4_bin LIKE', $sql );
+		$this->assertStringContainsString( '💊', $sql );
+		$this->assertStringNotContainsString( 'LIKE BINARY', $sql );
 	}
 
 	public function testWhereOrSingle() {
