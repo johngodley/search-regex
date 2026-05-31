@@ -184,6 +184,67 @@ class SqlWhereTest extends TestCase {
 		$this->assertStringContainsString( '💊', $where->get_as_sql() );
 	}
 
+	public function testWhereStringCaseSensitiveLegacyUtf8() {
+		// Legacy database where the column charset is utf8 (not utf8mb4):
+		// COLLATE utf8mb4_bin would raise a MySQL error, so we fall back to LIKE BINARY.
+		$this->setUpWpdb( 'utf8' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $this->getSelect(), 'equals', 'Test', $flags );
+		$this->assertEquals( "posts.column LIKE BINARY 'Test'", $where->get_as_sql() );
+	}
+
+	public function testWhereStringCaseSensitiveLegacyUtf8NotEquals() {
+		$this->setUpWpdb( 'utf8' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $this->getSelect(), 'notequals', 'Test', $flags );
+		$this->assertEquals( "posts.column NOT LIKE BINARY 'Test'", $where->get_as_sql() );
+	}
+
+	public function testWhereStringCaseInsensitiveOnLegacyUtf8() {
+		// Case-insensitive search must NOT add COLLATE or BINARY on a legacy column either.
+		$this->setUpWpdb( 'utf8' );
+
+		$flags = new Search\Flags( [ 'case' ] );
+		$where = new Sql\Where\Where_String( $this->getSelect(), 'equals', 'Test', $flags );
+		$this->assertEquals( "posts.column LIKE 'Test'", $where->get_as_sql() );
+	}
+
+	public function testWhereStringCaseSensitiveJoinedColumnFallsBackToBinary() {
+		// Simulate what Modifier::replace_join_columns() does for a Term_Description join:
+		// rewrite the rendered SQL from 'description' to the alias-prefixed 'tt.description' while
+		// preserving the original table/column metadata for charset lookup. Because the mocked
+		// underlying column charset is utf8, we fall back to LIKE BINARY rather than risk
+		// COLLATE utf8mb4_bin against a legacy utf8 column.
+		$this->setUpWpdb( 'utf8' );
+
+		$select = new Sql\Select\Select( Sql\Value::table( 'wp_term_taxonomy' ), Sql\Value::column( 'description' ) );
+		$select->set_prefix_required();
+		$select->update_column( 'description', 'tt.description' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $select, 'contains', 'Test', $flags );
+		$sql = $where->get_as_sql();
+
+		$this->assertStringContainsString( 'tt.description LIKE BINARY', $sql );
+		$this->assertStringNotContainsString( 'COLLATE', $sql );
+	}
+
+	public function testWhereStringCaseSensitiveJoinedUtf8mb4ColumnUsesCollate() {
+		$select = new Sql\Select\Select( Sql\Value::table( 'wp_term_taxonomy' ), Sql\Value::column( 'description' ) );
+		$select->set_prefix_required();
+		$select->update_column( 'description', 'tt.description' );
+
+		$flags = new Search\Flags( [] );
+		$where = new Sql\Where\Where_String( $select, 'contains', '💊', $flags );
+		$sql = $where->get_as_sql();
+
+		$this->assertStringContainsString( 'tt.description COLLATE utf8mb4_bin LIKE', $sql );
+		$this->assertStringContainsString( '💊', $sql );
+		$this->assertStringNotContainsString( 'LIKE BINARY', $sql );
+	}
+
 	public function testWhereOrSingle() {
 		$where = new Sql\Where\Where_Or( [ new Sql\Where\Where_Integer( $this->getSelect(), 'equals', 5 ) ] );
 		$this->assertEquals( 'posts.column = 5', $where->get_as_sql() );

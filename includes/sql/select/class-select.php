@@ -26,6 +26,16 @@ class Select {
 	protected string $table;
 
 	/**
+	 * Original table name before any join rewrite.
+	 */
+	protected string $source_table;
+
+	/**
+	 * Original column name before any join rewrite.
+	 */
+	protected string $source_column;
+
+	/**
 	 * SQL prefix
 	 */
 	protected bool $prefix_sql = false;
@@ -41,6 +51,8 @@ class Select {
 	public function __construct( Sql\Value $table, Sql\Value $column, $alias = null, $prefix_required = false ) {
 		$this->table = $table->get_value();
 		$this->column = $column->get_value();
+		$this->source_table = $this->table;
+		$this->source_column = $this->column;
 		$this->alias = $alias ? $alias->get_value() : null;
 		$this->prefix_sql = $prefix_required;
 	}
@@ -62,6 +74,24 @@ class Select {
 		}
 
 		return $sql;
+	}
+
+	/**
+	 * Get the underlying table name before any join rewrite.
+	 *
+	 * @return string
+	 */
+	public function get_table() {
+		return $this->source_table;
+	}
+
+	/**
+	 * Get the underlying column name before any join rewrite.
+	 *
+	 * @return string
+	 */
+	public function get_column() {
+		return $this->source_column;
 	}
 
 	/**

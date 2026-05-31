@@ -71,11 +71,18 @@ abstract class TestCase extends BaseTestCase {
 
 	/**
 	 * Set up the global $wpdb mock for SQL-related tests.
+	 *
+	 * @param string $column_charset Charset reported by get_col_charset() (default 'utf8mb4').
 	 */
-	protected function setUpWpdb(): void {
+	protected function setUpWpdb( string $column_charset = 'utf8mb4' ): void {
 		global $wpdb;
-		$wpdb = new class {
+		$wpdb = new class( $column_charset ) {
 			public $prefix = 'wp_';
+			private string $column_charset;
+
+			public function __construct( string $column_charset ) {
+				$this->column_charset = $column_charset;
+			}
 
 			public function prepare( $format, ...$args ) {
 				$value = $args[0] ?? '';
@@ -90,6 +97,10 @@ abstract class TestCase extends BaseTestCase {
 
 			public function esc_like( $text ) {
 				return addcslashes( $text, '_%\\' );
+			}
+
+			public function get_col_charset( $table, $column ) {
+				return $this->column_charset;
 			}
 		};
 	}
