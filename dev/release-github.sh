@@ -12,6 +12,11 @@ if [ "$BRANCH" != "trunk" ]; then
 	exit 1
 fi
 
+if [ -n "$(git status --porcelain)" ]; then
+	echo "Releases require a clean working tree." >&2
+	exit 1
+fi
+
 VERSION="$(node -p "require('./package.json').version")"
 TAG="$VERSION"
 ZIP_FILE="release/search-regex.zip"
@@ -30,7 +35,7 @@ esac
 
 pnpm plugin:zip
 
-if git rev-parse "$TAG" >/dev/null 2>&1; then
+if git show-ref --verify --quiet "refs/tags/$TAG"; then
 	echo "Git tag $TAG already exists locally."
 else
 	git tag -a "$TAG" -m "Release $TAG"
