@@ -123,7 +123,7 @@ export default function AdvancedPagination( props: AdvancedPaginationProps ) {
 	}
 
 	return (
-		<div className="tablenav-pages">
+		<div className="tablenav tablenav-pages">
 			{ noTotal && <div>&nbsp;</div> }
 			{ ! noTotal && (
 				<div className="displaying-num">

@@ -66,7 +66,7 @@ function ContextItem( props: ContextItemProps ): JSX.Element {
 						column={ column }
 						schema={ schema }
 						source={ source }
-						className="searchregex-replace__modal"
+						className="searchregex-replace__modal inline-edit-row"
 						description={
 							getValueType( context.type === 'keyvalue' ? context.value.value_type : context.value_type )
 								? __( 'Contains encoded data', 'search-regex' )

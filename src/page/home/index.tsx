@@ -116,18 +116,20 @@ function Home() {
 					<div className="searchregex-header">
 						<h1 className="wp-heading-inline">{ getTitles()[ page ] }</h1>
 						{ page === 'search' && (
-							<Select
-								items={ [
-									{ value: 'simple', label: __( 'Simple mode', 'search-regex' ) },
-									{ value: 'advanced', label: __( 'Advanced mode', 'search-regex' ) },
-								] }
-								name="search-mode"
-								value={ mode }
-								onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) => {
-									setMode( ev.target.value as 'simple' | 'advanced' );
-									updateSearchUrl();
-								} }
-							/>
+							<div className="inline-edit-row searchregex-search-mode">
+								<Select
+									items={ [
+										{ value: 'simple', label: __( 'Simple mode', 'search-regex' ) },
+										{ value: 'advanced', label: __( 'Advanced mode', 'search-regex' ) },
+									] }
+									name="search-mode"
+									value={ mode }
+									onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) => {
+										setMode( ev.target.value as 'simple' | 'advanced' );
+										updateSearchUrl();
+									} }
+								/>
+							</div>
 						) }
 					</div>
 
@@ -163,7 +165,11 @@ function Home() {
 
 					<PageContent page={ page } />
 
-					<Snackbar notices={ notices } onClear={ clearNotices } snackBarViewText={ __( 'View' ) } />
+					<Snackbar
+						notices={ notices.map( ( message ) => ( { message } ) ) }
+						onClear={ clearNotices }
+						snackBarViewText={ __( 'View' ) }
+					/>
 				</PageRouter>
 			</div>
 		</ErrorBoundary>
