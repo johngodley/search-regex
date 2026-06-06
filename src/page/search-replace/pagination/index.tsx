@@ -50,7 +50,7 @@ function Pagination( props: PaginationProps ) {
 
 	if ( shouldHide ) {
 		return (
-			<div className="tablenav-pages">
+			<div className="tablenav tablenav-pages">
 				<div className="displaying-num">&nbsp;</div>
 			</div>
 		);

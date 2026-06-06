@@ -81,13 +81,13 @@ function OptionsForm() {
 							onChange={ ( ev: React.ChangeEvent< HTMLSelectElement > ) =>
 								setStartupSelection( ev.target.value )
 							}
-						/>{ ' ' }
-						<span>
+						/>
+						<p className="sub">
 							{ __(
 								'Choose which mode Search Regex should start in. You can still switch modes in the UI.',
 								'search-regex'
 							) }
-						</span>
+						</p>
 					</>
 				</TableRow>
 
@@ -101,9 +101,9 @@ function OptionsForm() {
 						value={ String( restApi ) }
 					/>
 					&nbsp;
-					<span className="sub">
+					<p className="sub">
 						{ __( "How Search Regex uses the REST API - don't change unless necessary", 'search-regex' ) }
-					</span>
+					</p>
 				</TableRow>
 			</Table>
 

@@ -1,10 +1,11 @@
 @use "../../../global" as *;
 
-.tablenav-pages {
+.tablenav.tablenav-pages {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	padding: 10px;
+	margin: 0;
 }
 
 .pagination-links {

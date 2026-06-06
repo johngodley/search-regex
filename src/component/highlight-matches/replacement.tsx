@@ -110,7 +110,7 @@ function Replacement( props: ReplacementProps ): JSX.Element {
 						schema={ schemaColumn || { type: 'string' as const } }
 						rowId={ String( rowId ) }
 						context={ { value: match, type: 'string', forceSingle: true } }
-						className="searchregex-replace__modal"
+						className="searchregex-replace__modal inline-edit-row"
 						source={ schema.source || '' }
 					/>
 				);

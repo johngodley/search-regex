@@ -1,7 +1,7 @@
 import { useState, FormEvent, ChangeEvent } from 'react';
 import { __ } from '@wordpress/i18n';
 import SearchForm from '../../page/search-replace/search-form/form';
-import { MultiOptionDropdown, createInterpolateElement } from '@wp-plugin-components';
+import { Button, MultiOptionDropdown, createInterpolateElement } from '@wp-plugin-components';
 import type { PresetValue, PresetTag } from '../../types/preset';
 import type { SearchValues } from '../../types/search';
 
@@ -205,14 +205,14 @@ function PresetEdit( props: PresetEditProps ) {
 									</label>
 									{ /* eslint-enable jsx-a11y/label-has-associated-control */ }
 									{ pos < MAX_PRESETS && (
-										<button
-											type="button"
+										<Button
+											className="searchregex-preset__tag-button"
 											onClick={ () =>
 												pos === presetTags.length - 1 ? addTag() : deleteTag( pos )
 											}
 										>
 											{ pos === presetTags.length - 1 ? '+' : '-' }
-										</button>
+										</Button>
 									) }
 								</p>
 							) ) }

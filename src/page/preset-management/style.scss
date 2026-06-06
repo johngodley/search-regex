@@ -1,4 +1,4 @@
-.searchregex-presets {
+.widefat.searchregex-presets {
 	margin-top: 20px;
 
 	.searchregex-preset__name {
@@ -61,11 +61,21 @@
 	}
 
 	p {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 6px;
 		margin: 1px 0;
 	}
 
 	input[type="text"] {
 		width: 100%;
+	}
+
+	.searchregex-preset__tag-button {
+		min-width: 40px;
+		padding-right: 10px;
+		padding-left: 10px;
 	}
 }
 

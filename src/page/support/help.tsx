@@ -30,7 +30,7 @@ const Help = () => {
 				</strong>
 			</p>
 
-			<Notice level="general">
+			<Notice level="general" className="searchregex-help__github-notice">
 				<p className="github">
 					<ExternalLink url="https://github.com/johngodley/search-regex/issues">
 						<img

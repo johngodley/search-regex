@@ -3,19 +3,6 @@
 	align-items: baseline;
 	margin-bottom: 5px;
 
-	.wpl-dropdowntext,
-	input[type="text"],
-	textarea,
-	select {
-		margin-left: 8px;
-		margin-right: 8px;
-
-		&:last-child {
-			margin-right: 0;
-			margin-bottom: 0;
-		}
-	}
-
 	.wpl-dropdowntext > input[type="text"] {
 		margin-right: 0;
 		margin-left: 0;
