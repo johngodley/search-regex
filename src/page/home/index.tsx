@@ -165,7 +165,11 @@ function Home() {
 
 					<PageContent page={ page } />
 
-					<Snackbar notices={ notices } onClear={ clearNotices } snackBarViewText={ __( 'View' ) } />
+					<Snackbar
+						notices={ notices.map( ( message ) => ( { message } ) ) }
+						onClear={ clearNotices }
+						snackBarViewText={ __( 'View' ) }
+					/>
 				</PageRouter>
 			</div>
 		</ErrorBoundary>
