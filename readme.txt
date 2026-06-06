@@ -128,6 +128,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 = 3.4.2 - May 31st 2026 =
 * Better older PHP compatibility
 * Improve UTF8 collation searching
+* Improve WP 7.0 admin styling
 
 = 3.4.1 - February 28th 2026 =
 * Fix problem with export data
