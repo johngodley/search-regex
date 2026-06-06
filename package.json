@@ -20,7 +20,7 @@
 		"lint:php": "composer run-script checks",
 		"plugin": "pnpm build && rm -rf release && mkdir -p release/search-regex && cp -R search-regex.php search-regex-loader.php changelog.txt readme.txt build license.txt includes release/search-regex",
 		"plugin:zip": "pnpm plugin && cd release && zip -r search-regex.zip search-regex",
-		"release": "pnpm plugin:zip && release-it",
+		"release": "dev/release-github.sh",
 		"release:svn": "pnpm plugin && dev/svn.sh $npm_package_version",
 		"start": "wp-scripts start",
 		"test": "pnpm test:js && pnpm test:unit && pnpm test:integration",
@@ -71,7 +71,6 @@
 		"npm-check-updates": "^19.6.6",
 		"path": "^0.12.7",
 		"prettier": "npm:wp-prettier@3.0.3",
-		"release-it": "^20.2.0",
 		"stylelint": "^16.26.1",
 		"typescript": "^5.9.3",
 		"webpack-bundle-analyzer": "^5.3.0",
@@ -104,16 +103,6 @@
 	},
 	"wordpress": {
 		"supported": "6.6"
-	},
-	"release-it": {
-		"github": {
-			"release": true,
-			"tokenRef": "GITHUB_TOKEN_RELEASE",
-			"assets": [
-				"release/search-regex.zip"
-			]
-		},
-		"npm": false
 	},
 	"lint-staged": {
 		"*.php": [
