@@ -1,5 +1,9 @@
 {
     "core": "WordPress/WordPress",
     "plugins": [ "." ],
-    "testsEnvironment": false
+    "env": {
+        "tests": {
+            "phpVersion": "7.4"
+        }
+    }
 }
