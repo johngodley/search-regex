@@ -100,9 +100,15 @@
 	padding-bottom: 10px !important;
 }
 
-/* Some plugins hide .notice - ensure our stuff always shows */
-.notice {
+/* Only show Search Regex-owned admin notices on Search Regex pages. */
+.notice.wpl-notice:not(.hidden),
+.update-nag.wpl-notice:not(.hidden) {
 	display: block !important;
+}
+
+.notice:not(.wpl-notice):not(.hidden),
+.update-nag:not(.wpl-notice):not(.hidden) {
+	display: none !important;
 }
 
 .database-switch {
