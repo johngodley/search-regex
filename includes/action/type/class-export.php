@@ -147,6 +147,35 @@ class Export extends Action\Action {
 	}
 
 	/**
+	 * Neutralize a value that could be interpreted as a spreadsheet formula when the CSV is opened
+	 * in a spreadsheet application. Leading whitespace is trimmed before the check so a formula
+	 * hidden behind it is still caught, but the original value is otherwise preserved. Numeric
+	 * strings (eg. "-10", "+3.5") are exempt, since a leading +/- there is a sign, not a formula.
+	 *
+	 * [FORMULA] is used to avoid being removed by spreadsheet applications.
+	 *
+	 * @param mixed $value Column value.
+	 * @return mixed
+	 */
+	private function sanitise_csv_column( $value ) {
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+
+		$trimmed = ltrim( $value );
+
+		if ( $trimmed === '' || ! in_array( $trimmed[0], [ '=', '+', '-', '@' ], true ) ) {
+			return $value;
+		}
+
+		if ( is_numeric( $trimmed ) ) {
+			return $value;
+		}
+
+		return '[FORMULA] ' . $value;
+	}
+
+	/**
 	 * Convert a Result to CSV
 	 *
 	 * @param Search\Result $result Result.
@@ -154,7 +183,7 @@ class Export extends Action\Action {
 	 */
 	private function convert_to_csv( Search\Result $result ) {
 		$csv = array_map(
-			fn( $column ) => $column->get_value(),
+			fn( $column ) => $this->sanitise_csv_column( $column->get_value() ),
 			$result->get_columns()
 		);
 
