@@ -75,6 +75,37 @@ class RunTest extends TestCase {
 		$this->assertEquals( [ 'hook' => false ], $run->to_json()['actionOption'] );
 	}
 
+	public function testHookNamedZeroIsPreserved() {
+		// The string "0" is falsy in PHP, so a naive `if ( $hook && ... )` check would
+		// incorrectly treat this as an empty/unset hook rather than a real hook name.
+		Functions\expect( 'has_action' )
+			->once()
+			->with( '0' )
+			->andReturn( true );
+
+		$run = new Run( [ 'hook' => '0' ], $this->getSchema() );
+
+		$this->assertEquals( [ 'hook' => '0' ], $run->to_json()['actionOption'] );
+	}
+
+	public function testPerformFiresHookNamedZero() {
+		Functions\expect( 'has_action' )->once()->with( '0' )->andReturn( true );
+
+		$run = new Run( [ 'hook' => '0' ], $this->getSchema() );
+		$run->set_save_mode( true );
+
+		$source = $this->getSource();
+		$row = [ 'ID' => 1 ];
+
+		Functions\expect( 'do_action' )
+			->once()
+			->with( '0', $row, 123, $source, [] );
+
+		$result = $run->perform( 123, $row, $source, [] );
+
+		$this->assertEquals( [], $result );
+	}
+
 	public function testUnregisteredHookIsNotSet() {
 		Functions\when( 'has_action' )->justReturn( false );
 

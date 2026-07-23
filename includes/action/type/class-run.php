@@ -11,7 +11,7 @@ class Run extends Action {
 	/**
 	 * Hook name
 	 *
-	 * @var string|false
+	 * @var non-empty-string|false
 	 */
 	private $hook = false;
 
@@ -25,7 +25,7 @@ class Run extends Action {
 		if ( is_array( $options ) && isset( $options['hook'] ) && is_string( $options['hook'] ) ) {
 			$hook = preg_replace( '/[^A-Za-z0-9_-]/', '', $options['hook'] );
 
-			if ( $hook && has_action( $hook ) ) {
+			if ( $hook !== null && $hook !== '' && has_action( $hook ) ) {
 				$this->hook = $hook;
 			}
 		}
@@ -60,7 +60,7 @@ class Run extends Action {
 	 * @return array<Search\Column>
 	 */
 	public function perform( $row_id, array $row, Source\Source $source, array $columns ) {
-		if ( ! $this->hook || ! $this->save ) {
+		if ( $this->hook === false || ! $this->save ) {
 			return $columns;
 		}
 
