@@ -125,6 +125,10 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
+= 3.4.3 - July 23rd 2026 =
+* Sanitise CSV exports
+* Fix 'run action'
+
 = 3.4.2 - May 31st 2026 =
 * Better older PHP compatibility
 * Improve UTF8 collation searching
