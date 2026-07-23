@@ -23,7 +23,7 @@ class Run extends Action {
 	 */
 	public function __construct( $options, Schema\Schema $schema ) {
 		if ( is_array( $options ) && isset( $options['hook'] ) && has_action( $options['hook'] ) ) {
-			$this->hook = preg_replace( '/[A-Za-z0-9_-]/', '', $options['hook'] );
+			$this->hook = preg_replace( '/[^A-Za-z0-9_-]/', '', $options['hook'] );
 		}
 
 		parent::__construct( $options, $schema );
@@ -56,7 +56,7 @@ class Run extends Action {
 	 * @return array<Search\Column>
 	 */
 	public function perform( $row_id, array $row, Source\Source $source, array $columns ) {
-		if ( ! $this->hook || ! $this->should_save() ) {
+		if ( ! $this->hook || ! $this->save ) {
 			return $columns;
 		}
 
