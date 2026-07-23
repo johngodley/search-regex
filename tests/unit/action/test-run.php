@@ -65,6 +65,16 @@ class RunTest extends TestCase {
 		$this->assertEquals( [ 'hook' => false ], $run->to_json()['actionOption'] );
 	}
 
+	public function testNonStringHookOptionIsNotSet() {
+		// An array cast to string becomes the literal "Array", which would otherwise
+		// pass sanitizing and could accidentally match a real registered hook name.
+		Functions\expect( 'has_action' )->never();
+
+		$run = new Run( [ 'hook' => [ 'not', 'a', 'string' ] ], $this->getSchema() );
+
+		$this->assertEquals( [ 'hook' => false ], $run->to_json()['actionOption'] );
+	}
+
 	public function testUnregisteredHookIsNotSet() {
 		Functions\when( 'has_action' )->justReturn( false );
 
