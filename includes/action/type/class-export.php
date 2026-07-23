@@ -152,7 +152,7 @@ class Export extends Action\Action {
 	 * hidden behind it is still caught, but the original value is otherwise preserved. Numeric
 	 * strings (eg. "-10", "+3.5") are exempt, since a leading +/- there is a sign, not a formula.
 	 *
-	 * [FORUMULA] is used to avoid being removed by spreadsheet applications.
+	 * [FORMULA] is used to avoid being removed by spreadsheet applications.
 	 *
 	 * @param mixed $value Column value.
 	 * @return mixed
