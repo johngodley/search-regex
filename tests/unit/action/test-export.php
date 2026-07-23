@@ -30,7 +30,7 @@ class ExportTest extends TestCase {
 	 */
 	private function preventFormulaInjection( $value ) {
 		$reflection = new ReflectionClass( $this->export );
-		$method = $reflection->getMethod( 'prevent_formula_injection' );
+		$method = $reflection->getMethod( 'sanitise_csv_column' );
 		return $method->invoke( $this->export, $value );
 	}
 
@@ -76,5 +76,25 @@ class ExportTest extends TestCase {
 
 	public function testValueContainingButNotStartingWithFormulaCharIsUnchanged() {
 		$this->assertEquals( 'total=5', $this->preventFormulaInjection( 'total=5' ) );
+	}
+
+	public function testFormulaBehindLeadingNewlineIsPrefixed() {
+		$this->assertEquals( "[FORMULA] \n=cmd()", $this->preventFormulaInjection( "\n=cmd()" ) );
+	}
+
+	public function testNegativeNumberIsUnchanged() {
+		$this->assertEquals( '-10', $this->preventFormulaInjection( '-10' ) );
+	}
+
+	public function testPositiveNumberIsUnchanged() {
+		$this->assertEquals( '+10', $this->preventFormulaInjection( '+10' ) );
+	}
+
+	public function testNegativeDecimalIsUnchanged() {
+		$this->assertEquals( '-3.5', $this->preventFormulaInjection( '-3.5' ) );
+	}
+
+	public function testNumberBehindLeadingSpaceIsUnchanged() {
+		$this->assertEquals( '  -10', $this->preventFormulaInjection( '  -10' ) );
 	}
 }

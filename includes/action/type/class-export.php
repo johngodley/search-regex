@@ -148,27 +148,31 @@ class Export extends Action\Action {
 
 	/**
 	 * Neutralize a value that could be interpreted as a spreadsheet formula when the CSV is opened
-	 * in a spreadsheet application. Leading whitespace/tabs are trimmed before the check so a
-	 * formula hidden behind them is still caught, but the original value is otherwise preserved.
+	 * in a spreadsheet application. Leading whitespace is trimmed before the check so a formula
+	 * hidden behind it is still caught, but the original value is otherwise preserved. Numeric
+	 * strings (eg. "-10", "+3.5") are exempt, since a leading +/- there is a sign, not a formula.
 	 *
-	 * A single-quote prefix is the usual mitigation, but it isn't stripped by all spreadsheet
-	 * applications (for example macOS Numbers), so a visible `[FORMULA]` prefix is used instead.
+	 * [FORUMULA] is used to avoid being removed by spreadsheet applications.
 	 *
 	 * @param mixed $value Column value.
 	 * @return mixed
 	 */
-	private function prevent_formula_injection( $value ) {
+	private function sanitise_csv_column( $value ) {
 		if ( ! is_string( $value ) ) {
 			return $value;
 		}
 
-		$trimmed = ltrim( $value, " \t" );
+		$trimmed = ltrim( $value );
 
-		if ( $trimmed !== '' && in_array( $trimmed[0], [ '=', '+', '-', '@' ], true ) ) {
-			return '[FORMULA] ' . $value;
+		if ( $trimmed === '' || ! in_array( $trimmed[0], [ '=', '+', '-', '@' ], true ) ) {
+			return $value;
 		}
 
-		return $value;
+		if ( is_numeric( $trimmed ) ) {
+			return $value;
+		}
+
+		return '[FORMULA] ' . $value;
 	}
 
 	/**
@@ -179,7 +183,7 @@ class Export extends Action\Action {
 	 */
 	private function convert_to_csv( Search\Result $result ) {
 		$csv = array_map(
-			fn( $column ) => $this->prevent_formula_injection( $column->get_value() ),
+			fn( $column ) => $this->sanitise_csv_column( $column->get_value() ),
 			$result->get_columns()
 		);
 
