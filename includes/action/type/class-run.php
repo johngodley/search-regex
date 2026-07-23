@@ -22,8 +22,12 @@ class Run extends Action {
 	 * @param Schema\Schema $schema Schema.
 	 */
 	public function __construct( $options, Schema\Schema $schema ) {
-		if ( is_array( $options ) && isset( $options['hook'] ) && has_action( $options['hook'] ) ) {
-			$this->hook = preg_replace( '/[^A-Za-z0-9_-]/', '', $options['hook'] );
+		if ( is_array( $options ) && isset( $options['hook'] ) ) {
+			$hook = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $options['hook'] );
+
+			if ( $hook && has_action( $hook ) ) {
+				$this->hook = $hook;
+			}
 		}
 
 		parent::__construct( $options, $schema );

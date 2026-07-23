@@ -22,7 +22,10 @@ class RunTest extends TestCase {
 	}
 
 	public function testValidHookNameIsPreserved() {
-		Functions\when( 'has_action' )->justReturn( true );
+		Functions\expect( 'has_action' )
+			->once()
+			->with( 'my_custom-hook_123' )
+			->andReturn( true );
 
 		$run = new Run( [ 'hook' => 'my_custom-hook_123' ], $this->getSchema() );
 
@@ -30,11 +33,36 @@ class RunTest extends TestCase {
 	}
 
 	public function testInvalidCharactersAreStrippedButValidOnesKept() {
-		Functions\when( 'has_action' )->justReturn( true );
+		// has_action() must be called with the sanitized name, not the raw input.
+		Functions\expect( 'has_action' )
+			->once()
+			->with( 'myhookDROPTABLEwp_posts--' )
+			->andReturn( true );
 
 		$run = new Run( [ 'hook' => "my hook'; DROP TABLE wp_posts;--" ], $this->getSchema() );
 
 		$this->assertEquals( [ 'hook' => 'myhookDROPTABLEwp_posts--' ], $run->to_json()['actionOption'] );
+	}
+
+	public function testHookIsValidatedAfterSanitizingNotBefore() {
+		// The raw hook contains a disallowed '.' character. If has_action() were (incorrectly) called
+		// with the raw value, this expectation would not match and the test would fail.
+		Functions\expect( 'has_action' )
+			->once()
+			->with( 'wp_ajax_dosomething' )
+			->andReturn( true );
+
+		$run = new Run( [ 'hook' => 'wp_ajax_do.something' ], $this->getSchema() );
+
+		$this->assertEquals( [ 'hook' => 'wp_ajax_dosomething' ], $run->to_json()['actionOption'] );
+	}
+
+	public function testHookThatSanitizesToEmptyStringIsNotSet() {
+		Functions\expect( 'has_action' )->never();
+
+		$run = new Run( [ 'hook' => '!!!' ], $this->getSchema() );
+
+		$this->assertEquals( [ 'hook' => false ], $run->to_json()['actionOption'] );
 	}
 
 	public function testUnregisteredHookIsNotSet() {
