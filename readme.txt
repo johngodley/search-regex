@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database
 Tested up to: 7.0
-Stable tag: 3.4.2
+Stable tag: 3.4.3
 License: GPLv3
 
 Search Regex adds a powerful set of search and replace functions to WordPress posts, pages, custom post types, and other data.
