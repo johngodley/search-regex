@@ -125,7 +125,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.4.3 - July 23rd 2026 =
+= 3.4.3 - July 25th 2026 =
 * Sanitise CSV exports
 * Fix 'run action'
 
