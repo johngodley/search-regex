@@ -91,6 +91,10 @@ class Filter_Member extends Filter_Type {
 		$select = new Sql\Select\Select_Column( $this->schema );
 
 		if ( $this->join ) {
+			if ( $this->logic === 'exclude' ) {
+				$this->join->set_outer_join();
+			}
+
 			$query->add_join( $this->join );
 		}
 
