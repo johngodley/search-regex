@@ -204,26 +204,29 @@ export type LoadRowResponse = z.infer< typeof loadRowResponseSchema >;
 
 /**
  * Save row response schema
- * The result is a Result object (same structure as in searchResponseSchema)
+ * The result is a Result object (same structure as in searchResponseSchema), or `null` if the
+ * replacement caused the row to no longer match the search
  */
 export const saveRowResponseSchema = z.object( {
-	result: z.object( {
-		row_id: z.union( [ z.string(), z.number() ] ).transform( ( val ) => String( val ) ),
-		match_count: z.number().optional(),
-		source_name: z.string(),
-		source_type: z.string(),
-		title: z.string(),
-		actions: z.unknown(),
-		columns: z.array(
-			z.object( {
-				column_id: z.string(),
-				column_label: z.string().optional(),
-				contexts: z.array( z.unknown() ),
-				context_count: z.number().optional(),
-				match_count: z.number().optional(),
-			} )
-		),
-	} ),
+	result: z
+		.object( {
+			row_id: z.union( [ z.string(), z.number() ] ).transform( ( val ) => String( val ) ),
+			match_count: z.number().optional(),
+			source_name: z.string(),
+			source_type: z.string(),
+			title: z.string(),
+			actions: z.unknown(),
+			columns: z.array(
+				z.object( {
+					column_id: z.string(),
+					column_label: z.string().optional(),
+					contexts: z.array( z.unknown() ),
+					context_count: z.number().optional(),
+					match_count: z.number().optional(),
+				} )
+			),
+		} )
+		.nullable(),
 	row: z
 		.object( {
 			row_id: z.string(),

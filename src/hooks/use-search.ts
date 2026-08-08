@@ -109,14 +109,23 @@ export function useSaveRow() {
 			// Update with the actual response data from the API
 			const currentResults = useSearchStore.getState().results;
 			const rowIdStr = String( rowId );
+			const { result: savedResult } = data;
+
+			// A `null` result means the replacement removed the row's last match against the
+			// current search, so it no longer belongs in the result set - drop it instead of
+			// trying to update it.
+			if ( savedResult === null ) {
+				setResults( currentResults.filter( ( result ) => String( result.row_id ) !== rowIdStr ) );
+				return;
+			}
 
 			const updatedResults = currentResults.map( ( result ) => {
 				// Match by string comparison since Result.row_id is a string
 				if ( String( result.row_id ) === rowIdStr ) {
 					// Convert API response (number row_id) to match Result interface (string row_id)
 					const updatedResult = {
-						...data.result,
-						row_id: String( data.result.row_id ),
+						...savedResult,
+						row_id: String( savedResult.row_id ),
 					};
 					return updatedResult as Result;
 				}

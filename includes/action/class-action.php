@@ -86,7 +86,11 @@ abstract class Action {
 		$json = [];
 
 		foreach ( $results['results'] as $result ) {
-			$json[] = $result->to_json();
+			// A result can be `false` when a row no longer matches the search - for example
+			// after a single-row replace has removed the last occurrence of the search phrase.
+			if ( $result !== false ) {
+				$json[] = $result->to_json();
+			}
 		}
 
 		$results['results'] = $json;

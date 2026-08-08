@@ -214,6 +214,15 @@ class Source_Route extends Api\Route {
 			return $results;
 		}
 
+		// The replacement may have removed the last occurrence of the search phrase, in which
+		// case the row no longer matches the original search conditions. There's nothing more
+		// to return for it - the row itself was still saved successfully above.
+		if ( count( $results ) === 0 || $results[0] === false ) {
+			return [
+				'result' => null,
+			];
+		}
+
 		return [
 			'result' => $action->get_results( [ 'results' => $results ] )['results'][0],
 		];
