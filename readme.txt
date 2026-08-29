@@ -125,7 +125,7 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 
 == Changelog ==
 
-= 3.4.4 - August 29 2026 =
+= 3.4.4 - August 29th 2026 =
 * WordPress 7.1 compatibility
 
 = 3.4.3 - July 25th 2026 =
