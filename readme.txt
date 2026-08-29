@@ -2,8 +2,8 @@
 Contributors: johnny5
 Donate link: http://searchregex.com/donation/
 Tags: search, replace, regex, regular expression, database
-Tested up to: 7.0
-Stable tag: 3.4.3
+Tested up to: 7.1
+Stable tag: 3.4.4
 License: GPLv3
 
 Search Regex adds a powerful set of search and replace functions to WordPress posts, pages, custom post types, and other data.
@@ -124,6 +124,9 @@ Full documentation can be found on the [Search Regex](http://searchregex.com/) s
 * Set PHP 7.4 as the minimum
 
 == Changelog ==
+
+= 3.4.4 - August 29th 2026 =
+* WordPress 7.1 compatibility
 
 = 3.4.3 - July 25th 2026 =
 * Sanitise CSV exports
