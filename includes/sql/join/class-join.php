@@ -14,6 +14,11 @@ abstract class Join {
 	protected bool $is_matching = true;
 
 	/**
+	 * Use a LEFT JOIN instead of INNER JOIN (needed for exclude logic to include untagged posts)
+	 */
+	protected bool $is_outer_join = false;
+
+	/**
 	 * Column to join on
 	 */
 	protected string $column;
@@ -109,6 +114,15 @@ abstract class Join {
 	 */
 	public function set_non_matching() {
 		$this->is_matching = false;
+	}
+
+	/**
+	 * Use a LEFT JOIN so posts with no matching terms are included in exclude queries
+	 *
+	 * @return void
+	 */
+	public function set_outer_join(): void {
+		$this->is_outer_join = true;
 	}
 
 	/**
