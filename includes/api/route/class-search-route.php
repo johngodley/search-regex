@@ -11,6 +11,23 @@ use WP_Error;
  */
 class Search_Route extends Api\Route {
 	/**
+	 * Check access to the requested search sources and action.
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @return bool
+	 */
+	public function permission_callback( WP_REST_Request $request ) {
+		if ( ! parent::permission_callback( $request ) ) {
+			return false;
+		}
+
+		$action = $request->get_param( 'action' );
+		$changes_options = (bool) $request->get_param( 'save' ) && in_array( $action, [ 'modify', 'replace', 'delete', 'action' ], true );
+
+		return $this->has_source_access( $request, $changes_options );
+	}
+
+	/**
 	 * Return API paging args
 	 *
 	 * @internal

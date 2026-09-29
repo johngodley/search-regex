@@ -29,6 +29,38 @@ class Route {
 	}
 
 	/**
+	 * Check source-specific access restrictions.
+	 *
+	 * User data is always administrator-only. WordPress options can be read by a user with
+	 * Search Regex access, but changing them is administrator-only.
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @param bool $changes_options Whether the request can change the options source.
+	 * @return bool
+	 */
+	protected function has_source_access( WP_REST_Request $request, $changes_options ) {
+		$sources = $request->get_param( 'source' );
+		if ( ! is_array( $sources ) ) {
+			$sources = $sources === null ? [] : [ $sources ];
+		}
+
+		foreach ( $sources as $source ) {
+			if ( ! is_string( $source ) ) {
+				continue;
+			}
+
+			$is_user_source = Source\Manager::source_uses_class( $source, Source\Core\User::class ) || Source\Manager::source_uses_class( $source, Source\Core\User_Meta::class );
+			$is_options_change = $changes_options && Source\Manager::source_uses_class( $source, Source\Core\Options::class );
+
+			if ( ( $is_user_source || $is_options_change ) && ! current_user_can( Plugin\Capabilities::CAP_DEFAULT ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Get route details
 	 *
 	 * @param string        $method Method name.

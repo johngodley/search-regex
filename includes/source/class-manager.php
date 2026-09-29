@@ -227,6 +227,26 @@ class Manager {
 	}
 
 	/**
+	 * Determine whether a registered source uses a particular source class.
+	 *
+	 * This checks the configured handler class rather than the public source name so aliases and
+	 * subclasses cannot bypass source-specific authorization checks.
+	 *
+	 * @param string $source_name Source name.
+	 * @param class-string<Source> $class_name Source class.
+	 * @return bool
+	 */
+	public static function source_uses_class( $source_name, $class_name ) {
+		foreach ( self::get_all_sources() as $source ) {
+			if ( $source['name'] === $source_name ) {
+				return is_a( $source['class'], $class_name, true );
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get all the specified sources as source objects
 	 *
 	 * @param string[] $sources Array of source names.

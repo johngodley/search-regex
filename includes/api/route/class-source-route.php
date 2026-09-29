@@ -17,6 +17,20 @@ class Source_Route extends Api\Route {
 	const AUTOCOMPLETE_TRIM_BEFORE = 10;
 
 	/**
+	 * Check access to the requested source operation.
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @return bool
+	 */
+	public function permission_callback( WP_REST_Request $request ) {
+		if ( ! parent::permission_callback( $request ) ) {
+			return false;
+		}
+
+		return $this->has_source_access( $request, $request->get_method() !== 'GET' );
+	}
+
+	/**
 	 * API schema for source validation.
 	 *
 	 * @return array<string, array<string, mixed>>
