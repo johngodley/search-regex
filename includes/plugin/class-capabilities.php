@@ -5,38 +5,63 @@ namespace SearchRegex\Plugin;
 /**
  * Search Regex capabilities
  *
- * Hook `searchregex_role` and return a capability for access to the plugin menu. For example `edit_pages` will allow an editor
- * Hook `searchregex_capability` and return a different capability for each check that needs specific permissions.
+ * Capabilities are real, directly-checkable WordPress capabilities. Grant one to a role or
+ * user with any standard role/permission-management plugin, or with `add_cap()`, and
+ * `has_access()` picks it up immediately - no upgrade step required.
  *
- * For example, if you want to give editors access to create redirects, but nothing else:
+ * If the current user doesn't hold a specific capability, access falls back to whoever holds
+ * the plugin's base access capability (`manage_options` by default, filterable with
+ * `searchregex_role`). This fallback can only be used to *extend* access to additional roles -
+ * it can't be used to remove access from whoever already holds base access.
+ *
+ * Note: reaching the admin menu/page at all is still gated on the base access capability only,
+ * and every REST API route is gated on `search_regex_manage` only - granting
+ * `search_regex_options`/`search_regex_support`/`search_regex_presets` to a role changes what
+ * `get_all_capabilities()`/`get_available_pages()` report for that user, but doesn't yet unlock
+ * the admin menu or any REST route on its own.
+ *
+ * Capabilities:
+ * - `search_regex_manage` - access to search & replace
+ * - `search_regex_options` - access to plugin settings
+ * - `search_regex_support` - access to the support page
+ * - `search_regex_presets` - access to presets
+ *
+ * Other filters:
+ * - `searchregex_capability_pages( $pages )` - filters the list of available pages
+ * - `searchregex_role( $cap )` - return the role/capability used for overall access to the plugin
+ *
+ * Deprecated: the `searchregex_capability_check( $capability, $permission_name )` filter is
+ * deprecated in favour of granting the capabilities above directly. It's fully supported for
+ * now - a registered callback continues to take full precedence over the capabilities above -
+ * but it will be removed in a future major version.
  *
  * ```php
+ * // Old way (deprecated, still works if already in place):
  * add_filter( 'searchregex_capability_check', function( $capability, $permission_name ) {
- *     if ( $permission_name === 'searchregex_cap_redirect_manage' || $permission_name === 'searchregex_cap_redirect_add' ) {
+ *     if ( $permission_name === 'searchregex_cap_options' ) {
  *         return $capability;
  *     }
  *
  *     return 'manage_options';
  * } );
+ *
+ * // New way - grant the real capability to a role directly, e.g. via a role/permission
+ * // management plugin, or in code:
+ * add_action( 'admin_init', function() {
+ *     get_role( 'editor' )->add_cap( 'search_regex_options' );
+ * } );
  * ```
  *
- * Always default to restrictive and then grant permissions. Don't default to permissive and remove permissions. This way if a new
- * capability is added your users won't automatically be granted access.
- *
- * Capabilities can be filtered with:
- * - `searchregex_capability_check( $capability, $permission_name )` - override `$capability` dependant on `$permission_name`
- * - `searchregex_capability_pages( $pages )` - filters the list of available pages
- * - `searchregex_role( $cap )` - return the role/capability used for overall access to the plugin
- *
- * Note some capabilities may give access to data from others. For example, when viewing a page of redirects via `searchregex_cap_redirect_manage`
- * the client will need to access group data.
- *
- * @phpstan-type CapabilityName 'searchregex_cap_manage'|'searchregex_cap_options'|'searchregex_cap_support'|'searchregex_cap_preset'
+ * @phpstan-type CapabilityName 'search_regex_manage'|'search_regex_options'|'search_regex_support'|'search_regex_presets'
+ * @phpstan-type LegacyCapabilityName 'searchregex_cap_manage'|'searchregex_cap_options'|'searchregex_cap_support'|'searchregex_cap_preset'
  * @phpstan-type PageName 'search'|'options'|'support'|'presets'
+ * @phpstan-type CapabilityDefinition array{capability: CapabilityName, legacy: LegacyCapabilityName, page: PageName}
  */
 class Capabilities {
 	const FILTER_ALL = 'searchregex_capability_all';
 	const FILTER_PAGES = 'searchregex_capability_pages';
+
+	// Deprecated - see the class docblock @deprecated note
 	const FILTER_CAPABILITY = 'searchregex_capability_check';
 
 	// The default WordPress capability used for all checks
@@ -45,24 +70,42 @@ class Capabilities {
 	// The main capability used to provide access to the plugin
 	const CAP_PLUGIN = 'searchregex_role';
 
-	// These capabilities are combined with `searchregex_cap_` to form `searchregex_cap_redirect_add` etc
-	const CAP_SEARCHREGEX_SEARCH = 'searchregex_cap_manage';
-	const CAP_SEARCHREGEX_OPTIONS = 'searchregex_cap_options';
-	const CAP_SEARCHREGEX_SUPPORT = 'searchregex_cap_support';
-	const CAP_SEARCHREGEX_PRESETS = 'searchregex_cap_preset';
+	// Real, directly-checkable capabilities
+	const CAP_SEARCHREGEX_SEARCH = 'search_regex_manage';
+	const CAP_SEARCHREGEX_OPTIONS = 'search_regex_options';
+	const CAP_SEARCHREGEX_SUPPORT = 'search_regex_support';
+	const CAP_SEARCHREGEX_PRESETS = 'search_regex_presets';
+
+	// Deprecated pseudo-capability names, retained only as the `$permission_name` passed to the
+	// deprecated `searchregex_capability_check` filter. Don't use these for new capability checks.
+	const LEGACY_CAP_SEARCHREGEX_SEARCH = 'searchregex_cap_manage';
+	const LEGACY_CAP_SEARCHREGEX_OPTIONS = 'searchregex_cap_options';
+	const LEGACY_CAP_SEARCHREGEX_SUPPORT = 'searchregex_cap_support';
+	const LEGACY_CAP_SEARCHREGEX_PRESETS = 'searchregex_cap_preset';
 
 	/**
 	 * Determine if the current user has access to a named capability.
 	 *
-	 * @param CapabilityName $cap_name The capability to check for. See Capabilities for constants.
+	 * @param CapabilityName $cap_name The real capability to check for. See Capabilities for constants.
+	 * @param LegacyCapabilityName $legacy_name The deprecated pseudo-capability name for this check, passed
+	 * to the deprecated `searchregex_capability_check` filter if a site has registered one.
 	 * @return bool
 	 */
-	public static function has_access( $cap_name ) {
-		// Get the capability using the default plugin access as the base. Old sites overriding `searchregex_role` will get access to everything
-		$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $cap_name );
+	public static function has_access( $cap_name, $legacy_name ) {
+		// Deprecated: if a site has customized access with the old filter, it still takes full precedence
+		if ( has_filter( self::FILTER_CAPABILITY ) ) {
+			$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $legacy_name );
 
-		// Check the capability
-		return current_user_can( $cap_to_check );
+			return current_user_can( $cap_to_check );
+		}
+
+		// Explicitly granted, e.g. by a role/permission-management plugin
+		if ( current_user_can( $cap_name ) ) {
+			return true;
+		}
+
+		// Default: same base access capability as always (manage_options, filterable via `searchregex_role`)
+		return current_user_can( self::get_plugin_access() );
 	}
 
 	/**
@@ -75,22 +118,46 @@ class Capabilities {
 	}
 
 	/**
+	 * Every capability this plugin defines, paired with its deprecated legacy name and the page it gates.
+	 *
+	 * @return list<CapabilityDefinition>
+	 */
+	private static function get_capability_definitions() {
+		return [
+			[
+				'capability' => self::CAP_SEARCHREGEX_SEARCH,
+				'legacy' => self::LEGACY_CAP_SEARCHREGEX_SEARCH,
+				'page' => 'search',
+			],
+			[
+				'capability' => self::CAP_SEARCHREGEX_OPTIONS,
+				'legacy' => self::LEGACY_CAP_SEARCHREGEX_OPTIONS,
+				'page' => 'options',
+			],
+			[
+				'capability' => self::CAP_SEARCHREGEX_SUPPORT,
+				'legacy' => self::LEGACY_CAP_SEARCHREGEX_SUPPORT,
+				'page' => 'support',
+			],
+			[
+				'capability' => self::CAP_SEARCHREGEX_PRESETS,
+				'legacy' => self::LEGACY_CAP_SEARCHREGEX_PRESETS,
+				'page' => 'presets',
+			],
+		];
+	}
+
+	/**
 	 * Return all the pages the user has access to.
 	 *
 	 * @return list<PageName> Array of pages
 	 */
 	public static function get_available_pages() {
-		$pages = [
-			self::CAP_SEARCHREGEX_SEARCH => 'search',
-			self::CAP_SEARCHREGEX_OPTIONS => 'options',
-			self::CAP_SEARCHREGEX_SUPPORT => 'support',
-			self::CAP_SEARCHREGEX_PRESETS => 'presets',
-		];
-
 		$available = [];
-		foreach ( $pages as $key => $page ) {
-			if ( self::has_access( $key ) ) {
-				$available[] = $page;
+
+		foreach ( self::get_capability_definitions() as $definition ) {
+			if ( self::has_access( $definition['capability'], $definition['legacy'] ) ) {
+				$available[] = $definition['page'];
 			}
 		}
 
@@ -103,13 +170,15 @@ class Capabilities {
 	 * @return list<CapabilityName> Array of capabilities
 	 */
 	public static function get_all_capabilities() {
-		$caps = self::get_every_capability();
+		$granted = [];
 
-		$caps = array_filter(
-			$caps, fn( $cap ) => self::has_access( $cap )
-		);
+		foreach ( self::get_capability_definitions() as $definition ) {
+			if ( self::has_access( $definition['capability'], $definition['legacy'] ) ) {
+				$granted[] = $definition['capability'];
+			}
+		}
 
-		return array_values( apply_filters( self::FILTER_ALL, $caps ) );
+		return array_values( apply_filters( self::FILTER_ALL, $granted ) );
 	}
 
 	/**
@@ -118,11 +187,9 @@ class Capabilities {
 	 * @return list<CapabilityName> Array of capabilities
 	 */
 	public static function get_every_capability() {
-		return [
-			self::CAP_SEARCHREGEX_SEARCH,
-			self::CAP_SEARCHREGEX_OPTIONS,
-			self::CAP_SEARCHREGEX_SUPPORT,
-			self::CAP_SEARCHREGEX_PRESETS,
-		];
+		return array_map(
+			fn( $definition ) => $definition['capability'],
+			self::get_capability_definitions()
+		);
 	}
 }

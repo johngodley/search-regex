@@ -25,7 +25,7 @@ class Route {
 	 * @return bool
 	 */
 	public function permission_callback( WP_REST_Request $_request ) {
-		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH );
+		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_SEARCH );
 	}
 
 	/**
