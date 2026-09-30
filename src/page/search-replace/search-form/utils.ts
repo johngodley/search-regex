@@ -30,6 +30,10 @@ export function getSimpleReplacement( value: unknown ): string | null {
 	return ( value as { replacement?: string | null } ).replacement ?? null;
 }
 
+export function getReplacementInputValue( replacement: string | null | undefined ): string | null {
+	return replacement ?? null;
+}
+
 export function getSourcesForDropdown( sources: SearchSourceGroup[] ): MultiOptionGroupValue[] {
 	return sources.map( ( sourceGroup ) => {
 		return {

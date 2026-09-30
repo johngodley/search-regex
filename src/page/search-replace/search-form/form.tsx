@@ -20,7 +20,7 @@ import {
 } from '../../../lib/preset-utils';
 import Search from '../../../component/search';
 import Filters from './filters';
-import { convertToSource, getSimpleReplacement, getSourcesForDropdown } from './utils';
+import { convertToSource, getReplacementInputValue, getSimpleReplacement, getSourcesForDropdown } from './utils';
 import Actions from '../actions';
 import SearchFlags from '../../../component/search-flags';
 import TaggedPhrases from '../../../component/tagged-phrase';
@@ -308,7 +308,7 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 							<Replace
 								disabled={ isBusy }
 								setReplace={ setSimpleReplace }
-								replacement={ replacement ?? null }
+								replacement={ getReplacementInputValue( replacement ) }
 								preset={ preset }
 								schema={ { type: 'string' } as SchemaColumn }
 								column={
@@ -448,7 +448,7 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 						{
 							action: ( search as any ).action || '',
 							actionOption,
-							replacement: replacement || null,
+							replacement: getReplacementInputValue( replacement ),
 						} as any
 					}
 				/>
