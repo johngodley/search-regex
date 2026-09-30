@@ -382,7 +382,7 @@ export const searchValuesSchema = z
 		searchPhrase: z.string().optional(),
 		searchFlags: z.array( z.string() ).optional(),
 		source: z.array( z.string() ).optional(),
-		replacement: z.string().optional(),
+		replacement: z.string().nullable().optional(),
 		perPage: z.number().optional(),
 		filters: z.array( filterSchema ).optional(),
 		view: z.array( z.string() ).optional(),

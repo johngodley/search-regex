@@ -20,7 +20,7 @@ import {
 } from '../../../lib/preset-utils';
 import Search from '../../../component/search';
 import Filters from './filters';
-import { convertToSource, getSourcesForDropdown } from './utils';
+import { convertToSource, getSimpleReplacement, getSourcesForDropdown } from './utils';
 import Actions from '../actions';
 import SearchFlags from '../../../component/search-flags';
 import TaggedPhrases from '../../../component/tagged-phrase';
@@ -221,8 +221,7 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 		! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' );
 
 	const setSimpleReplace: SetReplace = ( value ) => {
-		const replacementValue = ( value as { replacement?: string | null } ).replacement;
-		onSetSearch( { replacement: replacementValue ?? '' } );
+		onSetSearch( { replacement: getSimpleReplacement( value ) } );
 	};
 
 	useEffect( () => {
