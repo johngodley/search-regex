@@ -31,14 +31,13 @@ class Route {
 	/**
 	 * Check source-specific access restrictions.
 	 *
-	 * User data is always administrator-only. WordPress options can be read by a user with
-	 * Search Regex access, but changing them is administrator-only.
+	 * User data and WordPress options are always administrator-only. Options can contain
+	 * secrets such as salts and API keys, so even reading them requires administrator access.
 	 *
 	 * @param WP_REST_Request<array<string, mixed>> $request Request.
-	 * @param bool $changes_options Whether the request can change the options source.
 	 * @return bool
 	 */
-	protected function has_source_access( WP_REST_Request $request, $changes_options ) {
+	protected function has_source_access( WP_REST_Request $request ) {
 		$sources = $request->get_param( 'source' );
 		if ( ! is_array( $sources ) ) {
 			$sources = $sources === null ? [] : [ $sources ];
@@ -49,10 +48,11 @@ class Route {
 				continue;
 			}
 
-			$is_user_source = Source\Manager::source_uses_class( $source, Source\Core\User::class ) || Source\Manager::source_uses_class( $source, Source\Core\User_Meta::class );
-			$is_options_change = $changes_options && Source\Manager::source_uses_class( $source, Source\Core\Options::class );
+			$is_sensitive_source = Source\Manager::source_uses_class( $source, Source\Core\User::class )
+				|| Source\Manager::source_uses_class( $source, Source\Core\User_Meta::class )
+				|| Source\Manager::source_uses_class( $source, Source\Core\Options::class );
 
-			if ( ( $is_user_source || $is_options_change ) && ! current_user_can( Plugin\Capabilities::CAP_DEFAULT ) ) {
+			if ( $is_sensitive_source && ! current_user_can( Plugin\Capabilities::CAP_DEFAULT ) ) {
 				return false;
 			}
 		}

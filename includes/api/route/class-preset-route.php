@@ -4,6 +4,7 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Search;
 use SearchRegex\Api;
+use SearchRegex\Plugin;
 use WP_REST_Request;
 use WP_Error;
 
@@ -11,6 +12,18 @@ use WP_Error;
  * Search API endpoint
  */
 class Preset_Route extends Api\Route {
+	/**
+	 * Check access to saved presets.
+	 *
+	 * The legacy manage permission name is retained because all REST routes historically used it.
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $_request Request.
+	 * @return bool
+	 */
+	public function permission_callback( WP_REST_Request $_request ) {
+		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_PRESETS, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_SEARCH );
+	}
+
 	/**
 	 * Get preset API params
 	 *

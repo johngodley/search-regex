@@ -3,6 +3,7 @@
 namespace SearchRegex\Api\Route;
 
 use SearchRegex\Api;
+use SearchRegex\Plugin;
 use WP_REST_Request;
 use WP_Error;
 
@@ -21,10 +22,13 @@ class Search_Route extends Api\Route {
 			return false;
 		}
 
-		$action = $request->get_param( 'action' );
-		$changes_options = (bool) $request->get_param( 'save' ) && in_array( $action, [ 'modify', 'replace', 'delete', 'action' ], true );
+		// Running an action fires an arbitrary WordPress hook, so is administrator-only
+		$runs_hook = $request->get_param( 'save' ) === true && $request->get_param( 'action' ) === 'action';
+		if ( $runs_hook && ! current_user_can( Plugin\Capabilities::CAP_DEFAULT ) ) {
+			return false;
+		}
 
-		return $this->has_source_access( $request, $changes_options );
+		return $this->has_source_access( $request );
 	}
 
 	/**
@@ -61,6 +65,11 @@ class Search_Route extends Api\Route {
 				'description' => 'Maximum number of results to return',
 				'type' => 'integer',
 				'default' => 0,
+			],
+			'save' => [
+				'description' => 'Perform the action for real, rather than a dry run',
+				'type' => 'boolean',
+				'default' => false,
 			],
 		];
 	}

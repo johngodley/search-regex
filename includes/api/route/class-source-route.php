@@ -27,7 +27,7 @@ class Source_Route extends Api\Route {
 			return false;
 		}
 
-		return $this->has_source_access( $request, $request->get_method() !== 'GET' );
+		return $this->has_source_access( $request );
 	}
 
 	/**

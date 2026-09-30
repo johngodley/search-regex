@@ -14,11 +14,11 @@ namespace SearchRegex\Plugin;
  * `searchregex_role`). This fallback can only be used to *extend* access to additional roles -
  * it can't be used to remove access from whoever already holds base access.
  *
- * Note: reaching the admin menu/page at all is still gated on the base access capability only,
- * and every REST API route is gated on `search_regex_manage` only - granting
- * `search_regex_options`/`search_regex_support`/`search_regex_presets` to a role changes what
- * `get_all_capabilities()`/`get_available_pages()` report for that user, but doesn't yet unlock
- * the admin menu or any REST route on its own.
+ * Note: reaching the admin menu/page at all is still gated on the base access capability only.
+ * REST search, source, and connectivity routes require `search_regex_manage`; settings routes
+ * require `search_regex_options`; and preset routes require `search_regex_presets`. The support
+ * page has no data route. For backwards compatibility, REST checks continue to pass the legacy
+ * manage permission name to the deprecated capability filter.
  *
  * Capabilities:
  * - `search_regex_manage` - access to search & replace

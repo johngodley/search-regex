@@ -43,63 +43,83 @@ class SensitiveSourcePermissionsApiTest extends SearchRegex_Api_Test {
 		}
 	}
 
-	public function testDelegatedUserCanReadButCannotChangeOptions() {
+	public function testDelegatedUserCannotAccessOptions() {
 		$this->setDelegatedUser();
 
-		$read = $this->callApi(
-			'search',
-			[
-				'source' => [ 'options' ],
-			],
-			'POST'
-		);
-		$this->assertNotEquals( 403, $read->status, wp_json_encode( $read->data ) );
+		$requests = [
+			[ 'search', [ 'source' => [ 'options' ] ], 'POST' ],
+			[ 'search', [ 'source' => [ 'options' ], 'action' => 'replace', 'save' => false ], 'POST' ],
+			[ 'search', [ 'source' => [ 'posts', 'options' ] ], 'POST' ],
+			[ 'source/options/complete/option_name', [ 'value' => 'example' ], 'GET' ],
+			[ 'source/options/row/1', [], 'GET' ],
+			[ 'source/options/row/1', [ 'replacement' => [ 'column' => 'option_value' ] ], 'POST' ],
+			[ 'source/options/row/1/delete', [], 'POST' ],
+		];
 
-		$preview = $this->callApi(
-			'search',
-			[
-				'source' => [ 'options' ],
-				'action' => 'replace',
-				'save' => false,
-			],
-			'POST'
-		);
-		$this->assertNotEquals( 403, $preview->status, wp_json_encode( $preview->data ) );
+		foreach ( $requests as $request ) {
+			$result = $this->callApi( $request[0], $request[1], $request[2] );
 
-		foreach ( [ 'modify', 'replace', 'delete', 'action' ] as $action ) {
+			$this->assertEquals( 403, $result->status, $request[0] . ': ' . wp_json_encode( $result->data ) );
+		}
+	}
+
+	public function testDelegatedUserCannotRunActionHooks() {
+		$this->setDelegatedUser();
+
+		foreach ( [ true, 'true', '1' ] as $save ) {
 			$result = $this->callApi(
 				'search',
 				[
-					'source' => [ 'options' ],
-					'action' => $action,
-					'save' => true,
+					'source' => [ 'posts' ],
+					'action' => 'action',
+					'actionOption' => [ 'hook' => 'init' ],
+					'save' => $save,
 				],
 				'POST'
 			);
 
-			$this->assertEquals( 403, $result->status, $action . ': ' . wp_json_encode( $result->data ) );
+			$this->assertEquals( 403, $result->status, wp_json_encode( $result->data ) );
 		}
 
-		$string_false = $this->callApi(
+		foreach ( [ false, 'false', '0' ] as $save ) {
+			$preview = $this->callApi(
+				'search',
+				[
+					'source' => [ 'posts' ],
+					'action' => 'action',
+					'actionOption' => [ 'hook' => 'init' ],
+					'save' => $save,
+				],
+				'POST'
+			);
+
+			$this->assertNotEquals( 403, $preview->status, wp_json_encode( $preview->data ) );
+		}
+	}
+
+	public function testStringFalseSaveDoesNotRunActionHook() {
+		$this->setNonce();
+		$this->factory->post->create( [ 'post_title' => 'hook target' ] );
+
+		$calls = 0;
+		$counter = function () use ( &$calls ) {
+			$calls++;
+		};
+		add_action( 'searchregex_test_hook', $counter );
+
+		$this->callApi(
 			'search',
 			[
-				'source' => [ 'options' ],
-				'action' => 'replace',
+				'source' => [ 'posts' ],
+				'action' => 'action',
+				'actionOption' => [ 'hook' => 'searchregex_test_hook' ],
 				'save' => 'false',
 			],
 			'POST'
 		);
-		$this->assertEquals( 403, $string_false->status, wp_json_encode( $string_false->data ) );
 
-		$row_save = $this->callApi(
-			'source/options/row/1',
-			[ 'replacement' => [ 'column' => 'option_value' ] ],
-			'POST'
-		);
-		$this->assertEquals( 403, $row_save->status, wp_json_encode( $row_save->data ) );
-
-		$row_delete = $this->callApi( 'source/options/row/1/delete', [], 'POST' );
-		$this->assertEquals( 403, $row_delete->status, wp_json_encode( $row_delete->data ) );
+		remove_action( 'searchregex_test_hook', $counter );
+		$this->assertSame( 0, $calls );
 	}
 
 	public function testAdministratorCanAccessSensitiveSources() {
@@ -108,6 +128,8 @@ class SensitiveSourcePermissionsApiTest extends SearchRegex_Api_Test {
 		$requests = [
 			[ 'search', [ 'source' => [ 'user' ] ], 'POST' ],
 			[ 'search', [ 'source' => [ 'user-meta' ] ], 'POST' ],
+			[ 'search', [ 'source' => [ 'options' ] ], 'POST' ],
+			[ 'search', [ 'source' => [ 'posts' ], 'action' => 'action', 'actionOption' => [ 'hook' => 'init' ], 'save' => false ], 'POST' ],
 			[ 'source/options/row/999999999', [ 'replacement' => [ 'column' => 'option_value' ] ], 'POST' ],
 			[ 'source/options/row/999999999/delete', [], 'POST' ],
 		];
