@@ -10,7 +10,7 @@ jest.mock( '../preload', () => ( {
 	default: jest.fn( () => ( {} ) ),
 } ) );
 
-import { getQuerySearchParams, getDefaultSearch } from '../search-utils';
+import { getQuerySearchParams, getDefaultSearch, getApiSearchValues } from '../search-utils';
 
 describe( 'getQuerySearchParams', () => {
 	describe( 'basic parameter parsing', () => {
@@ -354,5 +354,20 @@ describe( 'default filters preservation', () => {
 
 		// Custom filters should override defaults
 		expect( merged.filters ).toEqual( customFilters );
+	} );
+} );
+
+describe( 'getApiSearchValues', () => {
+	it( 'should send a Remove (null) replacement as an empty string', () => {
+		expect( getApiSearchValues( { searchPhrase: 'cat', replacement: null } ) ).toEqual( {
+			searchPhrase: 'cat',
+			replacement: '',
+		} );
+	} );
+
+	it( 'should leave other replacements unchanged', () => {
+		expect( getApiSearchValues( { replacement: 'dog' } ).replacement ).toBe( 'dog' );
+		expect( getApiSearchValues( { replacement: '' } ).replacement ).toBe( '' );
+		expect( getApiSearchValues( {} ) ).not.toHaveProperty( 'replacement' );
 	} );
 } );
