@@ -16,7 +16,7 @@ class SearchRegexApiRouteCapabilitiesTest extends SearchRegex_Api_Test {
 			'settings_read' => [ 'setting', [], 'GET' ],
 			'settings_write' => [ 'setting', [], 'POST' ],
 			'presets_read' => [ 'preset', [], 'GET' ],
-			'presets_write' => [ 'preset/import', [], 'POST' ],
+			'presets_write' => [ 'preset', [ 'name' => 'Test', 'search' => [ 'source' => [ 'posts' ] ] ], 'POST' ],
 		];
 	}
 
@@ -25,33 +25,21 @@ class SearchRegexApiRouteCapabilitiesTest extends SearchRegex_Api_Test {
 			$result = $this->callApi( $route[0], $route[1], $route[2] );
 
 			if ( in_array( $name, $allowed, true ) ) {
-				$this->assertNotEquals( 403, $result->status, $name . ': ' . wp_json_encode( $result->data ) );
+				$this->assertEquals( 200, $result->status, $name . ': ' . wp_json_encode( $result->data ) );
 			} else {
 				$this->assertEquals( 403, $result->status, $name . ': ' . wp_json_encode( $result->data ) );
 			}
 		}
 	}
 
-	public function testSearchCapabilityOnlyAccessesSearchRoutes() {
-		$this->setDelegatedUser( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH );
+	public function testDelegatedUserAccessesEverythingExceptSettings() {
+		$this->setDelegatedUser( Plugin\Capabilities::CAP_DELEGATED );
 
-		$this->assertRouteAccess( [ 'search', 'source', 'plugin' ] );
+		$this->assertRouteAccess( [ 'search', 'source', 'plugin', 'presets_read', 'presets_write' ] );
 	}
 
-	public function testOptionsCapabilityOnlyAccessesSettingsRoutes() {
-		$this->setDelegatedUser( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS );
-
-		$this->assertRouteAccess( [ 'settings_read', 'settings_write' ] );
-	}
-
-	public function testPresetsCapabilityOnlyAccessesPresetRoutes() {
-		$this->setDelegatedUser( Plugin\Capabilities::CAP_SEARCHREGEX_PRESETS );
-
-		$this->assertRouteAccess( [ 'presets_read', 'presets_write' ] );
-	}
-
-	public function testSupportCapabilityDoesNotGrantDataRouteAccess() {
-		$this->setDelegatedUser( Plugin\Capabilities::CAP_SEARCHREGEX_SUPPORT );
+	public function testUserWithoutAccessCannotAccessAnyRoute() {
+		$this->setEditor();
 
 		$this->assertRouteAccess( [] );
 	}
@@ -62,20 +50,33 @@ class SearchRegexApiRouteCapabilitiesTest extends SearchRegex_Api_Test {
 		$this->assertRouteAccess( array_keys( $this->get_route_families() ) );
 	}
 
-	public function testLegacyManageFilterStillGrantsEveryRestRoute() {
+	public function testLegacyManageFilterStillGrantsManageRoutes() {
 		$this->setEditor();
 		add_filter( Plugin\Capabilities::FILTER_CAPABILITY, [ $this, 'grantLegacyManageToEditor' ], 10, 2 );
 
-		$this->assertRouteAccess( array_keys( $this->get_route_families() ) );
+		$this->assertRouteAccess( [ 'search', 'source', 'plugin', 'presets_read', 'presets_write' ] );
 
 		remove_filter( Plugin\Capabilities::FILTER_CAPABILITY, [ $this, 'grantLegacyManageToEditor' ], 10 );
 	}
 
+	public function testLegacyFilterTakesPrecedenceOverDelegatedCapability() {
+		$this->setDelegatedUser( Plugin\Capabilities::CAP_DELEGATED );
+		add_filter( Plugin\Capabilities::FILTER_CAPABILITY, [ $this, 'keepDefaultCapability' ], 10, 2 );
+
+		$this->assertRouteAccess( [] );
+
+		remove_filter( Plugin\Capabilities::FILTER_CAPABILITY, [ $this, 'keepDefaultCapability' ], 10 );
+	}
+
 	public function grantLegacyManageToEditor( $capability, $permission_name ) {
-		if ( $permission_name === Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_SEARCH ) {
+		if ( $permission_name === Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH ) {
 			return 'editor';
 		}
 
+		return $capability;
+	}
+
+	public function keepDefaultCapability( $capability, $permission_name ) {
 		return $capability;
 	}
 }

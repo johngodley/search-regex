@@ -28,6 +28,7 @@ export interface SearchRegexi10n {
 	caps: {
 		pages: string[];
 		capabilities: string[];
+		admin?: boolean;
 	};
 	update_notice?: string | false;
 }

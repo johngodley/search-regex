@@ -25,7 +25,7 @@ class Route {
 	 * @return bool
 	 */
 	public function permission_callback( WP_REST_Request $_request ) {
-		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_SEARCH );
+		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH );
 	}
 
 	/**
@@ -48,11 +48,7 @@ class Route {
 				continue;
 			}
 
-			$is_sensitive_source = Source\Manager::source_uses_class( $source, Source\Core\User::class )
-				|| Source\Manager::source_uses_class( $source, Source\Core\User_Meta::class )
-				|| Source\Manager::source_uses_class( $source, Source\Core\Options::class );
-
-			if ( $is_sensitive_source && ! current_user_can( Plugin\Capabilities::CAP_DEFAULT ) ) {
+			if ( Source\Manager::is_sensitive_source( $source ) && ! Plugin\Capabilities::is_administrator() ) {
 				return false;
 			}
 		}

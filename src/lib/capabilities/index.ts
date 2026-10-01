@@ -2,10 +2,14 @@ export function hasCapability( cap: string ): boolean {
 	return SearchRegexi10n.caps.capabilities.indexOf( cap ) !== -1;
 }
 
+export function isAdministrator(): boolean {
+	return SearchRegexi10n.caps.admin === true;
+}
+
 export function hasPageAccess( page: string ): boolean {
 	return SearchRegexi10n.caps.pages.indexOf( page ) !== -1;
 }
 
-export const CAP_SEARCHREGEX_SEARCH = 'search_regex_manage';
-export const CAP_SEARCHREGEX_OPTIONS = 'search_regex_options';
-export const CAP_SEARCHREGEX_SUPPORT = 'search_regex_support';
+export const CAP_SEARCHREGEX_SEARCH = 'searchregex_cap_manage';
+export const CAP_SEARCHREGEX_OPTIONS = 'searchregex_cap_options';
+export const CAP_SEARCHREGEX_SUPPORT = 'searchregex_cap_support';

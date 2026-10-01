@@ -6,7 +6,7 @@ use SearchRegex\Source;
 class SensitiveSourcePermissionsApiTest extends SearchRegex_Api_Test {
 	private function setDelegatedUser() {
 		$this->setEditor();
-		wp_get_current_user()->add_cap( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH );
+		wp_get_current_user()->add_cap( Plugin\Capabilities::CAP_DELEGATED );
 	}
 
 	public function testDelegatedUserCanStillSearchOrdinarySources() {
@@ -20,7 +20,7 @@ class SensitiveSourcePermissionsApiTest extends SearchRegex_Api_Test {
 			'POST'
 		);
 
-		$this->assertNotEquals( 403, $result->status, wp_json_encode( $result->data ) );
+		$this->assertEquals( 200, $result->status, wp_json_encode( $result->data ) );
 	}
 
 	public function testDelegatedUserCannotAccessUserSources() {
@@ -93,52 +93,106 @@ class SensitiveSourcePermissionsApiTest extends SearchRegex_Api_Test {
 				'POST'
 			);
 
-			$this->assertNotEquals( 403, $preview->status, wp_json_encode( $preview->data ) );
+			$this->assertEquals( 200, $preview->status, wp_json_encode( $preview->data ) );
 		}
 	}
 
-	public function testStringFalseSaveDoesNotRunActionHook() {
-		$this->setNonce();
-		$this->factory->post->create( [ 'post_title' => 'hook target' ] );
-
+	private function countActionHookCalls( $save ) {
 		$calls = 0;
 		$counter = function () use ( &$calls ) {
 			$calls++;
 		};
 		add_action( 'searchregex_test_hook', $counter );
 
-		$this->callApi(
+		$result = $this->callApi(
 			'search',
 			[
 				'source' => [ 'posts' ],
 				'action' => 'action',
 				'actionOption' => [ 'hook' => 'searchregex_test_hook' ],
-				'save' => 'false',
+				'save' => $save,
 			],
 			'POST'
 		);
 
 		remove_action( 'searchregex_test_hook', $counter );
-		$this->assertSame( 0, $calls );
+		$this->assertEquals( 200, $result->status, wp_json_encode( $result->data ) );
+
+		return $calls;
+	}
+
+	public function testActionHookOnlyRunsWhenSaving() {
+		$this->setNonce();
+		$this->factory->post->create( [ 'post_title' => 'hook target' ] );
+
+		// Positive control - saving runs the hook, so a zero count below is meaningful
+		$this->assertGreaterThan( 0, $this->countActionHookCalls( true ) );
+
+		foreach ( [ false, 'false', '0' ] as $save ) {
+			$this->assertSame( 0, $this->countActionHookCalls( $save ), wp_json_encode( $save ) );
+		}
 	}
 
 	public function testAdministratorCanAccessSensitiveSources() {
+		global $wpdb;
+
 		$this->setNonce();
+		$option_id = $wpdb->get_var( "SELECT option_id FROM {$wpdb->options} WHERE option_name='blogname'" );
 
 		$requests = [
 			[ 'search', [ 'source' => [ 'user' ] ], 'POST' ],
 			[ 'search', [ 'source' => [ 'user-meta' ] ], 'POST' ],
 			[ 'search', [ 'source' => [ 'options' ] ], 'POST' ],
 			[ 'search', [ 'source' => [ 'posts' ], 'action' => 'action', 'actionOption' => [ 'hook' => 'init' ], 'save' => false ], 'POST' ],
-			[ 'source/options/row/999999999', [ 'replacement' => [ 'column' => 'option_value' ] ], 'POST' ],
-			[ 'source/options/row/999999999/delete', [], 'POST' ],
+			[ 'source/options/complete/option_name', [ 'value' => 'blog' ], 'GET' ],
+			[ 'source/options/row/' . $option_id, [], 'GET' ],
+			[ 'source/user/row/' . get_current_user_id(), [], 'GET' ],
 		];
 
 		foreach ( $requests as $request ) {
 			$result = $this->callApi( $request[0], $request[1], $request[2] );
 
-			$this->assertNotEquals( 403, $result->status, $request[0] . ': ' . wp_json_encode( $result->data ) );
+			$this->assertEquals( 200, $result->status, $request[0] . ': ' . wp_json_encode( $result->data ) );
 		}
+	}
+
+	private function getSensitiveRequests() {
+		return [
+			[ 'search', [ 'source' => [ 'user' ] ], 'POST' ],
+			[ 'search', [ 'source' => [ 'options' ] ], 'POST' ],
+			[ 'search', [ 'source' => [ 'posts' ], 'action' => 'action', 'actionOption' => [ 'hook' => 'searchregex_test_hook' ], 'save' => true ], 'POST' ],
+		];
+	}
+
+	private function assertSensitiveAccess( $expected ) {
+		foreach ( $this->getSensitiveRequests() as $request ) {
+			$result = $this->callApi( $request[0], $request[1], $request[2] );
+
+			$this->assertEquals( $expected, $result->status, $request[0] . ': ' . wp_json_encode( $result->data ) );
+		}
+	}
+
+	public function testPluginRoleFilterGrantsSensitiveAccess() {
+		add_filter( Plugin\Capabilities::CAP_PLUGIN, fn() => 'edit_pages' );
+		$this->setEditor();
+
+		$this->assertSensitiveAccess( 200 );
+	}
+
+	public function testLegacyFilterGrantsSensitiveAccess() {
+		add_filter( Plugin\Capabilities::FILTER_CAPABILITY, fn() => 'edit_pages', 10, 2 );
+		$this->setEditor();
+
+		$this->assertSensitiveAccess( 200 );
+	}
+
+	public function testManageOptionsIsNotEnoughWhenPluginRoleIsStricter() {
+		add_filter( Plugin\Capabilities::CAP_PLUGIN, fn() => 'searchregex_strict_access' );
+		$this->setNonce();
+		wp_get_current_user()->add_cap( Plugin\Capabilities::CAP_DELEGATED );
+
+		$this->assertTrue( current_user_can( 'manage_options' ) );
+		$this->assertSensitiveAccess( 403 );
 	}
 
 	public function testSensitiveSourceAliasesCannotBypassAdminAccess() {

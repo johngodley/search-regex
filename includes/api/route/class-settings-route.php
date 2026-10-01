@@ -12,15 +12,13 @@ use WP_Error;
  */
 class Settings_Route extends Api\Route {
 	/**
-	 * Check access to plugin settings.
-	 *
-	 * The legacy manage permission name is retained because all REST routes historically used it.
+	 * Check access to plugin settings. This is administrator-only.
 	 *
 	 * @param WP_REST_Request<array<string, mixed>> $_request Request.
 	 * @return bool
 	 */
 	public function permission_callback( WP_REST_Request $_request ) {
-		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_SEARCH );
+		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS );
 	}
 
 	/**

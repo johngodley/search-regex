@@ -15,71 +15,40 @@ class CapabilitiesTest extends TestCase {
 		require_once PLUGIN_PATH . '/search-regex-loader.php';
 	}
 
-	public function testFallsBackToBaseAccessWhenNothingGranted() {
-		Functions\expect( 'has_filter' )
-			->once()
-			->with( Plugin\Capabilities::FILTER_CAPABILITY )
-			->andReturn( false );
-
-		Functions\expect( 'current_user_can' )
-			->once()
-			->with( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS )
-			->andReturn( false );
-
-		Functions\expect( 'current_user_can' )
-			->once()
-			->with( Plugin\Capabilities::CAP_DEFAULT )
-			->andReturn( true );
-
-		$this->assertTrue(
-			Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_OPTIONS )
+	private function grantCapabilities( array $granted, $has_legacy_filter = false ) {
+		Functions\when( 'has_filter' )->justReturn( $has_legacy_filter );
+		Functions\when( 'current_user_can' )->alias(
+			fn( $cap ) => in_array( $cap, $granted, true )
 		);
 	}
 
-	public function testDeniesAccessWhenNothingGrantedAndNoBaseAccess() {
-		Functions\expect( 'has_filter' )
-			->once()
-			->with( Plugin\Capabilities::FILTER_CAPABILITY )
-			->andReturn( false );
+	public function testAdministratorHasEveryPermission() {
+		$this->grantCapabilities( [ Plugin\Capabilities::CAP_DEFAULT ] );
 
-		Functions\expect( 'current_user_can' )
-			->once()
-			->with( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS )
-			->andReturn( false );
-
-		Functions\expect( 'current_user_can' )
-			->once()
-			->with( Plugin\Capabilities::CAP_DEFAULT )
-			->andReturn( false );
-
-		$this->assertFalse(
-			Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_OPTIONS )
-		);
+		foreach ( Plugin\Capabilities::get_every_capability() as $permission ) {
+			$this->assertTrue( Plugin\Capabilities::has_access( $permission ), $permission );
+		}
 	}
 
-	public function testExplicitGrantPassesWithoutNeedingBaseAccess() {
-		Functions\expect( 'has_filter' )
-			->once()
-			->with( Plugin\Capabilities::FILTER_CAPABILITY )
-			->andReturn( false );
+	public function testDelegatedUserHasEveryPermissionExceptOptions() {
+		$this->grantCapabilities( [ Plugin\Capabilities::CAP_DELEGATED ] );
 
-		// Granted directly, e.g. by a role/permission-management plugin - the base-access
-		// fallback must not even be checked.
-		Functions\expect( 'current_user_can' )
-			->once()
-			->with( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS )
-			->andReturn( true );
-
-		$this->assertTrue(
-			Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_OPTIONS )
-		);
+		$this->assertTrue( Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH ) );
+		$this->assertTrue( Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_PRESETS ) );
+		$this->assertTrue( Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SUPPORT ) );
+		$this->assertFalse( Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS ) );
 	}
 
-	public function testLegacyFilterTakesFullPrecedenceOverExplicitGrant() {
-		Functions\expect( 'has_filter' )
-			->once()
-			->with( Plugin\Capabilities::FILTER_CAPABILITY )
-			->andReturn( true );
+	public function testUserWithoutAccessHasNoPermissions() {
+		$this->grantCapabilities( [] );
+
+		foreach ( Plugin\Capabilities::get_every_capability() as $permission ) {
+			$this->assertFalse( Plugin\Capabilities::has_access( $permission ), $permission );
+		}
+	}
+
+	public function testLegacyFilterTakesFullPrecedenceOverDelegatedCapability() {
+		$this->grantCapabilities( [ Plugin\Capabilities::CAP_DELEGATED ], true );
 
 		// Functions\expect('apply_filters') doesn't take effect here - it's shadowed by the
 		// apply_filters stub the base TestCase installs in setUp(). Functions\when()->alias()
@@ -89,11 +58,8 @@ class CapabilitiesTest extends TestCase {
 		Functions\when( 'apply_filters' )->alias(
 			function ( $hook, $default, ...$rest ) {
 				if ( $hook === Plugin\Capabilities::FILTER_CAPABILITY ) {
-					// Assert the legacy filter receives the correct arguments:
-					// - $default should be the result of get_plugin_access() (which is CAP_DEFAULT)
-					// - $rest[0] should be the legacy pseudo-capability name, not the new real capability
 					$this->assertSame( Plugin\Capabilities::CAP_DEFAULT, $default );
-					$this->assertSame( [ Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_OPTIONS ], $rest );
+					$this->assertSame( [ Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH ], $rest );
 
 					return 'editor_only_capability';
 				}
@@ -102,27 +68,30 @@ class CapabilitiesTest extends TestCase {
 			}
 		);
 
-		Functions\expect( 'current_user_can' )
-			->once()
-			->with( 'editor_only_capability' )
-			->andReturn( false );
-
-		// If the code regressed and fell through to checking the real capability directly
-		// despite the legacy filter being registered, this test fails - no expectation is
-		// set up for current_user_can( CAP_SEARCHREGEX_OPTIONS ), so Brain\Monkey raises on
-		// the unmatched call.
-		$this->assertFalse(
-			Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_OPTIONS )
-		);
+		$this->assertFalse( Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH ) );
 	}
 
-	public function testGetEveryCapabilityReturnsRealCapabilityNames() {
+	public function testMenuCapability() {
+		$this->grantCapabilities( [ Plugin\Capabilities::CAP_DEFAULT, Plugin\Capabilities::CAP_DELEGATED ] );
+		$this->assertSame( Plugin\Capabilities::CAP_DEFAULT, Plugin\Capabilities::get_menu_capability() );
+
+		$this->grantCapabilities( [ Plugin\Capabilities::CAP_DELEGATED ] );
+		$this->assertSame( Plugin\Capabilities::CAP_DELEGATED, Plugin\Capabilities::get_menu_capability() );
+
+		$this->grantCapabilities( [ Plugin\Capabilities::CAP_DELEGATED ], true );
+		$this->assertSame( Plugin\Capabilities::CAP_DEFAULT, Plugin\Capabilities::get_menu_capability() );
+
+		$this->grantCapabilities( [] );
+		$this->assertSame( Plugin\Capabilities::CAP_DEFAULT, Plugin\Capabilities::get_menu_capability() );
+	}
+
+	public function testGetEveryCapabilityReturnsPermissionNames() {
 		$this->assertEquals(
 			[
-				'search_regex_manage',
-				'search_regex_options',
-				'search_regex_support',
-				'search_regex_presets',
+				'searchregex_cap_manage',
+				'searchregex_cap_options',
+				'searchregex_cap_support',
+				'searchregex_cap_preset',
 			],
 			Plugin\Capabilities::get_every_capability()
 		);

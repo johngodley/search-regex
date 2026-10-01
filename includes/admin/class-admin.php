@@ -173,6 +173,7 @@ class Admin {
 				'caps' => [
 					'pages' => $pages,
 					'capabilities' => $caps,
+					'admin' => Plugin\Capabilities::is_administrator(),
 				],
 				'update_notice' => $is_new ? $major_version : false,
 			]
@@ -214,24 +215,12 @@ class Admin {
 	 * @return array<string, mixed>
 	 */
 	private function get_preload_data() {
-		$can_search = Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH );
-		$can_preset = Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_PRESETS );
-
-		// Sources and presets are only needed by the search and preset pages
-		if ( ! $can_search && ! $can_preset ) {
-			return [
-				'sources' => [],
-				'presets' => [],
-				'schema' => [],
-				'labels' => [],
-			];
-		}
-
-		$schema = Source\Manager::get_schema();
-		$presets = Search\Preset::get_all();
+		$is_administrator = Plugin\Capabilities::is_administrator();
+		$schema = Source\Manager::get_schema( [], $is_administrator );
+		$presets = Search\Preset::get_available();
 
 		return [
-			'sources' => Source\Manager::get_all_grouped(),
+			'sources' => Source\Manager::get_all_grouped( $is_administrator ),
 			'presets' => $presets,
 			'schema' => $schema,
 			'labels' => $this->get_preload_labels( $presets ),

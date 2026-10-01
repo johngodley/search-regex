@@ -4,7 +4,6 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Search;
 use SearchRegex\Api;
-use SearchRegex\Plugin;
 use WP_REST_Request;
 use WP_Error;
 
@@ -13,18 +12,6 @@ use WP_Error;
  */
 class Preset_Route extends Api\Route {
 	/**
-	 * Check access to saved presets.
-	 *
-	 * The legacy manage permission name is retained because all REST routes historically used it.
-	 *
-	 * @param WP_REST_Request<array<string, mixed>> $_request Request.
-	 * @return bool
-	 */
-	public function permission_callback( WP_REST_Request $_request ) {
-		return Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_PRESETS, Plugin\Capabilities::LEGACY_CAP_SEARCHREGEX_SEARCH );
-	}
-
-	/**
 	 * Get preset API params
 	 *
 	 * @return array<string, mixed>
@@ -32,7 +19,7 @@ class Preset_Route extends Api\Route {
 	private function get_preset_params() {
 		$search = $this->get_search_params();
 
-		$search['searchPhrase']['type'] = 'string|null';
+		$search['searchPhrase']['type'] = [ 'string', 'null' ];
 		unset( $search['searchPhrase']['required'] );
 		unset( $search['source']['required'] );
 		unset( $search['searchPhrase']['validate_callback'] );
@@ -138,11 +125,15 @@ class Preset_Route extends Api\Route {
 		$params = $request->get_params();
 
 		$preset = new Search\Preset( $params );
+		if ( ! $preset->can_access() ) {
+			return $this->get_forbidden_error();
+		}
+
 		$preset->create();
 
 		return [
 			'current' => $preset->to_json(),
-			'presets' => Search\Preset::get_all(),
+			'presets' => Search\Preset::get_available(),
 		];
 	}
 
@@ -161,7 +152,7 @@ class Preset_Route extends Api\Route {
 
 			if ( $imported > 0 ) {
 				return [
-					'presets' => Search\Preset::get_all(),
+					'presets' => Search\Preset::get_available(),
 					'import' => $imported,
 				];
 			}
@@ -180,12 +171,17 @@ class Preset_Route extends Api\Route {
 		$params = $request->get_params();
 
 		$preset = Search\Preset::get( $params['id'] );
-		if ( $preset ) {
+		if ( $preset && $preset->can_access() ) {
+			// The updated sources and action come from the params, or the existing (accessible) preset
+			if ( ! ( new Search\Preset( $params ) )->can_access() ) {
+				return $this->get_forbidden_error();
+			}
+
 			$preset->update( $params );
 
 			return [
 				'current' => $preset->to_json(),
-				'presets' => Search\Preset::get_all(),
+				'presets' => Search\Preset::get_available(),
 			];
 		}
 
@@ -202,16 +198,16 @@ class Preset_Route extends Api\Route {
 		$params = $request->get_params();
 
 		$preset = Search\Preset::get( $params['id'] );
-		if ( $preset ) {
+		if ( $preset && $preset->can_access() ) {
 			$preset->delete();
 
 			return [
 				'current' => $preset->to_json(),
-				'presets' => Search\Preset::get_all(),
+				'presets' => Search\Preset::get_available(),
 			];
 		}
 
-		return new WP_Error( 'searchregex', 'No preset of that ID' );
+		return new WP_Error( 'searchregex', 'No preset of that ID', [ 'status' => 404 ] );
 	}
 
 	/**
@@ -241,13 +237,22 @@ class Preset_Route extends Api\Route {
 					}
 
 					return $preset;
-				}, Search\Preset::get_all()
+				}, Search\Preset::get_available()
 			);
 		}
 
 		return [
-			'presets' => Search\Preset::get_all(),
+			'presets' => Search\Preset::get_available(),
 		];
+	}
+
+	/**
+	 * Error returned when a preset uses an administrator-only source or action
+	 *
+	 * @return WP_Error
+	 */
+	private function get_forbidden_error() {
+		return new WP_Error( 'rest_forbidden', 'Sorry, you are not allowed to do that.', [ 'status' => rest_authorization_required_code() ] );
 	}
 
 	/**

@@ -6,6 +6,7 @@ use SearchRegex\Action;
 use SearchRegex\Schema;
 use SearchRegex\Source;
 use SearchRegex\Filter;
+use SearchRegex\Plugin;
 
 /**
  * @phpstan-type PresetTag array{name: string, title: string}
@@ -448,6 +449,19 @@ class Preset {
 	}
 
 	/**
+	 * Get all presets the current user can access, as JSON
+	 *
+	 * @return PresetParams[]
+	 */
+	public static function get_available() {
+		if ( Plugin\Capabilities::is_administrator() ) {
+			return self::get_all();
+		}
+
+		return array_values( array_filter( self::get_all(), fn( $preset ) => ( new Preset( $preset ) )->can_access() ) );
+	}
+
+	/**
 	 * Get a preset by ID
 	 *
 	 * @param string $id Preset ID.
@@ -467,6 +481,30 @@ class Preset {
 	}
 
 	/**
+	 * Determine if the current user can access the preset. Presets are shared, so an administrator may have created one
+	 * that uses an administrator-only source or action.
+	 *
+	 * @return bool
+	 */
+	public function can_access() {
+		if ( Plugin\Capabilities::is_administrator() ) {
+			return true;
+		}
+
+		if ( $this->action instanceof Action\Type\Run ) {
+			return false;
+		}
+
+		foreach ( $this->source as $source ) {
+			if ( Source\Manager::is_sensitive_source( $source ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Determine if the preset is valid
 	 *
 	 * @return boolean
@@ -480,7 +518,7 @@ class Preset {
 	}
 
 	/**
-	 * Import presets from a file
+	 * Import presets from a file. Presets the current user can't access are skipped.
 	 *
 	 * @param string $filename Filename to import.
 	 * @return integer Number of presets imported
@@ -498,7 +536,7 @@ class Preset {
 				foreach ( $json as $params ) {
 					$preset = new Preset( $params );
 
-					if ( $preset->is_valid() ) {
+					if ( $preset->is_valid() && $preset->can_access() ) {
 						$preset->create();
 						$imported++;
 					}

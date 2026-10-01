@@ -4,6 +4,7 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Source;
 use SearchRegex\Api;
+use SearchRegex\Plugin;
 use WP_REST_Request;
 use WP_Error;
 
@@ -178,6 +179,10 @@ class Source_Route extends Api\Route {
 	 */
 	public function getSources( WP_REST_Request $request ) {
 		$sources = Source\Manager::get_all_sources();
+
+		if ( ! Plugin\Capabilities::is_administrator() ) {
+			$sources = array_values( array_filter( $sources, fn( $source ) => ! Source\Manager::is_sensitive_class( $source['class'] ) ) );
+		}
 
 		return array_map(
 			fn( $source ) => [

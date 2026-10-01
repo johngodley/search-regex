@@ -24,7 +24,7 @@ class Search_Route extends Api\Route {
 
 		// Running an action fires an arbitrary WordPress hook, so is administrator-only
 		$runs_hook = $request->get_param( 'save' ) === true && $request->get_param( 'action' ) === 'action';
-		if ( $runs_hook && ! current_user_can( Plugin\Capabilities::CAP_DEFAULT ) ) {
+		if ( $runs_hook && ! Plugin\Capabilities::is_administrator() ) {
 			return false;
 		}
 
