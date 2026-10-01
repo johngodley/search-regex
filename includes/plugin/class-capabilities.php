@@ -14,10 +14,10 @@ namespace SearchRegex\Plugin;
  * `searchregex_role`). This fallback can only be used to *extend* access to additional roles -
  * it can't be used to remove access from whoever already holds base access.
  *
- * Note: reaching the admin menu/page at all is still gated on the base access capability only.
- * REST search, source, and connectivity routes require `search_regex_manage`; settings routes
- * require `search_regex_options`; and preset routes require `search_regex_presets`. The support
- * page has no data route. For backwards compatibility, REST checks continue to pass the legacy
+ * The admin menu is shown to anyone with access to at least one page, and each page is then
+ * checked against its own capability. REST search, source, and connectivity routes require
+ * `search_regex_manage`; settings routes require `search_regex_options`; and preset routes require
+ * `search_regex_presets`. The support page has no data route. For backwards compatibility, REST checks continue to pass the legacy
  * manage permission name to the deprecated capability filter.
  *
  * Capabilities:
@@ -87,13 +87,18 @@ class Capabilities {
 	 * Determine if the current user has access to a named capability.
 	 *
 	 * @param CapabilityName $cap_name The real capability to check for. See Capabilities for constants.
-	 * @param LegacyCapabilityName $legacy_name The deprecated pseudo-capability name for this check, passed
-	 * to the deprecated `searchregex_capability_check` filter if a site has registered one.
+	 * @param LegacyCapabilityName|null $legacy_name The deprecated pseudo-capability name for this check, passed
+	 * to the deprecated `searchregex_capability_check` filter if a site has registered one. Defaults to the
+	 * legacy name that matches `$cap_name`.
 	 * @return bool
 	 */
-	public static function has_access( $cap_name, $legacy_name ) {
+	public static function has_access( $cap_name, $legacy_name = null ) {
 		// Deprecated: if a site has customized access with the old filter, it still takes full precedence
 		if ( has_filter( self::FILTER_CAPABILITY ) ) {
+			if ( $legacy_name === null ) {
+				$legacy_name = self::get_legacy_name( $cap_name );
+			}
+
 			$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $legacy_name );
 
 			return current_user_can( $cap_to_check );
@@ -106,6 +111,47 @@ class Capabilities {
 
 		// Default: same base access capability as always (manage_options, filterable via `searchregex_role`)
 		return current_user_can( self::get_plugin_access() );
+	}
+
+	/**
+	 * Return the deprecated legacy name that matches a capability.
+	 *
+	 * @param string $cap_name Capability name.
+	 * @return string Legacy name, or `$cap_name` if it isn't a known capability
+	 */
+	private static function get_legacy_name( $cap_name ) {
+		foreach ( self::get_capability_definitions() as $definition ) {
+			if ( $definition['capability'] === $cap_name ) {
+				return $definition['legacy'];
+			}
+		}
+
+		return $cap_name;
+	}
+
+	/**
+	 * Return the capability used to register the plugin admin menu.
+	 *
+	 * The menu is shown to anyone with access to at least one plugin page. Individual pages are
+	 * still checked separately. `add_management_page()` only accepts a single capability, so this
+	 * returns a capability the current user holds when they have access through a specific capability.
+	 *
+	 * @return string Role/capability
+	 */
+	public static function get_menu_capability() {
+		$base = self::get_plugin_access();
+
+		if ( current_user_can( $base ) ) {
+			return $base;
+		}
+
+		foreach ( self::get_capability_definitions() as $definition ) {
+			if ( self::has_access( $definition['capability'], $definition['legacy'] ) && current_user_can( $definition['capability'] ) ) {
+				return $definition['capability'];
+			}
+		}
+
+		return $base;
 	}
 
 	/**

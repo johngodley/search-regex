@@ -109,7 +109,7 @@ class Admin {
 				isset( $_REQUEST['_wpnonce'] ) &&
 				(bool) wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp_rest' )
 		) {
-			if ( $_REQUEST['action'] === 'rest_api' ) {
+			if ( $_REQUEST['action'] === 'rest_api' && Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS ) ) {
 				$this->set_rest_api( intval( $_REQUEST['rest_api'], 10 ) );
 			}
 		}
@@ -214,6 +214,19 @@ class Admin {
 	 * @return array<string, mixed>
 	 */
 	private function get_preload_data() {
+		$can_search = Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH );
+		$can_preset = Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_PRESETS );
+
+		// Sources and presets are only needed by the search and preset pages
+		if ( ! $can_search && ! $can_preset ) {
+			return [
+				'sources' => [],
+				'presets' => [],
+				'schema' => [],
+				'labels' => [],
+			];
+		}
+
 		$schema = Source\Manager::get_schema();
 		$presets = Search\Preset::get_all();
 
@@ -337,7 +350,7 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_menu() {
-		$access = Plugin\Capabilities::get_plugin_access();
+		$access = Plugin\Capabilities::get_menu_capability();
 		$hook = add_management_page( 'Search Regex', 'Search Regex', $access, basename( SEARCHREGEX_FILE ), [ $this, 'admin_screen' ] );
 		if ( $hook ) {
 			add_action( 'load-' . $hook, [ $this, 'searchregex_head' ] );
