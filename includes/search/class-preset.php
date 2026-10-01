@@ -256,7 +256,7 @@ class Preset {
 		}
 
 		if ( array_key_exists( 'replacement', $search ) ) {
-			$this->replacement = $search['replacement'];
+			$this->replacement = $search['replacement'] ?? '';
 		}
 
 		if ( isset( $search['perPage'] ) ) {

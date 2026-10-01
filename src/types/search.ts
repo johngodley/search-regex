@@ -5,7 +5,7 @@ export interface SearchValues {
 	searchPhrase?: string;
 	searchFlags?: string[];
 	source?: string[];
-	replacement?: string;
+	replacement?: string | null;
 	perPage?: number;
 	filters?: Filter[];
 	[ key: string ]: any;
