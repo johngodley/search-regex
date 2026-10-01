@@ -20,7 +20,7 @@ import {
 } from '../../../lib/preset-utils';
 import Search from '../../../component/search';
 import Filters from './filters';
-import { convertToSource, getReplacementInputValue, getSimpleReplacement, getSourcesForDropdown } from './utils';
+import { convertToSource, getSourcesForDropdown } from './utils';
 import Actions from '../actions';
 import SearchFlags from '../../../component/search-flags';
 import TaggedPhrases from '../../../component/tagged-phrase';
@@ -221,7 +221,8 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 		! isLocked( locked, 'replacement' ) && ! hasTags( tags, preset?.search?.replacement ?? '' );
 
 	const setSimpleReplace: SetReplace = ( value ) => {
-		onSetSearch( { replacement: getSimpleReplacement( value ) } );
+		const replacementValue = ( value as { replacement?: string | null } ).replacement;
+		onSetSearch( { replacement: replacementValue ?? null } );
 	};
 
 	useEffect( () => {
@@ -308,7 +309,7 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 							<Replace
 								disabled={ isBusy }
 								setReplace={ setSimpleReplace }
-								replacement={ getReplacementInputValue( replacement ) }
+								replacement={ replacement ?? null }
 								preset={ preset }
 								schema={ { type: 'string' } as SchemaColumn }
 								column={
@@ -448,7 +449,7 @@ function Form( { search, onSetSearch, isBusy, preset }: FormProps ) {
 						{
 							action: ( search as any ).action || '',
 							actionOption,
-							replacement: getReplacementInputValue( replacement ),
+							replacement: replacement ?? null,
 						} as any
 					}
 				/>

@@ -153,7 +153,7 @@ abstract class Action {
 		if ( isset( $options['action'] ) && $options['action'] === 'replace' ) {
 			return [
 				'search' => $options['searchPhrase'],
-				'replacement' => $options['replacement'],
+				'replacement' => $options['replacement'] ?? '',
 				'flags' => $options['searchFlags'],
 			];
 		}

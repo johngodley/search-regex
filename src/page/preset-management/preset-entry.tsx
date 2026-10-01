@@ -13,8 +13,8 @@ interface PresetEntryProps {
 function PresetEntry( props: PresetEntryProps ) {
 	const { children, preset } = props;
 	const { search, name, tags } = preset;
-	const { searchPhrase = '', replacement: replacementValue = '', filters = [], action } = search;
-	const replacement = replacementValue ?? '';
+	const { searchPhrase = '', filters = [], action } = search;
+	const replacement = search.replacement ?? '';
 	const description = getActions( true, true ).find( ( item ) => item.value === action );
 
 	return (

@@ -196,15 +196,6 @@ export function getReplacement( replacement: string ): string | null {
 	return replacement;
 }
 
-// A `null` replacement is the UI's 'Remove' sentinel. The API expects a string, so send it as an empty string.
-export function getApiSearchValues< T extends SearchValues >( search: T ): T {
-	if ( search.replacement === null ) {
-		return { ...search, replacement: '' };
-	}
-
-	return search;
-}
-
 export function getDefaultSearch(): SearchValues {
 	return {
 		searchPhrase: '',

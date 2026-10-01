@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch, getApiRequest, postApiRequest, uploadApiRequest } from '@wp-plugin-lib';
 import getPreload from '../lib/preload';
-import { getApiSearchValues } from '../lib/search-utils';
 import { useMessageStore } from '../stores/message-store';
 import type { PresetValue } from '../types/preset';
 import type { SearchValues } from '../types/search';
@@ -33,9 +32,7 @@ export function useSavePreset() {
 
 	return useMutation< PresetResponse, Error, { name: string; searchValues: SearchValues } >( {
 		mutationFn: async ( { name, searchValues } ) => {
-			const response = await apiFetch(
-				postApiRequest( 'search-regex/v1/preset', { ...getApiSearchValues( searchValues ), name } )
-			);
+			const response = await apiFetch( postApiRequest( 'search-regex/v1/preset', { ...searchValues, name } ) );
 			return presetResponseSchema.parse( response );
 		},
 		onSuccess: ( data ) => {
@@ -56,10 +53,10 @@ export function useUpdatePreset() {
 	return useMutation< PresetResponse, Error, PresetValue >( {
 		mutationFn: async ( preset ) => {
 			const response = await apiFetch(
-				postApiRequest( `search-regex/v1/preset/id/${ preset.id }`, {
-					...preset,
-					search: getApiSearchValues( preset.search ),
-				} as unknown as Record< string, unknown > )
+				postApiRequest(
+					`search-regex/v1/preset/id/${ preset.id }`,
+					preset as unknown as Record< string, unknown >
+				)
 			);
 			return presetResponseSchema.parse( response );
 		},

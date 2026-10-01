@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { apiFetch, postApiRequest } from '@wp-plugin-lib';
 import { ApiUtils } from '../lib/api-utils';
-import { getApiSearchValues } from '../lib/search-utils';
 import type { SearchValues, Result } from '../types/search';
 import { useMessageStore } from '../stores/message-store';
 import { useSearchStore } from '../stores/search-store';
@@ -32,9 +31,7 @@ export function useSearch() {
 
 	return useMutation< SearchResponse, Error, SearchParams >( {
 		mutationFn: async ( searchParams ) => {
-			const response = await apiFetch(
-				postApiRequest( 'search-regex/v1/search', getApiSearchValues( searchParams ) )
-			);
+			const response = await apiFetch( postApiRequest( 'search-regex/v1/search', searchParams ) );
 			// For export saves, parse with the export schema and accumulate the raw data,
 			// then return a SearchResponse-shaped object with empty results so all callers
 			// can treat the response uniformly.
