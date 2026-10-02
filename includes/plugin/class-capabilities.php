@@ -70,7 +70,7 @@ class Capabilities {
 	 */
 	public static function has_access( $cap_name ) {
 		// Deprecated: if a site has customized access with the old filter, it still takes full precedence
-		if ( has_filter( self::FILTER_CAPABILITY ) ) {
+		if ( self::has_legacy_filter() ) {
 			$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $cap_name );
 
 			return current_user_can( $cap_to_check );
@@ -91,11 +91,20 @@ class Capabilities {
 	 */
 	public static function is_administrator() {
 		// Deprecated: the old filter has always granted everything with the manage permission
-		if ( has_filter( self::FILTER_CAPABILITY ) ) {
+		if ( self::has_legacy_filter() ) {
 			return self::has_access( self::CAP_SEARCHREGEX_SEARCH );
 		}
 
 		return current_user_can( self::get_plugin_access() );
+	}
+
+	/**
+	 * Determine if the deprecated capability filter is in use. `has_filter()` returns the callback priority, which can be 0.
+	 *
+	 * @return bool
+	 */
+	private static function has_legacy_filter() {
+		return has_filter( self::FILTER_CAPABILITY ) !== false;
 	}
 
 	/**
@@ -116,7 +125,7 @@ class Capabilities {
 	public static function get_menu_capability() {
 		$base = self::get_plugin_access();
 
-		if ( ! has_filter( self::FILTER_CAPABILITY ) && ! current_user_can( $base ) && current_user_can( self::CAP_DELEGATED ) ) {
+		if ( ! self::has_legacy_filter() && ! current_user_can( $base ) && current_user_can( self::CAP_DELEGATED ) ) {
 			return self::CAP_DELEGATED;
 		}
 

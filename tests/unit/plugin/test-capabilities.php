@@ -15,8 +15,9 @@ class CapabilitiesTest extends TestCase {
 		require_once PLUGIN_PATH . '/search-regex-loader.php';
 	}
 
-	private function grantCapabilities( array $granted, $has_legacy_filter = false ) {
-		Functions\when( 'has_filter' )->justReturn( $has_legacy_filter );
+	private function grantCapabilities( array $granted, $has_legacy_filter = false, $priority = 10 ) {
+		// has_filter() returns the callback priority, or false
+		Functions\when( 'has_filter' )->justReturn( $has_legacy_filter ? $priority : false );
 		Functions\when( 'current_user_can' )->alias(
 			fn( $cap ) => in_array( $cap, $granted, true )
 		);
@@ -69,6 +70,18 @@ class CapabilitiesTest extends TestCase {
 		);
 
 		$this->assertFalse( Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_SEARCH ) );
+	}
+
+	public function testLegacyFilterAtPriorityZeroIsUsed() {
+		$this->grantCapabilities( [ Plugin\Capabilities::CAP_DELEGATED ], true, 0 );
+
+		Functions\when( 'apply_filters' )->alias(
+			fn( $hook, $default ) => $hook === Plugin\Capabilities::FILTER_CAPABILITY ? Plugin\Capabilities::CAP_DELEGATED : $default
+		);
+
+		$this->assertTrue( Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS ) );
+		$this->assertTrue( Plugin\Capabilities::is_administrator() );
+		$this->assertSame( Plugin\Capabilities::CAP_DEFAULT, Plugin\Capabilities::get_menu_capability() );
 	}
 
 	public function testMenuCapability() {
