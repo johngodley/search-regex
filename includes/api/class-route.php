@@ -29,6 +29,19 @@ class Route {
 	}
 
 	/**
+	 * Check access to the requested action. Running an action fires an arbitrary WordPress hook, so saving one is
+	 * administrator-only. `save` uses the same truthiness as `get_search_replace()`, as not every route sanitizes it.
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @return bool
+	 */
+	protected function has_action_access( WP_REST_Request $request ) {
+		$runs_hook = (bool) $request->get_param( 'save' ) && $request->get_param( 'action' ) === 'action';
+
+		return ! $runs_hook || Plugin\Capabilities::is_administrator();
+	}
+
+	/**
 	 * Check source-specific access restrictions.
 	 *
 	 * User data and WordPress options are always administrator-only. Options can contain
@@ -243,6 +256,10 @@ class Route {
 
 		if ( ! is_array( $value ) ) {
 			$value = [ $value ];
+		}
+
+		if ( count( $value ) === 0 ) {
+			return new WP_Error( 'rest_invalid_param', 'No source specified', [ 'status' => 400 ] );
 		}
 
 		$valid = array_filter(

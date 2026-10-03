@@ -151,9 +151,84 @@ class PresetPermissionsApiTest extends SearchRegex_Api_Test {
 			)
 		);
 
-		$this->assertSame( 1, Search\Preset::import( $file ) );
+		$this->assertSame(
+			[
+				'imported' => 1,
+				'skipped' => 2,
+			],
+			Search\Preset::import( $file )
+		);
 		unlink( $file );
 
 		$this->assertEquals( [ 'Imported posts', 'Posts' ], $this->getPresetNames( Search\Preset::get_available() ) );
+	}
+
+	public function testAdministratorImportSkipsNothing() {
+		$this->setNonce();
+
+		$file = wp_tempnam( 'presets.json' );
+		file_put_contents( $file, wp_json_encode( [ [ 'name' => 'Imported options', 'search' => [ 'source' => [ 'options' ] ] ] ] ) );
+
+		$this->assertSame(
+			[
+				'imported' => 1,
+				'skipped' => 0,
+			],
+			Search\Preset::import( $file )
+		);
+		unlink( $file );
+	}
+
+	public function testDelegatedUserExportOnlyContainsAccessiblePresets() {
+		$this->setDelegatedUser();
+
+		$result = $this->callApi( 'preset', [ 'force' => true ] );
+
+		$this->assertEquals( 200, $result->status );
+		$this->assertEquals( [ 'Posts' ], $this->getPresetNames( $result->data ) );
+	}
+
+	private function getNestedUpdate( array $search ) {
+		return [
+			'name' => 'Posts',
+			'search' => array_merge( [ 'searchPhrase' => 'cat' ], $search ),
+		];
+	}
+
+	public function testDelegatedUserCannotMakePresetRestrictedWithNestedSearch() {
+		$this->setDelegatedUser();
+		$id = $this->preset_ids['posts'];
+
+		$requests = [
+			$this->getNestedUpdate( [ 'source' => [ 'options' ] ] ),
+			$this->getNestedUpdate( [ 'source' => [ 'posts', 'user' ] ] ),
+			$this->getNestedUpdate( [ 'source' => [ 'posts' ], 'action' => 'action', 'actionOption' => [ 'hook' => 'init' ] ] ),
+		];
+
+		foreach ( $requests as $request ) {
+			$result = $this->callApi( 'preset/id/' . $id, $request, 'POST' );
+
+			$this->assertEquals( 403, $result->status, wp_json_encode( $request ) );
+		}
+
+		$this->assertEquals( [ 'posts' ], Search\Preset::get( $id )->to_json()['search']['source'] );
+	}
+
+	public function testDelegatedUserCanUpdatePresetWithNestedSearch() {
+		$this->setDelegatedUser();
+		$id = $this->preset_ids['posts'];
+
+		$result = $this->callApi( 'preset/id/' . $id, $this->getNestedUpdate( [ 'source' => [ 'comment' ] ] ), 'POST' );
+
+		$this->assertEquals( 200, $result->status, wp_json_encode( $result->data ) );
+		$this->assertEquals( [ 'comment' ], $result->data['current']['search']['source'] );
+	}
+
+	public function testSearchRejectsEmptySource() {
+		$this->setDelegatedUser();
+
+		$result = $this->callApi( 'search', [ 'source' => [] ], 'POST' );
+
+		$this->assertEquals( 400, $result->status, wp_json_encode( $result->data ) );
 	}
 }

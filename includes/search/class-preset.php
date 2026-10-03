@@ -20,6 +20,7 @@ use SearchRegex\Plugin;
  *     filters?: array<string, mixed>,
  *     view?: list<string>
  * }
+ * @phpstan-type ImportResult array{imported: int, skipped: int}
  * @phpstan-type PresetParams array{
  *     id?: string,
  *     name?: string,
@@ -521,32 +522,39 @@ class Preset {
 	 * Import presets from a file. Presets the current user can't access are skipped.
 	 *
 	 * @param string $filename Filename to import.
-	 * @return integer Number of presets imported
+	 * @return ImportResult Number of presets imported and skipped
 	 */
 	public static function import( $filename ) {
+		$result = [
+			'imported' => 0,
+			'skipped' => 0,
+		];
+
 		// phpcs:ignore
 		$file = file_get_contents( $filename );
+		$json = $file ? json_decode( $file, true ) : null;
 
-		if ( $file ) {
-			$json = json_decode( $file, true );
-
-			if ( is_array( $json ) ) {
-				$imported = 0;
-
-				foreach ( $json as $params ) {
-					$preset = new Preset( $params );
-
-					if ( $preset->is_valid() && $preset->can_access() ) {
-						$preset->create();
-						$imported++;
-					}
-				}
-
-				return $imported;
-			}
+		if ( ! is_array( $json ) ) {
+			return $result;
 		}
 
-		return 0;
+		foreach ( $json as $params ) {
+			$preset = new Preset( $params );
+
+			if ( ! $preset->is_valid() ) {
+				continue;
+			}
+
+			if ( ! $preset->can_access() ) {
+				$result['skipped']++;
+				continue;
+			}
+
+			$preset->create();
+			$result['imported']++;
+		}
+
+		return $result;
 	}
 
 	/**

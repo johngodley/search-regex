@@ -11,7 +11,8 @@ namespace SearchRegex\Plugin;
  *   filterable with `searchregex_role`). They have access to everything.
  * - Delegated users - anyone granted the `search_regex_manage` capability. They can search & replace,
  *   manage presets, and view the support page. Plugin settings, user data, WordPress options, and
- *   running action hooks remain administrator-only.
+ *   running action hooks remain administrator-only. The UI hides the action hook option, and presets
+ *   that use it, from delegated users entirely, although the API allows a dry run.
  *
  * Delegated access is a privilege that an administrator grants to trusted users. Grant it to a role or
  * user with any standard role/permission-management plugin, or with `add_cap()`:

@@ -97,6 +97,70 @@ class SensitiveSourcePermissionsApiTest extends SearchRegex_Api_Test {
 		}
 	}
 
+	private function countRowSaveHookCalls( $save ) {
+		$post_id = $this->factory->post->create( [ 'post_title' => 'hook target' ] );
+		$calls = 0;
+		$counter = function () use ( &$calls ) {
+			$calls++;
+		};
+		add_action( 'searchregex_test_hook', $counter );
+
+		$result = $this->callApi(
+			'source/posts/row/' . $post_id,
+			[
+				'source' => [ 'posts' ],
+				'searchFlags' => [],
+				'action' => 'action',
+				'actionOption' => [ 'hook' => 'searchregex_test_hook' ],
+				'save' => $save,
+				'replacement' => [
+					'source' => 'posts',
+					'column' => 'post_title',
+					'operation' => 'set',
+					'replaceValue' => 'changed',
+				],
+			],
+			'POST'
+		);
+
+		remove_action( 'searchregex_test_hook', $counter );
+
+		return [ $result, $calls, $post_id ];
+	}
+
+	public function testDelegatedUserCannotRunActionHooksWhenSavingRow() {
+		$this->setDelegatedUser();
+
+		foreach ( [ true, 'true', '1', 'yes' ] as $save ) {
+			[ $result, $calls ] = $this->countRowSaveHookCalls( $save );
+
+			$this->assertEquals( 403, $result->status, wp_json_encode( $save ) );
+			$this->assertSame( 0, $calls, wp_json_encode( $save ) );
+		}
+	}
+
+	public function testDelegatedUserCanSaveRowWithoutRunningHook() {
+		$this->setDelegatedUser();
+
+		foreach ( [ false, '' ] as $save ) {
+			[ $result, $calls ] = $this->countRowSaveHookCalls( $save );
+
+			$this->assertEquals( 200, $result->status, wp_json_encode( $result->data ) );
+			$this->assertSame( 0, $calls );
+		}
+	}
+
+	public function testSavingRowDoesNotRunActionHook() {
+		$this->setNonce();
+
+		[ $result, $calls, $post_id ] = $this->countRowSaveHookCalls( true );
+
+		// Only the row modification is saved. Refreshing the row afterwards is a dry run of the search action
+		$this->assertEquals( 200, $result->status, wp_json_encode( $result->data ) );
+		$this->assertSame( 'changed', get_post( $post_id )->post_title );
+		$this->assertSame( 0, $calls );
+	}
+
 	private function countActionHookCalls( $save ) {
 		$calls = 0;
 		$counter = function () use ( &$calls ) {

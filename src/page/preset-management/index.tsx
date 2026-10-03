@@ -203,6 +203,22 @@ function PresetManagement() {
 									}
 								) }
 							</h3>
+							{ ( uploadMutation.data?.skipped ?? 0 ) > 0 && (
+								<p>
+									{ sprintf(
+										/* translators: %(total)d: number of presets skipped */
+										_n(
+											'Skipped %(total)d preset that needs administrator access',
+											'Skipped %(total)d presets that need administrator access',
+											uploadMutation.data?.skipped ?? 0,
+											'search-regex'
+										),
+										{
+											total: uploadMutation.data?.skipped ?? 0,
+										}
+									) }
+								</p>
+							) }
 							<button className="button-secondary" onClick={ cancel }>
 								{ __( 'Done', 'search-regex' ) }
 							</button>

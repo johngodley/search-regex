@@ -3,7 +3,6 @@
 namespace SearchRegex\Api\Route;
 
 use SearchRegex\Api;
-use SearchRegex\Plugin;
 use WP_REST_Request;
 use WP_Error;
 
@@ -22,13 +21,7 @@ class Search_Route extends Api\Route {
 			return false;
 		}
 
-		// Running an action fires an arbitrary WordPress hook, so is administrator-only
-		$runs_hook = $request->get_param( 'save' ) === true && $request->get_param( 'action' ) === 'action';
-		if ( $runs_hook && ! Plugin\Capabilities::is_administrator() ) {
-			return false;
-		}
-
-		return $this->has_source_access( $request );
+		return $this->has_action_access( $request ) && $this->has_source_access( $request );
 	}
 
 	/**

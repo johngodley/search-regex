@@ -18,7 +18,7 @@ class Source_Route extends Api\Route {
 	const AUTOCOMPLETE_TRIM_BEFORE = 10;
 
 	/**
-	 * Check access to the requested source operation.
+	 * Check access to the requested source operation. The action is checked too, in case a route ever performs it.
 	 *
 	 * @param WP_REST_Request<array<string, mixed>> $request Request.
 	 * @return bool
@@ -28,7 +28,7 @@ class Source_Route extends Api\Route {
 			return false;
 		}
 
-		return $this->has_source_access( $request );
+		return $this->has_action_access( $request ) && $this->has_source_access( $request );
 	}
 
 	/**
@@ -226,8 +226,8 @@ class Source_Route extends Api\Route {
 			return $results;
 		}
 
-		// Get the row again, with the original search conditions
-		[$search, $action] = $this->get_search_replace( $params );
+		// Get the row again, with the original search conditions. This is only a refresh, so never perform the action for real
+		[$search, $action] = $this->get_search_replace( array_merge( $params, [ 'save' => false ] ) );
 		$results = $search->get_row( $params['rowId'], $action );
 		if ( $results instanceof WP_Error ) {
 			return $results;

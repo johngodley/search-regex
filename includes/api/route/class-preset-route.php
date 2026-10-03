@@ -148,13 +148,18 @@ class Preset_Route extends Api\Route {
 		$upload = $upload['file'] ?? false;
 
 		if ( $upload && is_uploaded_file( $upload['tmp_name'] ) ) {
-			$imported = Search\Preset::import( $upload['tmp_name'] );
+			$result = Search\Preset::import( $upload['tmp_name'] );
 
-			if ( $imported > 0 ) {
+			if ( $result['imported'] > 0 ) {
 				return [
 					'presets' => Search\Preset::get_available(),
-					'import' => $imported,
+					'imported' => $result['imported'],
+					'skipped' => $result['skipped'],
 				];
+			}
+
+			if ( $result['skipped'] > 0 ) {
+				return $this->get_forbidden_error();
 			}
 		}
 
