@@ -40,6 +40,28 @@ class SearchRegexAdminCapabilitiesTest extends SearchRegex_Api_Test {
 		remove_filter( Plugin\Capabilities::FILTER_CAPABILITY, [ $this, 'keepDefaultCapability' ], 10 );
 	}
 
+	public function testDelegatedSettingsOnlyContainStartupValues() {
+		$add_secret = fn( $settings ) => array_merge( $settings, [ 'secret' => 'value' ] );
+		add_filter( 'searchregex_default_options', $add_secret );
+
+		$settings = new Plugin\Settings();
+
+		remove_filter( 'searchregex_default_options', $add_secret );
+
+		$this->assertArrayHasKey( 'secret', $settings->get_as_json() );
+		$this->assertEquals(
+			[ 'defaultPreset', 'rest_api', 'startupMode', 'startupPreset', 'support' ],
+			$this->getSortedKeys( $settings->get_delegated_json() )
+		);
+	}
+
+	private function getSortedKeys( array $values ) {
+		$keys = array_keys( $values );
+		sort( $keys );
+
+		return $keys;
+	}
+
 	public function keepDefaultCapability( $capability, $permission_name ) {
 		return $capability;
 	}

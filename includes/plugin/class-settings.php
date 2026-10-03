@@ -301,6 +301,16 @@ class Settings extends Plugin_Settings {
 	}
 
 	/**
+	 * Return the settings a non-administrator needs to use the plugin. The full settings are administrator-only, and may
+	 * contain custom values added with `searchregex_load_options`.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function get_delegated_json() {
+		return array_intersect_key( $this->get_as_json(), array_flip( [ 'support', 'rest_api', 'startupMode', 'startupPreset', 'defaultPreset' ] ) );
+	}
+
+	/**
 	 * Can we save data to the database? Useful for disabling saves during debugging
 	 *
 	 * @return boolean

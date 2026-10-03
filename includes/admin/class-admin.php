@@ -166,7 +166,7 @@ class Admin {
 				'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
 				'pluginRoot' => $this->get_plugin_url(),
 				'locale' => implode( '-', array_slice( explode( '-', str_replace( '_', '-', get_locale() ) ), 0, 2 ) ),
-				'settings' => $settings->get_as_json(),
+				'settings' => Plugin\Capabilities::is_administrator() ? $settings->get_as_json() : $settings->get_delegated_json(),
 				'preload' => $preload,
 				'versions' => implode( "\n", $versions ),
 				'version' => SEARCHREGEX_VERSION,
