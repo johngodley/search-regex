@@ -14,6 +14,15 @@ use SearchRegex\Filter;
  */
 class Manager {
 	/**
+	 * Source classes that contain sensitive data, and are administrator-only
+	 */
+	const SENSITIVE_CLASSES = [
+		Core\User::class,
+		Core\User_Meta::class,
+		Core\Options::class,
+	];
+
+	/**
 	 * Return all the core source types
 	 *
 	 * @return list<SourceConfig>
@@ -121,14 +130,19 @@ class Manager {
 	 * Get schema for a list of sources
 	 *
 	 * @param string[] $sources Sources.
+	 * @param bool $include_sensitive Include sources with sensitive data.
 	 * @return list<array<string, mixed>>
 	 */
-	public static function get_schema( array $sources = [] ) {
+	public static function get_schema( array $sources = [], $include_sensitive = true ) {
 		$all = self::get_all_source_names();
 		$handlers = self::get( $all, [] );
 		$schema = [];
 
 		foreach ( $handlers as $source ) {
+			if ( ! $include_sensitive && self::is_sensitive_class( get_class( $source ) ) ) {
+				continue;
+			}
+
 			$newschema = $source->get_schema_for_source();
 			$newschema['type'] = $source->get_type() === 'post' ? 'posts' : $source->get_type();
 
@@ -143,10 +157,15 @@ class Manager {
 	/**
 	 * Get all the sources grouped into 'core', 'posttype', and 'plugin' groups.
 	 *
+	 * @param bool $include_sensitive Include sources with sensitive data.
 	 * @return list<SourceGroup>
 	 */
-	public static function get_all_grouped() {
+	public static function get_all_grouped( $include_sensitive = true ) {
 		$sources = self::get_all_sources();
+
+		if ( ! $include_sensitive ) {
+			$sources = array_filter( $sources, fn( $source ) => ! self::is_sensitive_class( $source['class'] ) );
+		}
 
 		$groups = [
 			[
@@ -224,6 +243,41 @@ class Manager {
 			fn( $source ) => $source['name'],
 			$sources
 		);
+	}
+
+	/**
+	 * Determine whether a source class contains sensitive data.
+	 *
+	 * @param string $class_name Source class.
+	 * @return bool
+	 */
+	public static function is_sensitive_class( $class_name ) {
+		foreach ( self::SENSITIVE_CLASSES as $sensitive ) {
+			if ( is_a( $class_name, $sensitive, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine whether a registered source contains sensitive data, such as user data or WordPress options.
+	 *
+	 * This checks the configured handler class rather than the public source name so aliases and
+	 * subclasses cannot bypass source-specific authorization checks.
+	 *
+	 * @param string $source_name Source name.
+	 * @return bool
+	 */
+	public static function is_sensitive_source( $source_name ) {
+		foreach ( self::get_all_sources() as $source ) {
+			if ( $source['name'] === $source_name ) {
+				return self::is_sensitive_class( $source['class'] );
+			}
+		}
+
+		return false;
 	}
 
 	/**

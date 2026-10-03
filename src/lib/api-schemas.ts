@@ -315,6 +315,7 @@ export type PresetResponse = z.infer< typeof presetResponseSchema >;
 export const presetUploadResponseSchema = z.object( {
 	presets: z.array( presetValueSchema ),
 	imported: z.number(),
+	skipped: z.number().optional(),
 } );
 
 export type PresetUploadResponse = z.infer< typeof presetUploadResponseSchema >;

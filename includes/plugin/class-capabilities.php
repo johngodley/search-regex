@@ -5,38 +5,47 @@ namespace SearchRegex\Plugin;
 /**
  * Search Regex capabilities
  *
- * Hook `searchregex_role` and return a capability for access to the plugin menu. For example `edit_pages` will allow an editor
- * Hook `searchregex_capability` and return a different capability for each check that needs specific permissions.
+ * There are two levels of access:
  *
- * For example, if you want to give editors access to create redirects, but nothing else:
+ * - Administrators - anyone with the plugin's base access capability (`manage_options` by default,
+ *   filterable with `searchregex_role`). They have access to everything.
+ * - Delegated users - anyone granted the `search_regex_manage` capability. They can search & replace,
+ *   manage presets, and view the support page. Plugin settings, user data, WordPress options, and
+ *   running action hooks remain administrator-only. The UI hides the action hook option, and presets
+ *   that use it, from delegated users entirely, although the API allows a dry run.
+ *
+ * Delegated access is a privilege that an administrator grants to trusted users. Grant it to a role or
+ * user with any standard role/permission-management plugin, or with `add_cap()`:
  *
  * ```php
- * add_filter( 'searchregex_capability_check', function( $capability, $permission_name ) {
- *     if ( $permission_name === 'searchregex_cap_redirect_manage' || $permission_name === 'searchregex_cap_redirect_add' ) {
- *         return $capability;
- *     }
- *
- *     return 'manage_options';
+ * add_action( 'admin_init', function() {
+ *     get_role( 'editor' )->add_cap( 'search_regex_manage' );
  * } );
  * ```
  *
- * Always default to restrictive and then grant permissions. Don't default to permissive and remove permissions. This way if a new
- * capability is added your users won't automatically be granted access.
+ * Permissions:
+ * - `searchregex_cap_manage` - access to search & replace
+ * - `searchregex_cap_options` - access to plugin settings
+ * - `searchregex_cap_support` - access to the support page
+ * - `searchregex_cap_preset` - access to presets
  *
- * Capabilities can be filtered with:
- * - `searchregex_capability_check( $capability, $permission_name )` - override `$capability` dependant on `$permission_name`
+ * Other filters:
  * - `searchregex_capability_pages( $pages )` - filters the list of available pages
  * - `searchregex_role( $cap )` - return the role/capability used for overall access to the plugin
  *
- * Note some capabilities may give access to data from others. For example, when viewing a page of redirects via `searchregex_cap_redirect_manage`
- * the client will need to access group data.
+ * Deprecated: the `searchregex_capability_check( $capability, $permission_name )` filter is
+ * deprecated in favour of granting `search_regex_manage`. It's fully supported for now - a registered
+ * callback takes full precedence over the access levels above - but it will be removed in a future
+ * major version.
  *
- * @phpstan-type CapabilityName 'searchregex_cap_manage'|'searchregex_cap_options'|'searchregex_cap_support'|'searchregex_cap_preset'
+ * @phpstan-type PermissionName 'searchregex_cap_manage'|'searchregex_cap_options'|'searchregex_cap_support'|'searchregex_cap_preset'
  * @phpstan-type PageName 'search'|'options'|'support'|'presets'
  */
 class Capabilities {
 	const FILTER_ALL = 'searchregex_capability_all';
 	const FILTER_PAGES = 'searchregex_capability_pages';
+
+	// Deprecated - see the class docblock
 	const FILTER_CAPABILITY = 'searchregex_capability_check';
 
 	// The default WordPress capability used for all checks
@@ -45,24 +54,58 @@ class Capabilities {
 	// The main capability used to provide access to the plugin
 	const CAP_PLUGIN = 'searchregex_role';
 
-	// These capabilities are combined with `searchregex_cap_` to form `searchregex_cap_redirect_add` etc
+	// Real WordPress capability that an administrator can grant to delegate access
+	const CAP_DELEGATED = 'search_regex_manage';
+
+	// Permissions checked with `has_access()`
 	const CAP_SEARCHREGEX_SEARCH = 'searchregex_cap_manage';
 	const CAP_SEARCHREGEX_OPTIONS = 'searchregex_cap_options';
 	const CAP_SEARCHREGEX_SUPPORT = 'searchregex_cap_support';
 	const CAP_SEARCHREGEX_PRESETS = 'searchregex_cap_preset';
 
 	/**
-	 * Determine if the current user has access to a named capability.
+	 * Determine if the current user has a permission.
 	 *
-	 * @param CapabilityName $cap_name The capability to check for. See Capabilities for constants.
+	 * @param PermissionName $cap_name The permission to check for. See Capabilities for constants.
 	 * @return bool
 	 */
 	public static function has_access( $cap_name ) {
-		// Get the capability using the default plugin access as the base. Old sites overriding `searchregex_role` will get access to everything
-		$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $cap_name );
+		// Deprecated: if a site has customized access with the old filter, it still takes full precedence
+		if ( self::has_legacy_filter() ) {
+			$cap_to_check = apply_filters( self::FILTER_CAPABILITY, self::get_plugin_access(), $cap_name );
 
-		// Check the capability
-		return current_user_can( $cap_to_check );
+			return current_user_can( $cap_to_check );
+		}
+
+		if ( current_user_can( self::get_plugin_access() ) ) {
+			return true;
+		}
+
+		return $cap_name !== self::CAP_SEARCHREGEX_OPTIONS && current_user_can( self::CAP_DELEGATED );
+	}
+
+	/**
+	 * Determine if the current user is a Search Regex administrator, with access to administrator-only
+	 * features such as sensitive sources. Delegated users are not administrators.
+	 *
+	 * @return bool
+	 */
+	public static function is_administrator() {
+		// Deprecated: the old filter has always granted everything with the manage permission
+		if ( self::has_legacy_filter() ) {
+			return self::has_access( self::CAP_SEARCHREGEX_SEARCH );
+		}
+
+		return current_user_can( self::get_plugin_access() );
+	}
+
+	/**
+	 * Determine if the deprecated capability filter is in use. `has_filter()` returns the callback priority, which can be 0.
+	 *
+	 * @return bool
+	 */
+	private static function has_legacy_filter() {
+		return has_filter( self::FILTER_CAPABILITY ) !== false;
 	}
 
 	/**
@@ -72,6 +115,22 @@ class Capabilities {
 	 */
 	public static function get_plugin_access() {
 		return apply_filters( self::CAP_PLUGIN, self::CAP_DEFAULT );
+	}
+
+	/**
+	 * Return the capability used to register the plugin admin menu. This is the base capability, or the
+	 * delegated capability for a delegated user. `add_management_page()` only accepts a single capability.
+	 *
+	 * @return string Role/capability
+	 */
+	public static function get_menu_capability() {
+		$base = self::get_plugin_access();
+
+		if ( ! self::has_legacy_filter() && ! current_user_can( $base ) && current_user_can( self::CAP_DELEGATED ) ) {
+			return self::CAP_DELEGATED;
+		}
+
+		return $base;
 	}
 
 	/**
@@ -98,24 +157,22 @@ class Capabilities {
 	}
 
 	/**
-	 * Return all the capabilities the current user has
+	 * Return all the permissions the current user has
 	 *
-	 * @return list<CapabilityName> Array of capabilities
+	 * @return list<PermissionName> Array of permissions
 	 */
 	public static function get_all_capabilities() {
-		$caps = self::get_every_capability();
-
 		$caps = array_filter(
-			$caps, fn( $cap ) => self::has_access( $cap )
+			self::get_every_capability(), fn( $cap ) => self::has_access( $cap )
 		);
 
 		return array_values( apply_filters( self::FILTER_ALL, $caps ) );
 	}
 
 	/**
-	 * Unfiltered list of all the supported capabilities, without influence from the current user
+	 * Unfiltered list of all the supported permissions, without influence from the current user
 	 *
-	 * @return list<CapabilityName> Array of capabilities
+	 * @return list<PermissionName> Array of permissions
 	 */
 	public static function get_every_capability() {
 		return [

@@ -2,6 +2,10 @@ export function hasCapability( cap: string ): boolean {
 	return SearchRegexi10n.caps.capabilities.indexOf( cap ) !== -1;
 }
 
+export function isAdministrator(): boolean {
+	return SearchRegexi10n.caps.admin === true;
+}
+
 export function hasPageAccess( page: string ): boolean {
 	return SearchRegexi10n.caps.pages.indexOf( page ) !== -1;
 }

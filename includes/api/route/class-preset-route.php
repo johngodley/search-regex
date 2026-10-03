@@ -19,7 +19,7 @@ class Preset_Route extends Api\Route {
 	private function get_preset_params() {
 		$search = $this->get_search_params();
 
-		$search['searchPhrase']['type'] = 'string|null';
+		$search['searchPhrase']['type'] = [ 'string', 'null' ];
 		unset( $search['searchPhrase']['required'] );
 		unset( $search['source']['required'] );
 		unset( $search['searchPhrase']['validate_callback'] );
@@ -125,11 +125,15 @@ class Preset_Route extends Api\Route {
 		$params = $request->get_params();
 
 		$preset = new Search\Preset( $params );
+		if ( ! $preset->can_access() ) {
+			return $this->get_forbidden_error();
+		}
+
 		$preset->create();
 
 		return [
 			'current' => $preset->to_json(),
-			'presets' => Search\Preset::get_all(),
+			'presets' => Search\Preset::get_available(),
 		];
 	}
 
@@ -144,13 +148,18 @@ class Preset_Route extends Api\Route {
 		$upload = $upload['file'] ?? false;
 
 		if ( $upload && is_uploaded_file( $upload['tmp_name'] ) ) {
-			$imported = Search\Preset::import( $upload['tmp_name'] );
+			$result = Search\Preset::import( $upload['tmp_name'] );
 
-			if ( $imported > 0 ) {
+			if ( $result['imported'] > 0 ) {
 				return [
-					'presets' => Search\Preset::get_all(),
-					'import' => $imported,
+					'presets' => Search\Preset::get_available(),
+					'imported' => $result['imported'],
+					'skipped' => $result['skipped'],
 				];
+			}
+
+			if ( $result['skipped'] > 0 ) {
+				return $this->get_forbidden_error();
 			}
 		}
 
@@ -167,12 +176,17 @@ class Preset_Route extends Api\Route {
 		$params = $request->get_params();
 
 		$preset = Search\Preset::get( $params['id'] );
-		if ( $preset ) {
+		if ( $preset && $preset->can_access() ) {
+			// The updated sources and action come from the params, or the existing (accessible) preset
+			if ( ! ( new Search\Preset( $params ) )->can_access() ) {
+				return $this->get_forbidden_error();
+			}
+
 			$preset->update( $params );
 
 			return [
 				'current' => $preset->to_json(),
-				'presets' => Search\Preset::get_all(),
+				'presets' => Search\Preset::get_available(),
 			];
 		}
 
@@ -189,16 +203,16 @@ class Preset_Route extends Api\Route {
 		$params = $request->get_params();
 
 		$preset = Search\Preset::get( $params['id'] );
-		if ( $preset ) {
+		if ( $preset && $preset->can_access() ) {
 			$preset->delete();
 
 			return [
 				'current' => $preset->to_json(),
-				'presets' => Search\Preset::get_all(),
+				'presets' => Search\Preset::get_available(),
 			];
 		}
 
-		return new WP_Error( 'searchregex', 'No preset of that ID' );
+		return new WP_Error( 'searchregex', 'No preset of that ID', [ 'status' => 404 ] );
 	}
 
 	/**
@@ -228,13 +242,22 @@ class Preset_Route extends Api\Route {
 					}
 
 					return $preset;
-				}, Search\Preset::get_all()
+				}, Search\Preset::get_available()
 			);
 		}
 
 		return [
-			'presets' => Search\Preset::get_all(),
+			'presets' => Search\Preset::get_available(),
 		];
+	}
+
+	/**
+	 * Error returned when a preset uses an administrator-only source or action
+	 *
+	 * @return WP_Error
+	 */
+	private function get_forbidden_error() {
+		return new WP_Error( 'rest_forbidden', 'Sorry, you are not allowed to do that.', [ 'status' => rest_authorization_required_code() ] );
 	}
 
 	/**

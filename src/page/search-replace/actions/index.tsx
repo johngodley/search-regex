@@ -9,6 +9,7 @@ import Replace from '../../../component/replace';
 import { getActions, getExportOptions } from './constants';
 import { getSearchOptionsForSources, getSchemaSourceColumn } from '../../../lib/search-utils';
 import { useSearchStore } from '../../../stores/search-store';
+import { isAdministrator } from '../../../lib/capabilities';
 import type { PresetValue, PresetTag } from '../../../types/preset';
 import type { ModifyColumn, SchemaColumn, ResultColumn } from '../../../types/search';
 import './style.scss';
@@ -58,7 +59,10 @@ function Actions( props: ActionsProps ) {
 
 	const schema = useSearchStore( ( state ) => state.schema );
 	const { action = '', actionOption = {}, replacement } = search;
-	const actions = getActions( Boolean( searchPhrase && searchPhrase.length > 0 ), sources.length === 1 );
+	// Running an action is administrator-only
+	const actions = getActions( Boolean( searchPhrase && searchPhrase.length > 0 ), sources.length === 1 ).filter(
+		( item ) => item.value !== 'action' || isAdministrator()
+	);
 	const currentAction = actions.find( ( item ) => item.value === action ) || actions[ 0 ];
 	const firstAction = actions[ 0 ];
 	const [ currentSource, setSource ] = useState( sources.length > 0 ? sources[ 0 ] : '' );

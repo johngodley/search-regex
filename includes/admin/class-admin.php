@@ -109,7 +109,7 @@ class Admin {
 				isset( $_REQUEST['_wpnonce'] ) &&
 				(bool) wp_verify_nonce( $_REQUEST['_wpnonce'], 'wp_rest' )
 		) {
-			if ( $_REQUEST['action'] === 'rest_api' ) {
+			if ( $_REQUEST['action'] === 'rest_api' && Plugin\Capabilities::has_access( Plugin\Capabilities::CAP_SEARCHREGEX_OPTIONS ) ) {
 				$this->set_rest_api( intval( $_REQUEST['rest_api'], 10 ) );
 			}
 		}
@@ -166,13 +166,14 @@ class Admin {
 				'pluginBaseUrl' => plugins_url( '', SEARCHREGEX_FILE ),
 				'pluginRoot' => $this->get_plugin_url(),
 				'locale' => implode( '-', array_slice( explode( '-', str_replace( '_', '-', get_locale() ) ), 0, 2 ) ),
-				'settings' => $settings->get_as_json(),
+				'settings' => Plugin\Capabilities::is_administrator() ? $settings->get_as_json() : $settings->get_delegated_json(),
 				'preload' => $preload,
 				'versions' => implode( "\n", $versions ),
 				'version' => SEARCHREGEX_VERSION,
 				'caps' => [
 					'pages' => $pages,
 					'capabilities' => $caps,
+					'admin' => Plugin\Capabilities::is_administrator(),
 				],
 				'update_notice' => $is_new ? $major_version : false,
 			]
@@ -214,11 +215,12 @@ class Admin {
 	 * @return array<string, mixed>
 	 */
 	private function get_preload_data() {
-		$schema = Source\Manager::get_schema();
-		$presets = Search\Preset::get_all();
+		$is_administrator = Plugin\Capabilities::is_administrator();
+		$schema = Source\Manager::get_schema( [], $is_administrator );
+		$presets = Search\Preset::get_available();
 
 		return [
-			'sources' => Source\Manager::get_all_grouped(),
+			'sources' => Source\Manager::get_all_grouped( $is_administrator ),
 			'presets' => $presets,
 			'schema' => $schema,
 			'labels' => $this->get_preload_labels( $presets ),
@@ -337,7 +339,7 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_menu() {
-		$access = Plugin\Capabilities::get_plugin_access();
+		$access = Plugin\Capabilities::get_menu_capability();
 		$hook = add_management_page( 'Search Regex', 'Search Regex', $access, basename( SEARCHREGEX_FILE ), [ $this, 'admin_screen' ] );
 		if ( $hook ) {
 			add_action( 'load-' . $hook, [ $this, 'searchregex_head' ] );

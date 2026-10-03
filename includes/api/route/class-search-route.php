@@ -11,6 +11,20 @@ use WP_Error;
  */
 class Search_Route extends Api\Route {
 	/**
+	 * Check access to the requested search sources and action.
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @return bool
+	 */
+	public function permission_callback( WP_REST_Request $request ) {
+		if ( ! parent::permission_callback( $request ) ) {
+			return false;
+		}
+
+		return $this->has_action_access( $request ) && $this->has_source_access( $request );
+	}
+
+	/**
 	 * Return API paging args
 	 *
 	 * @internal
@@ -44,6 +58,11 @@ class Search_Route extends Api\Route {
 				'description' => 'Maximum number of results to return',
 				'type' => 'integer',
 				'default' => 0,
+			],
+			'save' => [
+				'description' => 'Perform the action for real, rather than a dry run',
+				'type' => 'boolean',
+				'default' => false,
 			],
 		];
 	}

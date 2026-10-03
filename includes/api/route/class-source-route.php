@@ -4,6 +4,7 @@ namespace SearchRegex\Api\Route;
 
 use SearchRegex\Source;
 use SearchRegex\Api;
+use SearchRegex\Plugin;
 use WP_REST_Request;
 use WP_Error;
 
@@ -15,6 +16,20 @@ use WP_Error;
 class Source_Route extends Api\Route {
 	const AUTOCOMPLETE_MAX = 50;
 	const AUTOCOMPLETE_TRIM_BEFORE = 10;
+
+	/**
+	 * Check access to the requested source operation. The action is checked too, in case a route ever performs it.
+	 *
+	 * @param WP_REST_Request<array<string, mixed>> $request Request.
+	 * @return bool
+	 */
+	public function permission_callback( WP_REST_Request $request ) {
+		if ( ! parent::permission_callback( $request ) ) {
+			return false;
+		}
+
+		return $this->has_action_access( $request ) && $this->has_source_access( $request );
+	}
 
 	/**
 	 * API schema for source validation.
@@ -165,6 +180,10 @@ class Source_Route extends Api\Route {
 	public function getSources( WP_REST_Request $request ) {
 		$sources = Source\Manager::get_all_sources();
 
+		if ( ! Plugin\Capabilities::is_administrator() ) {
+			$sources = array_values( array_filter( $sources, fn( $source ) => ! Source\Manager::is_sensitive_class( $source['class'] ) ) );
+		}
+
 		return array_map(
 			fn( $source ) => [
 				'name' => $source['name'],
@@ -207,8 +226,8 @@ class Source_Route extends Api\Route {
 			return $results;
 		}
 
-		// Get the row again, with the original search conditions
-		[$search, $action] = $this->get_search_replace( $params );
+		// Get the row again, with the original search conditions. This is only a refresh, so never perform the action for real
+		[$search, $action] = $this->get_search_replace( array_merge( $params, [ 'save' => false ] ) );
 		$results = $search->get_row( $params['rowId'], $action );
 		if ( $results instanceof WP_Error ) {
 			return $results;
