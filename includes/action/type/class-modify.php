@@ -6,6 +6,7 @@ use SearchRegex\Action;
 use SearchRegex\Source;
 use SearchRegex\Schema;
 use SearchRegex\Modifier;
+use WP_Error;
 
 /**
  * Perform modification of columns
@@ -125,7 +126,7 @@ class Modify extends Action\Action {
 	 * @param array<string, mixed> $row
 	 * @param Source\Source $source
 	 * @param array<\SearchRegex\Search\Column> $columns
-	 * @return array<\SearchRegex\Search\Column>
+	 * @return array<\SearchRegex\Search\Column>|WP_Error
 	 */
 	public function perform( $row_id, array $row, Source\Source $source, array $columns ) {
 		foreach ( $columns as $pos => $column ) {
@@ -134,7 +135,12 @@ class Modify extends Action\Action {
 					$value = $action_column->get_row_data( $row );
 
 					if ( $value ) {
-						$columns[ $pos ] = $action_column->perform( $row_id, $value, $source, $column, $row, $this->should_save() );
+						$result = $action_column->perform( $row_id, $value, $source, $column, $row, $this->should_save() );
+						if ( $result instanceof WP_Error ) {
+							return $result;
+						}
+
+						$columns[ $pos ] = $result;
 					}
 
 					break;
