@@ -20,13 +20,6 @@ class Dynamic_Column {
 	private array $shortcodes;
 
 	/**
-	 * Array of standard WP shortcodes
-	 *
-	 * @var string[]
-	 */
-	private array $old_shortcodes = [];
-
-	/**
 	 * Row ID
 	 */
 	private int $row_id = 0;
@@ -68,24 +61,54 @@ class Dynamic_Column {
 				'date',
 			]
 		);
-
-		global $shortcode_tags;
-
-		$this->old_shortcodes = $shortcode_tags;
-
-		remove_all_shortcodes();
-
-		foreach ( $this->shortcodes as $code ) {
-			add_shortcode( $code, [ $this, 'do_shortcode' ] );
-		}
 	}
 
-	public function __destruct() {
+	/**
+	 * Process text using only Search Regex shortcodes.
+	 *
+	 * @param string $text Text containing shortcodes.
+	 * @return string
+	 */
+	public function replace_shortcodes( $text ) {
+		return $this->with_shortcodes( fn() => do_shortcode( $text ) );
+	}
+
+	/**
+	 * Determine whether text contains a Search Regex shortcode.
+	 *
+	 * @param string $text Text to check.
+	 * @param string $tag Shortcode name.
+	 * @return bool
+	 */
+	public function contains_shortcode( $text, $tag ) {
+		return $this->with_shortcodes( fn() => has_shortcode( $text, $tag ) );
+	}
+
+	/**
+	 * Run a callback with only Search Regex shortcodes registered.
+	 *
+	 * @param callable $callback Callback to run.
+	 * @return mixed
+	 */
+	private function with_shortcodes( $callback ) {
 		global $shortcode_tags;
 
-		// Restore shortcodes
-		// phpcs:ignore
-		$shortcode_tags = $this->old_shortcodes;
+		$old_shortcodes = $shortcode_tags;
+
+		try {
+			remove_all_shortcodes();
+			foreach ( $this->shortcodes as $code ) {
+				if ( $code !== '' ) {
+					add_shortcode( $code, [ $this, 'do_shortcode' ] );
+				}
+			}
+
+			return $callback();
+		} finally {
+			// Restore shortcodes
+			// phpcs:ignore
+			$shortcode_tags = $old_shortcodes;
+		}
 	}
 
 	/**
@@ -106,7 +129,7 @@ class Dynamic_Column {
 		$this->level = 0;
 		$this->schema = $schema;
 
-		return do_shortcode( $text );
+		return $this->replace_shortcodes( $text );
 	}
 
 	/**

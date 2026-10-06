@@ -70,33 +70,34 @@ class Modify extends Action\Action {
 		};
 
 		add_filter( 'pre_do_shortcode_tag', $remember, 10, 3 );
+		try {
+			$views = array_map(
+				function ( $column ) {
+					if ( ! $column instanceof Modifier\Value\String_Value ) {
+						return false;
+					}
 
-		$views = array_map(
-			function ( $column ) {
-				if ( ! $column instanceof Modifier\Value\String_Value ) {
-					  return false;
-				}
+					$replace = $column->get_replace_value();
+					if ( $replace === null ) {
+						return false;
+					}
 
-				$replace = $column->get_replace_value();
-				if ( $replace === null ) {
-					return false;
-				}
+					if ( $this->dynamic_column !== null && $this->dynamic_column->contains_shortcode( $replace, 'column' ) ) {
+						$result = $this->dynamic_column->replace_shortcodes( $replace );
 
-				if ( has_shortcode( $replace, 'column' ) ) {
-					$result = do_shortcode( $replace );
-
-					if ( preg_match_all( '/column::(.*?)\s/', $result, $matches ) > 0 ) {
-						foreach ( $matches[1] as $match ) {
-							   return $column->get_schema()->get_source() . '__' . $match;
+						if ( preg_match_all( '/column::(.*?)\s/', $result, $matches ) > 0 ) {
+							foreach ( $matches[1] as $match ) {
+								return $column->get_schema()->get_source() . '__' . $match;
+							}
 						}
 					}
-				}
 
-				return false;
-			}, $this->columns
-		);
-
-		remove_filter( 'pre_do_shortcode_tag', $remember, 10 );
+					return false;
+				}, $this->columns
+			);
+		} finally {
+			remove_filter( 'pre_do_shortcode_tag', $remember, 10 );
+		}
 
 		$modify = array_map(
 			fn( $column ) => $column->get_source_name() . '__' . $column->get_column_name(),
