@@ -9,6 +9,7 @@ use SearchRegex\Search;
 use SearchRegex\Context;
 use SearchRegex\Filter;
 use SearchRegex\Action;
+use WP_Error;
 
 /**
  * Modify a string
@@ -114,14 +115,11 @@ class String_Value extends Modifier\Modifier {
 			return [];
 		}
 
-		$replace_value = $this->replace_value;
-		if ( ! $this->search_flags->is_regex() ) {
-			// Escape the replace value, in case it has a $ in it
-			$replace_value = \preg_replace( '/(?<!\\\)\$/', '\\$', $this->replace_value );
-		}
-
 		// Global replace
-		$result = $this->replace_all( $this->search_value, self::BEFORE . $replace_value . self::AFTER, $value );
+		$result = $this->replace_all( $this->search_value, $this->replace_value, $value, self::BEFORE, self::AFTER );
+		if ( $result === null ) {
+			return [];
+		}
 
 		// Split into array
 		$pattern = '@' . self::BEFORE . '(.*?)' . self::AFTER . '@s';
@@ -143,29 +141,35 @@ class String_Value extends Modifier\Modifier {
 	 * @param string $search Search string.
 	 * @param string $replace Replacement value.
 	 * @param string $value Content to replace.
-	 * @return string
+	 * @param string $before Text to insert before each replacement.
+	 * @param string $after Text to insert after each replacement.
+	 * @return string|null The replaced content, or null if the replacement failed
 	 */
-	private function replace_all( $search, $replace, $value ) {
+	private function replace_all( $search, $replace, $value, $before = '', $after = '' ) {
 		$pattern = Search\Text::get_pattern( $search, $this->search_flags );
 
-		if ( ! $this->search_flags->is_regex() && is_serialized( $value ) ) {
-			$serial = '/s:(\d*):"(.*?)";/s';
-
-			return (string) preg_replace_callback(
-				$serial, function ( $matches ) use ( $search, $replace ) {
-					if ( strpos( $matches[2], $search ) !== false ) {
-						$replaced = str_replace( $search, $replace, $matches[2] );
-
-						return 's:' . (string) strlen( $replaced ) . ':"' . $replaced . '";';
-					}
-
-					return $matches[0];
-				}, $value
-			);
+		if ( ! $this->search_flags->is_regex() ) {
+			// A plain text replacement is literal, so stop $ and \ being treated as a backreference
+			$replace = addcslashes( $replace, '\\$' );
 		}
 
-		// Global replace
-		return (string) preg_replace( $pattern, $replace, $value );
+		// Global replace. This returns null on failure, such as invalid UTF-8 in the content or hitting a PCRE limit
+		return preg_replace( $pattern, $before . $replace . $after, $value );
+	}
+
+	/**
+	 * Determine if a search can be used as a pattern. A plain text search is always valid.
+	 *
+	 * @param string $search Search string.
+	 * @return bool
+	 */
+	private function is_valid_pattern( $search ) {
+		if ( ! $this->search_flags->is_regex() ) {
+			return true;
+		}
+
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- an invalid pattern raises a PHP warning
+		return @preg_match( Search\Text::get_pattern( $search, $this->search_flags ), '' ) !== false;
 	}
 
 	public function perform( $row_id, $row_value, Source\Source $source, Search\Column $column, array $raw, $save_mode ) {
@@ -186,8 +190,18 @@ class String_Value extends Modifier\Modifier {
 			return $column;
 		}
 
+		// Leave serialized data untouched
+		if ( is_serialized( $row_value ) ) {
+			return $column;
+		}
+
 		if ( ! $this->search_value ) {
 			return $column;
+		}
+
+		// An invalid pattern will fail for every row, so report it rather than silently change nothing
+		if ( ! $this->is_valid_pattern( $this->search_value ) ) {
+			return new WP_Error( 'rest_invalid_param', 'Invalid regular expression: ' . $this->search_value, [ 'status' => 400 ] );
 		}
 
 		if ( $this->pos_id === null ) {
@@ -198,6 +212,10 @@ class String_Value extends Modifier\Modifier {
 			// When not saving we need to return the individual replacements. If saving then we want to return the whole text
 			if ( $save_mode ) {
 				$global_replace = $this->replace_all( $this->search_value, $this->replace_value, $row_value );
+				if ( $global_replace === null ) {
+					// The replacement failed, so leave the row untouched rather than save an empty value
+					return $column;
+				}
 
 				$value = apply_filters( 'searchregex_text', $global_replace, $row_id, $row_value, $raw, $source->get_schema_item() );
 
