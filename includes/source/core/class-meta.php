@@ -44,7 +44,7 @@ abstract class Meta extends Source\Source {
 		if ( count( $meta ) > 0 ) {
 			// The value is written directly to the database, and WordPress will unserialize it when the meta is next read
 			if ( isset( $meta['meta_value'] ) && is_string( $meta['meta_value'] ) && is_serialized( $meta['meta_value'] ) ) {
-				return new WP_Error( 'searchregex', 'Serialized data cannot be saved to meta data: ' . $this->get_meta_table() );
+				return new WP_Error( 'searchregex', 'Serialized data cannot be saved to meta data: ' . $this->get_meta_table(), [ 'status' => 400 ] );
 			}
 
 			$this->log_save( 'meta', $meta );

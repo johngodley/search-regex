@@ -55,7 +55,7 @@ class MetaSerializedApiTest extends SearchRegex_Api_Test {
 		[ $post_id, $meta_id ] = $this->create_meta( 'plainvalue' );
 		$result = $this->save_row( $meta_id, [ 'operation' => 'set', 'replaceValue' => self::PAYLOAD ] );
 
-		$this->assertNotEquals( 200, $result->status );
+		$this->assertEquals( 400, $result->status );
 		$this->assertMetaUnchanged( $post_id );
 	}
 
@@ -73,7 +73,7 @@ class MetaSerializedApiTest extends SearchRegex_Api_Test {
 			]
 		);
 
-		$this->assertNotEquals( 200, $result->status );
+		$this->assertEquals( 400, $result->status );
 		$this->assertMetaUnchanged( $post_id );
 	}
 
