@@ -190,6 +190,26 @@ class Modifier_String_Test extends SearchRegex_Api_Test {
 		$this->assertStringContainsString( '(test', $result->get_error_message() );
 	}
 
+	/**
+	 * @dataProvider invalidRegexProvider
+	 */
+	public function testInvalidRegexIsAnErrorForSerializedValue( $save_mode, $pos_id ) {
+		$options = [ 'operation' => 'replace', 'searchValue' => '(test', 'replaceValue' => 'cat', 'searchFlags' => [ 'regex' ] ];
+		if ( $pos_id !== null ) {
+			$options['posId'] = $pos_id;
+		}
+
+		$value = serialize( [ 'this is a test' ] );
+		$modifier = $this->get_modifier( $options );
+		$source = Source\Manager::get( [ 'posts' ], [] );
+		$column = new Search\Column( 1, 1, [ new Context\Type\Value( $value ) ], [] );
+
+		$result = $modifier->perform( 1, $value, $source[0], $column, [], $save_mode );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertStringContainsString( '(test', $result->get_error_message() );
+	}
+
 	public function invalidRegexProvider() {
 		return [
 			'save' => [ true, null ],

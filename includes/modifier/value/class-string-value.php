@@ -224,11 +224,6 @@ class String_Value extends Modifier\Modifier {
 			return $column;
 		}
 
-		// Leave serialized data untouched
-		if ( is_serialized( $row_value ) ) {
-			return $column;
-		}
-
 		if ( ! $this->search_value ) {
 			return $column;
 		}
@@ -236,6 +231,11 @@ class String_Value extends Modifier\Modifier {
 		// An invalid pattern will fail for every row, so report it rather than silently change nothing
 		if ( ! $this->is_valid_pattern( $this->search_value ) ) {
 			return new WP_Error( 'rest_invalid_param', 'Invalid regular expression: ' . $this->search_value, [ 'status' => 400 ] );
+		}
+
+		// Leave serialized data untouched
+		if ( is_serialized( $row_value ) ) {
+			return $column;
 		}
 
 		if ( $this->pos_id === null ) {
