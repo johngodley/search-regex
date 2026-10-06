@@ -6,6 +6,7 @@ use SearchRegex\Schema;
 use SearchRegex\Modifier\Value;
 use SearchRegex\Search;
 use SearchRegex\Source;
+use WP_Error;
 
 /**
  * Modify a column
@@ -166,7 +167,7 @@ abstract class Modifier {
 	 * @param Search\Column $column Column.
 	 * @param array<string, mixed> $raw Raw database data.
 	 * @param bool $save_mode Is the save mode enabled.
-	 * @return Search\Column
+	 * @return Search\Column|WP_Error
 	 */
 	abstract public function perform( $row_id, $row_value, Source\Source $source, Search\Column $column, array $raw, $save_mode );
 }

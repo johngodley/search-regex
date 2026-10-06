@@ -72,6 +72,15 @@ class Text {
 	}
 
 	/**
+	 * Get the replacement text for this match
+	 *
+	 * @return string|null
+	 */
+	public function get_replacement() {
+		return $this->replacement;
+	}
+
+	/**
 	 * Add a regular expression capture value
 	 *
 	 * @param string $capture Captured value.

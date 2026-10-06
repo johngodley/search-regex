@@ -6,6 +6,7 @@ use SearchRegex\Action;
 use SearchRegex\Source;
 use SearchRegex\Schema;
 use SearchRegex\Modifier;
+use WP_Error;
 
 /**
  * Perform modification of columns
@@ -70,33 +71,34 @@ class Modify extends Action\Action {
 		};
 
 		add_filter( 'pre_do_shortcode_tag', $remember, 10, 3 );
+		try {
+			$views = array_map(
+				function ( $column ) {
+					if ( ! $column instanceof Modifier\Value\String_Value ) {
+						return false;
+					}
 
-		$views = array_map(
-			function ( $column ) {
-				if ( ! $column instanceof Modifier\Value\String_Value ) {
-					  return false;
-				}
+					$replace = $column->get_replace_value();
+					if ( $replace === null ) {
+						return false;
+					}
 
-				$replace = $column->get_replace_value();
-				if ( $replace === null ) {
-					return false;
-				}
+					if ( $this->dynamic_column !== null && $this->dynamic_column->contains_shortcode( $replace, 'column' ) ) {
+						$result = $this->dynamic_column->replace_shortcodes( $replace );
 
-				if ( has_shortcode( $replace, 'column' ) ) {
-					$result = do_shortcode( $replace );
-
-					if ( preg_match_all( '/column::(.*?)\s/', $result, $matches ) > 0 ) {
-						foreach ( $matches[1] as $match ) {
-							   return $column->get_schema()->get_source() . '__' . $match;
+						if ( preg_match_all( '/column::(.*?)\s/', $result, $matches ) > 0 ) {
+							foreach ( $matches[1] as $match ) {
+								return $column->get_schema()->get_source() . '__' . $match;
+							}
 						}
 					}
-				}
 
-				return false;
-			}, $this->columns
-		);
-
-		remove_filter( 'pre_do_shortcode_tag', $remember, 10 );
+					return false;
+				}, $this->columns
+			);
+		} finally {
+			remove_filter( 'pre_do_shortcode_tag', $remember, 10 );
+		}
 
 		$modify = array_map(
 			fn( $column ) => $column->get_source_name() . '__' . $column->get_column_name(),
@@ -124,7 +126,7 @@ class Modify extends Action\Action {
 	 * @param array<string, mixed> $row
 	 * @param Source\Source $source
 	 * @param array<\SearchRegex\Search\Column> $columns
-	 * @return array<\SearchRegex\Search\Column>
+	 * @return array<\SearchRegex\Search\Column>|WP_Error
 	 */
 	public function perform( $row_id, array $row, Source\Source $source, array $columns ) {
 		foreach ( $columns as $pos => $column ) {
@@ -133,7 +135,12 @@ class Modify extends Action\Action {
 					$value = $action_column->get_row_data( $row );
 
 					if ( $value ) {
-						$columns[ $pos ] = $action_column->perform( $row_id, $value, $source, $column, $row, $this->should_save() );
+						$result = $action_column->perform( $row_id, $value, $source, $column, $row, $this->should_save() );
+						if ( $result instanceof WP_Error ) {
+							return $result;
+						}
+
+						$columns[ $pos ] = $result;
 					}
 
 					break;

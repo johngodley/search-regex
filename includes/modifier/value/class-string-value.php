@@ -9,6 +9,7 @@ use SearchRegex\Search;
 use SearchRegex\Context;
 use SearchRegex\Filter;
 use SearchRegex\Action;
+use WP_Error;
 
 /**
  * Modify a string
@@ -23,9 +24,6 @@ use SearchRegex\Action;
  * }
  */
 class String_Value extends Modifier\Modifier {
-	const BEFORE = '<SEARCHREGEX>';
-	const AFTER = '</SEARCHREGEX>';
-
 	/**
 	 * Value to search for. Only used in a search/replace
 	 */
@@ -114,26 +112,31 @@ class String_Value extends Modifier\Modifier {
 			return [];
 		}
 
-		$replace_value = $this->replace_value;
-		if ( ! $this->search_flags->is_regex() ) {
-			// Escape the replace value, in case it has a $ in it
-			$replace_value = \preg_replace( '/(?<!\\\)\$/', '\\$', $this->replace_value );
-		}
+		[ $before, $after ] = $this->get_markers();
 
 		// Global replace
-		$result = $this->replace_all( $this->search_value, self::BEFORE . $replace_value . self::AFTER, $value );
-
-		// Split into array
-		$pattern = '@' . self::BEFORE . '(.*?)' . self::AFTER . '@s';
-		if ( $this->search_flags->is_case_insensitive() ) {
-			$pattern .= 'i';
+		$result = $this->replace_all( $this->search_value, $this->replace_value, $value, $before, $after );
+		if ( $result === null ) {
+			return [];
 		}
 
-		if ( \preg_match_all( $pattern, $result, $searches ) > 0 ) {
+		// Split into array
+		if ( \preg_match_all( '@' . $before . '(.*?)' . $after . '@s', $result, $searches ) > 0 ) {
 			return $searches[1];
 		}
 
 		return [];
+	}
+
+	/**
+	 * Get the text used to mark the start and end of each replacement. This is random so that it cannot already be in the content.
+	 *
+	 * @return array{string, string}
+	 */
+	private function get_markers() {
+		$marker = bin2hex( random_bytes( 8 ) );
+
+		return [ '<SEARCHREGEX-' . $marker . '>', '</SEARCHREGEX-' . $marker . '>' ];
 	}
 
 	/**
@@ -143,29 +146,64 @@ class String_Value extends Modifier\Modifier {
 	 * @param string $search Search string.
 	 * @param string $replace Replacement value.
 	 * @param string $value Content to replace.
-	 * @return string
+	 * @param string $before Text to insert before each replacement.
+	 * @param string $after Text to insert after each replacement.
+	 * @return string|null The replaced content, or null if the replacement failed
 	 */
-	private function replace_all( $search, $replace, $value ) {
+	private function replace_all( $search, $replace, $value, $before = '', $after = '' ) {
 		$pattern = Search\Text::get_pattern( $search, $this->search_flags );
 
-		if ( ! $this->search_flags->is_regex() && is_serialized( $value ) ) {
-			$serial = '/s:(\d*):"(.*?)";/s';
-
-			return (string) preg_replace_callback(
-				$serial, function ( $matches ) use ( $search, $replace ) {
-					if ( strpos( $matches[2], $search ) !== false ) {
-						$replaced = str_replace( $search, $replace, $matches[2] );
-
-						return 's:' . (string) strlen( $replaced ) . ':"' . $replaced . '";';
-					}
-
-					return $matches[0];
-				}, $value
-			);
+		if ( ! $this->search_flags->is_regex() ) {
+			// A plain text replacement is literal, so stop $ and \ being treated as a backreference
+			$replace = addcslashes( $replace, '\\$' );
 		}
 
-		// Global replace
-		return (string) preg_replace( $pattern, $replace, $value );
+		// Global replace. This returns null on failure, such as invalid UTF-8 in the content or hitting a PCRE limit
+		return preg_replace( $pattern, $before . $replace . $after, $value );
+	}
+
+	/**
+	 * Perform a global replacement, with any shortcodes in the replacement processed for each match.
+	 *
+	 * Shortcodes are only processed in the replacement, and not in the rest of the content.
+	 *
+	 * @internal
+	 * @param string $search Search string.
+	 * @param string $replace Replacement value.
+	 * @param int $row_id Row ID.
+	 * @param string $row_value Content to replace.
+	 * @param array<string, mixed> $raw Raw database data.
+	 * @param Source\Source $source Source.
+	 * @return string|null The replaced content, or null if the replacement failed
+	 */
+	private function replace_all_dynamic( $search, $replace, $row_id, $row_value, array $raw, Source\Source $source ) {
+		[ $before, $after ] = $this->get_markers();
+
+		$replaced = $this->replace_all( $search, $replace, $row_value, $before, $after );
+		if ( $replaced === null ) {
+			return null;
+		}
+
+		return preg_replace_callback(
+			'@' . $before . '(.*?)' . $after . '@s',
+			fn( $matches ) => apply_filters( 'searchregex_text', $matches[1], $row_id, $row_value, $raw, $source->get_schema_item() ),
+			$replaced
+		);
+	}
+
+	/**
+	 * Determine if a search can be used as a pattern. A plain text search is always valid.
+	 *
+	 * @param string $search Search string.
+	 * @return bool
+	 */
+	private function is_valid_pattern( $search ) {
+		if ( ! $this->search_flags->is_regex() ) {
+			return true;
+		}
+
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- an invalid pattern raises a PHP warning
+		return @preg_match( Search\Text::get_pattern( $search, $this->search_flags ), '' ) !== false;
 	}
 
 	public function perform( $row_id, $row_value, Source\Source $source, Search\Column $column, array $raw, $save_mode ) {
@@ -190,6 +228,16 @@ class String_Value extends Modifier\Modifier {
 			return $column;
 		}
 
+		// An invalid pattern will fail for every row, so report it rather than silently change nothing
+		if ( ! $this->is_valid_pattern( $this->search_value ) ) {
+			return new WP_Error( 'rest_invalid_param', 'Invalid regular expression: ' . $this->search_value, [ 'status' => 400 ] );
+		}
+
+		// Leave serialized data untouched
+		if ( is_serialized( $row_value ) ) {
+			return $column;
+		}
+
 		if ( $this->pos_id === null ) {
 			if ( $this->replace_value === null ) {
 				return $column;
@@ -197,9 +245,11 @@ class String_Value extends Modifier\Modifier {
 
 			// When not saving we need to return the individual replacements. If saving then we want to return the whole text
 			if ( $save_mode ) {
-				$global_replace = $this->replace_all( $this->search_value, $this->replace_value, $row_value );
-
-				$value = apply_filters( 'searchregex_text', $global_replace, $row_id, $row_value, $raw, $source->get_schema_item() );
+				$value = $this->replace_all_dynamic( $this->search_value, $this->replace_value, $row_id, $row_value, $raw, $source );
+				if ( $value === null ) {
+					// The replacement failed, so leave the row untouched rather than save an empty value
+					return $column;
+				}
 
 				// Global replace
 				if ( $row_value !== $value ) {
@@ -238,7 +288,13 @@ class String_Value extends Modifier\Modifier {
 			$match = $context->get_match_at_position( $this->pos_id );
 
 			if ( is_object( $match ) ) {
-				$value = apply_filters( 'searchregex_text', $match->replace_at_position( $row_value ), $row_id, $row_value, $raw, $source->get_schema_item() );
+				$replacement = $match->get_replacement();
+				if ( $replacement !== null ) {
+					// Only the replacement is dynamic. Shortcodes in the rest of the content are left alone
+					$match->set_replacement( apply_filters( 'searchregex_text', $replacement, $row_id, $row_value, $raw, $source->get_schema_item() ) );
+				}
+
+				$value = $match->replace_at_position( $row_value );
 
 				// Need to replace the match with the result in the raw data
 				if ( $row_value !== $value ) {

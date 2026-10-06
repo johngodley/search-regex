@@ -4,6 +4,7 @@ namespace SearchRegex\Source\Core;
 
 use SearchRegex\Source;
 use SearchRegex\Plugin;
+use WP_Error;
 
 abstract class Meta extends Source\Source {
 	public function get_table_id() {
@@ -41,6 +42,11 @@ abstract class Meta extends Source\Source {
 		$meta = $this->get_columns_to_change( $changes );
 
 		if ( count( $meta ) > 0 ) {
+			// The value is written directly to the database, and WordPress will unserialize it when the meta is next read
+			if ( isset( $meta['meta_value'] ) && is_string( $meta['meta_value'] ) && is_serialized( $meta['meta_value'] ) ) {
+				return new WP_Error( 'searchregex', 'Serialized data cannot be saved to meta data: ' . $this->get_meta_table(), [ 'status' => 400 ] );
+			}
+
 			$this->log_save( 'meta', $meta );
 
 			// This does all the sanitization
@@ -49,7 +55,7 @@ abstract class Meta extends Source\Source {
 			if ( Plugin\Settings::init()->can_save() ) {
 				$result = $wpdb->update( _get_meta_table( $this->get_meta_table() ), $meta, [ $this->get_table_id() => $row_id ] );
 				if ( $result === false ) {
-					return new \WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
+					return new WP_Error( 'searchregex', 'Failed to update meta data: ' . $this->get_meta_table() );
 				}
 
 				// Clear any cache
@@ -75,7 +81,7 @@ abstract class Meta extends Source\Source {
 				return true;
 			}
 
-			return new \WP_Error( 'searchregex_delete', 'Failed to delete meta', 401 );
+			return new WP_Error( 'searchregex_delete', 'Failed to delete meta', 401 );
 		}
 
 		return true;
