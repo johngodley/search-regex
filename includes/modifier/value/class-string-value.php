@@ -24,9 +24,6 @@ use WP_Error;
  * }
  */
 class String_Value extends Modifier\Modifier {
-	const BEFORE = '<SEARCHREGEX>';
-	const AFTER = '</SEARCHREGEX>';
-
 	/**
 	 * Value to search for. Only used in a search/replace
 	 */
@@ -115,23 +112,31 @@ class String_Value extends Modifier\Modifier {
 			return [];
 		}
 
+		[ $before, $after ] = $this->get_markers();
+
 		// Global replace
-		$result = $this->replace_all( $this->search_value, $this->replace_value, $value, self::BEFORE, self::AFTER );
+		$result = $this->replace_all( $this->search_value, $this->replace_value, $value, $before, $after );
 		if ( $result === null ) {
 			return [];
 		}
 
 		// Split into array
-		$pattern = '@' . self::BEFORE . '(.*?)' . self::AFTER . '@s';
-		if ( $this->search_flags->is_case_insensitive() ) {
-			$pattern .= 'i';
-		}
-
-		if ( \preg_match_all( $pattern, $result, $searches ) > 0 ) {
+		if ( \preg_match_all( '@' . $before . '(.*?)' . $after . '@s', $result, $searches ) > 0 ) {
 			return $searches[1];
 		}
 
 		return [];
+	}
+
+	/**
+	 * Get the text used to mark the start and end of each replacement. This is random so that it cannot already be in the content.
+	 *
+	 * @return array{string, string}
+	 */
+	private function get_markers() {
+		$marker = bin2hex( random_bytes( 8 ) );
+
+		return [ '<SEARCHREGEX-' . $marker . '>', '</SEARCHREGEX-' . $marker . '>' ];
 	}
 
 	/**
@@ -155,6 +160,35 @@ class String_Value extends Modifier\Modifier {
 
 		// Global replace. This returns null on failure, such as invalid UTF-8 in the content or hitting a PCRE limit
 		return preg_replace( $pattern, $before . $replace . $after, $value );
+	}
+
+	/**
+	 * Perform a global replacement, with any shortcodes in the replacement processed for each match.
+	 *
+	 * Shortcodes are only processed in the replacement, and not in the rest of the content.
+	 *
+	 * @internal
+	 * @param string $search Search string.
+	 * @param string $replace Replacement value.
+	 * @param int $row_id Row ID.
+	 * @param string $row_value Content to replace.
+	 * @param array<string, mixed> $raw Raw database data.
+	 * @param Source\Source $source Source.
+	 * @return string|null The replaced content, or null if the replacement failed
+	 */
+	private function replace_all_dynamic( $search, $replace, $row_id, $row_value, array $raw, Source\Source $source ) {
+		[ $before, $after ] = $this->get_markers();
+
+		$replaced = $this->replace_all( $search, $replace, $row_value, $before, $after );
+		if ( $replaced === null ) {
+			return null;
+		}
+
+		return preg_replace_callback(
+			'@' . $before . '(.*?)' . $after . '@s',
+			fn( $matches ) => apply_filters( 'searchregex_text', $matches[1], $row_id, $row_value, $raw, $source->get_schema_item() ),
+			$replaced
+		);
 	}
 
 	/**
@@ -211,13 +245,11 @@ class String_Value extends Modifier\Modifier {
 
 			// When not saving we need to return the individual replacements. If saving then we want to return the whole text
 			if ( $save_mode ) {
-				$global_replace = $this->replace_all( $this->search_value, $this->replace_value, $row_value );
-				if ( $global_replace === null ) {
+				$value = $this->replace_all_dynamic( $this->search_value, $this->replace_value, $row_id, $row_value, $raw, $source );
+				if ( $value === null ) {
 					// The replacement failed, so leave the row untouched rather than save an empty value
 					return $column;
 				}
-
-				$value = apply_filters( 'searchregex_text', $global_replace, $row_id, $row_value, $raw, $source->get_schema_item() );
 
 				// Global replace
 				if ( $row_value !== $value ) {
@@ -256,7 +288,13 @@ class String_Value extends Modifier\Modifier {
 			$match = $context->get_match_at_position( $this->pos_id );
 
 			if ( is_object( $match ) ) {
-				$value = apply_filters( 'searchregex_text', $match->replace_at_position( $row_value ), $row_id, $row_value, $raw, $source->get_schema_item() );
+				$replacement = $match->get_replacement();
+				if ( $replacement !== null ) {
+					// Only the replacement is dynamic. Shortcodes in the rest of the content are left alone
+					$match->set_replacement( apply_filters( 'searchregex_text', $replacement, $row_id, $row_value, $raw, $source->get_schema_item() ) );
+				}
+
+				$value = $match->replace_at_position( $row_value );
 
 				// Need to replace the match with the result in the raw data
 				if ( $row_value !== $value ) {

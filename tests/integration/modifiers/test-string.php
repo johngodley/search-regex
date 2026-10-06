@@ -205,6 +205,21 @@ class Modifier_String_Test extends SearchRegex_Api_Test {
 		$this->assertEquals( 'this is a cat', $context->get_replacement() );
 	}
 
+	public function testMarkerInContentDoesNotChangeReplacement() {
+		$value = '<SEARCHREGEX>planted</SEARCHREGEX> this is a test';
+		$modifier = $this->get_modifier( [ 'operation' => 'replace', 'searchValue' => 'test', 'replaceValue' => 'cat' ] );
+
+		$this->assertEquals( [ 'cat' ], $modifier->get_replace_positions( $value ) );
+	}
+
+	public function testMarkerInContentDoesNotChangePositionReplacement() {
+		$value = '<SEARCHREGEX>planted</SEARCHREGEX> this is a test';
+		$modifier = $this->get_modifier( [ 'operation' => 'replace', 'searchValue' => 'test', 'replaceValue' => 'cat', 'posId' => strpos( $value, 'test' ) ] );
+		$context = $this->perform( $modifier, $value );
+
+		$this->assertEquals( '<SEARCHREGEX>planted</SEARCHREGEX> this is a cat', $context->get_replacement() );
+	}
+
 	public function testSearchRegexPos() {
 		$modifier = $this->get_modifier( [ 'operation' => 'replace', 'searchValue' => 'test', 'replaceValue' => 'cat', 'posId' => 15 ] );
 		$context = $this->perform( $modifier, 'test this is a test' );
